@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: lexora-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false          # À renseigner manuellement dans le dashboard Render
+      - key: SECRET_KEY
+        generateValue: true  # Render génère automatiquement une valeur aléatoire
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 1440
+      - key: DEFAULT_DAILY_QUOTA
+        value: 50
+      - key: ADMIN_DAILY_QUOTA
+        value: 9999
+      - key: ALLOWED_ORIGINS
+        value: https://clementjonckheere.github.io  # Ton GitHub Pages
+      - key: DATABASE_URL
+        sync: false          # Tu colles l'URL Supabase ici
