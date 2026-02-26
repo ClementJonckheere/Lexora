@@ -2,31 +2,26 @@ import httpx
 from fastapi import HTTPException
 from .config import get_settings
 
-settings = get_settings()
-
-ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
-MODEL = "claude-sonnet-4-20250514"
-HEADERS = {
-    "Content-Type": "application/json",
-    "x-api-key": settings.anthropic_api_key,
-    "anthropic-version": "2023-06-01",
-}
+MODEL = "gemini-2.5-flash-lite"
+GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
 
 
 async def call_claude(system: str, user: str, max_tokens: int = 1200) -> tuple[str, int]:
     """
-    Appelle l'API Anthropic et retourne (texte_réponse, tokens_utilisés).
+    Appelle l'API Gemini et retourne (texte_réponse, tokens_utilisés).
     Lève une HTTPException en cas d'erreur.
     """
+    settings = get_settings()
+    url = f"{GEMINI_BASE_URL}/{MODEL}:generateContent?key={settings.gemini_api_key}"
+
     payload = {
-        "model": MODEL,
-        "max_tokens": max_tokens,
-        "system": system,
-        "messages": [{"role": "user", "content": user}],
+        "system_instruction": {"parts": [{"text": system}]},
+        "contents": [{"role": "user", "parts": [{"text": user}]}],
+        "generationConfig": {"maxOutputTokens": max_tokens},
     }
 
     async with httpx.AsyncClient(timeout=60.0) as client:
-        resp = await client.post(ANTHROPIC_URL, headers=HEADERS, json=payload)
+        resp = await client.post(url, json=payload)
 
     if resp.status_code != 200:
         raise HTTPException(
@@ -35,8 +30,14 @@ async def call_claude(system: str, user: str, max_tokens: int = 1200) -> tuple[s
         )
 
     data = resp.json()
-    text = "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text")
-    tokens = data.get("usage", {}).get("input_tokens", 0) + data.get("usage", {}).get("output_tokens", 0)
+    candidates = data.get("candidates", [])
+    text = ""
+    if candidates:
+        parts = candidates[0].get("content", {}).get("parts", [])
+        text = "".join(p.get("text", "") for p in parts)
+
+    usage = data.get("usageMetadata", {})
+    tokens = usage.get("totalTokenCount", 0)
 
     return text, tokens
 
