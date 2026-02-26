@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     # DATABASE_URL fournie par Supabase (format: postgresql://...)
     # Render l'injecte via les variables d'environnement du dashboard
     database_url: str = ""
-    anthropic_api_key: str
+    gemini_api_key: str
     secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 1440
