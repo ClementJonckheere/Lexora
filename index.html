@@ -818,13 +818,13 @@ select:focus { border-color: var(--accent); }
     <div class="section active" id="section-home">
 
       <!-- Header -->
-      <div style="padding: 16px 0 16px">
+      <div style="padding: 8px 0 12px">
         <div class="section-title">Tableau de bord</div>
         <div class="section-desc">Ton diagnostic évolue automatiquement au fil de tes exercices.</div>
       </div>
 
       <!-- Level Banner -->
-      <div class="diag-banner" id="diagBanner">
+      <div class="diag-banner" id="diagBanner" style="display:none">
         <div class="diag-level-wrap">
           <div class="diag-level-label">Niveau estimé</div>
           <div class="diag-level" id="diagLevel">—</div>
@@ -1314,6 +1314,7 @@ function renderDiagnostic() {
   const hasData = diagState.sessions > 0;
   document.getElementById('diagEmpty').style.display = hasData ? 'none' : 'block';
   document.getElementById('diagData').style.display = hasData ? 'block' : 'none';
+  document.getElementById('diagBanner').style.display = hasData ? 'flex' : 'none';
 
   const level = estimateLevel();
   document.getElementById('diagLevel').textContent = level;
@@ -1470,7 +1471,7 @@ function drawRadar() {
 // ════════════════════════════════════════
 //  CONFIG & AUTH
 // ════════════════════════════════════════
-const API_BASE = 'https://lexora-zopy.onrender.com/api';
+const API_BASE = 'https://lexora-backend.onrender.com/api';
 // ☝️ Remplace par l'URL exacte que Render te donnera après déploiement
 
 // ── Service Worker (PWA) ──────────────────────────────────────────────
