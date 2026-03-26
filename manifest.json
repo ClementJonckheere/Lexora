@@ -2,7 +2,7 @@
   "name": "Lexora — Apprends l'anglais",
   "short_name": "Lexora",
   "description": "Application d'apprentissage de l'anglais avec exercices interactifs",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#09090f",
   "theme_color": "#7c6af7",
@@ -20,14 +20,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "icons/screenshot.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
     }
   ],
   "categories": ["education", "productivity"],
