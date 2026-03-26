@@ -12,6 +12,13 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 <meta name="description" content="Application d'apprentissage de l'anglais avec exercices interactifs et correction personnalisée">
 <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;600;700&family=Cabinet+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script>
+  // Applique le thème AVANT le rendu pour éviter le flash
+  (function(){
+    var t = localStorage.getItem('lexora-theme');
+    if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  })();
+</script>
 <style>
 :root {
   --bg: #09090f;
@@ -30,6 +37,9 @@
   --border-bright: #3a3a50;
   --r: 14px;
   --r-sm: 9px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.35);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.45);
+  --transition: 0.2s ease;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -728,6 +738,100 @@ select:focus { border-color: var(--accent); }
   .tabs-mobile { display: flex; }
   nav .logo-dot { display: none; }
 }
+
+/* ── DESIGN IMPROVEMENTS ── */
+.card { box-shadow: var(--shadow); }
+.auth-box { box-shadow: var(--shadow-lg); }
+.home-module { box-shadow: var(--shadow); }
+.fc-wrapper { filter: drop-shadow(0 4px 20px rgba(124,106,247,0.18)); }
+
+textarea:focus  { box-shadow: 0 0 0 3px rgba(124,106,247,0.13); }
+select:focus    { box-shadow: 0 0 0 3px rgba(124,106,247,0.13); }
+.auth-field input:focus { box-shadow: 0 0 0 3px rgba(124,106,247,0.13); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #8a78ff 0%, #6b5be6 100%);
+  box-shadow: 0 3px 14px rgba(124,106,247,0.28);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #9888ff 0%, #7c6af7 100%);
+  box-shadow: 0 6px 24px rgba(124,106,247,0.42);
+  transform: translateY(-2px);
+}
+
+.home-module:hover { box-shadow: 0 6px 28px rgba(124,106,247,0.22); }
+
+nav { box-shadow: 0 1px 0 var(--border); }
+
+.result-box { box-shadow: var(--shadow); }
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 13px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  transition: all 0.18s;
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── LIGHT MODE ── */
+[data-theme="light"] {
+  --bg: #f3f3fb;
+  --surface: #ffffff;
+  --surface2: #eaeaf5;
+  --surface3: #e0e0ee;
+  --text: #16162a;
+  --text-dim: #5a5a82;
+  --border: #d6d6ea;
+  --border-bright: #bcbcd8;
+  --accent-glow: rgba(124,106,247,0.1);
+  --shadow: 0 2px 16px rgba(80,80,130,0.09);
+  --shadow-lg: 0 8px 40px rgba(80,80,130,0.13);
+}
+[data-theme="light"] body::before {
+  background-image:
+    linear-gradient(rgba(124,106,247,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,106,247,0.055) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+[data-theme="light"] body::after {
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 10%, rgba(124,106,247,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 60% at 85% 90%, rgba(34,211,238,0.05) 0%, transparent 55%);
+}
+[data-theme="light"] nav {
+  background: rgba(243,243,251,0.88);
+}
+[data-theme="light"] .tabs-mobile {
+  background: rgba(243,243,251,0.96);
+}
+[data-theme="light"] .auth-overlay {
+  background: var(--bg);
+}
+[data-theme="light"] .reading-text-block {
+  color: #464668;
+}
+[data-theme="light"] .writing-ai-feedback {
+  color: #464668;
+}
+[data-theme="light"] ::-webkit-scrollbar-track { background: var(--bg); }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--border-bright); }
+[data-theme="light"] .fc-wrapper {
+  filter: drop-shadow(0 4px 20px rgba(124,106,247,0.12));
+}
+[data-theme="light"] .btn-primary {
+  box-shadow: 0 3px 14px rgba(124,106,247,0.2);
+}
+[data-theme="light"] .btn-primary:hover {
+  box-shadow: 0 6px 24px rgba(124,106,247,0.32);
+}
 </style>
 </head>
 <body>
@@ -785,6 +889,7 @@ select:focus { border-color: var(--accent); }
   </div>
     <div class="quota-pill">Quota : <span id="quotaDisplay">—</span></div>
     <div class="xp-pill">⚡ <span id="totalXP">0</span> XP</div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Mode clair / sombre">☀️ Clair</button>
     <span style="color:var(--text-dim);font-size:0.82rem" id="navUsername"></span>
     <button class="btn-logout" onclick="logout()">Déconnexion</button>
   </div>
@@ -1205,6 +1310,26 @@ select:focus { border-color: var(--accent); }
 </div>
 
 <script>
+// ════════════════════════════════════════
+//  THEME
+// ════════════════════════════════════════
+function toggleTheme() {
+  const html = document.documentElement;
+  const isLight = html.getAttribute('data-theme') === 'light';
+  const next = isLight ? 'dark' : 'light';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('lexora-theme', next);
+  updateThemeBtn();
+}
+function updateThemeBtn() {
+  const btn = document.getElementById('themeToggle');
+  if (!btn) return;
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  btn.textContent = isLight ? '🌙 Sombre' : '☀️ Clair';
+}
+// Sync button label on load
+window.addEventListener('DOMContentLoaded', updateThemeBtn);
+
 // ════════════════════════════════════════
 //  NAVIGATION
 // ════════════════════════════════════════
