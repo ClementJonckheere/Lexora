@@ -1,33 +1,19 @@
-# Environnement & secrets — NE JAMAIS COMMITER
+# Dépendances & builds
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/schemas/
+coverage/
+
+# Environnement
 .env
 *.env
-!.env.example
 
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-.venv/
-venv/
-env/
-*.egg-info/
-dist/
-build/
-.pytest_cache/
-
-# IDE
-.vscode/
+# IDE / OS
+.vscode/*
+!.vscode/extensions.json
 .idea/
 *.swp
-*.swo
-
-# OS
 .DS_Store
 Thumbs.db
-
-# Logs
 *.log
-logs/
-
-# Railway
-.railway/
