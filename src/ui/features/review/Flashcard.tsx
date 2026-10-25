@@ -1,0 +1,60 @@
+import type { ReactNode } from 'react';
+import { Volume2 } from 'lucide-react';
+import { useApp } from '@/app/store';
+import type { Direction, Note } from '@/core/domain/types';
+import { speak, speechSupported } from '@/core/platform/speech';
+import { Button } from '@/ui/components/ui';
+
+export function speakNote(note: Note) {
+  const { settings } = useApp.getState();
+  speak(note.expression, { voice: settings.ttsVoice, rate: settings.ttsRate });
+}
+
+/** Fiche de mémorisation : question (recto) puis réponse (verso). */
+export function Flashcard({
+  note,
+  direction,
+  revealed,
+  meta,
+}: {
+  note: Note;
+  direction: Direction;
+  revealed: boolean;
+  meta: ReactNode;
+}) {
+  const frToEn = direction === 'fr_en';
+  const canSpeak = speechSupported();
+  const speakBtn = canSpeak && (
+    <Button variant="ghost" icon size="sm" title="Écouter (P)" onClick={() => speakNote(note)}>
+      <Volume2 size={18} />
+    </Button>
+  );
+
+  return (
+    <div className="card flashcard" key={`${note.id}-${direction}`}>
+      <div className="flashcard-meta">{meta}</div>
+      <div className="flashcard-prompt" lang={frToEn ? 'fr' : 'en'}>
+        {frToEn ? note.translation : note.expression}
+        {!frToEn && <span style={{ marginLeft: 6, verticalAlign: 'middle' }}>{speakBtn}</span>}
+      </div>
+      {revealed && (
+        <div className="flashcard-answer">
+          <div className="flashcard-answer-main" lang={frToEn ? 'en' : 'fr'}>
+            {frToEn ? note.expression : note.translation}
+            {frToEn && speakBtn}
+          </div>
+          {note.examples.length > 0 && (
+            <div className="flashcard-examples">
+              {note.examples.map((ex, i) => (
+                <p key={i} className="example" lang="en">
+                  {ex}
+                </p>
+              ))}
+            </div>
+          )}
+          {note.comment && <p className="flashcard-comment">{note.comment}</p>}
+        </div>
+      )}
+    </div>
+  );
+}
