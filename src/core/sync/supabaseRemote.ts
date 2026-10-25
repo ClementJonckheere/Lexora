@@ -2,6 +2,12 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Remote } from './engine';
 import type { RemoteRow, SyncTable } from './tables';
 
+/** Erreur PostgREST lisible ; colonne absente = schéma Supabase pas à jour. */
+function describe(error: { message: string; code?: string }): string {
+  const missing = error.code === 'PGRST204' || error.code === '42703' || /column .* does not exist|Could not find the '.*' column/i.test(error.message);
+  return missing ? `${error.message} — base Supabase à mettre à jour : relancez supabase/schema.sql dans l'éditeur SQL de Supabase.` : error.message;
+}
+
 /**
  * Serveur Supabase (PostgreSQL + Row Level Security).
  * Chaque utilisateur ne voit et n'écrit que ses lignes (politiques RLS sur user_id = auth.uid()).
@@ -16,7 +22,7 @@ export class SupabaseRemote implements Remote {
     const payload = rows.map((r) => ({ ...r, user_id: this.userId }));
     const onConflict = table.key === 'id' ? 'id' : `user_id,${table.key}`;
     const { error } = await this.client.from(table.name).upsert(payload, { onConflict });
-    if (error) throw new Error(`Envoi (${table.name}) : ${error.message}`);
+    if (error) throw new Error(`Envoi (${table.name}) : ${describe(error)}`);
   }
 
   async pull(table: SyncTable, since: number, afterKey: string, limit: number): Promise<RemoteRow[]> {
@@ -32,7 +38,7 @@ export class SupabaseRemote implements Remote {
       ? query.or(`server_updated_at.gt.${since},and(server_updated_at.eq.${since},${table.key}.gt.${afterKey})`)
       : query.gt('server_updated_at', since);
     const { data, error } = await query;
-    if (error) throw new Error(`Réception (${table.name}) : ${error.message}`);
+    if (error) throw new Error(`Réception (${table.name}) : ${describe(error)}`);
     return (data ?? []) as unknown as RemoteRow[];
   }
 }

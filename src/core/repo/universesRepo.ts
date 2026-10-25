@@ -8,6 +8,7 @@ interface UniverseRow {
   name: string;
   language: string;
   position: number;
+  new_per_day: number | null;
   created_at: number;
   updated_at: number;
 }
@@ -19,6 +20,7 @@ export async function loadUniverses(db: Queryable): Promise<Universe[]> {
     name: r.name,
     language: r.language,
     position: Number(r.position),
+    newPerDay: r.new_per_day == null ? null : Number(r.new_per_day),
     createdAt: Number(r.created_at),
     updatedAt: Number(r.updated_at),
   }));
@@ -56,6 +58,12 @@ export async function renameUniverse(db: Database, id: string, name: string, now
   const n = cleanText(name);
   if (!n) throw new Error("Le nom de l'univers est obligatoire.");
   await db.execute('UPDATE universes SET name = ?, updated_at = ?, dirty = 1 WHERE id = ?', [n, now, id]);
+}
+
+/** Plafond de nouveaux mots propre à l'univers (null = réglage général). */
+export async function setUniverseNewPerDay(db: Database, id: string, value: number | null, now = Date.now()): Promise<void> {
+  const v = value == null ? null : Math.round(Math.min(200, Math.max(0, value)));
+  await db.execute('UPDATE universes SET new_per_day = ?, updated_at = ?, dirty = 1 WHERE id = ?', [v, now, id]);
 }
 
 /** Supprime un univers avec toutes ses notes, fiches et collections. */

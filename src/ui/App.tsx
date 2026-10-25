@@ -2,6 +2,9 @@ import { useEffect } from 'react';
 import { BarChart3, BookOpen, Brain, Home, Layers, Plus, Search, Settings as SettingsIcon } from 'lucide-react';
 import { useApp, type Route } from '@/app/store';
 import { registerGlobalShortcut } from '@/core/platform/globalShortcut';
+import { readClipboardExpression } from '@/core/platform/desktop';
+import { startDesktopIntegration } from '@/app/desktop';
+import { UpdateBanner } from './features/account/UpdateBanner';
 import { Button, Kbd, Modal } from './components/ui';
 import { ConfirmHost } from './components/Confirm';
 import { Toasts } from './components/Toasts';
@@ -28,6 +31,23 @@ const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string
   { route: 'stats', label: 'Statistiques', icon: BarChart3, key: '5' },
   { route: 'settings', label: 'Paramètres', icon: SettingsIcon, key: '6' },
 ];
+
+let lastPrefill = '';
+
+/** Raccourci global : ouvre l'ajout rapide, pré-rempli avec le texte copié (s'il est nouveau). */
+async function quickAddFromAnywhere() {
+  const s = useApp.getState();
+  if (s.editor) return;
+  let expression: string | null = null;
+  if (s.settings.clipboardPrefill) {
+    const copied = await readClipboardExpression();
+    if (copied && copied !== lastPrefill) {
+      expression = copied;
+      lastPrefill = copied;
+    }
+  }
+  s.openEditor(null, expression ? { expression } : undefined);
+}
 
 function Sidebar() {
   const route = useApp((s) => s.route);
@@ -58,6 +78,7 @@ function Sidebar() {
       </div>
       <div className="sidebar-spacer" />
       <div className="sidebar-actions">
+        <UpdateBanner />
         <SidebarAccount />
         <button className="search-trigger" onClick={() => setSearchOpen(true)} title="Rechercher (Ctrl+K)">
           <Search size={15} />
@@ -159,11 +180,10 @@ export function App() {
 
   useEffect(() => {
     if (!appReady) return;
-    registerGlobalShortcut(globalShortcut, () => {
-      const s = useApp.getState();
-      if (!s.editor) s.openEditor();
-    }).catch((err) => toast('error', `Raccourci global « ${globalShortcut} » indisponible : ${err instanceof Error ? err.message : String(err)}`));
+    registerGlobalShortcut(globalShortcut, () => void quickAddFromAnywhere()).catch((err) => toast('error', `Raccourci global « ${globalShortcut} » indisponible : ${err instanceof Error ? err.message : String(err)}`));
   }, [appReady, globalShortcut, toast]);
+
+  useEffect(() => (appReady ? startDesktopIntegration() : undefined), [appReady]);
 
   const inSession = route.name === 'session';
 

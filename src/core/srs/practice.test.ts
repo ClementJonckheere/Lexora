@@ -15,6 +15,7 @@ function n(id: number, expression: string, examples: string[] = []): Note {
     category: '',
     categoryAuto: true,
     isFavorite: false,
+    suspended: false,
     createdAt: 0,
     updatedAt: 0,
     examples,

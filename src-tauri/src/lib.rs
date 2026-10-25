@@ -7,6 +7,8 @@
 
 mod db;
 mod oauth;
+#[cfg(desktop)]
+mod tray;
 
 use db::{AppDb, ExecResult};
 use serde::Serialize;
@@ -52,6 +54,22 @@ fn oauth_start(app: tauri::AppHandle) -> Result<u16, String> {
     oauth::start(app)
 }
 
+/// Fermer la fenêtre la masque-t-elle dans la zone de notification ?
+#[tauri::command]
+fn set_close_to_tray(enabled: bool) {
+    #[cfg(desktop)]
+    tray::set_close_to_tray(enabled);
+    let _ = enabled;
+}
+
+/// Infobulle de l'icône de la zone de notification.
+#[tauri::command]
+fn set_tray_tooltip(app: tauri::AppHandle, text: String) {
+    #[cfg(desktop)]
+    tray::set_tooltip(&app, &text);
+    let _ = (app, text);
+}
+
 #[tauri::command]
 fn read_text_file(path: String) -> Result<String, String> {
     std::fs::read_to_string(&path).map_err(|e| format!("Lecture impossible de {path} : {e}"))
@@ -70,20 +88,30 @@ pub fn run() {
     {
         // Une seule instance : relancer Lexora ramène la fenêtre existante au premier plan.
         builder = builder
-            .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
-                if let Some(w) = app.get_webview_window("main") {
-                    let _ = w.unminimize();
-                    let _ = w.show();
-                    let _ = w.set_focus();
-                }
-            }))
-            .plugin(tauri_plugin_global_shortcut::Builder::new().build());
+            .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| tray::show_main(app)))
+            .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+            .plugin(tauri_plugin_updater::Builder::new().build())
+            .plugin(tauri_plugin_autostart::init(
+                tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+                Some(vec!["--hidden"]),
+            ));
     }
 
     builder
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_notification::init())
         .setup(|app| {
+            #[cfg(desktop)]
+            {
+                tray::setup(app.handle())?;
+                // Lancement automatique avec Windows : démarre masqué dans la zone de notification.
+                if !std::env::args().any(|a| a == "--hidden") {
+                    tray::show_main(app.handle());
+                }
+            }
             let data_dir = app.path().app_data_dir()?;
             let db = AppDb::open(&data_dir).map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
             if let Err(e) = db.auto_backup() {
@@ -92,12 +120,24 @@ pub fn run() {
             app.manage(db);
             Ok(())
         })
+        .on_window_event(|window, event| {
+            #[cfg(desktop)]
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                if window.label() == "main" && tray::close_to_tray() {
+                    api.prevent_close();
+                    let _ = window.hide();
+                }
+            }
+            let _ = (window, event);
+        })
         .invoke_handler(tauri::generate_handler![
             db_select,
             db_execute,
             app_info,
             backup_now,
             oauth_start,
+            set_close_to_tray,
+            set_tray_tooltip,
             read_text_file,
             write_text_file
         ])

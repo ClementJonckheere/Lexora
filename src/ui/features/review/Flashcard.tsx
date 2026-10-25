@@ -5,6 +5,7 @@ import type { Direction, Note } from '@/core/domain/types';
 import { speechSupported } from '@/core/platform/speech';
 import { speakNote } from '@/ui/speech';
 import { Button } from '@/ui/components/ui';
+import { Example } from '@/ui/components/Example';
 
 export { speakNote };
 
@@ -14,11 +15,14 @@ export function Flashcard({
   direction,
   revealed,
   meta,
+  children,
 }: {
   note: Note;
   direction: Direction;
   revealed: boolean;
   meta: ReactNode;
+  /** Affiché entre la question et la réponse (saisie de la réponse). */
+  children?: ReactNode;
 }) {
   const frToEn = direction === 'fr_en';
   const language = useApp((s) => s.universes.find((u) => u.id === note.universeId)?.language ?? 'en');
@@ -36,6 +40,7 @@ export function Flashcard({
         {frToEn ? note.translation : note.expression}
         {!frToEn && <span style={{ marginLeft: 6, verticalAlign: 'middle' }}>{speakBtn}</span>}
       </div>
+      {children}
       {revealed && (
         <div className="flashcard-answer">
           <div className="flashcard-answer-main" lang={frToEn ? language : 'fr'}>
@@ -46,9 +51,7 @@ export function Flashcard({
           {note.examples.length > 0 && (
             <div className="flashcard-examples">
               {note.examples.map((ex, i) => (
-                <p key={i} className="example" lang={language}>
-                  {ex}
-                </p>
+                <Example key={i} sentence={ex} expression={note.expression} language={language} />
               ))}
             </div>
           )}

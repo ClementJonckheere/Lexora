@@ -56,4 +56,18 @@ export class SessionQueue<T> {
     this.completed = prev.completed;
     return this.queue[0];
   }
+
+  /** Retire définitivement des fiches (note suspendue) ; elles comptent comme traitées. */
+  remove(predicate: (item: T) => boolean): number {
+    const before = this.queue.length;
+    this.queue = this.queue.filter((i) => !predicate(i));
+    const removed = before - this.queue.length;
+    this.completed += removed;
+    // L'annulation ne doit pas les faire réapparaître.
+    this.history = this.history.map((h) => {
+      const kept = h.queue.filter((i) => !predicate(i));
+      return { queue: kept, completed: h.completed + (h.queue.length - kept.length) };
+    });
+    return removed;
+  }
 }

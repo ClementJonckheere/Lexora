@@ -50,6 +50,7 @@ export function collectDue(notes: Note[], opts: QueueOptions) {
 
   for (const note of notes) {
     if (opts.noteIds && !opts.noteIds.has(note.id)) continue;
+    if (note.suspended) continue;
     for (const direction of directions) {
       const card = note.cards[direction];
       if (!card) continue;

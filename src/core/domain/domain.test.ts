@@ -154,3 +154,18 @@ describe('univers multilingues', () => {
     expect(expressionKey('Año', 'es')).not.toBe(expressionKey('ano', 'es'));
   });
 });
+
+describe('réponse tapée', () => {
+  it('exacte, proche ou fausse', async () => {
+    const { checkAnswer } = await import('./answer');
+    expect(checkAnswer('To tackle an issue', 'tackle an issue')).toBe('exact');
+    expect(checkAnswer('To tackle an issue', 'To Tackle an issue!')).toBe('exact');
+    expect(checkAnswer('To tackle an issue', 'tackle issue')).toBe('close');
+    expect(checkAnswer('To figure out', 'figured out')).toBe('close');
+    expect(checkAnswer('To figure out', 'find out')).toBe('wrong');
+    expect(checkAnswer('To figure out / to work out', 'work out')).toBe('exact');
+    expect(checkAnswer('Echar de menos', 'echo de menos', 'es')).toBe('close');
+    expect(checkAnswer('马马虎虎', '马马 虎虎', 'zh')).toBe('exact');
+    expect(checkAnswer('To tackle', '')).toBe('wrong');
+  });
+});

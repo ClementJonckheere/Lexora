@@ -967,14 +967,14 @@ p {
 .table-head,
 .table-row {
   display: grid;
-  grid-template-columns: 28px minmax(0, 1.15fr) minmax(0, 1fr) 128px 120px 80px;
+  grid-template-columns: 52px minmax(0, 1.15fr) minmax(0, 1fr) 128px 120px 80px;
   align-items: center;
   gap: 12px;
   padding: 0 14px;
 }
 .library--detail .table-head,
 .library--detail .table-row {
-  grid-template-columns: 28px minmax(0, 1.1fr) minmax(0, 1fr) 132px;
+  grid-template-columns: 52px minmax(0, 1.1fr) minmax(0, 1fr) 132px;
 }
 .library--detail .col-category,
 .library--detail .col-date {
@@ -2025,4 +2025,96 @@ p {
   to {
     transform: translateX(250%);
   }
+}
+
+.update-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--primary-soft-2);
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+}
+.update-banner .label {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+.example mark {
+  background: var(--primary-soft-2);
+  color: var(--text);
+  font-style: normal;
+  font-weight: 600;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+.grade--suggested {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.row-lead {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.row-check {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  opacity: 0.35;
+}
+.table-row:hover .row-check,
+.row-check:checked,
+.row-check:focus-visible {
+  opacity: 1;
+}
+.table-row--checked {
+  background: var(--primary-soft);
+}
+.table-row--suspended .en,
+.table-row--suspended .fr {
+  opacity: 0.55;
+}
+.bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--primary-soft-2);
+  background: var(--primary-soft);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+.bulk-bar .bulk-count {
+  font-weight: 600;
+  margin-right: 4px;
+}
+.bulk-bar .select,
+.bulk-bar .input {
+  width: auto;
+  height: 30px;
+}
+
+.universes-overview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.universe-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.universe-chip--current {
+  border-color: var(--primary);
 }

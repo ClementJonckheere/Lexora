@@ -10,7 +10,7 @@ import { DEFAULT_SETTINGS } from '../domain/settings';
 import { ValidationError } from '../domain/validation';
 import { createScheduler, review } from '../srs/scheduler';
 import { buildQueue } from '../srs/queue';
-import { createNote, deleteNotes, findDuplicates, loadNotes, updateNote, type NoteTarget } from './notesRepo';
+import { addTag, createNote, deleteNotes, findDuplicates, loadNotes, moveNotes, restoreNotes, setSuspended, updateNote, type NoteTarget } from './notesRepo';
 import { addToCollection, createCollection, deleteCollection, loadCollections } from './collectionsRepo';
 import { createUniverse, deleteUniverse, loadUniverses } from './universesRepo';
 import { countNewIntroduced, loadForgetCounts, recordPractice, recordReview, undoReview } from './reviewRepo';
@@ -149,6 +149,26 @@ describe('notes', () => {
     await deleteNotes(db, [id]);
     expect(await loadNotes(db)).toHaveLength(0);
     expect(await db.select('SELECT * FROM cards WHERE deleted = 0')).toHaveLength(0);
+
+    await restoreNotes(db, [id]);
+    [n] = await loadNotes(db);
+    expect(n.cards.fr_en?.reps).toBe(1);
+  });
+
+  it('suspend, ajoute un tag et déplace vers un autre univers', async () => {
+    const id = await createNote(db, { ...tackle, tags: ['work'] }, en);
+    const c = await createCollection(db, en.universeId, 'Business');
+    await addToCollection(db, c, [id]);
+    await setSuspended(db, [id], true);
+    await addTag(db, [id], 'Work');
+    await addTag(db, [id], 'verbs');
+    let [n] = await loadNotes(db);
+    expect(n).toMatchObject({ suspended: true, tags: ['work', 'verbs'] });
+
+    const es = await createUniverse(db, 'Espagnol', 'es');
+    await moveNotes(db, [id], { universeId: es, language: 'es' });
+    [n] = await loadNotes(db);
+    expect(n).toMatchObject({ universeId: es, collectionIds: [] });
   });
 });
 

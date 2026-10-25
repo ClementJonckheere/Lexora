@@ -27,6 +27,7 @@ function n(id: number, expression: string, translation: string, extra: Partial<N
     category: '',
     categoryAuto: true,
     isFavorite: false,
+    suspended: false,
     createdAt: NOW - id * DAY,
     updatedAt: NOW,
     examples: [],

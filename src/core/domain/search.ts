@@ -7,7 +7,7 @@ export interface NoteFilters {
   category: string;
   tag: string;
   collectionId: string | null;
-  mastery: Mastery | 'not_mastered' | 'all';
+  mastery: Mastery | 'not_mastered' | 'suspended' | 'all';
   date: 'all' | 'today' | '7d' | '30d' | '90d';
   favoritesOnly: boolean;
   sort: 'recent' | 'oldest' | 'az' | 'za' | 'mastery';
@@ -78,7 +78,9 @@ export function filterNotes(
     if (tag && !n.tags.some((t) => t.toLowerCase() === tag)) return false;
     if (f.collectionId != null && !n.collectionIds.includes(f.collectionId)) return false;
     if (n.createdAt < since) return false;
-    if (f.mastery !== 'all') {
+    if (f.mastery === 'suspended') {
+      if (!n.suspended) return false;
+    } else if (f.mastery !== 'all') {
       const m = masteryOf(n);
       if (f.mastery === 'not_mastered' ? m === 'mastered' : m !== f.mastery) return false;
     }

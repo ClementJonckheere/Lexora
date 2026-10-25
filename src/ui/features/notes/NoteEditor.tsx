@@ -142,14 +142,8 @@ function NoteEditorDialog() {
 
   const remove = async () => {
     if (!existing) return;
-    const ok = await confirm({
-      title: 'Supprimer cette note ?',
-      message: `« ${existing.expression} » et son historique de révision seront définitivement supprimés.`,
-      confirmLabel: 'Supprimer',
-      danger: true,
-    });
-    if (!ok) return;
-    await attempt(() => deleteNotes([existing.id]), 'Note supprimée');
+    // Pas de confirmation : la notification propose « Annuler ».
+    await attempt(() => deleteNotes([existing.id]));
     closeEditor();
   };
 

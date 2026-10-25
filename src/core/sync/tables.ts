@@ -15,14 +15,14 @@ export interface SyncTable {
 const SYNC = ['updated_at', 'deleted'];
 
 export const SYNC_TABLES: SyncTable[] = [
-  { name: 'universes', key: 'id', columns: ['id', 'name', 'language', 'position', 'created_at', ...SYNC] },
+  { name: 'universes', key: 'id', columns: ['id', 'name', 'language', 'position', 'new_per_day', 'created_at', ...SYNC] },
   { name: 'collections', key: 'id', columns: ['id', 'universe_id', 'name', 'description', 'created_at', ...SYNC] },
   {
     name: 'notes',
     key: 'id',
     columns: [
       'id', 'universe_id', 'expression', 'translation', 'pronunciation', 'expression_key', 'comment', 'category',
-      'category_auto', 'is_favorite', 'examples', 'tags', 'collection_ids', 'created_at', ...SYNC,
+      'category_auto', 'is_favorite', 'suspended', 'examples', 'tags', 'collection_ids', 'created_at', ...SYNC,
     ],
     json: ['examples', 'tags', 'collection_ids'],
   },

@@ -22,6 +22,7 @@ interface NoteRow {
   category: string;
   category_auto: number;
   is_favorite: number;
+  suspended: number;
   examples: string;
   tags: string;
   collection_ids: string;
@@ -85,6 +86,7 @@ function mapNote(r: NoteRow): Note {
     category: r.category,
     categoryAuto: !!Number(r.category_auto),
     isFavorite: !!Number(r.is_favorite),
+    suspended: !!Number(r.suspended),
     createdAt: Number(r.created_at),
     updatedAt: Number(r.updated_at),
     examples: parseList(r.examples),
@@ -234,4 +236,55 @@ export async function updateCollectionIds(
     if (after.length === before.length && after.every((x, i) => x === before[i])) continue;
     await tx.execute('UPDATE notes SET collection_ids = ?, updated_at = ?, dirty = 1 WHERE id = ?', [JSON.stringify(after), now, id]);
   }
+}
+
+/** Annule une suppression (notes et fiches supprimées en même temps). */
+export async function restoreNotes(db: Database, ids: string[], now = Date.now()): Promise<void> {
+  await db.transaction(async (tx) => {
+    for (const id of ids) {
+      await tx.execute('UPDATE notes SET deleted = 0, updated_at = ?, dirty = 1 WHERE id = ?', [now, id]);
+      await tx.execute('UPDATE cards SET deleted = 0, updated_at = ?, dirty = 1 WHERE note_id = ? AND deleted = 1', [now, id]);
+    }
+  });
+}
+
+/** Suspend (exclut des révisions) ou réactive des notes. */
+export async function setSuspended(db: Database, ids: string[], suspended: boolean, now = Date.now()): Promise<void> {
+  await db.transaction(async (tx) => {
+    for (const id of ids) await tx.execute('UPDATE notes SET suspended = ?, updated_at = ?, dirty = 1 WHERE id = ?', [suspended ? 1 : 0, now, id]);
+  });
+}
+
+/** Ajoute un tag à plusieurs notes. */
+export async function addTag(db: Database, ids: string[], tag: string, now = Date.now()): Promise<void> {
+  const t = tag.replace(/\s+/g, ' ').trim();
+  if (!t) throw new Error('Tag vide.');
+  await db.transaction(async (tx) => {
+    for (const id of ids) {
+      const rows = await tx.select<{ tags: string }>('SELECT tags FROM notes WHERE id = ?', [id]);
+      if (!rows.length) continue;
+      const tags = parseList(rows[0].tags);
+      if (tags.some((x) => x.toLowerCase() === t.toLowerCase())) continue;
+      await tx.execute('UPDATE notes SET tags = ?, updated_at = ?, dirty = 1 WHERE id = ?', [JSON.stringify([...tags, t]), now, id]);
+    }
+  });
+}
+
+/**
+ * Déplace des notes vers un autre univers (ex. mot saisi dans la mauvaise langue).
+ * L'historique de révision est conservé ; les collections, propres à chaque univers, sont retirées.
+ */
+export async function moveNotes(db: Database, ids: string[], target: NoteTarget, now = Date.now()): Promise<void> {
+  await db.transaction(async (tx) => {
+    for (const id of ids) {
+      const rows = await tx.select<NoteRow>('SELECT * FROM notes WHERE id = ?', [id]);
+      const n = rows[0];
+      if (!n || n.universe_id === target.universeId) continue;
+      const category = Number(n.category_auto) ? categorize(n.expression, target.language) : n.category;
+      await tx.execute(
+        `UPDATE notes SET universe_id = ?, expression_key = ?, category = ?, collection_ids = '[]', updated_at = ?, dirty = 1 WHERE id = ?`,
+        [target.universeId, expressionKey(n.expression, target.language), category, now, id],
+      );
+    }
+  });
 }

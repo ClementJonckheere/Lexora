@@ -125,7 +125,14 @@ export const MIGRATIONS: Migration[] = [
   },
 ];
 
-MIGRATIONS.push(MIGRATION_V2);
+MIGRATIONS.push(MIGRATION_V2, {
+  version: 3,
+  name: 'suspension des notes, plafond de nouveaux mots par univers',
+  statements: [
+    'ALTER TABLE notes ADD COLUMN suspended INTEGER NOT NULL DEFAULT 0',
+    'ALTER TABLE universes ADD COLUMN new_per_day INTEGER',
+  ],
+});
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;
 

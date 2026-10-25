@@ -5,6 +5,7 @@ import { CheckCircle2 } from 'lucide-react';
 import { ScheduledSession } from './ScheduledSession';
 import { ClozePractice, FlashPractice } from './PracticeSession';
 import { buildQueue } from '@/core/srs/queue';
+import { settingsFor } from '@/core/domain/settings';
 import { useState } from 'react';
 
 export function SessionPage({ config }: { config: SessionConfig }) {
@@ -16,7 +17,7 @@ export function SessionPage({ config }: { config: SessionConfig }) {
     return (
       buildQueue(s.notes, {
         now: Date.now(),
-        settings: s.settings,
+        settings: settingsFor(s.settings, s.universe),
         scheduler: s.scheduler,
         newIntroducedToday: s.newIntroducedToday,
         limit: 1,

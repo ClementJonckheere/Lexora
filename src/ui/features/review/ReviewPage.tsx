@@ -4,6 +4,7 @@ import { useApp, type SessionConfig } from '@/app/store';
 import { formatDue } from '@/core/domain/dates';
 import { directionShort, type Direction } from '@/core/domain/types';
 import { countDue } from '@/core/srs/queue';
+import { settingsFor } from '@/core/domain/settings';
 import { clozeCandidates, difficultNotes } from '@/core/srs/practice';
 import { Button, Kbd, Segmented } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
@@ -11,7 +12,9 @@ import { State } from 'ts-fsrs';
 
 export function useDueCounts(collectionId: string | null = null, direction: Direction | null = null) {
   const notes = useApp((s) => s.notes);
-  const settings = useApp((s) => s.settings);
+  const baseSettings = useApp((s) => s.settings);
+  const universe = useApp((s) => s.universe);
+  const settings = useMemo(() => settingsFor(baseSettings, universe), [baseSettings, universe]);
   const scheduler = useApp((s) => s.scheduler);
   const newIntroducedToday = useApp((s) => s.newIntroducedToday);
   const collections = useApp((s) => s.collections);
@@ -34,6 +37,7 @@ function useNextDue() {
 
 export function ReviewPage() {
   const settings = useApp((s) => s.settings);
+  const universe = useApp((s) => s.universe);
   const notes = useApp((s) => s.notes);
   const collections = useApp((s) => s.collections);
   const forgetCounts = useApp((s) => s.forgetCounts);
@@ -85,7 +89,7 @@ export function ReviewPage() {
               {due.total > 0 ? (
                 <>
                   {due.review} à revoir · {due.new} nouveau{due.new > 1 ? 'x' : ''} · {due.learning} en apprentissage
-                  {due.newWaiting > 0 && ` · ${due.newWaiting} nouveaux en attente (plafond ${settings.newPerDay}/jour)`}
+                  {due.newWaiting > 0 && ` · ${due.newWaiting} nouveaux en attente (plafond ${settingsFor(settings, universe).newPerDay}/jour)`}
                 </>
               ) : notes.length === 0 ? (
                 'Ajoutez du vocabulaire : chaque expression devient automatiquement une fiche.'

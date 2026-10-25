@@ -43,6 +43,7 @@ function note(id: number, cards: Partial<Record<Direction, Partial<CardRecord>>>
     category: '',
     categoryAuto: true,
     isFavorite: false,
+    suspended: false,
     createdAt,
     updatedAt: createdAt,
     examples: [],
@@ -187,5 +188,19 @@ describe('session', () => {
     s.advance();
     expect(s.finished).toBe(true);
     expect(s.completed).toBe(5);
+  });
+
+  it('retire les fiches d’une note suspendue, même après annulation', () => {
+    const s = new SessionQueue(['a1', 'b', 'a2', 'c']);
+    s.advance(); // a1
+    s.remove((i) => i.startsWith('a'));
+    expect(s.current).toBe('b');
+    expect(s.completed).toBe(2);
+    s.undo();
+    expect(s.current).toBe('b');
+    s.advance();
+    s.advance();
+    expect(s.finished).toBe(true);
+    expect(s.completed).toBe(4);
   });
 });

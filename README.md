@@ -169,9 +169,22 @@ Thème clair, fond blanc cassé, indigo comme couleur d'action, gris très clair
 Le workflow GitHub Actions `CI & installateur Windows` construit automatiquement l'installateur à chaque push sur `main`, à chaque tag `v*` et sur demande depuis l'onglet *Actions* → *Run workflow* :
 
 1. GitHub → **Actions** → dernière exécution réussie → artefact **lexora-windows** ;
-2. lancer `Lexora_2.0.0_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`.
+2. lancer `Lexora_2.1.0_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`.
 
-Un tag `v2.0.0` crée en plus un brouillon de *Release* contenant les installateurs.
+### Mises à jour automatiques
+
+Dès la version 2.1.0, Lexora vérifie au démarrage (puis toutes les 6 h, ou *Paramètres → Rechercher*) si une nouvelle version est publiée et propose de l'installer en un clic.
+
+- À chaque push, si la version (`package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`) n'a pas encore de *Release*, la CI publie la release `v<version>` avec les installateurs signés et `latest.json`.
+- Prérequis : deux secrets GitHub, **`TAURI_SIGNING_PRIVATE_KEY`** (contenu de la clé privée de signature) et **`TAURI_SIGNING_PRIVATE_KEY_PASSWORD`**. La clé publique correspondante est dans `tauri.conf.json`. Sans ces secrets, l'installateur est construit mais aucune release n'est publiée.
+- La clé privée ne doit jamais être commitée ; si elle est perdue, les versions déjà installées ne pourront plus se mettre à jour (il faudra réinstaller manuellement une version signée avec une nouvelle clé).
+- Pour publier une nouvelle version : augmenter le numéro dans les trois fichiers et pousser.
+
+### Intégration Windows
+
+- **Icône dans la zone de notification** : fermer la fenêtre la réduit dans la zone de notification (désactivable) ; le menu de l'icône permet d'ajouter un mot ou de lancer les révisions, l'infobulle indique le nombre de fiches à réviser.
+- **Démarrage avec Windows** (option, fenêtre masquée) et **rappel quotidien** à l'heure choisie s'il reste des révisions.
+- **Ajout rapide** `Alt+Maj+L` depuis n'importe quelle application, pré-rempli avec le texte copié s'il ressemble à un mot ou une expression.
 
 ### Option B — compiler soi-même
 
@@ -212,6 +225,8 @@ Voir le guide pas à pas [docs/SUPABASE.md](docs/SUPABASE.md) :
 
 Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 
+**Mise à jour 2.1.0** : relancer `supabase/schema.sql` dans l'éditeur SQL de Supabase (colonnes `notes.suspended` et `universes.new_per_day`). Le script est idempotent. Sans cela, la synchronisation affiche « base Supabase à mettre à jour ».
+
 ## Données, sauvegarde et restauration
 
 - Base : `%APPDATA%\com.clementjonckheere.lexora\lexora.db` (chemin exact affiché dans *Paramètres*).
@@ -224,15 +239,17 @@ Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 | Où | Touche | Action |
 |---|---|---|
 | Partout | `N` / `Ctrl+N` | Ajouter une expression |
-| Partout | `Ctrl+K` | Recherche instantanée |
 | Partout | `Ctrl+Maj+V` | Coller plusieurs expressions |
 | Partout | `Ctrl+1` … `Ctrl+6` | Changer de page |
 | Partout | `Alt+1` … `Alt+9` · `Ctrl+U` | Changer d'univers (langue) · Gérer les univers |
 | Partout | `?` | Aide des raccourcis |
-| Windows | `Alt+Maj+L` (réglable) | Ajout rapide depuis n'importe quelle application |
+| Windows | `Alt+Maj+L` (réglable) | Ajout rapide depuis n'importe quelle application (pré-rempli avec le texte copié) |
+| Partout | `Ctrl+K` | Recherche dans toutes les langues |
 | Formulaire | `Entrée` / `Ctrl+Entrée` / `Échap` | Champ suivant / enregistrer / fermer |
 | Accueil, Réviser | `Espace` / `Entrée` | Session de 5 mots / toutes les révisions |
-| Session | `Espace` | Afficher la réponse (puis « Retenu ») |
+| Session | `Espace` | Afficher la réponse (puis la note suggérée, « Retenu » par défaut) |
+| Session (réponse tapée) | `Entrée` | Vérifier la réponse saisie |
 | Session | `1` `2` `3` `4` | Oublié · Difficile · Retenu · Facile |
-| Session | `Z` · `E` · `P` · `Échap` | Annuler · Modifier · Prononcer · Quitter |
-| Bibliothèque | `/` · `↑` `↓` · `E` · `F` · `H` · `P` · `Suppr` | Rechercher · Parcourir · Modifier · Favori · Masquer le français · Prononcer · Supprimer |
+| Session | `Z` · `E` · `P` · `S` · `Échap` | Annuler · Modifier · Prononcer · Suspendre la note · Quitter |
+| Bibliothèque | `/` · `↑` `↓` · `E` · `F` · `H` · `P` · `Suppr` | Rechercher · Parcourir · Modifier · Favori · Masquer le français · Prononcer · Supprimer (annulable) |
+| Bibliothèque | `X` · `Ctrl+clic` · `Maj+clic` · `Ctrl+A` · `Échap` | Sélection multiple (actions groupées : collection, tag, déplacer vers un autre univers, suspendre, supprimer) · Désélectionner |

@@ -3,6 +3,7 @@ import { Check, ChevronsUpDown, Pencil, Plus, Settings2, Trash2 } from 'lucide-r
 import { attempt, errorMessage, useApp } from '@/app/store';
 import { LANGUAGES, languageBadge, languageInfo } from '@/core/domain/languages';
 import { countDue } from '@/core/srs/queue';
+import { settingsFor } from '@/core/domain/settings';
 import type { Universe } from '@/core/domain/types';
 import { Button, Field, Modal } from '@/ui/components/ui';
 import { confirm } from '@/ui/components/Confirm';
@@ -16,7 +17,7 @@ export function LanguageBadge({ language, size = 22 }: { language: string; size?
 }
 
 /** Nombre de fiches à réviser par univers (pastilles du sélecteur). */
-function useDuePerUniverse() {
+export function useDuePerUniverse() {
   const allNotes = useApp((s) => s.allNotes);
   const universes = useApp((s) => s.universes);
   const settings = useApp((s) => s.settings);
@@ -31,7 +32,7 @@ function useDuePerUniverse() {
         countDue(
           allNotes.filter((n) => n.universeId === u.id),
           // Le compteur de nouveaux mots du jour n'est connu que pour l'univers courant.
-          { now, settings, scheduler, newIntroducedToday: u.id === current ? newIntroducedToday : 0 },
+          { now, settings: settingsFor(settings, u), scheduler, newIntroducedToday: u.id === current ? newIntroducedToday : 0 },
         ).total,
       ]),
     );
@@ -254,5 +255,30 @@ export function UniversesDialog() {
         />
       </div>
     </Modal>
+  );
+}
+
+/** Accueil : fiches à réviser dans chaque langue (si plusieurs univers). */
+export function UniversesOverview() {
+  const universes = useApp((s) => s.universes);
+  const current = useApp((s) => s.universe?.id);
+  const allNotes = useApp((s) => s.allNotes);
+  const due = useDuePerUniverse();
+  const { setUniverse } = useApp.getState();
+  if (universes.length < 2) return null;
+  const total = [...due.values()].reduce((a, b) => a + b, 0);
+  return (
+    <div className="universes-overview" aria-label="Toutes vos langues">
+      <span className="muted small">
+        Toutes langues : <strong className="text-2">{total}</strong> à réviser
+      </span>
+      {universes.map((u) => (
+        <button key={u.id} className={`chip chip--clickable universe-chip ${u.id === current ? 'universe-chip--current' : ''}`} onClick={() => void setUniverse(u.id)} title={`${allNotes.filter((n) => n.universeId === u.id).length} expressions`}>
+          <LanguageBadge language={u.language} size={16} />
+          {u.name}
+          <strong>{due.get(u.id) ?? 0}</strong>
+        </button>
+      ))}
+    </div>
   );
 }

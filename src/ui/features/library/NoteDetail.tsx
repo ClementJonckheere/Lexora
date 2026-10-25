@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pencil, Star, Trash2, Volume2, X } from 'lucide-react';
+import { Pause, Pencil, Play, Star, Trash2, Volume2, X } from 'lucide-react';
 import { State } from 'ts-fsrs';
 import { attempt, useApp } from '@/app/store';
 import { formatDate, formatDue } from '@/core/domain/dates';
@@ -12,6 +12,7 @@ import { directionMastery, noteMastery } from '@/core/srs/queue';
 import { speechSupported } from '@/core/platform/speech';
 import { speakNote } from '@/ui/speech';
 import { Button, MasteryBadge } from '@/ui/components/ui';
+import { Example } from '@/ui/components/Example';
 
 const RATING_COLOR = ['', 'var(--again)', 'var(--hard)', 'var(--good)', 'var(--easy)'];
 const RATING_LABEL = ['', 'Oublié', 'Difficile', 'Retenu', 'Facile'];
@@ -42,7 +43,7 @@ export function NoteDetail({
   const language = useApp((s) => s.universes.find((u) => u.id === note.universeId)?.language ?? 'en');
   const db = useApp((s) => s.db);
   const revision = useApp((s) => s.revision);
-  const { openEditor, toggleFavorite, selectNote, navigate, removeFromCollection } = useApp.getState();
+  const { openEditor, toggleFavorite, selectNote, navigate, removeFromCollection, setSuspended } = useApp.getState();
   const [history, setHistory] = useState<ReviewHistoryEntry[]>([]);
 
   useEffect(() => {
@@ -90,9 +91,7 @@ export function NoteDetail({
       {note.examples.length > 0 && (
         <div className="stack stack--sm">
           {note.examples.map((ex, i) => (
-            <p key={i} className="example" lang={language}>
-              {ex}
-            </p>
+            <Example key={i} sentence={ex} expression={note.expression} language={language} />
           ))}
         </div>
       )}
@@ -100,6 +99,11 @@ export function NoteDetail({
 
       <div className="row row--wrap">
         <MasteryBadge mastery={noteMastery(note, settings)} />
+        {note.suspended && (
+          <span className="chip" title="Exclue des révisions">
+            Suspendue
+          </span>
+        )}
         {note.category && <span className="chip">{note.category}</span>}
         {note.tags.map((t) => (
           <span key={t} className="chip chip--primary">
@@ -120,6 +124,14 @@ export function NoteDetail({
         <Button size="sm" onClick={() => void attempt(() => toggleFavorite(note.id))} shortcut="F">
           <Star size={14} fill={note.isFavorite ? '#f59e0b' : 'none'} color={note.isFavorite ? '#f59e0b' : 'currentColor'} />
           {note.isFavorite ? 'Retirer' : 'Favori'}
+        </Button>
+        <Button
+          size="sm"
+          icon
+          title={note.suspended ? 'Réactiver les révisions' : 'Suspendre (exclure des révisions)'}
+          onClick={() => void attempt(() => setSuspended([note.id], !note.suspended), note.suspended ? 'Révisions réactivées' : 'Note suspendue')}
+        >
+          {note.suspended ? <Play size={15} /> : <Pause size={15} />}
         </Button>
         <Button size="sm" variant="danger-ghost" icon onClick={onDelete} title="Supprimer (Suppr)">
           <Trash2 size={15} />

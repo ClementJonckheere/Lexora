@@ -7,6 +7,7 @@ import { Button, EmptyState } from '@/ui/components/ui';
 import { useDueCounts } from '@/ui/features/review/ReviewPage';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { DAY } from '@/core/domain/dates';
+import { UniversesOverview } from '@/ui/features/universes/Universes';
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -102,6 +103,7 @@ export function HomePage() {
             </Button>
           )}
         </div>
+        <UniversesOverview />
       </section>
 
       {notes.length === 0 ? (

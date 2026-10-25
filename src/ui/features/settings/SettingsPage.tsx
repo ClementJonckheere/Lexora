@@ -10,6 +10,8 @@ import { speakText } from '@/ui/speech';
 import { languageInfo } from '@/core/domain/languages';
 import { Button, Switch } from '@/ui/components/ui';
 import { AccountSection } from '@/ui/features/account/AccountSection';
+import { checkUpdates } from '@/app/desktop';
+import { getAutostart, setAutostart } from '@/core/platform/desktop';
 
 function Setting({ title, desc, children }: { title: string; desc?: ReactNode; children: ReactNode }) {
   return (
@@ -81,8 +83,26 @@ export function SettingsPage() {
           <div className="card-header">
             <h2 className="card-title">Mémorisation</h2>
           </div>
-          <Setting title="Nouveaux mots par jour" desc="Plafond de mots introduits chaque jour en révision. Les autres attendent leur tour.">
+          <Setting title="Nouveaux mots par jour" desc="Plafond par défaut, pour chaque univers. Les autres mots attendent leur tour.">
             <NumberInput value={settings.newPerDay} min={0} max={200} onCommit={(v) => update({ newPerDay: Math.round(v) })} />
+          </Setting>
+          {universe && (
+            <Setting
+              title={`Nouveaux mots par jour · ${universe.name}`}
+              desc="Plafond propre à cet univers (par exemple moins de nouveaux mots en chinois). Vide = réglage par défaut."
+            >
+              <OptionalNumberInput
+                value={universe.newPerDay}
+                placeholder={`Défaut (${settings.newPerDay})`}
+                onCommit={(v) => void attempt(() => useApp.getState().setUniverseNewPerDay(universe.id, v), 'Réglage enregistré')}
+              />
+            </Setting>
+          )}
+          <Setting
+            title="Taper la réponse (français → langue)"
+            desc="Avant de dévoiler, vous tapez l'expression : Lexora vérifie (formes conjuguées tolérées) et propose la note. Plus exigeant, idéal pour l'expression orale."
+          >
+            <Switch label="Taper la réponse" checked={settings.typeAnswer} onChange={(v) => update({ typeAnswer: v })} />
           </Setting>
           <Setting title="Directions révisées" desc="Chaque direction est suivie séparément. Français → langue entraîne la production orale.">
             <select className="select" value={settings.directions} onChange={(e) => update({ directions: e.target.value as DirectionMode })}>
@@ -183,7 +203,15 @@ export function SettingsPage() {
           >
             <ShortcutInput value={settings.globalShortcut} disabled={!isTauri()} onCommit={(v) => update({ globalShortcut: v })} />
           </Setting>
+          <Setting
+            title="Pré-remplir avec le texte copié"
+            desc="Copiez un mot dans un article ou une vidéo sous-titrée, appuyez sur le raccourci : l'expression est déjà saisie."
+          >
+            <Switch label="Pré-remplir avec le texte copié" checked={settings.clipboardPrefill} onChange={(v) => update({ clipboardPrefill: v })} />
+          </Setting>
         </section>
+
+        <DesktopSection />
 
         <section className="card settings-section">
           <div className="card-header">
@@ -279,5 +307,96 @@ function ShortcutInput({ value, disabled, onCommit }: { value: string; disabled?
       onBlur={() => draft.trim() !== value && onCommit(draft.trim())}
       onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
     />
+  );
+}
+
+function OptionalNumberInput({ value, placeholder, onCommit }: { value: number | null; placeholder: string; onCommit: (v: number | null) => void }) {
+  const [draft, setDraft] = useState(value == null ? '' : String(value));
+  useEffect(() => setDraft(value == null ? '' : String(value)), [value]);
+  const commit = () => {
+    const t = draft.trim();
+    const v = t === '' ? null : Math.round(Number(t));
+    if (v !== null && (!Number.isFinite(v) || v < 0)) return setDraft(value == null ? '' : String(value));
+    if (v !== value) onCommit(v);
+  };
+  return (
+    <input
+      className="input"
+      type="number"
+      min={0}
+      max={200}
+      value={draft}
+      placeholder={placeholder}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+    />
+  );
+}
+
+/** Intégration à Windows : démarrage, zone de notification, rappel, mises à jour. */
+function DesktopSection() {
+  const settings = useApp((s) => s.settings);
+  const update = useApp((s) => s.update);
+  const [autostart, setAutostartState] = useState<boolean | null>(null);
+  const [info, setInfo] = useState<AppInfo | null>(null);
+  const [checking, setChecking] = useState(false);
+  const save = (patch: Partial<Settings>) => attempt(() => useApp.getState().updateSettings(patch), 'Réglage enregistré');
+
+  useEffect(() => {
+    getAutostart().then(setAutostartState).catch(() => setAutostartState(null));
+    getAppInfo().then(setInfo).catch(() => setInfo(null));
+  }, []);
+
+  if (!isTauri()) return null;
+
+  return (
+    <section className="card settings-section">
+      <div className="card-header">
+        <h2 className="card-title">Windows</h2>
+      </div>
+      <Setting title="Lancer Lexora au démarrage de Windows" desc="Démarre discrètement dans la zone de notification : le raccourci d'ajout et le rappel sont toujours actifs.">
+        <Switch
+          label="Lancer au démarrage"
+          checked={!!autostart}
+          onChange={(v) =>
+            void attempt(async () => {
+              await setAutostart(v);
+              setAutostartState(v);
+            }, v ? 'Lexora démarrera avec Windows' : 'Démarrage automatique désactivé')
+          }
+        />
+      </Setting>
+      <Setting title="Fermer la fenêtre = réduire dans la zone de notification" desc="Lexora reste actif près de l'horloge. Pour quitter : clic droit sur l'icône → Quitter.">
+        <Switch label="Réduire à la fermeture" checked={settings.closeToTray} onChange={(v) => void save({ closeToTray: v })} />
+      </Setting>
+      <Setting title="Rappel quotidien" desc="Notification Windows à l'heure choisie, seulement s'il reste des révisions (une fois par jour).">
+        <div className="row">
+          <input
+            className="input"
+            type="time"
+            style={{ width: 110 }}
+            value={settings.reminderTime}
+            disabled={!settings.reminderEnabled}
+            onChange={(e) => e.target.value && void save({ reminderTime: e.target.value })}
+          />
+          <Switch label="Rappel quotidien" checked={settings.reminderEnabled} onChange={(v) => void save({ reminderEnabled: v })} />
+        </div>
+      </Setting>
+      <Setting
+        title="Mises à jour"
+        desc={update ? `Version ${update.version} disponible : utilisez le bouton « Installer » en bas de la barre latérale.` : `Version installée : ${info?.version ?? '…'}. Les mises à jour sont vérifiées automatiquement.`}
+      >
+        <Button
+          disabled={checking}
+          onClick={() => {
+            setChecking(true);
+            void checkUpdates(true).finally(() => setChecking(false));
+          }}
+        >
+          {checking ? 'Vérification…' : 'Rechercher'}
+        </Button>
+      </Setting>
+    </section>
   );
 }

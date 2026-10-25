@@ -33,6 +33,8 @@ export interface Universe {
   name: string;
   language: string;
   position: number;
+  /** Plafond de nouveaux mots par jour propre à l'univers (null = réglage général). */
+  newPerDay: number | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -66,6 +68,8 @@ export interface Note {
   category: string;
   categoryAuto: boolean;
   isFavorite: boolean;
+  /** Suspendue : conservée dans la bibliothèque mais exclue des révisions. */
+  suspended: boolean;
   createdAt: number;
   updatedAt: number;
   examples: string[];

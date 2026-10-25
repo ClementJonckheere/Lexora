@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useApp } from '@/app/store';
 import { directionShort } from '@/core/domain/types';
+import { settingsFor } from '@/core/domain/settings';
 import { formatDate } from '@/core/domain/dates';
 import { computeStats, type Stats } from '@/core/repo/statsRepo';
 import { EmptyState } from '@/ui/components/ui';
@@ -23,7 +24,7 @@ export function StatsPage() {
   useEffect(() => {
     if (!db) return;
     if (!universe) return;
-    computeStats(db, notes, settings, scheduler, universe.id)
+    computeStats(db, notes, settingsFor(settings, universe), scheduler, universe.id)
       .then(setStats)
       .catch((e) => setError(e instanceof Error ? e.message : String(e)));
   }, [db, notes, settings, scheduler, revision, universe]);

@@ -166,3 +166,10 @@ begin
   end loop;
 end;
 $$;
+
+-- ------------------------------------------------- évolutions (v2.1) ---
+-- Suspension d'une note (exclue des révisions) et plafond de nouveaux mots par univers.
+alter table public.notes add column if not exists suspended smallint not null default 0;
+alter table public.universes add column if not exists new_per_day integer;
+-- Recharge le cache de l'API pour qu'elle voie immédiatement les nouvelles colonnes.
+notify pgrst, 'reload schema';

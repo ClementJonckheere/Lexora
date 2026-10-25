@@ -4,10 +4,11 @@ import { useApp } from '@/app/store';
 import { buildIndex, scoreMatch } from '@/core/domain/search';
 import { noteMastery } from '@/core/srs/queue';
 import { Kbd, MasteryBadge, Modal } from '@/ui/components/ui';
+import { LanguageBadge } from '@/ui/features/universes/Universes';
 
 const MAX = 40;
 
-/** Recherche instantanée (Ctrl+K) dans l'univers courant : expression, traduction, exemples, tags. */
+/** Recherche instantanée (Ctrl+K) dans tous les univers : expression, traduction, exemples, tags. */
 export function SearchPalette() {
   const open = useApp((s) => s.searchOpen);
   if (!open) return null;
@@ -15,27 +16,33 @@ export function SearchPalette() {
 }
 
 function Palette() {
+  // Recherche dans tous les univers ; l'univers courant passe en premier à pertinence égale.
+  const allNotes = useApp((s) => s.allNotes);
   const notes = useApp((s) => s.notes);
+  const universes = useApp((s) => s.universes);
+  const currentId = useApp((s) => s.universe?.id);
   const settings = useApp((s) => s.settings);
   const universeName = useApp((s) => s.universe?.name ?? '');
+  const languageOf = useMemo(() => new Map(universes.map((u) => [u.id, u.language])), [universes]);
+  const several = universes.length > 1;
   const { setSearchOpen, showNote, openEditor } = useApp.getState();
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const index = useMemo(() => buildIndex(notes), [notes]);
+  const index = useMemo(() => buildIndex(allNotes), [allNotes]);
 
   useEffect(() => inputRef.current?.focus(), []);
 
   const results = useMemo(() => {
     if (!query.trim()) return notes.slice(0, 8);
-    return notes
+    return allNotes
       .map((n) => ({ n, s: scoreMatch(index.get(n.id)!, query) }))
       .filter((x) => x.s > 0)
-      .sort((a, b) => b.s - a.s || b.n.createdAt - a.n.createdAt)
+      .sort((a, b) => b.s - a.s || Number(b.n.universeId === currentId) - Number(a.n.universeId === currentId) || b.n.createdAt - a.n.createdAt)
       .slice(0, MAX)
       .map((x) => x.n);
-  }, [notes, index, query]);
+  }, [allNotes, notes, index, query, currentId]);
 
   const canAdd = query.trim().length > 0;
   const total = results.length + (canAdd ? 1 : 0);
@@ -63,7 +70,7 @@ function Palette() {
         <input
           ref={inputRef}
           value={query}
-          placeholder={`Rechercher dans « ${universeName} »…`}
+          placeholder={several ? 'Rechercher dans toutes vos langues…' : `Rechercher dans « ${universeName} »…`}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'ArrowDown') {
@@ -90,7 +97,10 @@ function Palette() {
             onMouseMove={() => setActive(i)}
             onClick={() => choose(i)}
           >
-            <span className="en">{n.expression}</span>
+            <span className="en row" style={{ gap: 8 }}>
+              {several && <LanguageBadge language={languageOf.get(n.universeId) ?? 'en'} size={18} />}
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{n.expression}</span>
+            </span>
             <span className="fr">{n.translation}</span>
             <MasteryBadge mastery={noteMastery(n, settings)} />
           </button>
@@ -106,7 +116,7 @@ function Palette() {
           >
             <Plus size={16} className="muted" />
             <span>
-              Ajouter <strong>« {query.trim()} »</strong> comme nouvelle expression
+              Ajouter <strong>« {query.trim()} »</strong> dans « {universeName} »
             </span>
           </button>
         )}

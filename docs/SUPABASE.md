@@ -21,7 +21,7 @@ l'**URL du projet** et la **clé publique** (`anon` / `publishable`).
 2. Coller tout le contenu de [`supabase/schema.sql`](../supabase/schema.sql) → **Run**.
 3. Vérifier dans **Table Editor** : `universes`, `notes`, `cards`, `collections`, `review_logs`, `practice_logs`, `settings`, toutes marquées *RLS enabled*.
 
-Le script peut être relancé sans risque (après une mise à jour de Lexora, par exemple).
+Le script peut être relancé sans risque. **À relancer après la mise à jour vers Lexora 2.1.0** (nouvelles colonnes `notes.suspended` et `universes.new_per_day`).
 
 ## 3. Créer l'identifiant Google (Google Cloud)
 
@@ -110,5 +110,6 @@ Copier `.env.example` en `.env` à la racine et remplir les deux valeurs, puis `
 | La page Google affiche `redirect_uri_mismatch` | L'URI de l'étape 3 ne correspond pas exactement à la *Callback URL* de Supabase. |
 | Après Google, le navigateur ouvre le *Site URL* au lieu de « Connexion réussie » | Les adresses `http://127.0.0.1:4782x/**` manquent dans **Redirect URLs** (étape 5). |
 | `Access blocked: … has not completed the Google verification process` | Ajoutez votre adresse dans **Utilisateurs test** ou publiez l'application (étape 3). |
+| « … base Supabase à mettre à jour : relancez supabase/schema.sql » | Une nouvelle version de Lexora ajoute des colonnes : relancez le script (étape 2). |
 | « Synchronisation en échec : … permission denied » | Le script `schema.sql` n'a pas été exécuté (ou pas entièrement). |
 | L'application démarre sans écran de connexion | Les secrets `VITE_SUPABASE_*` n'étaient pas définis au moment du build. |

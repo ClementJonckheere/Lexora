@@ -13,6 +13,7 @@ import { createScheduler, type Scheduler } from '@/core/srs/scheduler';
 import { authConfigured, currentUser, signInWithGoogle, signOut as authSignOut, type AccountUser } from '@/core/platform/auth';
 import { bindAccount, getSyncState, resetLocalData } from '@/core/sync/engine';
 import { readPref, writePref } from '@/ui/prefs';
+import type { AvailableUpdate } from '@/core/platform/desktop';
 import { runSync, scheduleSync, startSyncLoop, stopSyncLoop } from './sync';
 
 export type SessionConfig =
@@ -37,7 +38,7 @@ export interface LibraryFilters {
   category: string;
   tag: string;
   collectionId: string | null;
-  mastery: Mastery | 'not_mastered' | 'all';
+  mastery: Mastery | 'not_mastered' | 'suspended' | 'all';
   date: DateFilter;
   favoritesOnly: boolean;
   sort: SortKey;
@@ -145,7 +146,15 @@ interface AppState {
   deleteUniverse(id: string): Promise<void>;
 
   saveNote(input: NoteInput, id?: string | null): Promise<string>;
+  /** Suppression immédiate, annulable depuis la notification. */
   deleteNotes(ids: string[]): Promise<void>;
+  restoreNotes(ids: string[]): Promise<void>;
+  setSuspended(ids: string[], suspended: boolean): Promise<void>;
+  addTag(ids: string[], tag: string): Promise<void>;
+  moveNotes(ids: string[], universeId: string): Promise<void>;
+  setUniverseNewPerDay(id: string, value: number | null): Promise<void>;
+  update: AvailableUpdate | null;
+  setUpdate(update: AvailableUpdate | null): void;
   toggleFavorite(id: string): Promise<void>;
   updateSettings(patch: Partial<Settings>): Promise<void>;
   createCollection(name: string, description?: string): Promise<string>;
@@ -228,6 +237,7 @@ export const useApp = create<AppState>((set, get) => {
     libraryFilters: DEFAULT_FILTERS,
     hideTranslation: false,
     selectedNoteId: null,
+    update: null,
 
     async init() {
       try {
@@ -404,9 +414,41 @@ export const useApp = create<AppState>((set, get) => {
     },
 
     async deleteNotes(ids) {
+      if (!ids.length) return;
+      const first = get().notesById.get(ids[0]);
       await notesRepo.deleteNotes(db(), ids);
       if (ids.includes(get().selectedNoteId ?? '')) set({ selectedNoteId: null });
       await afterWrite();
+      get().toast('info', ids.length > 1 ? `${ids.length} expressions supprimées` : `« ${first?.expression ?? 'Expression'} » supprimée`, {
+        label: 'Annuler',
+        run: () => void attempt(() => get().restoreNotes(ids), 'Suppression annulée'),
+      });
+    },
+    async restoreNotes(ids) {
+      await notesRepo.restoreNotes(db(), ids);
+      await afterWrite();
+    },
+    async setSuspended(ids, suspended) {
+      await notesRepo.setSuspended(db(), ids, suspended);
+      await afterWrite();
+    },
+    async addTag(ids, tag) {
+      await notesRepo.addTag(db(), ids, tag);
+      await afterWrite();
+    },
+    async moveNotes(ids, universeId) {
+      const target = get().universes.find((u) => u.id === universeId);
+      if (!target) throw new Error('Univers introuvable.');
+      await notesRepo.moveNotes(db(), ids, { universeId: target.id, language: target.language });
+      if (ids.includes(get().selectedNoteId ?? '')) set({ selectedNoteId: null });
+      await afterWrite();
+    },
+    async setUniverseNewPerDay(id, value) {
+      await universesRepo.setUniverseNewPerDay(db(), id, value);
+      await afterWrite();
+    },
+    setUpdate(update) {
+      set({ update });
     },
 
     async toggleFavorite(id) {

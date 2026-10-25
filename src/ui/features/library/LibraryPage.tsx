@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { BookOpen, Eye, EyeOff, Plus, Search, Star, Upload } from 'lucide-react';
+import { BookOpen, Eye, EyeOff, Pause, Plus, Search, Star, Upload } from 'lucide-react';
 import { attempt, DEFAULT_FILTERS, useApp, type LibraryFilters } from '@/app/store';
 import { formatDate } from '@/core/domain/dates';
 import { buildIndex, filterNotes } from '@/core/domain/search';
@@ -9,7 +9,7 @@ import type { Note } from '@/core/domain/types';
 import { directionLabel } from '@/core/domain/types';
 import { directionMastery, noteMastery } from '@/core/srs/queue';
 import { Button, DirectionDots, EmptyState, Kbd, MasteryBadge } from '@/ui/components/ui';
-import { confirm } from '@/ui/components/Confirm';
+import { BulkBar } from './BulkBar';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { NoteDetail } from './NoteDetail';
 import { speakNote } from '@/ui/speech';
@@ -79,19 +79,43 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
     selectNote(rows[next].id);
   };
 
-  const removeSelected = async () => {
-    if (!selected) return;
-    const ok = await confirm({
-      title: 'Supprimer cette note ?',
-      message: `« ${selected.expression} » et son historique de révision seront définitivement supprimés.`,
-      confirmLabel: 'Supprimer',
-      danger: true,
+  // Sélection multiple (cases à cocher, Ctrl+clic, Maj+clic) pour les actions groupées.
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+  const anchor = useRef<number | null>(null);
+  useEffect(() => {
+    // Les notes disparues (supprimées, déplacées, filtrées) quittent la sélection.
+    const visible = new Set(rows.map((r) => r.id));
+    setChecked((c) => {
+      const kept = [...c].filter((id) => visible.has(id));
+      return kept.length === c.size ? c : new Set(kept);
     });
-    if (ok) {
-      const next = rows[selectedIndex + 1] ?? rows[selectedIndex - 1];
-      await attempt(() => deleteNotes([selected.id]), 'Note supprimée');
-      selectNote(next && next.id !== selected.id ? next.id : null);
+  }, [rows]);
+
+  const toggleCheck = (index: number, range: boolean) => {
+    const id = rows[index].id;
+    const from = anchor.current;
+    setChecked((c) => {
+      const next = new Set(c);
+      if (range && from != null && from < rows.length) {
+        const [a, b] = [Math.min(from, index), Math.max(from, index)];
+        for (let i = a; i <= b; i++) next.add(rows[i].id);
+      } else if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    anchor.current = index;
+  };
+
+  const removeSelected = async () => {
+    if (checked.size) {
+      await attempt(() => deleteNotes([...checked]));
+      return;
     }
+    if (!selected) return;
+    // Pas de confirmation : la notification propose « Annuler ».
+    const next = rows[selectedIndex + 1] ?? rows[selectedIndex - 1];
+    await attempt(() => deleteNotes([selected.id]));
+    selectNote(next && next.id !== selected.id ? next.id : null);
   };
 
   useHotkeys(
@@ -108,7 +132,9 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
       delete: () => void removeSelected(),
       h: () => setHideTranslation(!hide),
       p: () => selected && speakNote(selected),
-      escape: () => selectNote(null),
+      x: () => selectedIndex >= 0 && toggleCheck(selectedIndex, false),
+      'mod+a': () => setChecked(new Set(rows.map((r) => r.id))),
+      escape: () => (checked.size ? setChecked(new Set()) : selectNote(null)),
     },
     { enabled: !overlay },
   );
@@ -160,6 +186,7 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
           <option value="new">À apprendre</option>
           <option value="learning">En cours</option>
           <option value="mastered">Maîtrisées</option>
+          <option value="suspended">Suspendues</option>
         </select>
         <select
           className="select select--sm"
@@ -244,6 +271,8 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
         )}
       </div>
 
+      {checked.size > 0 && <BulkBar ids={[...checked]} total={rows.length} onSelectAll={() => setChecked(new Set(rows.map((r) => r.id)))} onClear={() => setChecked(new Set())} />}
+
       <div className={`library ${selected ? 'library--detail' : ''}`}>
         <div className="card table">
           <div className="table-head">
@@ -283,17 +312,35 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
                 {virtualizer.getVirtualItems().map((v) => {
                   const n = rows[v.index];
                   const isSel = n.id === selectedId;
+                  const isChecked = checked.has(n.id);
                   const masked = hide && !revealed.has(n.id);
                   return (
                     <div
                       key={n.id}
-                      className={`table-row ${isSel ? 'table-row--selected' : ''}`}
+                      className={`table-row ${isSel ? 'table-row--selected' : ''} ${isChecked ? 'table-row--checked' : ''} ${n.suspended ? 'table-row--suspended' : ''}`}
                       style={{ position: 'absolute', top: 0, left: 0, right: 0, transform: `translateY(${v.start}px)` }}
-                      onClick={() => selectNote(isSel ? null : n.id)}
+                      onClick={(e) => {
+                        if (e.ctrlKey || e.metaKey || e.shiftKey || checked.size) {
+                          e.preventDefault();
+                          toggleCheck(v.index, e.shiftKey);
+                        } else selectNote(isSel ? null : n.id);
+                      }}
                       onDoubleClick={() => openEditor(n.id)}
                       role="row"
                       aria-selected={isSel}
                     >
+                      <span className="row-lead">
+                      <input
+                        type="checkbox"
+                        className="row-check"
+                        checked={isChecked}
+                        aria-label={`Sélectionner « ${n.expression} »`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleCheck(v.index, e.shiftKey);
+                        }}
+                        onChange={() => undefined}
+                      />
                       <button
                         className={`star ${n.isFavorite ? 'star--on' : ''}`}
                         aria-label={n.isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
@@ -304,7 +351,9 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
                       >
                         <Star size={14} fill={n.isFavorite ? 'currentColor' : 'none'} />
                       </button>
+                      </span>
                       <span className="en" title={n.expression}>
+                        {n.suspended && <Pause size={12} className="muted" style={{ marginRight: 4 }} aria-label="Suspendue" />}
                         {n.expression}
                       </span>
                       <span
@@ -343,7 +392,7 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
               </span>
               <span className="row">
                 <Kbd>↑</Kbd>
-                <Kbd>↓</Kbd> parcourir · <Kbd>E</Kbd> modifier · <Kbd>F</Kbd> favori · <Kbd>H</Kbd> masquer le français
+                <Kbd>↓</Kbd> parcourir · <Kbd>E</Kbd> modifier · <Kbd>F</Kbd> favori · <Kbd>X</Kbd> sélectionner · <Kbd>H</Kbd> masquer le français
               </span>
             </div>
           )}
