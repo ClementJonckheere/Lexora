@@ -18,7 +18,18 @@ export interface AccountUser {
   avatarUrl: string | null;
 }
 
-const URL_ = import.meta.env.VITE_SUPABASE_URL?.trim();
+/** Seule l'origine compte (https://xxxx.supabase.co) : un chemin collé par erreur (/auth/v1/callback…) est ignoré. */
+function projectOrigin(raw: string | undefined): string | undefined {
+  const v = raw?.trim();
+  if (!v) return undefined;
+  try {
+    return new URL(v).origin;
+  } catch {
+    return v.replace(/\/+$/, '');
+  }
+}
+
+const URL_ = projectOrigin(import.meta.env.VITE_SUPABASE_URL);
 const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 
 export const authConfigured = Boolean(URL_ && KEY);
