@@ -32,8 +32,12 @@ Le script peut être relancé sans risque (après une mise à jour de Lexora, pa
    (ou cliquez **Publier l'application** pour l'ouvrir à tout compte Google).
 3. **Identifiants → Créer des identifiants → ID client OAuth** :
    - Type : **Application Web** ;
-   - **URI de redirection autorisés** : `https://<VOTRE-PROJET>.supabase.co/auth/v1/callback`
-     (l'adresse exacte est affichée dans Supabase à l'étape 4).
+   - **Origines JavaScript autorisées** : laisser **vide** (cette rubrique refuse les adresses avec un chemin :
+     « Origine non valide : les URI ne doivent pas contenir de chemin d'accès ») ;
+   - **URI de redirection autorisés** (la rubrique du dessous) → **Ajouter un URI** :
+     `https://<VOTRE-PROJET>.supabase.co/auth/v1/callback`, où `<VOTRE-PROJET>` est l'identifiant de votre
+     projet (ex. `https://abcdefghijklmnop.supabase.co/auth/v1/callback`). Le plus simple : copier la
+     *Callback URL* affichée dans Supabase à l'étape 4.
 4. Copier l'**ID client** et le **Code secret du client**.
 
 ## 4. Activer Google dans Supabase
