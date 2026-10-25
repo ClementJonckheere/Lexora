@@ -1,8 +1,10 @@
+import { languageInfo } from './languages';
 import { tokenize } from './text';
 
 /**
  * Catégorisation automatique, locale et déterministe.
  * Évite d'avoir à ranger chaque expression : la catégorie reste modifiable.
+ * Règles fines pour l'anglais (verbes, phrasal verbs) ; « Mot » / « Expression » pour les autres langues.
  */
 export const AUTO_CATEGORIES = ['Mot', 'Verbe', 'Phrasal verb', 'Expression verbale', 'Expression'] as const;
 
@@ -14,9 +16,18 @@ const PARTICLES = new Set([
 
 const PLACEHOLDERS = new Set(['sb', 'sth', 'someone', 'somebody', 'something', 'it', 'one', 'them', 'him', 'her', 'oneself']);
 
-export function categorize(expression: string): string {
-  const words = tokenize(expression);
+export function categorize(expression: string, language = 'en'): string {
+  const trimmed = expression.trim();
+  if (!trimmed) return '';
+  if (languageInfo(language).noSpaces) {
+    // Chinois / japonais : pas d'espaces ; une expression courte est considérée comme un mot.
+    const chars = [...trimmed.replace(/[\s\p{P}]/gu, '')].length;
+    return chars <= 3 ? 'Mot' : 'Expression';
+  }
+  const words = tokenize(trimmed);
   if (words.length === 0) return '';
+  if (language !== 'en') return words.length === 1 ? 'Mot' : 'Expression';
+
   const hasTo = words[0] === 'to' && words.length > 1;
   const core = hasTo ? words.slice(1) : words;
 

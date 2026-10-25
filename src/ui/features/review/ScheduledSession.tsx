@@ -3,7 +3,7 @@ import { State } from 'ts-fsrs';
 import { errorMessage, useApp, type SessionConfig } from '@/app/store';
 import { formatInterval } from '@/core/domain/dates';
 import type { CardRecord } from '@/core/domain/types';
-import { DIRECTION_LABEL } from '@/core/domain/types';
+import { directionLabel } from '@/core/domain/types';
 import { recordReview, undoReview } from '@/core/repo/reviewRepo';
 import { buildQueue, type QueueItem } from '@/core/srs/queue';
 import { GRADES, previewIntervals, review, type Grade } from '@/core/srs/scheduler';
@@ -19,7 +19,7 @@ const GRADE_CLASS: Record<Grade, string> = { 1: 'again', 2: 'hard', 3: 'good', 4
 
 interface UndoEntry {
   before: CardRecord;
-  logId: number;
+  logId: string;
   grade: Grade;
 }
 
@@ -27,6 +27,7 @@ interface UndoEntry {
 export function ScheduledSession({ config }: { config: Extract<SessionConfig, { kind: 'scheduled' }> }) {
   const db = useApp((s) => s.db)!;
   const notesById = useApp((s) => s.notesById);
+  const language = useApp((s) => s.universe?.language ?? 'en');
   const scheduler = useApp((s) => s.scheduler);
   const settings = useApp((s) => s.settings);
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
@@ -45,7 +46,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
       direction: config.direction,
       noteIds,
     });
-    const cards = new Map<number, CardRecord>();
+    const cards = new Map<string, CardRecord>();
     for (const n of s.notes) for (const c of Object.values(n.cards)) if (c) cards.set(c.id, c);
     return { queue: new SessionQueue<QueueItem>(items), cards, startedAt: Date.now() };
   });
@@ -156,7 +157,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
         revealed={revealed}
         meta={
           <>
-            <span>{DIRECTION_LABEL[item.direction]}</span>
+            <span>{directionLabel(item.direction, language)}</span>
             <span>·</span>
             <span>{card.state === State.Relearning ? 'À réapprendre' : KIND_LABEL[item.kind]}</span>
           </>

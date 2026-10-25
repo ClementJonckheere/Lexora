@@ -1,13 +1,23 @@
 import type { State } from 'ts-fsrs';
+import { languageInfo } from './languages';
 
-/** fr_en : on voit le français, on retrouve l'anglais (production). en_fr : l'inverse (compréhension). */
+/**
+ * fr_en : on voit le français, on retrouve la langue cible (production).
+ * en_fr : on voit la langue cible, on retrouve le français (compréhension).
+ * (Codes historiques : « en » désigne la langue de l'univers, quelle qu'elle soit.)
+ */
 export type Direction = 'fr_en' | 'en_fr';
 export const DIRECTIONS: Direction[] = ['fr_en', 'en_fr'];
 
-export const DIRECTION_LABEL: Record<Direction, string> = {
-  fr_en: 'Français → Anglais',
-  en_fr: 'Anglais → Français',
-};
+export function directionLabel(direction: Direction, language = 'en'): string {
+  const target = languageInfo(language).name;
+  return direction === 'fr_en' ? `Français → ${target}` : `${target} → Français`;
+}
+
+export function directionShort(direction: Direction, language = 'en'): string {
+  const code = language.slice(0, 2).toUpperCase();
+  return direction === 'fr_en' ? `FR → ${code}` : `${code} → FR`;
+}
 
 export type Mastery = 'new' | 'learning' | 'mastered';
 
@@ -17,10 +27,20 @@ export const MASTERY_LABEL: Record<Mastery, string> = {
   mastered: 'Maîtrisé',
 };
 
+/** Un univers = une langue cible avec sa propre bibliothèque, ses collections et ses révisions. */
+export interface Universe {
+  id: string;
+  name: string;
+  language: string;
+  position: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
 /** Ligne de la table `cards` (état FSRS d'une direction d'une note). */
 export interface CardRecord {
-  id: number;
-  noteId: number;
+  id: string;
+  noteId: string;
   direction: Direction;
   state: State;
   due: number;
@@ -35,9 +55,12 @@ export interface CardRecord {
 }
 
 export interface Note {
-  id: number;
+  id: string;
+  universeId: string;
   expression: string;
   translation: string;
+  /** Pinyin, translittération… (facultatif). */
+  pronunciation: string;
   expressionKey: string;
   comment: string;
   category: string;
@@ -47,7 +70,7 @@ export interface Note {
   updatedAt: number;
   examples: string[];
   tags: string[];
-  collectionIds: number[];
+  collectionIds: string[];
   cards: Partial<Record<Direction, CardRecord>>;
 }
 
@@ -55,17 +78,19 @@ export interface Note {
 export interface NoteInput {
   expression: string;
   translation: string;
+  pronunciation?: string;
   examples?: string[];
   comment?: string;
   /** undefined ou '' → catégorie détectée automatiquement. */
   category?: string;
   tags?: string[];
-  collectionIds?: number[];
+  collectionIds?: string[];
   isFavorite?: boolean;
 }
 
 export interface Collection {
-  id: number;
+  id: string;
+  universeId: string;
   name: string;
   description: string;
   createdAt: number;

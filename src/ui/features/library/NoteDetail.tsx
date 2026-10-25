@@ -5,11 +5,12 @@ import { attempt, useApp } from '@/app/store';
 import { formatDate, formatDue } from '@/core/domain/dates';
 import { activeDirections } from '@/core/domain/settings';
 import type { CardRecord, Note } from '@/core/domain/types';
-import { DIRECTION_LABEL } from '@/core/domain/types';
+import { directionLabel } from '@/core/domain/types';
 import { loadNoteHistory, type ReviewHistoryEntry } from '@/core/repo/reviewRepo';
 import { retrievability } from '@/core/srs/scheduler';
 import { directionMastery, noteMastery } from '@/core/srs/queue';
-import { speak, speechSupported } from '@/core/platform/speech';
+import { speechSupported } from '@/core/platform/speech';
+import { speakNote } from '@/ui/speech';
 import { Button, MasteryBadge } from '@/ui/components/ui';
 
 const RATING_COLOR = ['', 'var(--again)', 'var(--hard)', 'var(--good)', 'var(--easy)'];
@@ -33,11 +34,12 @@ export function NoteDetail({
   masked: boolean;
   onReveal: () => void;
   /** Affichée depuis une collection : propose de l'en retirer. */
-  collectionId?: number | null;
+  collectionId?: string | null;
 }) {
   const settings = useApp((s) => s.settings);
   const scheduler = useApp((s) => s.scheduler);
   const collections = useApp((s) => s.collections);
+  const language = useApp((s) => s.universes.find((u) => u.id === note.universeId)?.language ?? 'en');
   const db = useApp((s) => s.db);
   const revision = useApp((s) => s.revision);
   const { openEditor, toggleFavorite, selectNote, navigate, removeFromCollection } = useApp.getState();
@@ -62,15 +64,16 @@ export function NoteDetail({
       <div className="row row--between" style={{ alignItems: 'flex-start' }}>
         <div className="stack stack--sm" style={{ minWidth: 0 }}>
           <div className="row" style={{ alignItems: 'flex-start' }}>
-            <h2 className="detail-en" lang="en">
+            <h2 className="detail-en" lang={language}>
               {note.expression}
             </h2>
             {speechSupported() && (
-              <Button variant="ghost" icon size="sm" title="Écouter (P)" onClick={() => speak(note.expression, { voice: settings.ttsVoice, rate: settings.ttsRate })}>
+              <Button variant="ghost" icon size="sm" title="Écouter (P)" onClick={() => speakNote(note)}>
                 <Volume2 size={16} />
               </Button>
             )}
           </div>
+          {note.pronunciation && <p className="muted small">{note.pronunciation}</p>}
           {masked ? (
             <button className="link" style={{ alignSelf: 'flex-start' }} onClick={onReveal}>
               Afficher la traduction
@@ -87,7 +90,7 @@ export function NoteDetail({
       {note.examples.length > 0 && (
         <div className="stack stack--sm">
           {note.examples.map((ex, i) => (
-            <p key={i} className="example" lang="en">
+            <p key={i} className="example" lang={language}>
               {ex}
             </p>
           ))}
@@ -139,7 +142,7 @@ export function NoteDetail({
 
       <div className="stack">
         {activeDirections(settings).map((d) => (
-          <CardStatus key={d} label={DIRECTION_LABEL[d]} card={note.cards[d]} mastery={directionMastery(note.cards[d], settings)} recall={note.cards[d] ? retrievability(scheduler, note.cards[d]!, now) : 0} />
+          <CardStatus key={d} label={directionLabel(d, language)} card={note.cards[d]} mastery={directionMastery(note.cards[d], settings)} recall={note.cards[d] ? retrievability(scheduler, note.cards[d]!, now) : 0} />
         ))}
       </div>
 
@@ -153,7 +156,7 @@ export function NoteDetail({
               <span
                 key={h.id}
                 style={{ background: RATING_COLOR[h.rating] }}
-                title={`${formatDate(h.reviewedAt)} · ${DIRECTION_LABEL[h.direction]} · ${RATING_LABEL[h.rating]}`}
+                title={`${formatDate(h.reviewedAt)} · ${directionLabel(h.direction, language)} · ${RATING_LABEL[h.rating]}`}
               />
             ))}
           </div>

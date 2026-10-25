@@ -5,7 +5,8 @@ import { categorize, AUTO_CATEGORIES } from '@/core/domain/categorize';
 import { findDuplicates } from '@/core/repo/notesRepo';
 import type { NoteInput } from '@/core/domain/types';
 import { ValidationError, type FieldErrors } from '@/core/domain/validation';
-import { speak } from '@/core/platform/speech';
+import { languageInfo } from '@/core/domain/languages';
+import { speakText } from '@/ui/speech';
 import { Button, Field, Kbd, Modal } from '@/ui/components/ui';
 import { TagInput } from '@/ui/components/TagInput';
 import { confirm } from '@/ui/components/Confirm';
@@ -15,15 +16,16 @@ import { readPref, writePref } from '@/ui/prefs';
 interface Draft {
   expression: string;
   translation: string;
+  pronunciation: string;
   examples: string[];
   comment: string;
   category: string;
   tags: string[];
-  collectionIds: number[];
+  collectionIds: string[];
   isFavorite: boolean;
 }
 
-const EMPTY: Draft = { expression: '', translation: '', examples: [''], comment: '', category: '', tags: [], collectionIds: [], isFavorite: false };
+const EMPTY: Draft = { expression: '', translation: '', pronunciation: '', examples: [''], comment: '', category: '', tags: [], collectionIds: [], isFavorite: false };
 
 export function NoteEditor() {
   const editor = useApp((s) => s.editor);
@@ -34,19 +36,27 @@ export function NoteEditor() {
 
 function NoteEditorDialog() {
   const editor = useApp((s) => s.editor)!;
-  const notes = useApp((s) => s.notes);
+  const notes = useApp((s) => s.allNotes);
   const notesById = useApp((s) => s.notesById);
   const collections = useApp((s) => s.collections);
-  const settings = useApp((s) => s.settings);
+  const universes = useApp((s) => s.universes);
+  const current = useApp((s) => s.universe);
   const { closeEditor, openEditor, saveNote, deleteNotes, toast } = useApp.getState();
 
   const existing = editor.noteId ? notesById.get(editor.noteId) : undefined;
   const isEdit = !!existing;
+  const universe = universes.find((u) => u.id === existing?.universeId) ?? current;
+  const language = universe?.language ?? 'en';
+  const lang = languageInfo(language);
+  // Doublons et suggestions : uniquement dans l'univers de la note.
+  const universeNotes = notes.filter((n) => n.universeId === universe?.id);
+  const universeCollections = collections.filter((c) => c.universeId === universe?.id);
 
   const initial: Draft = existing
     ? {
         expression: existing.expression,
         translation: existing.translation,
+        pronunciation: existing.pronunciation,
         examples: existing.examples.length ? existing.examples : [''],
         comment: existing.comment,
         category: existing.categoryAuto ? '' : existing.category,
@@ -78,13 +88,17 @@ function NoteEditorDialog() {
     if (errors[k as keyof FieldErrors]) setErrors((e) => ({ ...e, [k]: undefined }));
   };
 
-  const duplicates = useMemo(() => findDuplicates(notes, draft.expression, existing?.id), [notes, draft.expression, existing?.id]);
-  const autoCategory = useMemo(() => categorize(draft.expression), [draft.expression]);
-  const allTags = useMemo(() => [...new Set(notes.flatMap((n) => n.tags))].sort((a, b) => a.localeCompare(b)), [notes]);
-  const allCategories = useMemo(
-    () => [...new Set([...AUTO_CATEGORIES, ...notes.map((n) => n.category).filter(Boolean)])].sort((a, b) => a.localeCompare(b)),
-    [notes],
+  const duplicates = useMemo(
+    () => findDuplicates(universeNotes, draft.expression, language, existing?.id),
+    [universeNotes, draft.expression, language, existing?.id],
   );
+  const autoCategory = useMemo(() => categorize(draft.expression, language), [draft.expression, language]);
+  const allTags = useMemo(() => [...new Set(universeNotes.flatMap((n) => n.tags))].sort((a, b) => a.localeCompare(b)), [universeNotes]);
+  const allCategories = useMemo(
+    () => [...new Set([...AUTO_CATEGORIES, ...universeNotes.map((n) => n.category).filter(Boolean)])].sort((a, b) => a.localeCompare(b)),
+    [universeNotes],
+  );
+  const showPronunciation = !!lang.transcription || !!draft.pronunciation;
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(initial);
 
@@ -194,22 +208,22 @@ function NoteEditorDialog() {
           void submit();
         }}
       >
-        <Field label="Expression anglaise" error={errors.expression} htmlFor="f-expression">
+        <Field label={`Expression (${universe?.name ?? lang.name})`} error={errors.expression} htmlFor="f-expression">
           <div className="row">
             <input
               id="f-expression"
               ref={exprRef}
               className={`input input--lg ${errors.expression ? 'input--invalid' : ''}`}
-              placeholder="To tackle an issue"
+              placeholder={lang.placeholder.expression}
               value={draft.expression}
               autoComplete="off"
               spellCheck
-              lang="en"
+              lang={language}
               onChange={(e) => set('expression', e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.ctrlKey) {
                   e.preventDefault();
-                  document.getElementById('f-translation')?.focus();
+                  document.getElementById(showPronunciation ? 'f-pronunciation' : 'f-translation')?.focus();
                 }
               }}
             />
@@ -218,7 +232,7 @@ function NoteEditorDialog() {
               icon
               title="Écouter la prononciation"
               disabled={!draft.expression.trim()}
-              onClick={() => speak(draft.expression, { voice: settings.ttsVoice, rate: settings.ttsRate })}
+              onClick={() => speakText(draft.expression, universe?.id)}
             >
               <Volume2 size={17} />
             </Button>
@@ -238,11 +252,30 @@ function NoteEditorDialog() {
           </div>
         )}
 
+        {showPronunciation && (
+          <Field label={lang.transcription ?? 'Prononciation'} optional error={errors.pronunciation} htmlFor="f-pronunciation">
+            <input
+              id="f-pronunciation"
+              className="input"
+              value={draft.pronunciation}
+              autoComplete="off"
+              spellCheck={false}
+              onChange={(e) => set('pronunciation', e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.ctrlKey) {
+                  e.preventDefault();
+                  document.getElementById('f-translation')?.focus();
+                }
+              }}
+            />
+          </Field>
+        )}
+
         <Field label="Traduction française" error={errors.translation} htmlFor="f-translation">
           <input
             id="f-translation"
             className={`input ${errors.translation ? 'input--invalid' : ''}`}
-            placeholder="S'attaquer à un problème"
+            placeholder={lang.placeholder.translation}
             value={draft.translation}
             autoComplete="off"
             lang="fr"
@@ -263,9 +296,9 @@ function NoteEditorDialog() {
                 <input
                   id={`ex-${i}`}
                   className="input"
-                  placeholder={i === 0 ? 'We need to tackle this issue before it gets worse.' : 'Autre exemple…'}
+                  placeholder={i === 0 ? lang.placeholder.example : 'Autre exemple…'}
                   value={ex}
-                  lang="en"
+                  lang={language}
                   autoComplete="off"
                   onChange={(e) => setExample(i, e.target.value)}
                   onKeyDown={(e) => {
@@ -292,11 +325,16 @@ function NoteEditorDialog() {
 
         <button type="button" className="link small" style={{ alignSelf: 'flex-start', color: 'var(--text-2)' }} onClick={toggleMore}>
           {more ? <ChevronDown size={14} style={{ verticalAlign: -3 }} /> : <ChevronRight size={14} style={{ verticalAlign: -3 }} />} Tags,
-          collections, catégorie, note
+          collections, catégorie, note{showPronunciation ? '' : ', prononciation'}
         </button>
 
         {more && (
           <div className="stack">
+            {!showPronunciation && (
+              <Field label="Prononciation" optional hint="Transcription phonétique, pinyin, accent tonique…">
+                <input className="input" value={draft.pronunciation} onChange={(e) => set('pronunciation', e.target.value)} />
+              </Field>
+            )}
             <div className="grid-2">
               <Field label="Catégorie" optional hint={!draft.category && autoCategory ? `Auto : ${autoCategory}` : undefined}>
                 <input
@@ -316,10 +354,10 @@ function NoteEditorDialog() {
                 <TagInput value={draft.tags} onChange={(t) => set('tags', t)} suggestions={allTags} />
               </Field>
             </div>
-            {collections.length > 0 && (
+            {universeCollections.length > 0 && (
               <Field label="Collections" optional>
                 <div className="row row--wrap">
-                  {collections.map((c) => {
+                  {universeCollections.map((c) => {
                     const on = draft.collectionIds.includes(c.id);
                     return (
                       <button

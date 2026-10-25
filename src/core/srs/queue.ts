@@ -10,8 +10,8 @@ export const LEARN_AHEAD_MS = 20 * 60_000;
 export type QueueKind = 'learning' | 'review' | 'new';
 
 export interface QueueItem {
-  noteId: number;
-  cardId: number;
+  noteId: string;
+  cardId: string;
   direction: Direction;
   kind: QueueKind;
 }
@@ -27,7 +27,7 @@ export interface QueueOptions {
   /** Limiter à une direction. */
   direction?: Direction | null;
   /** Limiter à un sous-ensemble de notes (collection). */
-  noteIds?: Set<number> | null;
+  noteIds?: Set<string> | null;
 }
 
 interface Candidate extends QueueItem {
@@ -75,8 +75,8 @@ export function collectDue(notes: Note[], opts: QueueOptions) {
   learning.sort((a, b) => a.sortKey - b.sortKey);
   // Les plus menacées d'oubli d'abord (rétrievabilité la plus faible) ; à égalité, FR→EN.
   reviews.sort((a, b) => a.sortKey - b.sortKey || (a.direction === b.direction ? 0 : a.direction === 'fr_en' ? -1 : 1));
-  newPrimary.sort((a, b) => a.sortKey - b.sortKey || a.noteId - b.noteId);
-  newSecondary.sort((a, b) => a.sortKey - b.sortKey || a.noteId - b.noteId);
+  newPrimary.sort((a, b) => a.sortKey - b.sortKey || a.noteId.localeCompare(b.noteId));
+  newSecondary.sort((a, b) => a.sortKey - b.sortKey || a.noteId.localeCompare(b.noteId));
 
   const newQuota = Math.max(0, settings.newPerDay - opts.newIntroducedToday);
   const news = [...newSecondary, ...newPrimary.slice(0, newQuota)];
@@ -128,7 +128,7 @@ export function buildQueue(notes: Note[], opts: QueueOptions): QueueItem[] {
   const { learning, reviews, news } = collectDue(notes, opts);
   const limit = opts.limit ?? Infinity;
 
-  const seen = new Set<number>();
+  const seen = new Set<string>();
   const deferred: Candidate[] = [];
   const pick = (list: Candidate[]) => {
     const kept: Candidate[] = [];

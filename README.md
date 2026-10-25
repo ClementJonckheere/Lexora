@@ -1,6 +1,6 @@
-# Lexora — carnet de vocabulaire anglais & mémorisation espacée
+# Lexora — carnet de vocabulaire multilingue & mémorisation espacée
 
-Lexora **n'enseigne pas l'anglais**. Il ne propose aucun cours, aucune leçon ni aucun contenu que vous n'avez pas ajouté vous-même.
+Lexora **n'enseigne pas les langues**. Il ne propose aucun cours, aucune leçon ni aucun contenu que vous n'avez pas ajouté vous-même.
 Vous apprenez par vos propres moyens (lecture, vidéos, travail, conversations). Lexora sert à :
 
 1. **enregistrer** une expression en 5 secondes ;
@@ -9,7 +9,10 @@ Vous apprenez par vos propres moyens (lecture, vidéos, travail, conversations).
 4. la **mémoriser** par rappel actif ;
 5. la **réviser au bon moment**, grâce à l'algorithme de répétition espacée **FSRS**.
 
-Application de bureau Windows, **100 % locale et hors ligne** : aucun compte, aucun abonnement, aucun serveur.
+Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, allemand…) avec sa propre bibliothèque, ses collections, ses révisions et ses statistiques.
+
+Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
+Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
 
 ---
 
@@ -19,25 +22,29 @@ Le quotidien type tient en deux gestes :
 
 | Moment | Geste | Coût |
 |---|---|---|
-| Je croise une expression | `N` (ou `Alt+Maj+L` depuis n'importe quelle application) → anglais `Entrée` français `Entrée` exemple `Ctrl+Entrée` | ~5 s |
+| Je croise une expression | `N` (ou `Alt+Maj+L` depuis n'importe quelle application) → expression `Entrée` français `Entrée` exemple `Ctrl+Entrée` | ~5 s |
+| Je change de langue | `Alt+1`, `Alt+2`… ou le sélecteur d'univers en haut de la barre latérale | 1 s |
 | J'ai 2 minutes | J'ouvre Lexora → `Espace` (5 mots) ou `Entrée` (toutes les révisions du jour) → `Espace` pour dévoiler, `1`–`4` pour noter | quelques secondes par mot |
 
 Tout le reste (planification, ordre, rythme, catégorie) est automatique.
 
 ## 2. Pages
 
-Barre latérale : **Accueil · Bibliothèque · Réviser · Collections · Statistiques · Paramètres**, avec en permanence **Rechercher (`Ctrl+K`)** et **+ Ajouter (`N`)**.
+Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à réviser par langue), puis **Accueil · Bibliothèque · Réviser · Collections · Statistiques · Paramètres**. En bas : le compte et l'état de synchronisation, **Rechercher (`Ctrl+K`)** et **+ Ajouter (`N`)**.
+
+- **Connexion** (premier lancement) : « Continuer avec Google ». Le navigateur s'ouvre et l'application récupère la session. Elle reste ensuite connectée, y compris hors ligne.
+- **Choix de la première langue** : grille de langues (anglais, espagnol, portugais, allemand, italien, russe, chinois, japonais, coréen, arabe, néerlandais, ou toute autre langue par son code ISO).
 
 - **Accueil** : « Bonjour, prêt à réviser ? », le nombre de fiches à réviser aujourd'hui, les mots ajoutés ces 7 derniers jours, la taille de la bibliothèque. Deux gros boutons (*Commencer les révisions*, *Ajouter du vocabulaire*), puis les derniers ajouts, les mots souvent oubliés et une petite progression (maîtrise et activité sur 14 jours).
-- **Bibliothèque** : tableau compact et virtualisé (des milliers de lignes restent fluides). Recherche instantanée en anglais **et** en français, sans tenir compte des accents ni du « to » initial. Les filtres se combinent : maîtrise, non maîtrisées, date d'ajout, catégorie, tag, collection, favoris. Tri par date, ordre alphabétique ou maîtrise. Le bouton **Masquer le français** (`H`) permet de s'autoévaluer : on clique sur une traduction pour la révéler. Un clic sur une ligne ouvre le détail : exemples, note, état FSRS de chaque direction, historique des réponses.
-- **Réviser** : sessions de 5 / 10 / 20 mots ou toutes les révisions du jour. On peut choisir la direction (les deux, FR→EN ou EN→FR) et limiter à une collection. Trois modes d'**entraînement libre** : mots difficiles, phrases à trous et aléatoire.
+- **Bibliothèque** : tableau compact et virtualisé (des milliers de lignes restent fluides). Recherche instantanée dans la langue de l'univers **et** en français, sans tenir compte des accents (ni du « to » initial en anglais). Les filtres se combinent : maîtrise, non maîtrisées, date d'ajout, catégorie, tag, collection, favoris. Tri par date, ordre alphabétique ou maîtrise. Le bouton **Masquer le français** (`H`) permet de s'autoévaluer : on clique sur une traduction pour la révéler. Un clic sur une ligne ouvre le détail : exemples, note, état FSRS de chaque direction, historique des réponses.
+- **Réviser** : sessions de 5 / 10 / 20 mots ou toutes les révisions du jour. On peut choisir la direction (les deux, français → langue ou langue → français) et limiter à une collection. Trois modes d'**entraînement libre** : mots difficiles, phrases à trous et aléatoire.
 - **Collections** : listes personnalisées (Business English, Phrasal Verbs…). Une note peut appartenir à plusieurs collections. Chaque collection se révise et s'entraîne séparément.
 - **Statistiques** : chiffres réels uniquement (voir §6).
-- **Paramètres** : réglages de mémorisation, voix, raccourci global, import/export, sauvegardes.
+- **Paramètres** : compte et synchronisation, réglages de mémorisation, voix (une par langue), raccourci global, import/export, sauvegardes.
 
 ## 3. Parcours utilisateurs
 
-**Ajouter** : `N` ouvre le formulaire, curseur dans « Expression ». `Entrée` passe au champ suivant et `Ctrl+Entrée` enregistre. Seuls l'anglais et le français sont obligatoires. L'exemple est facultatif et on peut en ajouter plusieurs. Les tags, collections, catégorie et note libre sont repliés par défaut. Les **doublons** sont signalés pendant la frappe (« tackle an issue » = « To tackle an issue. »), avec un lien pour ouvrir la note existante. L'option **Ajout en série** garde le formulaire ouvert pour enchaîner plusieurs expressions.
+**Ajouter** : `N` ouvre le formulaire, curseur dans « Expression ». `Entrée` passe au champ suivant et `Ctrl+Entrée` enregistre. Seuls l'expression et le français sont obligatoires. Pour le chinois, le japonais, le coréen, le russe et l'arabe, un champ **prononciation** (pinyin, romanisation…) apparaît directement ; pour les autres langues, il est disponible dans les options. L'exemple est facultatif et on peut en ajouter plusieurs. Les tags, collections, catégorie et note libre sont repliés par défaut. Les **doublons** sont signalés pendant la frappe, au sein de l'univers (« tackle an issue » = « To tackle an issue. » ; en espagnol, « año » ≠ « ano »), avec un lien pour ouvrir la note existante. L'option **Ajout en série** garde le formulaire ouvert pour enchaîner plusieurs expressions.
 
 **Importer en masse** : `Ctrl+Maj+V` ouvre la fenêtre de collage, une expression par ligne :
 
@@ -60,9 +67,10 @@ Un aperçu indique pour chaque ligne si elle est valide, doublon ou en erreur. U
 | Application de bureau | **Tauri 2** | Installateur Windows léger (quelques Mo), démarrage rapide, utilise WebView2 intégré à Windows 10/11. |
 | Interface | **React 19 + TypeScript**, Vite, Zustand, CSS maison | Composants réutilisables, état central minimal, aucun framework CSS lourd. |
 | Base de données | **SQLite** (rusqlite, SQLite embarqué) | Un fichier local, transactions, mode WAL. |
+| Compte & synchronisation | **Supabase** (Auth Google + PostgreSQL avec RLS) | Comptes gérés, sécurité par ligne, offre gratuite suffisante ; même compte sur PC et mobile. |
 | Répétition espacée | **FSRS** via `ts-fsrs` (bibliothèque de référence de l'Open Spaced Repetition) | Algorithme moderne, plus précis que SM-2 (Anki historique). |
 | Prononciation | Synthèse vocale du système (Web Speech API) | Voix Windows locales, hors ligne, aucune dépendance. |
-| Tests | Vitest (logique métier sur une vraie base SQLite en mémoire via sql.js), `cargo test` (couche native) | |
+| Tests | Vitest (logique métier sur une vraie base SQLite en mémoire via sql.js), synchronisation contre PostgreSQL + PostgREST réels, `cargo test` (couche native) | |
 
 **Séparation des responsabilités** :
 
@@ -73,39 +81,55 @@ src/
     domain/             types, validation, normalisation, doublons, catégorisation,
                         phrases à trous, CSV, recherche & filtres, dates, réglages
     srs/                FSRS (scheduler), file de révision, session, entraînement libre
-    repo/               accès aux données : notes, collections, révisions, stats, import/export
-    platform/           fichiers, synthèse vocale, raccourci global
-  app/                  état applicatif (store), actions d'import/export
+    repo/               accès aux données : univers, notes, collections, révisions, stats, import/export
+    sync/               moteur de synchronisation (hors ligne d'abord), client Supabase
+    platform/           compte Google, fichiers, synthèse vocale, raccourci global
+  app/                  état applicatif (store), planification de la synchro, import/export
   ui/                   composants React (components/) et pages (features/)
-src-tauri/              couche native Rust : connexion SQLite, sauvegardes, fichiers
+src-tauri/              couche native Rust : connexion SQLite, sauvegardes, fichiers, retour OAuth
+supabase/schema.sql     tables PostgreSQL, déclencheurs, règles RLS (à exécuter dans Supabase)
 ```
 
-Le Rust reste volontairement mince : il expose une connexion SQLite unique (`db_select`, `db_execute`), la lecture et l'écriture des fichiers choisis dans une boîte de dialogue, la sauvegarde et la restauration. Les transactions (`BEGIN IMMEDIATE … COMMIT`) sont pilotées depuis TypeScript sur cette connexion unique, et toutes les requêtes passent par un verrou asynchrone : une transaction n'est jamais entrelacée avec une autre requête.
+Le Rust reste volontairement mince : il expose une connexion SQLite unique (`db_select`, `db_execute`), la lecture et l'écriture des fichiers choisis dans une boîte de dialogue, les sauvegardes automatiques, et un mini-serveur `127.0.0.1` qui reçoit le retour de la connexion Google. Les transactions (`BEGIN IMMEDIATE … COMMIT`) sont pilotées depuis TypeScript sur cette connexion unique, et toutes les requêtes passent par un verrou asynchrone : une transaction n'est jamais entrelacée avec une autre requête.
 
 Le même code SQL tourne dans les trois environnements. Dans l'application, c'est rusqlite. Avec `npm run dev`, un aperçu navigateur utilise sql.js (WebAssembly), persisté dans IndexedDB. Les tests utilisent sql.js en mémoire.
 
 ## 5. Modèle de données
 
+Schéma v2, identique en local (SQLite) et dans Supabase (PostgreSQL, avec en plus `user_id` et `server_updated_at`) :
+
 ```
-notes            id, expression, translation, expression_key (clé normalisée → doublons),
-                 comment, category, category_auto, is_favorite, created_at, updated_at
-examples         id, note_id → notes, sentence, position            (plusieurs exemples par note)
-tags             id, name (unique, insensible à la casse)
-note_tags        note_id → notes, tag_id → tags
-collections      id, name (unique), description, created_at
-collection_notes collection_id → collections, note_id → notes, added_at   (n-n)
-cards            id, note_id → notes, direction ('fr_en' | 'en_fr'),
-                 state, due, stability, difficulty, elapsed_days, scheduled_days,
-                 learning_steps, reps, lapses, last_review           (= carte FSRS)
-review_logs      id, card_id → cards, rating 1-4, état FSRS AVANT la réponse,
-                 reviewed_at, duration_ms                            (historique complet)
-practice_logs    id, note_id → notes, mode ('cloze'|'random'|'difficult'), rating, created_at
-settings         key, value (JSON)
+universes      id, name, language (code ISO : en, es, zh…), position, created_at
+notes          id, universe_id, expression, translation, pronunciation, expression_key (doublons),
+               comment, category, category_auto, is_favorite,
+               examples[], tags[], collection_ids[] (JSON), created_at
+collections    id, universe_id, name, description, created_at
+cards          id, note_id, direction ('fr_en' = français → langue | 'en_fr' = langue → français),
+               state, due, stability, difficulty, elapsed_days, scheduled_days,
+               learning_steps, reps, lapses, last_review                 (= carte FSRS)
+review_logs    id, card_id, rating 1-4, état FSRS AVANT la réponse, reviewed_at, duration_ms
+practice_logs  id, note_id, mode ('cloze'|'random'|'difficult'), rating, created_at
+settings       key, value (réglages partagés entre appareils)
+device_settings, sync_state      (local uniquement : voix, raccourci ; compte lié, curseurs)
+
++ sur chaque table synchronisée : updated_at (ms), deleted (suppression douce), dirty (local : à envoyer)
 ```
 
+- Identifiants **UUID** : des lignes créées hors ligne sur deux appareils ne peuvent pas entrer en collision.
 - Chaque note crée **deux fiches**, une par direction : la maîtrise est suivie **séparément**.
-- Les dates sont stockées en millisecondes. Les suppressions sont en cascade : supprimer une note supprime ses fiches et son historique.
-- Les **migrations** sont versionnées (`PRAGMA user_version`, `src/core/db/migrations.ts`). Chacune s'applique dans sa propre transaction. Une migration publiée n'est jamais modifiée : toute évolution passe par une nouvelle entrée.
+- Les **suppressions sont douces** (`deleted = 1`) pour se propager aux autres appareils.
+- Les **migrations** sont versionnées (`PRAGMA user_version`, `src/core/db/migrations.ts`). Chacune s'applique dans sa propre transaction. La v2 a converti la base v1 sans perte : notes, exemples, tags, collections, fiches et historique sont rangés dans un univers « Anglais ».
+
+### Synchronisation
+
+Le moteur (`src/core/sync/engine.ts`) fonctionne **hors ligne d'abord** :
+
+1. toute écriture locale marque la ligne `dirty` et met à jour `updated_at` ;
+2. un cycle **reçoit** d'abord, table par table, ce qui a changé sur le serveur depuis le dernier curseur `server_updated_at`. Une ligne reçue n'écrase la ligne locale que si elle est plus récente ;
+3. puis il **envoie** les lignes `dirty`. Côté serveur, un déclencheur PostgreSQL refuse qu'une version plus ancienne remplace une plus récente ;
+4. **RLS** : chaque compte ne lit et n'écrit que ses propres lignes (`user_id = auth.uid()`).
+
+La synchronisation se déclenche quelques secondes après chaque modification, toutes les 2 minutes, au retour du réseau, quand la fenêtre reprend le focus, ou via le bouton *Synchroniser*. L'historique des révisions est en ajout seul : les révisions faites sur plusieurs appareils s'additionnent.
 
 ## 6. Logique de mémorisation
 
@@ -171,17 +195,29 @@ Installateurs générés dans `src-tauri\target\release\bundle\nsis\` (`.exe`) e
 ```powershell
 npm run app:dev     # application Tauri avec rechargement à chaud
 npm run dev         # aperçu dans le navigateur (http://localhost:1420), données dans IndexedDB
-npm test            # tests de la logique métier (Vitest)
+npm test            # tests de la logique métier et de la synchronisation (Vitest)
 npm run typecheck   # vérification TypeScript
 cargo test --manifest-path src-tauri/Cargo.toml   # tests de la couche native
 ```
+
+## Compte Google et synchronisation
+
+Voir le guide pas à pas [docs/SUPABASE.md](docs/SUPABASE.md) :
+
+1. créer un projet Supabase ;
+2. exécuter `supabase/schema.sql` ;
+3. activer Google ;
+4. déclarer les adresses de retour ;
+5. renseigner `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` : en secrets GitHub pour l'installateur, dans `.env` pour un build local.
+
+Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 
 ## Données, sauvegarde et restauration
 
 - Base : `%APPDATA%\com.clementjonckheere.lexora\lexora.db` (chemin exact affiché dans *Paramètres*).
 - **Sauvegarde automatique** : une copie par jour au démarrage, les 10 dernières sont conservées (`…\backups\`).
-- **Sauvegarde complète** (*Paramètres → Sauvegarder*) : un fichier JSON avec les notes, les fiches FSRS, l'historique et les réglages. Il se **restaure** à l'identique, tout comme un fichier `.db` des sauvegardes automatiques. Une copie de sécurité est faite avant chaque restauration.
-- **Export** CSV (UTF-8, `;`, s'ouvre directement dans Excel) et JSON. **Import** CSV et JSON, doublons ignorés.
+- **Sauvegarde complète** (*Paramètres → Sauvegarder*) : un fichier JSON avec tous les univers, les notes, les fiches FSRS, l'historique et les réglages. Il se **restaure** à l'identique, et la restauration se propage aux appareils synchronisés. Une copie de sécurité de la base est faite avant chaque restauration.
+- **Export** CSV (UTF-8, `;`, s'ouvre directement dans Excel) et JSON de l'univers courant. **Import** CSV et JSON dans l'univers courant, doublons ignorés.
 
 ## Raccourcis clavier
 
@@ -191,6 +227,7 @@ cargo test --manifest-path src-tauri/Cargo.toml   # tests de la couche native
 | Partout | `Ctrl+K` | Recherche instantanée |
 | Partout | `Ctrl+Maj+V` | Coller plusieurs expressions |
 | Partout | `Ctrl+1` … `Ctrl+6` | Changer de page |
+| Partout | `Alt+1` … `Alt+9` · `Ctrl+U` | Changer d'univers (langue) · Gérer les univers |
 | Partout | `?` | Aide des raccourcis |
 | Windows | `Alt+Maj+L` (réglable) | Ajout rapide depuis n'importe quelle application |
 | Formulaire | `Entrée` / `Ctrl+Entrée` / `Échap` | Champ suivant / enregistrer / fermer |

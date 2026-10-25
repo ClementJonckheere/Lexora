@@ -2,14 +2,14 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { CheckCircle2, Flame, PencilLine, Shuffle, Zap } from 'lucide-react';
 import { useApp, type SessionConfig } from '@/app/store';
 import { formatDue } from '@/core/domain/dates';
-import type { Direction } from '@/core/domain/types';
+import { directionShort, type Direction } from '@/core/domain/types';
 import { countDue } from '@/core/srs/queue';
 import { clozeCandidates, difficultNotes } from '@/core/srs/practice';
 import { Button, Kbd, Segmented } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { State } from 'ts-fsrs';
 
-export function useDueCounts(collectionId: number | null = null, direction: Direction | null = null) {
+export function useDueCounts(collectionId: string | null = null, direction: Direction | null = null) {
   const notes = useApp((s) => s.notes);
   const settings = useApp((s) => s.settings);
   const scheduler = useApp((s) => s.scheduler);
@@ -41,14 +41,16 @@ export function ReviewPage() {
   const { navigate, openEditor } = useApp.getState();
 
   const [direction, setDirection] = useState<'mix' | Direction>('mix');
-  const [collectionId, setCollectionId] = useState<number | null>(null);
+  const [collectionId, setCollectionId] = useState<string | null>(null);
   const dir = direction === 'mix' ? null : direction;
   const due = useDueCounts(collectionId, dir);
   const nextDue = useNextDue();
 
   const scoped = useMemo(() => (collectionId == null ? notes : notes.filter((n) => n.collectionIds.includes(collectionId))), [notes, collectionId]);
   const hardCount = useMemo(() => difficultNotes(scoped, forgetCounts).length, [scoped, forgetCounts]);
-  const clozeCount = useMemo(() => clozeCandidates(scoped).length, [scoped]);
+  const language = useApp((s) => s.universe?.language ?? 'en');
+  const universeName = useApp((s) => s.universe?.name ?? '');
+  const clozeCount = useMemo(() => clozeCandidates(scoped, language).length, [scoped, language]);
 
   const start = (config: SessionConfig) => navigate({ name: 'session', config });
   const startScheduled = (limit: number | null) => start({ kind: 'scheduled', limit, direction: dir, collectionId });
@@ -99,8 +101,8 @@ export function ReviewPage() {
                 onChange={setDirection}
                 options={[
                   { value: 'mix', label: 'Les deux' },
-                  { value: 'fr_en', label: 'FR → EN', title: 'Retrouver l’anglais à partir du français' },
-                  { value: 'en_fr', label: 'EN → FR', title: 'Retrouver le sens français' },
+                  { value: 'fr_en', label: directionShort('fr_en', language), title: `Retrouver l’expression (${universeName}) à partir du français` },
+                  { value: 'en_fr', label: directionShort('en_fr', language), title: 'Retrouver le sens français' },
                 ]}
               />
             )}
@@ -109,7 +111,7 @@ export function ReviewPage() {
                 className="select select--sm"
                 style={{ width: 'auto' }}
                 value={collectionId ?? ''}
-                onChange={(e) => setCollectionId(e.target.value ? Number(e.target.value) : null)}
+                onChange={(e) => setCollectionId(e.target.value || null)}
                 aria-label="Collection"
               >
                 <option value="">Toute la bibliothèque</option>

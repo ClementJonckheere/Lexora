@@ -3,16 +3,21 @@ import type { Database } from '@/core/db/types';
 import { openDatabase } from '@/core/db/open';
 import { startOfStudyDay } from '@/core/domain/dates';
 import { DEFAULT_SETTINGS, primaryDirection, type Settings } from '@/core/domain/settings';
-import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode } from '@/core/domain/types';
+import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode, Universe } from '@/core/domain/types';
 import * as notesRepo from '@/core/repo/notesRepo';
 import * as collectionsRepo from '@/core/repo/collectionsRepo';
+import * as universesRepo from '@/core/repo/universesRepo';
 import { countNewIntroduced, loadForgetCounts } from '@/core/repo/reviewRepo';
 import { loadSettings, saveSettings } from '@/core/repo/settingsRepo';
 import { createScheduler, type Scheduler } from '@/core/srs/scheduler';
+import { authConfigured, currentUser, signInWithGoogle, signOut as authSignOut, type AccountUser } from '@/core/platform/auth';
+import { bindAccount, getSyncState, resetLocalData } from '@/core/sync/engine';
+import { readPref, writePref } from '@/ui/prefs';
+import { runSync, scheduleSync, startSyncLoop, stopSyncLoop } from './sync';
 
 export type SessionConfig =
-  | { kind: 'scheduled'; limit: number | null; direction?: Direction | null; collectionId?: number | null }
-  | { kind: 'practice'; mode: PracticeMode; limit: number | null; direction?: Direction | null; collectionId?: number | null };
+  | { kind: 'scheduled'; limit: number | null; direction?: Direction | null; collectionId?: string | null }
+  | { kind: 'practice'; mode: PracticeMode; limit: number | null; direction?: Direction | null; collectionId?: string | null };
 
 export type Route =
   | { name: 'home' }
@@ -20,7 +25,7 @@ export type Route =
   | { name: 'review' }
   | { name: 'session'; config: SessionConfig }
   | { name: 'collections' }
-  | { name: 'collection'; id: number }
+  | { name: 'collection'; id: string }
   | { name: 'stats' }
   | { name: 'settings' };
 
@@ -31,7 +36,7 @@ export interface LibraryFilters {
   query: string;
   category: string;
   tag: string;
-  collectionId: number | null;
+  collectionId: string | null;
   mastery: Mastery | 'not_mastered' | 'all';
   date: DateFilter;
   favoritesOnly: boolean;
@@ -57,8 +62,22 @@ export interface Toast {
 }
 
 interface EditorState {
-  noteId: number | null;
+  noteId: string | null;
   prefill?: Partial<NoteInput>;
+}
+
+/**
+ * checking : lecture de la session ; signed-out : écran de connexion ;
+ * conflict : cet appareil contient les données d'un autre compte ;
+ * first-sync : premier chargement des données du compte ; in : connecté ;
+ * local : Supabase non configuré (aperçu / développement), pas de synchronisation.
+ */
+export type AuthPhase = 'checking' | 'signed-out' | 'conflict' | 'first-sync' | 'in' | 'local';
+
+export interface SyncStatus {
+  state: 'idle' | 'syncing' | 'offline' | 'error' | 'disabled';
+  lastSync: number | null;
+  error: string | null;
 }
 
 interface AppState {
@@ -67,10 +86,20 @@ interface AppState {
   db: Database | null;
   settings: Settings;
   scheduler: Scheduler;
+
+  auth: { phase: AuthPhase; user: AccountUser | null; busy: boolean; error: string | null };
+  sync: SyncStatus;
+
+  universes: Universe[];
+  universe: Universe | null;
+  /** Notes de l'univers courant. */
   notes: Note[];
-  notesById: Map<number, Note>;
+  /** Toutes les notes, tous univers (compteurs du sélecteur d'univers). */
+  allNotes: Note[];
+  notesById: Map<string, Note>;
+  /** Collections de l'univers courant. */
   collections: Collection[];
-  forgetCounts: Map<number, number>;
+  forgetCounts: Map<string, number>;
   newIntroducedToday: number;
   /** Incrémenté à chaque modification des données. */
   revision: number;
@@ -82,42 +111,55 @@ interface AppState {
   searchOpen: boolean;
   bulkOpen: boolean;
   shortcutsOpen: boolean;
+  universesOpen: boolean;
   toasts: Toast[];
   libraryFilters: LibraryFilters;
   hideTranslation: boolean;
-  selectedNoteId: number | null;
+  selectedNoteId: string | null;
 
   init(): Promise<void>;
   refresh(): Promise<void>;
   navigate(route: Route): void;
-  openEditor(noteId?: number | null, prefill?: Partial<NoteInput>): void;
+  openEditor(noteId?: string | null, prefill?: Partial<NoteInput>): void;
   closeEditor(): void;
   setSearchOpen(open: boolean): void;
   setBulkOpen(open: boolean): void;
   setShortcutsOpen(open: boolean): void;
+  setUniversesOpen(open: boolean): void;
   toast(kind: Toast['kind'], message: string, action?: Toast['action']): void;
   dismissToast(id: number): void;
   setLibraryFilters(patch: Partial<LibraryFilters>): void;
   setHideTranslation(hide: boolean): void;
-  selectNote(id: number | null): void;
+  selectNote(id: string | null): void;
   /** Affiche une note dans la bibliothèque (filtres réinitialisés pour la rendre visible). */
-  showNote(id: number): void;
+  showNote(id: string): void;
 
-  saveNote(input: NoteInput, id?: number | null): Promise<number>;
-  deleteNotes(ids: number[]): Promise<void>;
-  toggleFavorite(id: number): Promise<void>;
+  signIn(): Promise<void>;
+  signOut(): Promise<void>;
+  resolveAccountConflict(replaceLocal: boolean): Promise<void>;
+  syncNow(): Promise<void>;
+
+  setUniverse(id: string): Promise<void>;
+  createUniverse(name: string, language: string): Promise<string>;
+  renameUniverse(id: string, name: string): Promise<void>;
+  deleteUniverse(id: string): Promise<void>;
+
+  saveNote(input: NoteInput, id?: string | null): Promise<string>;
+  deleteNotes(ids: string[]): Promise<void>;
+  toggleFavorite(id: string): Promise<void>;
   updateSettings(patch: Partial<Settings>): Promise<void>;
-  createCollection(name: string, description?: string): Promise<number>;
-  updateCollection(id: number, name: string, description: string): Promise<void>;
-  deleteCollection(id: number): Promise<void>;
-  addToCollection(collectionId: number, noteIds: number[]): Promise<void>;
-  removeFromCollection(collectionId: number, noteIds: number[]): Promise<void>;
+  createCollection(name: string, description?: string): Promise<string>;
+  updateCollection(id: string, name: string, description: string): Promise<void>;
+  deleteCollection(id: string): Promise<void>;
+  addToCollection(collectionId: string, noteIds: string[]): Promise<void>;
+  removeFromCollection(collectionId: string, noteIds: string[]): Promise<void>;
 }
 
 let toastSeq = 1;
 
 export function errorMessage(err: unknown): string {
   if (err instanceof Error) return err.message;
+  if (err && typeof err === 'object' && 'message' in err) return String((err as { message: unknown }).message);
   return typeof err === 'string' ? err : 'Erreur inattendue';
 }
 
@@ -127,6 +169,33 @@ export const useApp = create<AppState>((set, get) => {
     if (!d) throw new Error('Base de données non initialisée');
     return d;
   };
+  const universe = () => {
+    const u = get().universe;
+    if (!u) throw new Error('Aucun univers sélectionné');
+    return u;
+  };
+  /** Après une écriture locale : rechargement + synchronisation différée. */
+  const afterWrite = async () => {
+    await get().refresh();
+    scheduleSync();
+  };
+
+  /** Rattache les données locales au compte puis charge l'application. */
+  const enter = async (user: AccountUser) => {
+    const d = db();
+    const bound = await bindAccount(d, user.id);
+    if (bound === 'other-account') {
+      set((s) => ({ auth: { ...s.auth, phase: 'conflict', user } }));
+      return;
+    }
+    const neverSynced = !(await getSyncState(d, 'last_sync'));
+    set((s) => ({ auth: { ...s.auth, phase: neverSynced ? 'first-sync' : 'in', user, error: null } }));
+    if (neverSynced) await runSync();
+    await get().refresh();
+    set((s) => ({ auth: { ...s.auth, phase: 'in' } }));
+    startSyncLoop();
+    if (!neverSynced) void runSync();
+  };
 
   return {
     status: 'loading',
@@ -134,7 +203,14 @@ export const useApp = create<AppState>((set, get) => {
     db: null,
     settings: DEFAULT_SETTINGS,
     scheduler: createScheduler(DEFAULT_SETTINGS),
+
+    auth: { phase: 'checking', user: null, busy: false, error: null },
+    sync: { state: authConfigured ? 'idle' : 'disabled', lastSync: null, error: null },
+
+    universes: [],
+    universe: null,
     notes: [],
+    allNotes: [],
     notesById: new Map(),
     collections: [],
     forgetCounts: new Map(),
@@ -147,6 +223,7 @@ export const useApp = create<AppState>((set, get) => {
     searchOpen: false,
     bulkOpen: false,
     shortcutsOpen: false,
+    universesOpen: false,
     toasts: [],
     libraryFilters: DEFAULT_FILTERS,
     hideTranslation: false,
@@ -156,9 +233,17 @@ export const useApp = create<AppState>((set, get) => {
       try {
         const database = await openDatabase();
         const settings = await loadSettings(database);
-        set({ db: database, settings, scheduler: createScheduler(settings) });
-        await get().refresh();
+        const lastSync = Number((await getSyncState(database, 'last_sync')) ?? 0) || null;
+        set((s) => ({ db: database, settings, scheduler: createScheduler(settings), sync: { ...s.sync, lastSync } }));
         set({ status: 'ready' });
+        if (!authConfigured) {
+          await get().refresh();
+          set((s) => ({ auth: { ...s.auth, phase: 'local' } }));
+          return;
+        }
+        const user = await currentUser();
+        if (!user) set((s) => ({ auth: { ...s.auth, phase: 'signed-out' } }));
+        else await enter(user);
       } catch (err) {
         console.error(err);
         set({ status: 'error', error: errorMessage(err) });
@@ -168,19 +253,29 @@ export const useApp = create<AppState>((set, get) => {
     async refresh() {
       const d = db();
       const { settings } = get();
-      const [notes, collections, forgetCounts, newIntroducedToday] = await Promise.all([
+      const [universes, allNotes, allCollections, forgetCounts] = await Promise.all([
+        universesRepo.loadUniverses(d),
         notesRepo.loadNotes(d),
         collectionsRepo.loadCollections(d),
         loadForgetCounts(d),
-        countNewIntroduced(d, startOfStudyDay(Date.now(), settings.dayStartHour), primaryDirection(settings)),
       ]);
+      const wanted = get().universe?.id ?? readPref<string | null>('universeId', null);
+      const current = universes.find((u) => u.id === wanted) ?? universes[0] ?? null;
+      const newIntroducedToday = current
+        ? await countNewIntroduced(d, startOfStudyDay(Date.now(), settings.dayStartHour), primaryDirection(settings), current.id)
+        : 0;
+      const changedUniverse = current?.id !== get().universe?.id;
       set((s) => ({
-        notes,
-        notesById: new Map(notes.map((n) => [n.id, n])),
-        collections,
+        universes,
+        universe: current,
+        allNotes,
+        notes: current ? allNotes.filter((n) => n.universeId === current.id) : [],
+        notesById: new Map(allNotes.map((n) => [n.id, n])),
+        collections: current ? allCollections.filter((c) => c.universeId === current.id) : [],
         forgetCounts,
         newIntroducedToday,
         revision: s.revision + 1,
+        ...(changedUniverse ? { libraryFilters: DEFAULT_FILTERS, selectedNoteId: null } : {}),
       }));
     },
 
@@ -202,6 +297,9 @@ export const useApp = create<AppState>((set, get) => {
     setShortcutsOpen(shortcutsOpen) {
       set({ shortcutsOpen });
     },
+    setUniversesOpen(universesOpen) {
+      set({ universesOpen, searchOpen: false });
+    },
     toast(kind, message, action) {
       const id = toastSeq++;
       set((s) => ({ toasts: [...s.toasts.slice(-3), { id, kind, message, action }] }));
@@ -220,55 +318,130 @@ export const useApp = create<AppState>((set, get) => {
       set({ selectedNoteId });
     },
     showNote(id) {
+      const note = get().notesById.get(id);
+      if (note && note.universeId !== get().universe?.id) void get().setUniverse(note.universeId);
       set((s) => ({ route: { name: 'library' }, routeKey: s.routeKey + 1, selectedNoteId: id, libraryFilters: DEFAULT_FILTERS, searchOpen: false }));
     },
 
+    /* ------------------------------- Compte ------------------------------- */
+
+    async signIn() {
+      set((s) => ({ auth: { ...s.auth, busy: true, error: null } }));
+      try {
+        const user = await signInWithGoogle();
+        if (user) await enter(user);
+      } catch (err) {
+        set((s) => ({ auth: { ...s.auth, error: errorMessage(err) } }));
+      } finally {
+        set((s) => ({ auth: { ...s.auth, busy: false } }));
+      }
+    },
+
+    async signOut() {
+      stopSyncLoop();
+      await authSignOut();
+      set((s) => ({ auth: { ...s.auth, phase: 'signed-out', user: null }, route: { name: 'home' }, sync: { ...s.sync, state: 'idle', error: null } }));
+    },
+
+    async resolveAccountConflict(replaceLocal) {
+      const user = get().auth.user;
+      if (!user) return;
+      if (!replaceLocal) {
+        await get().signOut();
+        return;
+      }
+      await resetLocalData(db(), user.id);
+      await enter(user);
+    },
+
+    async syncNow() {
+      await runSync({ manual: true });
+    },
+
+    /* ------------------------------- Univers ------------------------------ */
+
+    async setUniverse(id) {
+      writePref('universeId', id);
+      const target = get().universes.find((u) => u.id === id);
+      if (!target) return;
+      set({ universe: target });
+      await get().refresh();
+      set((s) => ({ libraryFilters: DEFAULT_FILTERS, selectedNoteId: null, route: s.route.name === 'collection' || s.route.name === 'session' ? { name: 'home' } : s.route, routeKey: s.routeKey + 1 }));
+    },
+    async createUniverse(name, language) {
+      const id = await universesRepo.createUniverse(db(), name, language);
+      writePref('universeId', id);
+      set({ universe: null });
+      await afterWrite();
+      return id;
+    },
+    async renameUniverse(id, name) {
+      await universesRepo.renameUniverse(db(), id, name);
+      await afterWrite();
+    },
+    async deleteUniverse(id) {
+      await universesRepo.deleteUniverse(db(), id);
+      if (get().universe?.id === id) set({ universe: null, route: { name: 'home' } });
+      await afterWrite();
+    },
+
+    /* -------------------------------- Notes ------------------------------- */
+
     async saveNote(input, id) {
       const d = db();
-      const noteId = id ? (await notesRepo.updateNote(d, id, input), id) : await notesRepo.createNote(d, input);
-      await get().refresh();
+      const u = universe();
+      let noteId: string;
+      if (id) {
+        const note = get().notesById.get(id);
+        const lang = get().universes.find((x) => x.id === note?.universeId)?.language ?? u.language;
+        await notesRepo.updateNote(d, id, input, lang);
+        noteId = id;
+      } else {
+        noteId = await notesRepo.createNote(d, input, { universeId: u.id, language: u.language });
+      }
+      await afterWrite();
       return noteId;
     },
 
     async deleteNotes(ids) {
       await notesRepo.deleteNotes(db(), ids);
-      if (ids.includes(get().selectedNoteId ?? -1)) set({ selectedNoteId: null });
-      await get().refresh();
+      if (ids.includes(get().selectedNoteId ?? '')) set({ selectedNoteId: null });
+      await afterWrite();
     },
 
     async toggleFavorite(id) {
       const note = get().notesById.get(id);
       if (!note) return;
       await notesRepo.setFavorite(db(), id, !note.isFavorite);
-      await get().refresh();
+      await afterWrite();
     },
 
     async updateSettings(patch) {
       const settings = await saveSettings(db(), patch);
       set({ settings, scheduler: createScheduler(settings) });
-      await get().refresh();
+      await afterWrite();
     },
 
     async createCollection(name, description = '') {
-      const id = await collectionsRepo.createCollection(db(), name, description);
-      await get().refresh();
+      const id = await collectionsRepo.createCollection(db(), universe().id, name, description);
+      await afterWrite();
       return id;
     },
     async updateCollection(id, name, description) {
       await collectionsRepo.updateCollection(db(), id, name, description);
-      await get().refresh();
+      await afterWrite();
     },
     async deleteCollection(id) {
       await collectionsRepo.deleteCollection(db(), id);
-      await get().refresh();
+      await afterWrite();
     },
     async addToCollection(collectionId, noteIds) {
       await collectionsRepo.addToCollection(db(), collectionId, noteIds);
-      await get().refresh();
+      await afterWrite();
     },
     async removeFromCollection(collectionId, noteIds) {
       await collectionsRepo.removeFromCollection(db(), collectionId, noteIds);
-      await get().refresh();
+      await afterWrite();
     },
   };
 });

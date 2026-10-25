@@ -1,4 +1,5 @@
-import type { Database } from './types';
+import type { Database, Queryable } from './types';
+import { MIGRATION_V2 } from './migrationV2';
 
 /**
  * Migrations versionnées. La version courante est stockée dans
@@ -11,6 +12,8 @@ export interface Migration {
   version: number;
   name: string;
   statements: string[];
+  /** Transformation de données éventuelle, exécutée après les instructions, dans la même transaction. */
+  run?: (tx: Queryable) => Promise<void>;
 }
 
 export const MIGRATIONS: Migration[] = [
@@ -122,6 +125,8 @@ export const MIGRATIONS: Migration[] = [
   },
 ];
 
+MIGRATIONS.push(MIGRATION_V2);
+
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;
 
 export async function getSchemaVersion(db: Database): Promise<number> {
@@ -141,6 +146,7 @@ export async function migrate(db: Database, migrations: Migration[] = MIGRATIONS
     if (m.version <= current) continue;
     await db.transaction(async (tx) => {
       for (const sql of m.statements) await tx.execute(sql);
+      await m.run?.(tx);
       await tx.execute(`PRAGMA user_version = ${m.version}`);
     });
     current = m.version;

@@ -1804,3 +1804,225 @@ p {
     transition-duration: 1ms !important;
   }
 }
+
+/* ---------- Univers ---------- */
+.lang-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+.universe-switcher {
+  position: relative;
+  margin: -4px 0 12px;
+}
+.universe-current {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  font-weight: 600;
+  text-align: left;
+}
+.universe-current:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+.universe-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.popover-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+}
+.popover {
+  position: absolute;
+  z-index: 31;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  animation: modal-in 120ms var(--ease);
+}
+.popover-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.popover-item:hover {
+  background: var(--primary-soft);
+}
+.popover-item .kbd {
+  margin-left: auto;
+}
+.language-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+}
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-weight: 550;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms, box-shadow 120ms;
+}
+.language-option:hover:not(:disabled) {
+  border-color: var(--primary-soft-2);
+  box-shadow: var(--shadow);
+}
+.language-option:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.language-option span:nth-child(2) {
+  flex: 1;
+}
+.universe-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--surface-3);
+}
+.universe-row:first-child {
+  border-top: 0;
+}
+
+/* ---------- Compte / connexion ---------- */
+.auth-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 24px;
+  overflow: auto;
+  background: radial-gradient(1200px 500px at 50% -10%, var(--primary-soft), transparent), var(--bg);
+}
+.auth-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 420px;
+  padding: 36px;
+  text-align: center;
+  animation: fade-in 200ms var(--ease);
+}
+.auth-card[style*='left'] {
+  align-items: stretch;
+}
+.auth-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.avatar {
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.avatar--initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-soft-2);
+  color: var(--primary-text);
+  font-weight: 700;
+}
+.sidebar-account {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0 4px;
+}
+.sidebar-account-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 6px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.sidebar-account-main:hover {
+  background: var(--surface-2);
+}
+.sidebar-account-main .label {
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-account-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 13px;
+}
+.sync-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-3);
+  font-size: 12px;
+}
+.sync-label--error {
+  color: var(--danger);
+}
+.spin {
+  animation: spin 900ms linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.session-progress .indeterminate {
+  width: 40%;
+  animation: indeterminate 1.1s var(--ease) infinite;
+}
+@keyframes indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}

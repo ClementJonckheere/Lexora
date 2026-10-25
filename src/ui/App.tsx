@@ -16,6 +16,9 @@ import { SessionPage } from './features/review/SessionPage';
 import { CollectionPage, CollectionsPage } from './features/collections/CollectionsPage';
 import { StatsPage } from './features/stats/StatsPage';
 import { SettingsPage } from './features/settings/SettingsPage';
+import { AccountConflictScreen, FirstSyncScreen, LoginScreen } from './features/account/AuthScreens';
+import { SidebarAccount } from './features/account/SyncIndicator';
+import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/universes/Universes';
 
 const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string }[] = [
   { route: 'home', label: 'Accueil', icon: Home, key: '1' },
@@ -37,6 +40,7 @@ function Sidebar() {
         <img src="/favicon.png" alt="" />
         <span>Lexora</span>
       </div>
+      <UniverseSwitcher />
       <div className="nav">
         {NAV.map(({ route: r, label, icon: Icon, key }) => (
           <button
@@ -54,6 +58,7 @@ function Sidebar() {
       </div>
       <div className="sidebar-spacer" />
       <div className="sidebar-actions">
+        <SidebarAccount />
         <button className="search-trigger" onClick={() => setSearchOpen(true)} title="Rechercher (Ctrl+K)">
           <Search size={15} />
           <span className="label">Rechercher</span>
@@ -79,6 +84,7 @@ function ShortcutsHelp() {
     ['Ctrl+Maj+V', 'Coller plusieurs expressions'],
     ['Ctrl+K', 'Recherche instantanée'],
     ['Ctrl+1 … 6', 'Changer de page'],
+    ['Alt+1 … 9', "Changer d'univers (langue)"],
     ['Ctrl+Entrée', 'Enregistrer le formulaire'],
     ['Accueil : Entrée / Espace', 'Toutes les révisions / 5 mots'],
     ['Révision : Espace', 'Afficher la réponse (puis « Retenu »)'],
@@ -137,20 +143,27 @@ export function App() {
   const error = useApp((s) => s.error);
   const route = useApp((s) => s.route);
   const globalShortcut = useApp((s) => s.settings.globalShortcut);
-  const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
+  const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen || s.universesOpen);
+  const phase = useApp((s) => s.auth.phase);
+  const hasUniverse = useApp((s) => !!s.universe);
   const { navigate, openEditor, setSearchOpen, setBulkOpen, setShortcutsOpen, toast } = useApp.getState();
+  const appReady = status === 'ready' && (phase === 'in' || phase === 'local') && hasUniverse;
+  const switchUniverse = (i: number) => {
+    const u = useApp.getState().universes[i];
+    if (u) void useApp.getState().setUniverse(u.id);
+  };
 
   useEffect(() => {
     void useApp.getState().init();
   }, []);
 
   useEffect(() => {
-    if (status !== 'ready') return;
+    if (!appReady) return;
     registerGlobalShortcut(globalShortcut, () => {
       const s = useApp.getState();
       if (!s.editor) s.openEditor();
     }).catch((err) => toast('error', `Raccourci global « ${globalShortcut} » indisponible : ${err instanceof Error ? err.message : String(err)}`));
-  }, [status, globalShortcut, toast]);
+  }, [appReady, globalShortcut, toast]);
 
   const inSession = route.name === 'session';
 
@@ -170,12 +183,14 @@ export function App() {
             'mod+4': () => navigate({ name: 'collections' }),
             'mod+5': () => navigate({ name: 'stats' }),
             'mod+6': () => navigate({ name: 'settings' }),
+            'mod+u': () => useApp.getState().setUniversesOpen(true),
+            ...Object.fromEntries(Array.from({ length: 9 }, (_, i) => [`alt+${i + 1}`, () => switchUniverse(i)])),
           }),
     },
-    { enabled: status === 'ready' && !overlay, allowInInputs: ['mod+k', 'mod+n', 'mod+shift+v'] },
+    { enabled: appReady && !overlay, allowInInputs: ['mod+k', 'mod+n', 'mod+shift+v'] },
   );
 
-  if (status === 'loading') return <div className="loading-screen">Chargement…</div>;
+  if (status === 'loading' || (status === 'ready' && phase === 'checking')) return <div className="loading-screen">Chargement…</div>;
   if (status === 'error') {
     return (
       <div className="loading-screen" style={{ flexDirection: 'column', gap: 12, padding: 32, textAlign: 'center' }}>
@@ -183,6 +198,26 @@ export function App() {
         <span className="code">{error}</span>
         <Button onClick={() => location.reload()}>Réessayer</Button>
       </div>
+    );
+  }
+
+  const gate =
+    phase === 'signed-out' ? (
+      <LoginScreen />
+    ) : phase === 'conflict' ? (
+      <AccountConflictScreen />
+    ) : phase === 'first-sync' ? (
+      <FirstSyncScreen />
+    ) : !hasUniverse ? (
+      <OnboardingScreen />
+    ) : null;
+  if (gate) {
+    return (
+      <>
+        {gate}
+        <ConfirmHost />
+        <Toasts />
+      </>
     );
   }
 
@@ -198,6 +233,7 @@ export function App() {
       <BulkImport />
       <SearchPalette />
       <ShortcutsHelp />
+      <UniversesDialog />
       <ConfirmHost />
       <Toasts />
     </>

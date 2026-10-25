@@ -1,26 +1,37 @@
-import type { Database, Queryable, SqlValue } from '../db/types';
+import type { Database, Queryable } from '../db/types';
 import { categorize } from '../domain/categorize';
-import { expressionKey } from '../domain/text';
+import { expressionKey, newId } from '../domain/text';
 import type { CardRecord, Direction, Note, NoteInput } from '../domain/types';
 import { DIRECTIONS } from '../domain/types';
 import { validateNote, type ValidatedNote } from '../domain/validation';
 
+/*
+ * Toute écriture locale positionne updated_at = maintenant et dirty = 1 :
+ * la synchronisation enverra la ligne et « la plus récente gagne ».
+ * Les suppressions sont douces (deleted = 1) pour se propager aux autres appareils.
+ */
+
 interface NoteRow {
-  id: number;
+  id: string;
+  universe_id: string;
   expression: string;
   translation: string;
+  pronunciation: string;
   expression_key: string;
   comment: string;
   category: string;
   category_auto: number;
   is_favorite: number;
+  examples: string;
+  tags: string;
+  collection_ids: string;
   created_at: number;
   updated_at: number;
 }
 
 export interface CardRow {
-  id: number;
-  note_id: number;
+  id: string;
+  note_id: string;
   direction: Direction;
   state: number;
   due: number;
@@ -34,10 +45,20 @@ export interface CardRow {
   last_review: number | null;
 }
 
+export function parseList(json: unknown): string[] {
+  if (typeof json !== 'string') return [];
+  try {
+    const v = JSON.parse(json);
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
 export function mapCard(r: CardRow): CardRecord {
   return {
-    id: Number(r.id),
-    noteId: Number(r.note_id),
+    id: r.id,
+    noteId: r.note_id,
     direction: r.direction,
     state: Number(r.state),
     due: Number(r.due),
@@ -52,162 +73,165 @@ export function mapCard(r: CardRow): CardRecord {
   };
 }
 
-/** Charge toute la bibliothèque en 5 requêtes (assemblage en mémoire, très rapide jusqu'à des dizaines de milliers de notes). */
-export async function loadNotes(db: Queryable): Promise<Note[]> {
-  const [rows, examples, tags, colls, cards] = await Promise.all([
-    db.select<NoteRow>('SELECT * FROM notes ORDER BY created_at DESC, id DESC'),
-    db.select<{ note_id: number; sentence: string }>('SELECT note_id, sentence FROM examples ORDER BY note_id, position, id'),
-    db.select<{ note_id: number; name: string }>(
-      'SELECT nt.note_id, t.name FROM note_tags nt JOIN tags t ON t.id = nt.tag_id ORDER BY t.name COLLATE NOCASE',
-    ),
-    db.select<{ note_id: number; collection_id: number }>('SELECT note_id, collection_id FROM collection_notes'),
-    db.select<CardRow>('SELECT * FROM cards'),
-  ]);
+function mapNote(r: NoteRow): Note {
+  return {
+    id: r.id,
+    universeId: r.universe_id,
+    expression: r.expression,
+    translation: r.translation,
+    pronunciation: r.pronunciation ?? '',
+    expressionKey: r.expression_key,
+    comment: r.comment,
+    category: r.category,
+    categoryAuto: !!Number(r.category_auto),
+    isFavorite: !!Number(r.is_favorite),
+    createdAt: Number(r.created_at),
+    updatedAt: Number(r.updated_at),
+    examples: parseList(r.examples),
+    tags: parseList(r.tags),
+    collectionIds: parseList(r.collection_ids),
+    cards: {},
+  };
+}
 
-  const byId = new Map<number, Note>();
+/** Charge toutes les notes non supprimées (tous univers), avec leurs fiches. */
+export async function loadNotes(db: Queryable): Promise<Note[]> {
+  const rows = await db.select<NoteRow>('SELECT * FROM notes WHERE deleted = 0 ORDER BY created_at DESC, id DESC');
+  const cards = await db.select<CardRow>('SELECT * FROM cards WHERE deleted = 0');
+  const byId = new Map<string, Note>();
   const notes = rows.map((r) => {
-    const n: Note = {
-      id: Number(r.id),
-      expression: r.expression,
-      translation: r.translation,
-      expressionKey: r.expression_key,
-      comment: r.comment,
-      category: r.category,
-      categoryAuto: !!r.category_auto,
-      isFavorite: !!r.is_favorite,
-      createdAt: Number(r.created_at),
-      updatedAt: Number(r.updated_at),
-      examples: [],
-      tags: [],
-      collectionIds: [],
-      cards: {},
-    };
+    const n = mapNote(r);
     byId.set(n.id, n);
     return n;
   });
-  for (const e of examples) byId.get(Number(e.note_id))?.examples.push(e.sentence);
-  for (const t of tags) byId.get(Number(t.note_id))?.tags.push(t.name);
-  for (const c of colls) byId.get(Number(c.note_id))?.collectionIds.push(Number(c.collection_id));
   for (const c of cards) {
     const card = mapCard(c);
     const note = byId.get(card.noteId);
-    if (note) note.cards[card.direction] = card;
+    // En cas de doublon (synchronisation concurrente), la fiche la plus révisée l'emporte.
+    if (note && (!note.cards[card.direction] || card.reps > note.cards[card.direction]!.reps)) note.cards[card.direction] = card;
   }
   return notes;
 }
 
-function resolveCategory(v: ValidatedNote): { category: string; auto: boolean } {
-  return v.category ? { category: v.category, auto: false } : { category: categorize(v.expression), auto: true };
+function resolveCategory(v: ValidatedNote, language: string): { category: string; auto: boolean } {
+  return v.category ? { category: v.category, auto: false } : { category: categorize(v.expression, language), auto: true };
 }
 
-async function setExamples(tx: Queryable, noteId: number, examples: string[]) {
-  await tx.execute('DELETE FROM examples WHERE note_id = ?', [noteId]);
-  for (let i = 0; i < examples.length; i++) {
-    await tx.execute('INSERT INTO examples (note_id, sentence, position) VALUES (?, ?, ?)', [noteId, examples[i], i]);
-  }
-}
-
-async function setTags(tx: Queryable, noteId: number, tags: string[]) {
-  await tx.execute('DELETE FROM note_tags WHERE note_id = ?', [noteId]);
-  for (const name of tags) {
-    await tx.execute('INSERT OR IGNORE INTO tags (name) VALUES (?)', [name]);
-    await tx.execute('INSERT OR IGNORE INTO note_tags (note_id, tag_id) SELECT ?, id FROM tags WHERE name = ?', [noteId, name]);
-  }
-}
-
-async function setCollections(tx: Queryable, noteId: number, collectionIds: number[], now: number) {
-  const placeholders = collectionIds.map(() => '?').join(',');
-  await tx.execute(
-    collectionIds.length
-      ? `DELETE FROM collection_notes WHERE note_id = ? AND collection_id NOT IN (${placeholders})`
-      : 'DELETE FROM collection_notes WHERE note_id = ?',
-    [noteId, ...collectionIds],
-  );
-  for (const cid of collectionIds) {
-    await tx.execute('INSERT OR IGNORE INTO collection_notes (collection_id, note_id, added_at) VALUES (?, ?, ?)', [cid, noteId, now]);
-  }
-}
-
-export async function deleteOrphanTags(tx: Queryable) {
-  await tx.execute('DELETE FROM tags WHERE id NOT IN (SELECT DISTINCT tag_id FROM note_tags)');
+export interface NoteTarget {
+  universeId: string;
+  language: string;
 }
 
 /** Insère une note validée et ses deux fiches de mémorisation (dans une transaction existante). */
-export async function insertNote(tx: Queryable, v: ValidatedNote, now: number, createdAt = now): Promise<number> {
-  const { category, auto } = resolveCategory(v);
-  const res = await tx.execute(
-    `INSERT INTO notes (expression, translation, expression_key, comment, category, category_auto, is_favorite, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [v.expression, v.translation, expressionKey(v.expression), v.comment, category, auto ? 1 : 0, v.isFavorite ? 1 : 0, createdAt, now],
+export async function insertNote(tx: Queryable, v: ValidatedNote, target: NoteTarget, now: number, createdAt = now): Promise<string> {
+  const { category, auto } = resolveCategory(v, target.language);
+  const id = newId();
+  await tx.execute(
+    `INSERT INTO notes (id, universe_id, expression, translation, pronunciation, expression_key, comment, category, category_auto,
+       is_favorite, examples, tags, collection_ids, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      id,
+      target.universeId,
+      v.expression,
+      v.translation,
+      v.pronunciation,
+      expressionKey(v.expression, target.language),
+      v.comment,
+      category,
+      auto ? 1 : 0,
+      v.isFavorite ? 1 : 0,
+      JSON.stringify(v.examples),
+      JSON.stringify(v.tags),
+      JSON.stringify(v.collectionIds),
+      createdAt,
+      now,
+    ],
   );
-  const id = res.lastInsertId;
   for (const direction of DIRECTIONS) {
-    await tx.execute('INSERT INTO cards (note_id, direction, state, due) VALUES (?, ?, 0, ?)', [id, direction, createdAt]);
+    await tx.execute('INSERT INTO cards (id, note_id, direction, state, due, updated_at) VALUES (?, ?, ?, 0, ?, ?)', [
+      newId(),
+      id,
+      direction,
+      createdAt,
+      now,
+    ]);
   }
-  await setExamples(tx, id, v.examples);
-  await setTags(tx, id, v.tags);
-  await setCollections(tx, id, v.collectionIds, now);
   return id;
 }
 
-export async function createNote(db: Database, input: NoteInput, now = Date.now()): Promise<number> {
+export async function createNote(db: Database, input: NoteInput, target: NoteTarget, now = Date.now()): Promise<string> {
   const v = validateNote(input);
-  return db.transaction((tx) => insertNote(tx, v, now));
+  return db.transaction((tx) => insertNote(tx, v, target, now));
 }
 
 /**
  * Met à jour une note. La planification des révisions est conservée :
  * corriger une faute ne remet pas à zéro l'apprentissage.
  */
-export async function updateNote(db: Database, id: number, input: NoteInput, now = Date.now()): Promise<void> {
+export async function updateNote(db: Database, id: string, input: NoteInput, language: string, now = Date.now()): Promise<void> {
   const v = validateNote(input);
-  await db.transaction(async (tx) => {
-    const { category, auto } = resolveCategory(v);
-    const res = await tx.execute(
-      `UPDATE notes SET expression = ?, translation = ?, expression_key = ?, comment = ?, category = ?,
-         category_auto = ?, is_favorite = ?, updated_at = ? WHERE id = ?`,
-      [v.expression, v.translation, expressionKey(v.expression), v.comment, category, auto ? 1 : 0, v.isFavorite ? 1 : 0, now, id],
-    );
-    if (res.rowsAffected === 0) throw new Error('Cette note n’existe plus.');
-    await setExamples(tx, id, v.examples);
-    await setTags(tx, id, v.tags);
-    await setCollections(tx, id, v.collectionIds, now);
-    await deleteOrphanTags(tx);
-  });
+  const { category, auto } = resolveCategory(v, language);
+  const res = await db.execute(
+    `UPDATE notes SET expression = ?, translation = ?, pronunciation = ?, expression_key = ?, comment = ?, category = ?,
+       category_auto = ?, is_favorite = ?, examples = ?, tags = ?, collection_ids = ?, updated_at = ?, dirty = 1
+     WHERE id = ? AND deleted = 0`,
+    [
+      v.expression,
+      v.translation,
+      v.pronunciation,
+      expressionKey(v.expression, language),
+      v.comment,
+      category,
+      auto ? 1 : 0,
+      v.isFavorite ? 1 : 0,
+      JSON.stringify(v.examples),
+      JSON.stringify(v.tags),
+      JSON.stringify(v.collectionIds),
+      now,
+      id,
+    ],
+  );
+  if (res.rowsAffected === 0) throw new Error('Cette note n’existe plus.');
 }
 
-export async function deleteNotes(db: Database, ids: number[]): Promise<void> {
+/** Suppression douce de notes et de leurs fiches. */
+export async function softDeleteNotes(tx: Queryable, ids: string[], now: number): Promise<void> {
+  for (const id of ids) {
+    await tx.execute('UPDATE notes SET deleted = 1, updated_at = ?, dirty = 1 WHERE id = ?', [now, id]);
+    await tx.execute('UPDATE cards SET deleted = 1, updated_at = ?, dirty = 1 WHERE note_id = ?', [now, id]);
+  }
+}
+
+export async function deleteNotes(db: Database, ids: string[], now = Date.now()): Promise<void> {
   if (!ids.length) return;
-  await db.transaction(async (tx) => {
-    for (const id of ids) await tx.execute('DELETE FROM notes WHERE id = ?', [id]);
-    await deleteOrphanTags(tx);
-  });
+  await db.transaction((tx) => softDeleteNotes(tx, ids, now));
 }
 
-export async function setFavorite(db: Database, id: number, favorite: boolean): Promise<void> {
-  await db.execute('UPDATE notes SET is_favorite = ? WHERE id = ?', [favorite ? 1 : 0, id]);
+export async function setFavorite(db: Database, id: string, favorite: boolean, now = Date.now()): Promise<void> {
+  await db.execute('UPDATE notes SET is_favorite = ?, updated_at = ?, dirty = 1 WHERE id = ?', [favorite ? 1 : 0, now, id]);
 }
 
-/** Notes existantes ayant la même clé normalisée (doublons). */
-export function findDuplicates(notes: Note[], expression: string, excludeId?: number): Note[] {
-  const key = expressionKey(expression);
+/** Notes existantes ayant la même clé normalisée (doublons), dans la liste fournie (un univers). */
+export function findDuplicates(notes: Note[], expression: string, language: string, excludeId?: string): Note[] {
+  const key = expressionKey(expression, language);
   if (!key) return [];
   return notes.filter((n) => n.expressionKey === key && n.id !== excludeId);
 }
 
-export async function renameTag(db: Database, from: string, to: string): Promise<void> {
-  const target = to.trim();
-  if (!target) throw new Error('Nom de tag vide.');
-  await db.transaction(async (tx) => {
-    await tx.execute('INSERT OR IGNORE INTO tags (name) VALUES (?)', [target]);
-    const params: SqlValue[] = [target, from];
-    await tx.execute(
-      `INSERT OR IGNORE INTO note_tags (note_id, tag_id)
-       SELECT nt.note_id, (SELECT id FROM tags WHERE name = ?) FROM note_tags nt JOIN tags t ON t.id = nt.tag_id WHERE t.name = ?`,
-      params,
-    );
-    if (target.toLowerCase() !== from.toLowerCase()) await tx.execute('DELETE FROM tags WHERE name = ?', [from]);
-    else await tx.execute('UPDATE tags SET name = ? WHERE name = ?', [target, from]);
-    await deleteOrphanTags(tx);
-  });
+/** Modifie la liste des collections de plusieurs notes. */
+export async function updateCollectionIds(
+  tx: Queryable,
+  noteIds: string[],
+  change: (ids: string[]) => string[],
+  now: number,
+): Promise<void> {
+  for (const id of noteIds) {
+    const rows = await tx.select<{ collection_ids: string }>('SELECT collection_ids FROM notes WHERE id = ?', [id]);
+    if (!rows.length) continue;
+    const before = parseList(rows[0].collection_ids);
+    const after = [...new Set(change(before))];
+    if (after.length === before.length && after.every((x, i) => x === before[i])) continue;
+    await tx.execute('UPDATE notes SET collection_ids = ?, updated_at = ?, dirty = 1 WHERE id = ?', [JSON.stringify(after), now, id]);
+  }
 }

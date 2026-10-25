@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useApp } from '@/app/store';
+import { directionShort } from '@/core/domain/types';
 import { formatDate } from '@/core/domain/dates';
 import { computeStats, type Stats } from '@/core/repo/statsRepo';
 import { EmptyState } from '@/ui/components/ui';
@@ -14,16 +15,18 @@ export function StatsPage() {
   const settings = useApp((s) => s.settings);
   const scheduler = useApp((s) => s.scheduler);
   const revision = useApp((s) => s.revision);
+  const universe = useApp((s) => s.universe);
   const { showNote } = useApp.getState();
   const [stats, setStats] = useState<Stats | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!db) return;
-    computeStats(db, notes, settings, scheduler)
+    if (!universe) return;
+    computeStats(db, notes, settings, scheduler, universe.id)
       .then(setStats)
       .catch((e) => setError(e instanceof Error ? e.message : String(e)));
-  }, [db, notes, settings, scheduler, revision]);
+  }, [db, notes, settings, scheduler, revision, universe]);
 
   if (error) return <div className="page"><EmptyState title="Statistiques indisponibles">{error}</EmptyState></div>;
   if (!stats) return <div className="page" />;
@@ -104,9 +107,9 @@ export function StatsPage() {
               <dd>{stats.mastery.mastered}</dd>
               {settings.directions === 'both' && (
                 <>
-                  <dt>Maîtrisées FR → EN</dt>
+                  <dt>Maîtrisées {directionShort('fr_en', universe?.language)}</dt>
                   <dd>{stats.masteredByDirection.fr_en}</dd>
-                  <dt>Maîtrisées EN → FR</dt>
+                  <dt>Maîtrisées {directionShort('en_fr', universe?.language)}</dt>
                   <dd>{stats.masteredByDirection.en_fr}</dd>
                 </>
               )}

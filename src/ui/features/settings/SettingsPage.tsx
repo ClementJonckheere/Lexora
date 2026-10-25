@@ -6,7 +6,9 @@ import type { DirectionMode, Settings } from '@/core/domain/settings';
 import { getAppInfo, type AppInfo } from '@/core/platform/files';
 import { isTauri } from '@/core/platform/env';
 import { loadVoices, speak, speechSupported } from '@/core/platform/speech';
+import { languageInfo } from '@/core/domain/languages';
 import { Button, Switch } from '@/ui/components/ui';
+import { AccountSection } from '@/ui/features/account/AccountSection';
 
 function Setting({ title, desc, children }: { title: string; desc?: ReactNode; children: ReactNode }) {
   return (
@@ -50,11 +52,16 @@ export function SettingsPage() {
   const db = useApp((s) => s.db);
   const [info, setInfo] = useState<AppInfo | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const universe = useApp((s) => s.universe);
+  const language = universe?.language ?? 'en';
+  const lang = languageInfo(language);
 
   useEffect(() => {
     getAppInfo().then(setInfo).catch(() => setInfo(null));
-    loadVoices().then(setVoices);
   }, []);
+  useEffect(() => {
+    loadVoices(language).then(setVoices);
+  }, [language]);
 
   const update = (patch: Partial<Settings>) => attempt(() => useApp.getState().updateSettings(patch), 'Réglage enregistré');
 
@@ -68,6 +75,7 @@ export function SettingsPage() {
       </div>
 
       <div className="stack">
+        <AccountSection />
         <section className="card settings-section">
           <div className="card-header">
             <h2 className="card-title">Mémorisation</h2>
@@ -75,11 +83,11 @@ export function SettingsPage() {
           <Setting title="Nouveaux mots par jour" desc="Plafond de mots introduits chaque jour en révision. Les autres attendent leur tour.">
             <NumberInput value={settings.newPerDay} min={0} max={200} onCommit={(v) => update({ newPerDay: Math.round(v) })} />
           </Setting>
-          <Setting title="Directions révisées" desc="Chaque direction est suivie séparément. FR → EN entraîne la production orale.">
+          <Setting title="Directions révisées" desc="Chaque direction est suivie séparément. Français → langue entraîne la production orale.">
             <select className="select" value={settings.directions} onChange={(e) => update({ directions: e.target.value as DirectionMode })}>
               <option value="both">Les deux</option>
-              <option value="fr_en">FR → EN uniquement</option>
-              <option value="en_fr">EN → FR uniquement</option>
+              <option value="fr_en">Français → langue uniquement</option>
+              <option value="en_fr">Langue → français uniquement</option>
             </select>
           </Setting>
           <Setting
@@ -120,9 +128,20 @@ export function SettingsPage() {
           </div>
           {speechSupported() ? (
             <>
-              <Setting title="Voix anglaise" desc="Voix installées sur votre système (fonctionnent hors ligne).">
+              <Setting
+                title={`Voix · ${lang.name}`}
+                desc={
+                  voices.length
+                    ? 'Voix installées sur cet appareil (fonctionnent hors ligne). Réglage propre à chaque langue.'
+                    : `Aucune voix ${lang.name.toLowerCase()} installée. Windows : Paramètres → Heure et langue → Voix → Ajouter des voix.`
+                }
+              >
                 <div className="row">
-                  <select className="select" value={settings.ttsVoice} onChange={(e) => update({ ttsVoice: e.target.value })}>
+                  <select
+                    className="select"
+                    value={settings.ttsVoices[language] ?? ''}
+                    onChange={(e) => update({ ttsVoices: { ...settings.ttsVoices, [language]: e.target.value } })}
+                  >
                     <option value="">Automatique</option>
                     {voices.map((v) => (
                       <option key={v.voiceURI} value={v.voiceURI}>
@@ -130,7 +149,7 @@ export function SettingsPage() {
                       </option>
                     ))}
                   </select>
-                  <Button icon variant="ghost" title="Tester" onClick={() => speak('We need to tackle this issue.', { voice: settings.ttsVoice, rate: settings.ttsRate })}>
+                  <Button icon variant="ghost" title="Tester" onClick={() => speak(lang.placeholder.example, { language, voice: settings.ttsVoices[language], rate: settings.ttsRate })}>
                     <Volume2 size={16} />
                   </Button>
                 </div>
@@ -169,12 +188,18 @@ export function SettingsPage() {
           <div className="card-header">
             <h2 className="card-title">Données</h2>
           </div>
-          <Setting title="Importer" desc="CSV (Excel, Anki, Quizlet…) ou JSON. Les doublons sont ignorés automatiquement.">
+          <Setting
+            title={`Importer dans « ${universe?.name ?? ''} »`}
+            desc="CSV (Excel, Anki, Quizlet…) ou JSON. Les doublons sont ignorés automatiquement."
+          >
             <Button onClick={importFromFile}>
               <FileUp size={15} /> Importer
             </Button>
           </Setting>
-          <Setting title="Exporter le vocabulaire" desc={`${notes.length} expressions, avec exemples, tags et collections.`}>
+          <Setting
+            title={`Exporter « ${universe?.name ?? ''} »`}
+            desc={`${notes.length} expressions, avec exemples, tags et collections.`}
+          >
             <div className="row">
               <Button onClick={exportToCsv}>
                 <Download size={15} /> CSV
@@ -184,12 +209,18 @@ export function SettingsPage() {
               </Button>
             </div>
           </Setting>
-          <Setting title="Sauvegarde complète" desc="Fichier unique : notes, fiches de mémorisation, historique des révisions et réglages.">
+          <Setting
+            title="Sauvegarde complète"
+            desc="Fichier unique, tous univers : notes, fiches de mémorisation, historique des révisions et réglages."
+          >
             <Button variant="primary" onClick={backupToFile}>
               <HardDriveDownload size={15} /> Sauvegarder
             </Button>
           </Setting>
-          <Setting title="Restaurer une sauvegarde" desc="Remplace toutes les données actuelles (une copie de sécurité est faite avant dans l'application).">
+          <Setting
+            title="Restaurer une sauvegarde"
+            desc="Remplace toutes les données (tous univers) par celles de la sauvegarde, y compris sur vos autres appareils synchronisés."
+          >
             <Button onClick={restoreFromFile}>
               <RotateCcw size={15} /> Restaurer
             </Button>

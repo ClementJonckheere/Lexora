@@ -7,7 +7,7 @@ import { Kbd, MasteryBadge, Modal } from '@/ui/components/ui';
 
 const MAX = 40;
 
-/** Recherche instantanée globale (Ctrl+K) : anglais, français, exemples, tags. */
+/** Recherche instantanée (Ctrl+K) dans l'univers courant : expression, traduction, exemples, tags. */
 export function SearchPalette() {
   const open = useApp((s) => s.searchOpen);
   if (!open) return null;
@@ -17,6 +17,7 @@ export function SearchPalette() {
 function Palette() {
   const notes = useApp((s) => s.notes);
   const settings = useApp((s) => s.settings);
+  const universeName = useApp((s) => s.universe?.name ?? '');
   const { setSearchOpen, showNote, openEditor } = useApp.getState();
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
@@ -62,7 +63,7 @@ function Palette() {
         <input
           ref={inputRef}
           value={query}
-          placeholder="Rechercher une expression, en anglais ou en français…"
+          placeholder={`Rechercher dans « ${universeName} »…`}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'ArrowDown') {

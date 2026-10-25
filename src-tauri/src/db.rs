@@ -158,27 +158,6 @@ impl AppDb {
             }
         }
     }
-
-    /// Restaure une sauvegarde .db : une copie de sécurité de l'état actuel est faite avant.
-    pub fn restore_from(&self, source: &Path) -> Result<(), String> {
-        let src = Connection::open_with_flags(source, OpenFlags::SQLITE_OPEN_READ_ONLY)
-            .map_err(|e| format!("Fichier illisible : {e}"))?;
-        let ok: i64 = src
-            .query_row("SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name IN ('notes', 'cards')", [], |r| r.get(0))
-            .map_err(|_| "Ce fichier n'est pas une base SQLite valide.".to_string())?;
-        if ok != 2 {
-            return Err("Ce fichier n'est pas une sauvegarde Lexora.".into());
-        }
-        self.backup_to_dir()?;
-        let mut conn = self.lock()?;
-        let backup = rusqlite::backup::Backup::new(&src, &mut conn).map_err(|e| e.to_string())?;
-        backup
-            .run_to_completion(256, Duration::from_millis(0), None)
-            .map_err(|e| format!("Restauration impossible : {e}"))?;
-        drop(backup);
-        configure(&conn).map_err(|e| e.to_string())?;
-        Ok(())
-    }
 }
 
 #[cfg(test)]
@@ -222,20 +201,15 @@ mod tests {
     }
 
     #[test]
-    fn sauvegarde_et_restauration() {
-        let dir = temp_dir("backup");
-        let db = AppDb::open(&dir).unwrap();
+    fn sauvegardes_successives() {
+        let db = AppDb::open(&temp_dir("backup")).unwrap();
         seed(&db);
         db.execute("INSERT INTO notes (expression) VALUES ('kept')", &[]).unwrap();
-        let backup = db.backup_to_dir().unwrap();
-        assert!(backup.exists());
-        db.execute("DELETE FROM notes", &[]).unwrap();
-        db.restore_from(&backup).unwrap();
-        let rows = db.select("SELECT expression FROM notes", &[]).unwrap();
-        assert_eq!(rows[0]["expression"], json!("kept"));
-        // Un fichier quelconque est refusé.
-        let junk = dir.join("junk.db");
-        std::fs::write(&junk, b"not a database").unwrap();
-        assert!(db.restore_from(&junk).is_err());
+        let a = db.backup_to_dir().unwrap();
+        let b = db.backup_to_dir().unwrap();
+        assert!(a.exists() && b.exists() && a != b);
+        let copy = rusqlite::Connection::open(&b).unwrap();
+        let n: i64 = copy.query_row("SELECT count(*) FROM notes", [], |r| r.get(0)).unwrap();
+        assert_eq!(n, 1);
     }
 }

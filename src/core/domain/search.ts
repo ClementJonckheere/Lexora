@@ -6,7 +6,7 @@ export interface NoteFilters {
   query: string;
   category: string;
   tag: string;
-  collectionId: number | null;
+  collectionId: string | null;
   mastery: Mastery | 'not_mastered' | 'all';
   date: 'all' | 'today' | '7d' | '30d' | '90d';
   favoritesOnly: boolean;
@@ -20,14 +20,14 @@ export interface SearchIndex {
   rest: string;
 }
 
-export function buildIndex(notes: Note[]): Map<number, SearchIndex> {
+export function buildIndex(notes: Note[]): Map<string, SearchIndex> {
   return new Map(
     notes.map((n) => [
       n.id,
       {
         en: normalizeSearch(n.expression),
         fr: normalizeSearch(n.translation),
-        rest: normalizeSearch([...n.examples, n.comment, ...n.tags, n.category].join(' ')),
+        rest: normalizeSearch([n.pronunciation, ...n.examples, n.comment, ...n.tags, n.category].join(' ')),
       },
     ]),
   );
@@ -58,7 +58,7 @@ const MASTERY_ORDER: Record<Mastery, number> = { new: 0, learning: 1, mastered: 
 
 export function filterNotes(
   notes: Note[],
-  index: Map<number, SearchIndex>,
+  index: Map<string, SearchIndex>,
   f: NoteFilters,
   masteryOf: (n: Note) => Mastery,
   now = Date.now(),
@@ -70,7 +70,7 @@ export function filterNotes(
         ? startOfLocalDay(now)
         : now - { '7d': 7, '30d': 30, '90d': 90 }[f.date] * DAY;
   const tag = f.tag.toLowerCase();
-  const scores = new Map<number, number>();
+  const scores = new Map<string, number>();
 
   const out = notes.filter((n) => {
     if (f.favoritesOnly && !n.isFavorite) return false;
@@ -94,8 +94,8 @@ export function filterNotes(
   const collator = new Intl.Collator('en', { sensitivity: 'base' });
   const alpha = (a: Note, b: Note) => collator.compare(a.expression.replace(/^to\s+/i, ''), b.expression.replace(/^to\s+/i, ''));
   const sorters: Record<NoteFilters['sort'], (a: Note, b: Note) => number> = {
-    recent: (a, b) => b.createdAt - a.createdAt || b.id - a.id,
-    oldest: (a, b) => a.createdAt - b.createdAt || a.id - b.id,
+    recent: (a, b) => b.createdAt - a.createdAt || b.id.localeCompare(a.id),
+    oldest: (a, b) => a.createdAt - b.createdAt || a.id.localeCompare(b.id),
     az: alpha,
     za: (a, b) => alpha(b, a),
     mastery: (a, b) => MASTERY_ORDER[masteryOf(a)] - MASTERY_ORDER[masteryOf(b)] || alpha(a, b),

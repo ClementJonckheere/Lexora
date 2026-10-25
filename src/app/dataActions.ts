@@ -1,6 +1,7 @@
 import { useApp, errorMessage } from './store';
+import { scheduleSync } from './sync';
 import { dayKey } from '@/core/domain/dates';
-import { pickFile, saveTextFile, backupDbFile, restoreDbFile } from '@/core/platform/files';
+import { pickFile, saveTextFile, backupDbFile } from '@/core/platform/files';
 import { isTauri } from '@/core/platform/env';
 import { loadSettings } from '@/core/repo/settingsRepo';
 import { createScheduler } from '@/core/srs/scheduler';
@@ -19,6 +20,7 @@ import {
 import { confirm } from '@/ui/components/Confirm';
 
 const stamp = () => dayKey(Date.now());
+const slug = () => (useApp.getState().universe?.name ?? 'vocabulaire').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-');
 
 function state() {
   const s = useApp.getState();
@@ -35,8 +37,10 @@ export function describeReport(r: ImportReport): string {
 
 export async function importCandidates(candidates: ImportCandidate[]): Promise<ImportReport> {
   const s = state();
-  const report = await importNotes(s.db, candidates, s.notes);
+  if (!s.universe) throw new Error('Créez d’abord un univers.');
+  const report = await importNotes(s.db, candidates, s.notes, { universeId: s.universe.id, language: s.universe.language });
   await s.refresh();
+  scheduleSync();
   return report;
 }
 
@@ -74,7 +78,7 @@ export async function importFromFile(): Promise<void> {
 export async function exportToCsv(): Promise<void> {
   const s = useApp.getState();
   try {
-    const path = await saveTextFile(`lexora-vocabulaire-${stamp()}.csv`, exportCsv(s.notes, s.collections, s.settings), [
+    const path = await saveTextFile(`lexora-${slug()}-${stamp()}.csv`, exportCsv(s.notes, s.collections, s.settings), [
       { name: 'CSV', extensions: ['csv'] },
     ]);
     if (path) s.toast('success', `${s.notes.length} expressions exportées en CSV`);
@@ -86,7 +90,7 @@ export async function exportToCsv(): Promise<void> {
 export async function exportToJson(): Promise<void> {
   const s = useApp.getState();
   try {
-    const path = await saveTextFile(`lexora-vocabulaire-${stamp()}.json`, JSON.stringify(exportNotesJson(s.notes, s.collections), null, 2), [
+    const path = await saveTextFile(`lexora-${slug()}-${stamp()}.json`, JSON.stringify(exportNotesJson(s.notes, s.collections), null, 2), [
       { name: 'JSON', extensions: ['json'] },
     ]);
     if (path) s.toast('success', `${s.notes.length} expressions exportées en JSON`);
@@ -119,7 +123,7 @@ async function restoreFromBackupData(data: Parameters<typeof restoreBackup>[1]) 
   const count = data.tables.notes?.length ?? 0;
   const ok = await confirm({
     title: 'Restaurer cette sauvegarde ?',
-    message: `Vos données actuelles (${s.notes.length} expressions) seront remplacées par celles de la sauvegarde (${count} expressions, historique compris).`,
+    message: `Toutes vos données actuelles (${s.allNotes.length} expressions, tous univers) seront remplacées par celles de la sauvegarde (${count} expressions, historique compris), y compris sur vos autres appareils synchronisés.`,
     confirmLabel: 'Restaurer',
     danger: true,
   });
@@ -127,28 +131,16 @@ async function restoreFromBackupData(data: Parameters<typeof restoreBackup>[1]) 
   if (isTauri()) await backupDbFile(); // filet de sécurité
   await restoreBackup(s.db, data);
   await reloadAll();
+  scheduleSync();
   s.toast('success', 'Sauvegarde restaurée');
 }
 
-/** Restauration depuis une sauvegarde JSON ou un fichier .db (sauvegardes automatiques). */
+/** Restauration depuis une sauvegarde complète (JSON). */
 export async function restoreFromFile(): Promise<void> {
   const { toast } = useApp.getState();
   try {
-    const file = await pickFile([{ name: 'Sauvegarde Lexora', extensions: isTauri() ? ['json', 'db'] : ['json'] }]);
+    const file = await pickFile([{ name: 'Sauvegarde Lexora', extensions: ['json'] }]);
     if (!file) return;
-    if (/\.db$/i.test(file.name) && file.path) {
-      const ok = await confirm({
-        title: 'Restaurer cette base ?',
-        message: 'Vos données actuelles seront remplacées. Une copie de sécurité est créée automatiquement avant.',
-        confirmLabel: 'Restaurer',
-        danger: true,
-      });
-      if (!ok) return;
-      await restoreDbFile(file.path);
-      await reloadAll();
-      toast('success', 'Base restaurée');
-      return;
-    }
     const data = JSON.parse(await file.text());
     if (!isBackup(data)) throw new Error("Ce fichier n'est pas une sauvegarde complète Lexora (utilisez « Importer » pour un fichier de notes).");
     await restoreFromBackupData(data);

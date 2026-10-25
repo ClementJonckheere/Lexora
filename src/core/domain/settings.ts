@@ -17,13 +17,19 @@ export interface Settings {
   enableFuzz: boolean;
   /** Seuil de stabilité FSRS (jours) pour considérer une fiche « maîtrisée ». */
   masteryThresholdDays: number;
-  ttsVoice: string;
-  ttsRate: number;
   /** Lecture automatique de la prononciation au dévoilement de la réponse. */
   autoSpeak: boolean;
+
+  /* --- Réglages propres à l'appareil (jamais synchronisés) --- */
+  /** Voix choisie par langue (code langue → identifiant de voix du système). */
+  ttsVoices: Record<string, string>;
+  ttsRate: number;
   /** Raccourci système pour ouvrir l'ajout rapide depuis n'importe quelle application ('' = désactivé). */
   globalShortcut: string;
 }
+
+/** Réglages liés au matériel : stockés localement, non synchronisés entre appareils. */
+export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut'] as const satisfies readonly (keyof Settings)[];
 
 export const DEFAULT_SETTINGS: Settings = {
   newPerDay: 10,
@@ -33,9 +39,9 @@ export const DEFAULT_SETTINGS: Settings = {
   dayStartHour: 4,
   enableFuzz: true,
   masteryThresholdDays: 21,
-  ttsVoice: '',
-  ttsRate: 0.95,
   autoSpeak: false,
+  ttsVoices: {},
+  ttsRate: 0.95,
   globalShortcut: 'Alt+Shift+L',
 };
 
@@ -52,7 +58,10 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.dayStartHour = Math.round(clamp(num(raw.dayStartHour, s.dayStartHour), 0, 23));
   s.enableFuzz = typeof raw.enableFuzz === 'boolean' ? raw.enableFuzz : s.enableFuzz;
   s.masteryThresholdDays = Math.round(clamp(num(raw.masteryThresholdDays, s.masteryThresholdDays), 7, 365));
-  s.ttsVoice = typeof raw.ttsVoice === 'string' ? raw.ttsVoice : '';
+  s.ttsVoices =
+    raw.ttsVoices && typeof raw.ttsVoices === 'object'
+      ? Object.fromEntries(Object.entries(raw.ttsVoices as Record<string, unknown>).filter((e): e is [string, string] => typeof e[1] === 'string'))
+      : {};
   s.ttsRate = clamp(num(raw.ttsRate, s.ttsRate), 0.5, 1.5);
   s.autoSpeak = typeof raw.autoSpeak === 'boolean' ? raw.autoSpeak : s.autoSpeak;
   s.globalShortcut = typeof raw.globalShortcut === 'string' ? raw.globalShortcut.trim() : s.globalShortcut;

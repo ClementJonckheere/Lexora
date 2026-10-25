@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { errorMessage, useApp, type SessionConfig } from '@/app/store';
 import { checkCloze, clozeHint, type ClozeVerdict } from '@/core/domain/cloze';
-import { DIRECTION_LABEL } from '@/core/domain/types';
+import { directionLabel } from '@/core/domain/types';
 import { recordPractice } from '@/core/repo/reviewRepo';
 import { buildClozePractice, buildDifficultPractice, buildRandomPractice, type ClozeItem, type PracticeItem } from '@/core/srs/practice';
 import { GRADES, type Grade } from '@/core/srs/scheduler';
@@ -32,7 +32,7 @@ function Banner() {
 
 function usePracticeLog(mode: PracticeConfig['mode']) {
   const db = useApp((s) => s.db)!;
-  return async (noteId: number, rating: Grade) => {
+  return async (noteId: string, rating: Grade) => {
     try {
       await recordPractice(db, noteId, mode, rating);
     } catch (err) {
@@ -68,6 +68,7 @@ function PracticeFinished({ config, tally, startedAt }: { config: PracticeConfig
 
 export function FlashPractice({ config }: { config: PracticeConfig }) {
   const notesById = useApp((s) => s.notesById);
+  const language = useApp((s) => s.universe?.language ?? 'en');
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate, openEditor } = useApp.getState();
   const log = usePracticeLog(config.mode);
@@ -79,7 +80,7 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
       config.mode === 'difficult'
         ? buildDifficultPractice(notes, s.forgetCounts, config.limit, config.direction)
         : buildRandomPractice(notes, s.settings, config.limit, config.direction);
-    return { queue: new SessionQueue<PracticeItem>(items), startedAt: Date.now(), requeued: new Set<number>() };
+    return { queue: new SessionQueue<PracticeItem>(items), startedAt: Date.now(), requeued: new Set<string>() };
   });
   const [, setTick] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -141,7 +142,7 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
           <>
             <span>{MODE_TITLE[config.mode]}</span>
             <span>·</span>
-            <span>{DIRECTION_LABEL[item.direction]}</span>
+            <span>{directionLabel(item.direction, language)}</span>
           </>
         }
       />
@@ -182,12 +183,13 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
 
 export function ClozePractice({ config }: { config: PracticeConfig }) {
   const notesById = useApp((s) => s.notesById);
+  const language = useApp((s) => s.universe?.language ?? 'en');
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate } = useApp.getState();
   const log = usePracticeLog('cloze');
 
   const [session] = useState(() => ({
-    queue: new SessionQueue<ClozeItem>(buildClozePractice(scopedNotes(config), config.limit)),
+    queue: new SessionQueue<ClozeItem>(buildClozePractice(scopedNotes(config), config.limit, useApp.getState().universe?.language ?? 'en')),
     startedAt: Date.now(),
   }));
   const [, setTick] = useState(0);
@@ -207,7 +209,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
   const check = () => {
     if (!item) return;
     if (!answer.trim()) setVerdict('skipped');
-    else setVerdict(checkCloze(item.cloze, answer));
+    else setVerdict(checkCloze(item.cloze, answer, language));
     if (note && useApp.getState().settings.autoSpeak) speakNote(note);
   };
 
@@ -250,7 +252,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
             </>
           )}
         </div>
-        <p className="cloze-sentence" lang="en">
+        <p className="cloze-sentence" lang={language}>
           {item.cloze.parts.map((p, i) =>
             p.blank ? (
               <span key={i} className={`cloze-blank ${verdict ? 'cloze-blank--revealed' : ''}`}>
@@ -271,7 +273,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
             onChange={(e) => setAnswer(e.target.value)}
             autoComplete="off"
             spellCheck={false}
-            lang="en"
+            lang={language}
           />
         ) : (
           <div>

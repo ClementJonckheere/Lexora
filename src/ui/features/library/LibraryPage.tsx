@@ -6,17 +6,17 @@ import { formatDate } from '@/core/domain/dates';
 import { buildIndex, filterNotes } from '@/core/domain/search';
 import { activeDirections } from '@/core/domain/settings';
 import type { Note } from '@/core/domain/types';
-import { DIRECTION_LABEL } from '@/core/domain/types';
+import { directionLabel } from '@/core/domain/types';
 import { directionMastery, noteMastery } from '@/core/srs/queue';
 import { Button, DirectionDots, EmptyState, Kbd, MasteryBadge } from '@/ui/components/ui';
 import { confirm } from '@/ui/components/Confirm';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { NoteDetail } from './NoteDetail';
-import { speak } from '@/core/platform/speech';
+import { speakNote } from '@/ui/speech';
 
 const ROW_HEIGHT = 40;
 
-export function LibraryPage({ collectionId = null, embedded = false }: { collectionId?: number | null; embedded?: boolean }) {
+export function LibraryPage({ collectionId = null, embedded = false }: { collectionId?: string | null; embedded?: boolean }) {
   const notes = useApp((s) => s.notes);
   const settings = useApp((s) => s.settings);
   const collections = useApp((s) => s.collections);
@@ -31,7 +31,7 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
   const filters = embedded ? { ...localFilters, collectionId } : storedFilters;
   const setFilters = (patch: Partial<LibraryFilters>) => (embedded ? setLocalFilters((f) => ({ ...f, ...patch })) : setLibraryFilters(patch));
 
-  const [revealed, setRevealed] = useState<Set<number>>(new Set());
+  const [revealed, setRevealed] = useState<Set<string>>(new Set());
   useEffect(() => setRevealed(new Set()), [hide]);
 
   const searchRef = useRef<HTMLInputElement>(null);
@@ -39,7 +39,7 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
 
   const index = useMemo(() => buildIndex(notes), [notes]);
   const masteryOf = useMemo(() => {
-    const cache = new Map<number, ReturnType<typeof noteMastery>>();
+    const cache = new Map<string, ReturnType<typeof noteMastery>>();
     return (n: Note) => {
       let m = cache.get(n.id);
       if (!m) cache.set(n.id, (m = noteMastery(n, settings)));
@@ -51,6 +51,8 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
   const categories = useMemo(() => [...new Set(notes.map((n) => n.category).filter(Boolean))].sort((a, b) => a.localeCompare(b)), [notes]);
   const tags = useMemo(() => [...new Set(notes.flatMap((n) => n.tags))].sort((a, b) => a.localeCompare(b)), [notes]);
   const dirs = activeDirections(settings);
+  const language = useApp((s) => s.universe?.language ?? 'en');
+  const universeName = useApp((s) => s.universe?.name ?? 'Expression');
 
   // Le détail ne s'affiche que pour une note visible avec les filtres courants.
   const selectedIndex = selectedId != null ? rows.findIndex((r) => r.id === selectedId) : -1;
@@ -105,7 +107,7 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
       f: () => selected && void attempt(() => toggleFavorite(selected.id)),
       delete: () => void removeSelected(),
       h: () => setHideTranslation(!hide),
-      p: () => selected && speak(selected.expression, { voice: settings.ttsVoice, rate: settings.ttsRate }),
+      p: () => selected && speakNote(selected),
       escape: () => selectNote(null),
     },
     { enabled: !overlay },
@@ -129,7 +131,7 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
           <input
             ref={searchRef}
             className="input"
-            placeholder="Rechercher en anglais ou en français…"
+            placeholder={`Rechercher (${universeName.toLowerCase()} ou français)…`}
             value={filters.query}
             onChange={(e) => setFilters({ query: e.target.value })}
             onKeyDown={(e) => {
@@ -199,7 +201,7 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
             className="select select--sm"
             style={{ width: 'auto' }}
             value={filters.collectionId ?? ''}
-            onChange={(e) => setFilters({ collectionId: e.target.value ? Number(e.target.value) : null })}
+            onChange={(e) => setFilters({ collectionId: e.target.value || null })}
             aria-label="Collection"
           >
             <option value="">Toutes collections</option>
@@ -246,7 +248,7 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
         <div className="card table">
           <div className="table-head">
             <span />
-            <span>Anglais</span>
+            <span>{universeName}</span>
             <span>Français</span>
             <span className="col-category">Catégorie</span>
             <span>Maîtrise</span>
@@ -322,7 +324,7 @@ export function LibraryPage({ collectionId = null, embedded = false }: { collect
                         {dirs.length > 1 && (
                           <DirectionDots
                             levels={dirs.map((d) => directionMastery(n.cards[d], settings))}
-                            title={dirs.map((d) => `${DIRECTION_LABEL[d]} : ${directionMastery(n.cards[d], settings)}`).join('\n')}
+                            title={dirs.map((d) => `${directionLabel(d, language)} : ${directionMastery(n.cards[d], settings)}`).join('\n')}
                           />
                         )}
                       </span>

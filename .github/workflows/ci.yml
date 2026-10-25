@@ -40,9 +40,44 @@ jobs:
       - run: npm run build
       - run: cargo test --manifest-path src-tauri/Cargo.toml
 
+  sync-integration:
+    name: Synchronisation (PostgreSQL + PostgREST réels)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGPASSWORD: postgres
+      LEXORA_POSTGREST: http://localhost:3999
+      LEXORA_JWT_SECRET: lexora-ci-secret-lexora-ci-secret-0123456
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Schéma Supabase
+        run: |
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f supabase/test/auth-stub.sql
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f supabase/schema.sql
+          psql -h localhost -U postgres -c "create role authenticator login password 'auth' noinherit; grant authenticated, anon to authenticator;"
+      - name: PostgREST
+        run: |
+          curl -sSL https://github.com/PostgREST/postgrest/releases/download/v12.2.3/postgrest-v12.2.3-linux-static-x64.tar.xz | tar xJ
+          PGRST_DB_URI="postgres://authenticator:auth@localhost:5432/postgres" PGRST_DB_SCHEMAS=public PGRST_DB_ANON_ROLE=anon \
+            PGRST_JWT_SECRET="$LEXORA_JWT_SECRET" PGRST_SERVER_PORT=3999 nohup ./postgrest > postgrest.log 2>&1 &
+          for i in $(seq 1 30); do curl -s localhost:3999/ >/dev/null && break; sleep 1; done
+      - run: npx vitest run src/core/sync/supabase.integration.test.ts
+
   windows:
     name: Installateur Windows
-    needs: test
+    needs: [test, sync-integration]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +90,11 @@ jobs:
         with:
           workspaces: src-tauri
       - run: npm ci
+      # Configuration Supabase (secrets du dépôt) : sans eux, l'application fonctionne sans compte ni synchronisation.
       - run: npm run app:build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
       - name: Publier les installateurs (artefacts)
         uses: actions/upload-artifact@v4
         with:

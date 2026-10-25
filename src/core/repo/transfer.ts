@@ -7,26 +7,17 @@ import { MASTERY_LABEL } from '../domain/types';
 import { validateNote, ValidationError } from '../domain/validation';
 import type { Settings } from '../domain/settings';
 import { noteMastery } from '../srs/queue';
-import { insertNote } from './notesRepo';
+import { insertNote, type NoteTarget } from './notesRepo';
+import { insertCollection } from './collectionsRepo';
 
 /* -------------------------------------------------------------------------- */
-/*  Sauvegarde complète (JSON) : toutes les tables, historique compris.       */
+/*  Sauvegarde complète (JSON) : tous les univers, historique compris.        */
 /* -------------------------------------------------------------------------- */
 
 export const BACKUP_FORMAT = 'lexora-backup';
 
-const TABLES = [
-  'notes',
-  'examples',
-  'tags',
-  'note_tags',
-  'collections',
-  'collection_notes',
-  'cards',
-  'review_logs',
-  'practice_logs',
-  'settings',
-] as const;
+/** Tables synchronisées, dans l'ordre de dépendance. */
+const TABLES = ['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings'] as const;
 
 type Row = Record<string, unknown>;
 
@@ -39,7 +30,10 @@ export interface Backup {
 
 export async function exportBackup(db: Queryable): Promise<Backup> {
   const tables = {} as Backup['tables'];
-  for (const t of TABLES) tables[t] = await db.select<Row>(`SELECT * FROM ${t}`);
+  for (const t of TABLES) {
+    const rows = await db.select<Row>(t === 'settings' ? 'SELECT key, value, updated_at FROM settings' : `SELECT * FROM ${t} WHERE deleted = 0`);
+    tables[t] = rows.map(({ dirty: _d, deleted: _x, ...r }) => r);
+  }
   return { format: BACKUP_FORMAT, schemaVersion: LATEST_VERSION, exportedAt: new Date().toISOString(), tables };
 }
 
@@ -47,21 +41,33 @@ export function isBackup(data: unknown): data is Backup {
   return !!data && typeof data === 'object' && (data as Backup).format === BACKUP_FORMAT && typeof (data as Backup).tables === 'object';
 }
 
-/** Restauration : remplace INTÉGRALEMENT les données par celles de la sauvegarde (transaction unique). */
-export async function restoreBackup(db: Database, backup: Backup): Promise<void> {
+/**
+ * Restauration : l'état de la sauvegarde remplace INTÉGRALEMENT les données actuelles.
+ * Les lignes actuelles sont supprimées (suppression douce, propagée aux autres appareils),
+ * celles de la sauvegarde sont réécrites comme modifications récentes, à synchroniser.
+ */
+export async function restoreBackup(db: Database, backup: Backup, now = Date.now()): Promise<void> {
   if (!isBackup(backup)) throw new Error("Ce fichier n'est pas une sauvegarde Lexora.");
+  if (backup.schemaVersion < 2) {
+    throw new Error('Sauvegarde d’une ancienne version de Lexora : utilisez plutôt « Importer » avec un export CSV.');
+  }
   if (backup.schemaVersion > LATEST_VERSION) {
     throw new Error('Sauvegarde créée par une version plus récente de Lexora : mettez l’application à jour.');
   }
   await db.transaction(async (tx) => {
-    for (const t of [...TABLES].reverse()) await tx.execute(`DELETE FROM ${t}`);
+    for (const t of TABLES) {
+      if (t === 'settings') await tx.execute('DELETE FROM settings');
+      else await tx.execute(`UPDATE ${t} SET deleted = 1, updated_at = ?, dirty = 1 WHERE deleted = 0`, [now]);
+    }
     for (const t of TABLES) {
       for (const row of backup.tables[t] ?? []) {
-        const cols = Object.keys(row);
-        if (!cols.length || cols.some((c) => !/^[a-z_]+$/.test(c))) throw new Error(`Sauvegarde invalide (table ${t}).`);
+        const data: Row = { ...row, updated_at: now + 1, dirty: 1 };
+        if (t !== 'settings') data.deleted = 0;
+        const cols = Object.keys(data);
+        if (cols.some((c) => !/^[a-z_]+$/.test(c))) throw new Error(`Sauvegarde invalide (table ${t}).`);
         await tx.execute(
-          `INSERT INTO ${t} (${cols.join(', ')}) VALUES (${cols.map(() => '?').join(', ')})`,
-          cols.map((c) => row[c] as string | number | null),
+          `INSERT OR REPLACE INTO ${t} (${cols.join(', ')}) VALUES (${cols.map(() => '?').join(', ')})`,
+          cols.map((c) => data[c] as string | number | null),
         );
       }
     }
@@ -84,25 +90,29 @@ export interface ImportReport {
   invalid: { index: number; reason: string }[];
 }
 
+/** Importe dans un univers ; `existing` = notes de cet univers (détection des doublons). */
 export async function importNotes(
   db: Database,
   candidates: ImportCandidate[],
   existing: Note[],
+  target: NoteTarget,
   now = Date.now(),
 ): Promise<ImportReport> {
   const keys = new Set(existing.map((n) => n.expressionKey));
   const report: ImportReport = { imported: 0, duplicates: 0, invalid: [] };
 
   await db.transaction(async (tx) => {
-    const collections = new Map<string, number>(
-      (await tx.select<{ id: number; name: string }>('SELECT id, name FROM collections')).map((c) => [c.name.toLowerCase(), Number(c.id)]),
+    const collections = new Map<string, string>(
+      (
+        await tx.select<{ id: string; name: string }>('SELECT id, name FROM collections WHERE universe_id = ? AND deleted = 0', [target.universeId])
+      ).map((c) => [c.name.toLowerCase(), c.id]),
     );
     const collectionId = async (name: string) => {
       const k = name.trim().toLowerCase();
       if (!k) return null;
       let id = collections.get(k);
       if (id === undefined) {
-        id = (await tx.execute('INSERT INTO collections (name, description, created_at) VALUES (?, ?, ?)', [name.trim(), '', now])).lastInsertId;
+        id = await insertCollection(tx, target.universeId, name, '', now);
         collections.set(k, id);
       }
       return id;
@@ -117,7 +127,7 @@ export async function importNotes(
         report.invalid.push({ index: i, reason: err instanceof ValidationError ? err.message : String(err) });
         continue;
       }
-      const key = expressionKey(v.expression);
+      const key = expressionKey(v.expression, target.language);
       if (keys.has(key)) {
         report.duplicates++;
         continue;
@@ -128,7 +138,7 @@ export async function importNotes(
         if (id !== null) v.collectionIds.push(id);
       }
       const createdAt = c.createdAt && Number.isFinite(c.createdAt) && c.createdAt <= now ? c.createdAt : now;
-      await insertNote(tx, v, now, createdAt);
+      await insertNote(tx, v, target, now, createdAt);
       report.imported++;
     }
   });
@@ -137,11 +147,12 @@ export async function importNotes(
 
 /* ------------------------------------ CSV ----------------------------------- */
 
-const CSV_HEADERS = ['expression', 'traduction', 'exemples', 'note', 'categorie', 'tags', 'collections', 'favori', 'maitrise', 'ajoute_le'];
+const CSV_HEADERS = ['expression', 'traduction', 'prononciation', 'exemples', 'note', 'categorie', 'tags', 'collections', 'favori', 'maitrise', 'ajoute_le'];
 
 const HEADER_ALIASES: Record<string, string[]> = {
   expression: ['expression', 'anglais', 'english', 'en', 'word', 'mot', 'front', 'term'],
   translation: ['traduction', 'francais', 'français', 'french', 'fr', 'translation', 'back', 'definition', 'sens'],
+  pronunciation: ['prononciation', 'pronunciation', 'pinyin', 'reading', 'lecture', 'transcription', 'romanisation'],
   examples: ['exemples', 'exemple', 'examples', 'example', 'sentence', 'phrase'],
   comment: ['note', 'notes', 'comment', 'commentaire', 'remarque'],
   category: ['categorie', 'catégorie', 'category', 'type'],
@@ -161,6 +172,7 @@ export function exportCsv(notes: Note[], collections: Collection[], settings: Se
     rows.push([
       n.expression,
       n.translation,
+      n.pronunciation,
       n.examples.join(MULTI_SEP),
       n.comment,
       n.category,
@@ -199,6 +211,7 @@ export function parseCsvNotes(text: string): ImportCandidate[] {
     return {
       expression: col(r, 'expression', 0) ?? '',
       translation: col(r, 'translation', 1) ?? '',
+      pronunciation: col(r, 'pronunciation') ?? '',
       examples: splitMulti(col(r, 'examples', 2), /\s\|\s|\n/),
       comment: col(r, 'comment') ?? '',
       category: col(r, 'category') ?? '',
@@ -218,6 +231,7 @@ export interface NotesExport {
   notes: {
     expression: string;
     translation: string;
+    pronunciation: string;
     examples: string[];
     comment: string;
     category: string;
@@ -236,6 +250,7 @@ export function exportNotesJson(notes: Note[], collections: Collection[]): Notes
     notes: notes.map((n) => ({
       expression: n.expression,
       translation: n.translation,
+      pronunciation: n.pronunciation,
       examples: n.examples,
       comment: n.comment,
       category: n.category,
@@ -263,6 +278,7 @@ export function parseJsonNotes(data: unknown): ImportCandidate[] {
     return {
       expression: str(o.expression ?? o.english ?? o.word ?? o.en),
       translation: str(o.translation ?? o.french ?? o.fr ?? o.traduction),
+      pronunciation: str(o.pronunciation ?? o.pinyin ?? o.prononciation),
       examples: arr(o.examples ?? o.example ?? o.exemple),
       comment: str(o.comment ?? o.note ?? o.notes),
       category: str(o.category ?? o.categorie),

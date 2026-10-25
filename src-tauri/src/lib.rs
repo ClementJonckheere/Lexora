@@ -6,11 +6,11 @@
 //! (notes, FSRS, statistiques) vit côté TypeScript et est testée.
 
 mod db;
+mod oauth;
 
 use db::{AppDb, ExecResult};
 use serde::Serialize;
 use serde_json::{Map, Value};
-use std::path::PathBuf;
 use tauri::{Manager, State};
 
 #[derive(Serialize)]
@@ -46,10 +46,10 @@ fn backup_now(db: State<'_, AppDb>) -> Result<String, String> {
     db.backup_to_dir().map(|p| p.display().to_string())
 }
 
-/// Remplace le contenu de la base par celui d'un fichier .db (sauvegarde).
+/// Connexion Google : écoute le retour du navigateur sur 127.0.0.1 et renvoie le port.
 #[tauri::command]
-fn restore_db_file(db: State<'_, AppDb>, path: String) -> Result<(), String> {
-    db.restore_from(&PathBuf::from(path))
+fn oauth_start(app: tauri::AppHandle) -> Result<u16, String> {
+    oauth::start(app)
 }
 
 #[tauri::command]
@@ -82,6 +82,7 @@ pub fn run() {
 
     builder
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             let data_dir = app.path().app_data_dir()?;
             let db = AppDb::open(&data_dir).map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
@@ -96,7 +97,7 @@ pub fn run() {
             db_execute,
             app_info,
             backup_now,
-            restore_db_file,
+            oauth_start,
             read_text_file,
             write_text_file
         ])

@@ -129,3 +129,28 @@ describe('dates et réglages', () => {
     expect(s.directions).toBe('both');
   });
 });
+
+describe('univers multilingues', () => {
+  const b = (expr: string, sentence: string, lang: string) =>
+    buildCloze(expr, sentence, lang)
+      ?.parts.map((p) => (p.blank ? '___' : p.text))
+      .join('');
+  it('phrases à trous : espagnol, allemand, russe (formes conjuguées)', () => {
+    expect(b('Echar de menos', 'Echo de menos a mi familia.', 'es')).toBe('___ ___ ___ a mi familia.');
+    expect(b('Bescheid sagen', 'Sag mir bitte Bescheid.', 'de')).toBe('Sag mir bitte ___.');
+    expect(b('Обращать внимание', 'Обрати внимание на этот знак.', 'ru')).toBe('___ ___ на этот знак.');
+  });
+  it('phrases à trous : chinois et japonais (sans espaces)', () => {
+    expect(b('马马虎虎', '我的中文马马虎虎。', 'zh')).toBe('我的中文___。');
+    const c = buildCloze('马马虎虎', '我的中文马马虎虎。', 'zh')!;
+    expect(checkCloze(c, '马马虎虎', 'zh')).toBe('exact');
+    expect(checkCloze(c, '马虎', 'zh')).toBe('wrong');
+  });
+  it('catégorie et doublons selon la langue', () => {
+    expect(categorize('马马虎虎', 'zh')).toBe('Expression');
+    expect(categorize('猫', 'zh')).toBe('Mot');
+    expect(categorize('Echar de menos', 'es')).toBe('Expression');
+    expect(expressionKey('To go', 'es')).toBe('to go');
+    expect(expressionKey('Año', 'es')).not.toBe(expressionKey('ano', 'es'));
+  });
+});
