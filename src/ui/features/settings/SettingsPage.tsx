@@ -5,7 +5,8 @@ import { backupNowToAppFolder, backupToFile, exportToCsv, exportToJson, importFr
 import type { DirectionMode, Settings } from '@/core/domain/settings';
 import { getAppInfo, type AppInfo } from '@/core/platform/files';
 import { isTauri } from '@/core/platform/env';
-import { loadVoices, speak, speechSupported } from '@/core/platform/speech';
+import { loadVoices, speechSupported } from '@/core/platform/speech';
+import { speakText } from '@/ui/speech';
 import { languageInfo } from '@/core/domain/languages';
 import { Button, Switch } from '@/ui/components/ui';
 import { AccountSection } from '@/ui/features/account/AccountSection';
@@ -149,7 +150,7 @@ export function SettingsPage() {
                       </option>
                     ))}
                   </select>
-                  <Button icon variant="ghost" title="Tester" onClick={() => speak(lang.placeholder.example, { language, voice: settings.ttsVoices[language], rate: settings.ttsRate })}>
+                  <Button icon variant="ghost" title="Tester" onClick={() => speakText(lang.placeholder.example)}>
                     <Volume2 size={16} />
                   </Button>
                 </div>
