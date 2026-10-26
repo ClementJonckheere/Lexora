@@ -100,4 +100,5 @@ export interface Collection {
   createdAt: number;
 }
 
-export type PracticeMode = 'cloze' | 'random' | 'difficult';
+/** « listen » (mode écoute) est journalisé comme « random » : le schéma n'a pas à changer. */
+export type PracticeMode = 'cloze' | 'random' | 'difficult' | 'listen';

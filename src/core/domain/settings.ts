@@ -25,6 +25,8 @@ export interface Settings {
   autoTranslate: boolean;
   /** Objectif quotidien : nombre de réponses par jour (toutes langues). */
   dailyGoal: number;
+  /** Prononciation : enregistrement humain (Wiktionnaire) quand il existe, sinon voix de synthèse. */
+  recordedVoice: boolean;
 
   /* --- Réglages propres à l'appareil (jamais synchronisés) --- */
   /** Voix choisie par langue (code langue → identifiant de voix du système). */
@@ -59,6 +61,7 @@ export const DEFAULT_SETTINGS: Settings = {
   typeAnswer: false,
   autoTranslate: true,
   dailyGoal: 20,
+  recordedVoice: true,
   ttsVoices: {},
   ttsRate: 0.95,
   globalShortcut: 'Alt+Shift+L',
@@ -93,6 +96,7 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.typeAnswer = bool(raw.typeAnswer, s.typeAnswer);
   s.autoTranslate = bool(raw.autoTranslate, s.autoTranslate);
   s.dailyGoal = Math.round(clamp(num(raw.dailyGoal, s.dailyGoal), 5, 500));
+  s.recordedVoice = bool(raw.recordedVoice, s.recordedVoice);
   s.clipboardPrefill = bool(raw.clipboardPrefill, s.clipboardPrefill);
   s.closeToTray = bool(raw.closeToTray, s.closeToTray);
   s.reminderEnabled = bool(raw.reminderEnabled, s.reminderEnabled);

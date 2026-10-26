@@ -40,3 +40,17 @@ export function checkAnswer(expected: string, typed: string, language = 'en'): A
   }
   return best;
 }
+
+/**
+ * Mode écoute : on accepte l'expression entendue (dictée) ou son sens en français.
+ * - exact / close : l'expression, comme pour checkAnswer ;
+ * - meaning : la traduction (ou l'une de ses variantes) ;
+ * - wrong : ni l'un ni l'autre.
+ */
+export type ListeningVerdict = AnswerVerdict | 'meaning';
+
+export function checkListening(expression: string, translation: string, typed: string, language = 'en'): ListeningVerdict {
+  const heard = checkAnswer(expression, typed, language);
+  if (heard !== 'wrong') return heard;
+  return translation.trim() && checkAnswer(translation, typed, 'fr') !== 'wrong' ? 'meaning' : 'wrong';
+}

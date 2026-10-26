@@ -69,7 +69,7 @@ export async function recordPractice(db: Database, noteId: string, mode: Practic
   await db.execute('INSERT INTO practice_logs (id, note_id, mode, rating, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', [
     newId(),
     noteId,
-    mode,
+    mode === 'listen' ? 'random' : mode,
     rating,
     now,
     now,

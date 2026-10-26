@@ -3,7 +3,7 @@ import { useApp } from '@/app/store';
 import { Button, EmptyState } from '@/ui/components/ui';
 import { CheckCircle2 } from 'lucide-react';
 import { ScheduledSession } from './ScheduledSession';
-import { ClozePractice, FlashPractice } from './PracticeSession';
+import { ClozePractice, FlashPractice, ListenPractice } from './PracticeSession';
 import { buildQueue } from '@/core/srs/queue';
 import { scopeIds } from '@/core/srs/scope';
 import { settingsFor } from '@/core/domain/settings';
@@ -44,5 +44,6 @@ export function SessionPage({ config }: { config: SessionConfig }) {
   }
   if (config.kind === 'scheduled') return <ScheduledSession config={config} />;
   if (config.mode === 'cloze') return <ClozePractice config={config} />;
+  if (config.mode === 'listen') return <ListenPractice config={config} />;
   return <FlashPractice config={config} />;
 }

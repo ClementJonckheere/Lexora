@@ -4,6 +4,7 @@ import { errorMessage, useApp } from '@/app/store';
 import { translate, type TranslationResult } from '@/core/translate/translate';
 import { findExamples, type ExampleSentence } from '@/core/translate/examples';
 import { sharedDeepl } from '@/core/translate/shared';
+import { lookupDefinitions, type Sense } from '@/core/dictionary/wiktionary';
 import { Kbd } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 
@@ -38,6 +39,7 @@ export function TranslateAssist({
   const [found, setFound] = useState<ExampleSentence[]>([]);
   const [shown, setShown] = useState(-1);
   const [errors, setErrors] = useState<string[]>([]);
+  const [senses, setSenses] = useState<Sense[]>([]);
   const inserted = useRef<string | null>(null);
   const ctrl = useRef<AbortController | null>(null);
   const fields = useRef({ translation, examples });
@@ -50,6 +52,7 @@ export function TranslateAssist({
     setFound([]);
     setShown(-1);
     setErrors([]);
+    setSenses([]);
   }, [expression]);
 
   const run = async () => {
@@ -63,7 +66,13 @@ export function TranslateAssist({
     const wantExample = fields.current.examples.every((e) => !e.trim());
     // Phrase déjà présente (livre, exemple saisi) : contexte pour choisir le bon sens.
     const context = fields.current.examples.find((e) => e.trim()) ?? '';
-    const [t, ex] = await Promise.allSettled([translate(q, language, 'fr', { signal: c.signal, deeplKey, shared: sharedDeepl, context }), findExamples(q, language, c.signal)]);
+    const [t, ex, dict] = await Promise.allSettled([
+      translate(q, language, 'fr', { signal: c.signal, deeplKey, shared: sharedDeepl, context }),
+      findExamples(q, language, c.signal),
+      lookupDefinitions(q, language, c.signal),
+    ]);
+    // Dictionnaire : complément facultatif, sans message d'erreur s'il manque.
+    if (dict.status === 'fulfilled') setSenses(dict.value);
     if (c.signal.aborted) return;
     const errs: string[] = [];
     if (t.status === 'fulfilled') {
@@ -133,6 +142,15 @@ export function TranslateAssist({
           </span>
         )}
       </div>
+      {senses.length > 0 && (
+        <div className="assist-senses small">
+          {senses.map((sense) => (
+            <div key={sense.pos}>
+              <span className="chip">{sense.pos}</span> <span className="text-2">{sense.definitions.join(' · ')}</span>
+            </div>
+          ))}
+        </div>
+      )}
       {current && (
         <div className="assist-example small">
           <span className="muted">Exemple (Tatoeba)</span>
@@ -173,9 +191,10 @@ export function TranslateAssist({
           {e}
         </div>
       ))}
-      {(result || found.length > 0) && (
+      {(result || found.length > 0 || senses.length > 0) && (
         <div className="assist-credit">
-          Traduction : {result?.provider === 'mymemory' ? 'MyMemory' : 'DeepL (avec le contexte de la phrase)'} · Exemples : Tatoeba (CC BY 2.0 FR) · tout reste modifiable
+          Traduction : {result?.provider === 'mymemory' ? 'MyMemory' : 'DeepL (avec le contexte de la phrase)'} · Exemples : Tatoeba (CC BY 2.0 FR)
+          {senses.length > 0 && ' · Définitions : Wiktionnaire (CC BY-SA)'} · tout reste modifiable
         </div>
       )}
     </div>

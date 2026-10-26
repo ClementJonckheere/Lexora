@@ -161,6 +161,12 @@ export function SettingsPage() {
           <div className="card-header">
             <h2 className="card-title">Prononciation & raccourcis</h2>
           </div>
+          <Setting
+            title="Prononciation enregistrée"
+            desc="Quand elle existe, la prononciation d'une vraie personne (Wiktionnaire, Wikimedia Commons, Lingua Libre) remplace la voix de synthèse pour les mots et expressions courtes. Nécessite Internet ; sinon, voix de synthèse."
+          >
+            <Switch label="Prononciation enregistrée" checked={settings.recordedVoice} onChange={(v) => update({ recordedVoice: v })} />
+          </Setting>
           {speechSupported() ? (
             <>
               <Setting

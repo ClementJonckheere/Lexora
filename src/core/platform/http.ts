@@ -15,6 +15,7 @@ const PROXIES: [string, string][] = [
   ['https://tatoeba.org/', '/proxy/tatoeba/'],
   ['https://api-free.deepl.com/', '/proxy/deepl-free/'],
   ['https://api.deepl.com/', '/proxy/deepl/'],
+  ['https://en.wiktionary.org/', '/proxy/wiktionary/'],
 ];
 
 export class HttpError extends Error {

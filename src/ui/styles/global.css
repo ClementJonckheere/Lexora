@@ -2908,3 +2908,19 @@ p {
   text-decoration-color: rgb(165 180 252 / 0.6);
   background: rgb(165 180 252 / 0.08);
 }
+.assist-senses {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.assist-senses .chip {
+  font-size: 11px;
+  padding: 0 7px;
+}
+
+/* Mode écoute */
+.listen-controls { display: flex; gap: 10px; justify-content: center; margin: 18px 0 22px; }
+.listen-answer { font-size: 1.6rem; font-weight: 600; margin: 14px 0 4px; }

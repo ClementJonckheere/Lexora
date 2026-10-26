@@ -59,6 +59,9 @@
         },
         {
           "url": "https://api.deepl.com/*"
+        },
+        {
+          "url": "https://en.wiktionary.org/*"
         }
       ]
     }

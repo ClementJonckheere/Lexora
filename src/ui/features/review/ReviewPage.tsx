@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { CheckCircle2, ChevronDown, ChevronRight, Flame, PencilLine, Shuffle, SlidersHorizontal, Zap } from 'lucide-react';
+import { CheckCircle2, ChevronDown, ChevronRight, Ear, Flame, PencilLine, Shuffle, SlidersHorizontal, Zap } from 'lucide-react';
 import { useApp, type SessionConfig } from '@/app/store';
 import { formatDue } from '@/core/domain/dates';
 import { directionShort, type Direction } from '@/core/domain/types';
@@ -256,6 +256,14 @@ export function ReviewPage() {
           count={scoped.length}
           empty="Votre bibliothèque est vide."
           onStart={(limit) => start({ kind: 'practice', mode: 'random', limit, direction: dir, ...scope })}
+        />
+        <ModeCard
+          icon={<Ear size={18} />}
+          title="Écoute"
+          desc="Écoutez l’expression, puis tapez ce que vous entendez ou son sens en français."
+          count={scoped.length}
+          empty="Votre bibliothèque est vide."
+          onStart={(limit) => start({ kind: 'practice', mode: 'listen', limit, ...scope })}
         />
       </div>
 
