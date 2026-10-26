@@ -34,7 +34,19 @@ export function ranksFromList(list: string): FrequencyRanks {
 }
 
 /** Les langues flexionnelles ont plus de formes par mot : on ramène le rang à une échelle comparable. */
-const FORMS_FACTOR: Record<string, number> = { en: 1, nl: 1.2, fr: 1.35, es: 1.35, pt: 1.35, it: 1.35, de: 1.45, ar: 1.8, ko: 2, ru: 2.1 };
+// Valeurs par défaut ; le catalogue fourni contient un facteur mesuré pour chaque langue (formsFactor).
+const FORMS_FACTOR: Record<string, number> = { en: 1, de: 1.6, fr: 1.9, it: 2.2, nl: 2.2, es: 2.4, pt: 2.4, ar: 2.5, ru: 2.6, ko: 3 };
+
+/**
+ * Rang médian (90 % du texte) des 200 livres anglais les plus lus de Project Gutenberg : référence de l'étalonnage.
+ * Pour une autre langue, facteur = rang médian de ses livres les plus lus / cette valeur : un classique « moyen »
+ * reçoit le même niveau dans toutes les langues, malgré des listes de fréquence et des flexions différentes.
+ */
+export const REFERENCE_MEDIAN_RANK = 7000;
+
+export function formsFactor(language: string): number {
+  return FORMS_FACTOR[language] ?? 2;
+}
 
 // Seuils du vocabulaire (rang ajusté couvrant 90 % du texte) calibrés sur des livres de référence en anglais
 // (rang mesuré → niveau) : Alice's Adventures in Wonderland 2 400 → B1, The Tale of Peter Rabbit 3 900 → B1
@@ -94,17 +106,27 @@ function wordsOf(text: string): { words: string[]; sentences: number } {
   return { words, sentences };
 }
 
-export function estimateLevel(text: string, ranks: FrequencyRanks, language: string): LevelEstimate | null {
-  return languageInfo(language).noSpaces ? estimateByCharacters(text, ranks) : estimateByWords(text, ranks, language);
+/** `factor` : facteur de flexion de la langue (sinon valeur par défaut, voir formsFactor). */
+export function estimateLevel(text: string, ranks: FrequencyRanks, language: string, factor?: number): LevelEstimate | null {
+  return languageInfo(language).noSpaces ? estimateByCharacters(text, ranks) : estimateByWords(text, ranks, factor ?? formsFactor(language));
+}
+
+/** Niveau à partir des mesures (rang de vocabulaire, longueur des phrases, taille de l'extrait). */
+export function classifyWords(vocabRank: number, sentenceLength: number, sample: number, factor: number): Level {
+  let index = levelIndex(fromThresholds(vocabRank / factor, WORD_THRESHOLDS));
+  // Phrases très longues : +1 niveau ; très courtes : −1 (jamais au-delà des bornes).
+  if (sentenceLength > 24) index++;
+  else if (sentenceLength < 9) index--;
+  if (sample < SHORT_TEXT_WORDS) index--;
+  return LEVELS[Math.min(LEVELS.length - 1, Math.max(0, index))];
 }
 
 /** En dessous (texte entier), un livre très court : quelques mots rares s'apprennent au fil de la lecture. */
 const SHORT_TEXT_WORDS = 3000;
 
-function estimateByWords(text: string, ranks: FrequencyRanks, language: string): LevelEstimate | null {
-  const { words, sentences } = wordsOf(text);
+function estimateByWords(text: string, ranks: FrequencyRanks, factor: number): LevelEstimate | null {
+  const { words, sentences } = wordsOf(text.normalize('NFC'));
   if (words.length < 300) return null;
-  const factor = FORMS_FACTOR[language] ?? 1.35;
   // Contractions et possessifs (« don't », « captain's ») : rang du mot de base.
   const lookup = (w: string) => ranks.get(w) ?? ranks.get(w.replace(/['’].*$/, ''));
   const known: number[] = [];
@@ -120,17 +142,11 @@ function estimateByWords(text: string, ranks: FrequencyRanks, language: string):
   const vocabRank = percentile(sorted, COVERAGE);
   const sentenceLength = words.length / Math.max(1, sentences);
 
-  let index = levelIndex(fromThresholds(vocabRank / factor, WORD_THRESHOLDS));
-  // Phrases très longues : +1 niveau ; très courtes : −1 (jamais au-delà des bornes).
-  if (sentenceLength > 24) index++;
-  else if (sentenceLength < 9) index--;
-  if (known.length < SHORT_TEXT_WORDS) index--;
-  index = Math.max(0, index);
-  return { level: LEVELS[Math.min(LEVELS.length - 1, index)], vocabRank, sentenceLength: round(sentenceLength), sample: words.length };
+  return { level: classifyWords(vocabRank, sentenceLength, known.length, factor), vocabRank, sentenceLength: round(sentenceLength), sample: known.length };
 }
 
 function estimateByCharacters(text: string, ranks: FrequencyRanks): LevelEstimate | null {
-  const chars = [...text].filter((c) => /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(c));
+  const chars = [...text.normalize('NFC')].filter((c) => /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}]/u.test(c));
   if (chars.length < 500) return null;
   const sorted = chars.map((c) => ranks.get(c) ?? UNKNOWN_RANK).sort((a, b) => a - b);
   const vocabRank = percentile(sorted, 0.95);

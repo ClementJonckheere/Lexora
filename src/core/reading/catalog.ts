@@ -59,6 +59,8 @@ export interface BundledCatalog {
   generatedAt: string;
   /** Taille du catalogue complet de la langue (Gutendex). */
   total: number;
+  /** Facteur de flexion mesuré sur les livres de la langue (étalonnage du niveau). */
+  formsFactor?: number;
   books: BundledBook[];
 }
 
@@ -120,8 +122,13 @@ function bookText(book: ParsedBook): string {
   return book.chapters.flatMap((c) => c.blocks.map((b) => b.text)).join('\n\n');
 }
 
-export function levelOfText(book: ParsedBook, ranks: FrequencyRanks, language: string): LevelEstimate | null {
-  return estimateLevel(sampleForLevel(bookText(book)), ranks, language);
+/** Facteur d'étalonnage de la langue : celui du catalogue fourni, sinon la valeur par défaut. */
+export async function languageFactor(language: string): Promise<number | undefined> {
+  return (await loadBundledCatalog(language))?.formsFactor;
+}
+
+export function levelOfText(book: ParsedBook, ranks: FrequencyRanks, language: string, factor?: number): LevelEstimate | null {
+  return estimateLevel(sampleForLevel(bookText(book)), ranks, language, factor);
 }
 
 /** Estime le niveau d'un livre du catalogue à partir du début de son texte. */
@@ -130,7 +137,7 @@ export async function estimateCatalogBook(book: CatalogBook, signal?: AbortSigna
   if (!ranks) return null;
   const bytes = await httpGet(book.textUrl, { range: [0, SAMPLE_BYTES - 1], signal });
   // Le dernier caractère multi-octets peut être coupé : sans conséquence pour l'estimation.
-  return levelOfText(parseGutenberg(decodeText(bytes)), ranks, book.language);
+  return levelOfText(parseGutenberg(decodeText(bytes)), ranks, book.language, await languageFactor(book.language));
 }
 
 /** Télécharge et met en forme le livre complet. */

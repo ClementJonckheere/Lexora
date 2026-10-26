@@ -14,7 +14,7 @@ if (!src) {
   process.exit(1);
 }
 
-const WORDS = 20000;
+const WORDS = 50000;
 const CHARS = 5000;
 const SPACED = { en: 'en', es: 'es', pt: 'pt', de: 'de', it: 'it', ru: 'ru', ko: 'ko', ar: 'ar', nl: 'nl', fr: 'fr' };
 const CHARACTER = { zh: 'zh_cn', ja: 'ja' };

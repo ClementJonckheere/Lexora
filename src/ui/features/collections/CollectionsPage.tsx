@@ -148,7 +148,7 @@ export function CollectionPage({ id }: { id: string }) {
   const { navigate, openEditor, deleteCollection, toast } = useApp.getState();
   const [editing, setEditing] = useState(false);
   const [adding, setAdding] = useState(false);
-  const due = useDueCounts(id);
+  const due = useDueCounts({ collectionId: id });
   const count = useMemo(() => notes.filter((n) => n.collectionIds.includes(id)).length, [notes, id]);
 
   if (!collection) {

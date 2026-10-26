@@ -8,6 +8,7 @@ import type { CardRecord } from '@/core/domain/types';
 import { directionLabel } from '@/core/domain/types';
 import { recordReview, undoReview } from '@/core/repo/reviewRepo';
 import { buildQueue, type QueueItem } from '@/core/srs/queue';
+import { scopeIds } from '@/core/srs/scope';
 import { settingsFor } from '@/core/domain/settings';
 import { checkAnswer, type AnswerVerdict } from '@/core/domain/answer';
 import { GRADES, previewIntervals, review, type Grade } from '@/core/srs/scheduler';
@@ -41,7 +42,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   // File figée au démarrage ; l'état des fiches est suivi localement pendant la session.
   const [session] = useState(() => {
     const s = useApp.getState();
-    const noteIds = config.collectionId != null ? new Set(s.notes.filter((n) => n.collectionIds.includes(config.collectionId!)).map((n) => n.id)) : null;
+    const noteIds = scopeIds(s.notes, config);
     const items = buildQueue(s.notes, {
       now: Date.now(),
       settings: settingsFor(s.settings, s.universe),
@@ -293,7 +294,7 @@ function Finished({
 }) {
   const { navigate, refresh } = useApp.getState();
   useEffect(() => void refresh().catch(() => undefined), [refresh]);
-  const due = useDueCounts(config.collectionId ?? null, config.direction ?? null);
+  const due = useDueCounts(config, config.direction ?? null);
   const more = due.total;
   const again = () => navigate({ name: 'session', config: { ...config, limit: config.limit ?? null } });
 

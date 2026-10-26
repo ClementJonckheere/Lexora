@@ -14,17 +14,18 @@ import type { Book, CachedLevel } from '@/core/repo/booksRepo';
 import type { CatalogBook } from '@/core/reading/gutendex';
 import type { ParsedBook } from '@/core/reading/gutenberg';
 import type { LevelEstimate } from '@/core/reading/level';
-import { downloadBook, downloadCover, levelOfText, loadRanks } from '@/core/reading/catalog';
+import { downloadBook, downloadCover, languageFactor, levelOfText, loadRanks } from '@/core/reading/catalog';
 import { createScheduler, type Scheduler } from '@/core/srs/scheduler';
 import { authConfigured, currentUser, signInWithGoogle, signOut as authSignOut, type AccountUser } from '@/core/platform/auth';
 import { bindAccount, getSyncState, resetLocalData } from '@/core/sync/engine';
 import { readPref, writePref } from '@/ui/prefs';
 import type { AvailableUpdate } from '@/core/platform/desktop';
+import type { ReviewScope } from '@/core/srs/scope';
 import { runSync, scheduleSync, startSyncLoop, stopSyncLoop } from './sync';
 
 export type SessionConfig =
-  | { kind: 'scheduled'; limit: number | null; direction?: Direction | null; collectionId?: string | null }
-  | { kind: 'practice'; mode: PracticeMode; limit: number | null; direction?: Direction | null; collectionId?: string | null };
+  | ({ kind: 'scheduled'; limit: number | null; direction?: Direction | null } & ReviewScope)
+  | ({ kind: 'practice'; mode: PracticeMode; limit: number | null; direction?: Direction | null } & ReviewScope);
 
 export type Route =
   | { name: 'home' }
@@ -518,7 +519,7 @@ export const useApp = create<AppState>((set, get) => {
       const d = db();
       const [content, cover, ranks] = await Promise.all([downloadBook(book), downloadCover(book.coverUrl), loadRanks(book.language)]);
       // Niveau mesuré sur le livre entier (plus précis que l'extrait du catalogue).
-      const estimate = ranks ? levelOfText(content, ranks, book.language) : null;
+      const estimate = ranks ? levelOfText(content, ranks, book.language, await languageFactor(book.language)) : null;
       if (estimate) await booksRepo.saveLevel(d, book.key, estimate);
       await booksRepo.saveBook(d, book, u.id, estimate?.level ?? get().bookLevels.get(book.key)?.level ?? null, content, cover);
       await afterWrite();

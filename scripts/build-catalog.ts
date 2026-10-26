@@ -7,7 +7,8 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { decodeText, parseGutenberg } from '../src/core/reading/gutenberg';
 import { catalogUrl, parseCatalogPage, type CatalogBook, type GutendexPage } from '../src/core/reading/gutendex';
-import { estimateLevel, ranksFromList, sampleForLevel } from '../src/core/reading/level';
+import { classifyWords, estimateLevel, formsFactor, ranksFromList, REFERENCE_MEDIAN_RANK, sampleForLevel, type Level } from '../src/core/reading/level';
+import { languageInfo } from '../src/core/domain/languages';
 
 /** Nombre de livres par langue (les plus téléchargés). */
 const TARGET: Record<string, number> = { en: 200, fr: 120, de: 120, es: 120, it: 100, pt: 100, nl: 100 };
@@ -15,6 +16,9 @@ const DEFAULT_TARGET = 60;
 const LANGS = ['en', 'es', 'pt', 'de', 'it', 'ru', 'zh', 'ja', 'ko', 'ar', 'nl', 'fr'];
 const SAMPLE_BYTES = 160_000;
 const OUT = 'public/reading/catalog';
+
+/** Ouvrages de référence (dictionnaires, grammaires…) : pas des lectures. */
+const REFERENCE = /dictionar|dictionnaire|diccionario|dizionario|wörterbuch|woordenboek|dicionário|glossar|grammar|grammaire|gramática|grammatica|grammatik|vocabular|lexicon|phrase-?book|manual of|handbook|encyclop|index of|catalogue of/i;
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -62,37 +66,55 @@ async function buildLanguage(language: string) {
   while (url && books.length < target) {
     const page = parseCatalogPage((await (await get(url)).json()) as GutendexPage, language);
     total = page.count;
-    for (const b of page.books) if (b.language === language && !books.some((x) => x.key === b.key)) books.push(b);
+    for (const b of page.books) {
+      if (b.language !== language || REFERENCE.test(b.title) || books.some((x) => x.key === b.key)) continue;
+      books.push(b);
+    }
     url = page.next;
     await sleep(500);
   }
   books.splice(target);
 
-  let estimated = 0;
-  const withLevels = await pool(books, 4, async (b) => {
-    if (!ranks) return { ...b, level: null, vocabRank: 0, sentenceLength: 0 };
+  // 1. Mesures brutes (sans facteur de langue) sur un extrait de chaque livre.
+  type Measured = CatalogBook & { level: Level | null; vocabRank: number; sentenceLength: number; sample: number };
+  const measured = await pool(books, 4, async (b): Promise<Measured | null> => {
+    const none = { ...b, level: null, vocabRank: 0, sentenceLength: 0, sample: 0 };
+    if (!ranks) return none;
     try {
       const parsed = parseGutenberg(await sample(b));
       const text = parsed.chapters.flatMap((c) => c.blocks.map((x) => x.text)).join('\n\n');
-      const est = estimateLevel(sampleForLevel(text), ranks, language);
-      if (est) estimated++;
-      return { ...b, level: est?.level ?? null, vocabRank: est?.vocabRank ?? 0, sentenceLength: est?.sentenceLength ?? 0 };
+      const est = estimateLevel(sampleForLevel(text), ranks, language, 1);
+      return est ? { ...b, level: est.level, vocabRank: est.vocabRank, sentenceLength: est.sentenceLength, sample: est.sample } : none;
     } catch (err) {
       console.warn(`  ${b.key} ${b.title} : ${err instanceof Error ? err.message : err}`);
       // Texte absent : livre illisible, écarté ; autre erreur : gardé, niveau estimé plus tard dans l'application.
       if (err instanceof Error && err.message === 'texte introuvable') return null;
-      return { ...b, level: null, vocabRank: 0, sentenceLength: 0 };
+      return none;
     } finally {
       await sleep(250);
     }
   });
+  const kept = measured.filter((b): b is Measured => b !== null);
+
+  // 2. Étalonnage de la langue : son classique « moyen » reçoit le même niveau qu'un classique anglais moyen.
+  const spaced = !languageInfo(language).noSpaces;
+  const ranksMeasured = kept.filter((b) => b.vocabRank > 0).map((b) => b.vocabRank).sort((a, b) => a - b);
+  let factor = formsFactor(language);
+  if (spaced && language !== 'en' && ranksMeasured.length >= 15) {
+    const median = ranksMeasured[Math.floor(ranksMeasured.length / 2)];
+    factor = Math.round(Math.min(5, Math.max(1, median / REFERENCE_MEDIAN_RANK)) * 100) / 100;
+  }
+  if (language === 'en') factor = 1;
+  for (const b of kept) if (spaced && b.vocabRank > 0) b.level = classifyWords(b.vocabRank, b.sentenceLength, b.sample, factor);
+  const estimated = kept.filter((b) => b.level).length;
+  const withLevels = kept;
 
   mkdirSync(OUT, { recursive: true });
   writeFileSync(
     `${OUT}/${language}.json`,
-    JSON.stringify({ version: 1, language, generatedAt: new Date().toISOString(), total, books: withLevels.filter(Boolean) }),
+    JSON.stringify({ version: 2, language, generatedAt: new Date().toISOString(), total, formsFactor: factor, books: withLevels }),
   );
-  console.log(`${language} : ${withLevels.filter(Boolean).length} livres (${estimated} niveaux estimés) sur ${total}`);
+  console.log(`${language} : facteur ${factor} · ${withLevels.length} livres (${estimated} niveaux estimés) sur ${total}`);
 }
 
 const wanted = process.argv.slice(2).filter((a) => /^[a-z]{2}$/.test(a));

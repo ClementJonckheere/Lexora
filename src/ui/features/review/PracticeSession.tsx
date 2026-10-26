@@ -1,3 +1,4 @@
+import { scopeNotes } from '@/core/srs/scope';
 import { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { errorMessage, useApp, type SessionConfig } from '@/app/store';
@@ -18,8 +19,7 @@ const MODE_TITLE = { random: 'Révision aléatoire', difficult: 'Mots difficiles
 const GRADE_CLASS: Record<Grade, string> = { 1: 'again', 2: 'hard', 3: 'good', 4: 'easy' };
 
 function scopedNotes(config: PracticeConfig) {
-  const notes = useApp.getState().notes.filter((n) => !n.suspended);
-  return config.collectionId != null ? notes.filter((n) => n.collectionIds.includes(config.collectionId!)) : notes;
+  return scopeNotes(useApp.getState().notes.filter((n) => !n.suspended), config);
 }
 
 function Banner() {
