@@ -21,6 +21,8 @@ export default defineConfig({
     // Aperçu navigateur : Gutendex et Project Gutenberg n'autorisent pas les requêtes directes (CORS).
     proxy: {
       '/proxy/gutendex': { target: 'https://gutendex.com', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/gutendex/, '') },
+      '/proxy/mymemory': { target: 'https://api.mymemory.translated.net', changeOrigin: true, rewrite: (p) => p.replace(/^\/proxy\/mymemory/, '') },
+      '/proxy/tatoeba': { target: 'https://tatoeba.org', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/tatoeba/, '') },
       '/proxy/gutenberg': { target: 'https://www.gutenberg.org', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/gutenberg/, '') },
     },
   },

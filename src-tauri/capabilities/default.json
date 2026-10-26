@@ -44,6 +44,15 @@
         },
         {
           "url": "https://*.gutenberg.org/*"
+        },
+        {
+          "url": "https://api.mymemory.translated.net/*"
+        },
+        {
+          "url": "https://tatoeba.org/*"
+        },
+        {
+          "url": "https://api.tatoeba.org/*"
         }
       ]
     }

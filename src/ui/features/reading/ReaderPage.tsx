@@ -8,7 +8,7 @@ import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { speakText } from '@/ui/speech';
 import { readPref, writePref } from '@/ui/prefs';
 import { sourceNote } from '@/core/reading/selection';
-import { SelectionBubble, useReaderSelection } from './SelectionBubble';
+import { SelectionBubble, useReaderSelection, useSelectionTranslation } from './SelectionBubble';
 
 type Paper = 'ivory' | 'white' | 'night';
 type FontFamily = 'sans' | 'serif';
@@ -124,13 +124,22 @@ function Reader({
   const target = useRef<Target>({ kind: 'block', block: start.block });
   const current = useRef({ chapter, block: start.block });
   const [sel, clearSel] = useReaderSelection(flowRef, stageRef, chapters[chapter].blocks, language);
+  const autoTranslate = useApp((s) => s.settings.autoTranslate);
+  const selTranslation = useSelectionTranslation(sel, language, autoTranslate);
 
   /** Expression sélectionnée → fiche pré-remplie (la phrase du livre comme exemple, la source en note). */
   const addSelection = () => {
     if (!sel || sel.error || !sel.expression) return;
     const { openEditor } = useApp.getState();
     if (sel.known) openEditor(sel.known.id, { examples: [sel.sentence] });
-    else openEditor(null, { expression: sel.expression, examples: [sel.sentence], comment: sourceNote(title, author, chapters[chapter].title) });
+    else
+      openEditor(null, {
+        expression: sel.expression,
+        // Traduction proposée (modifiable) ; sinon la fiche la cherche à l'ouverture.
+        ...(selTranslation.text ? { translation: selTranslation.text } : {}),
+        examples: [sel.sentence],
+        comment: sourceNote(title, author, chapters[chapter].title),
+      });
     clearSel();
   };
 
@@ -377,7 +386,7 @@ function Reader({
               ))}
             </div>
           </div>
-          {sel && !overlay && <SelectionBubble sel={sel} universeId={universeId} onAdd={addSelection} />}
+          {sel && !overlay && <SelectionBubble sel={sel} universeId={universeId} translation={selTranslation} onAdd={addSelection} />}
           <button className="reader-edge reader-edge--prev" onClick={prev} disabled={atStart} aria-label="Page précédente" />
           <button className="reader-edge reader-edge--next" onClick={next} disabled={atEnd} aria-label="Page suivante" />
         </div>

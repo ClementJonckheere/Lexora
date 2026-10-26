@@ -21,6 +21,8 @@ export interface Settings {
   autoSpeak: boolean;
   /** Français → langue : taper la réponse avant de la dévoiler (vérification automatique). */
   typeAnswer: boolean;
+  /** Traduction proposée automatiquement (sélection dans un livre, ajout rapide). */
+  autoTranslate: boolean;
 
   /* --- Réglages propres à l'appareil (jamais synchronisés) --- */
   /** Voix choisie par langue (code langue → identifiant de voix du système). */
@@ -51,6 +53,7 @@ export const DEFAULT_SETTINGS: Settings = {
   masteryThresholdDays: 21,
   autoSpeak: false,
   typeAnswer: false,
+  autoTranslate: true,
   ttsVoices: {},
   ttsRate: 0.95,
   globalShortcut: 'Alt+Shift+L',
@@ -82,6 +85,7 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.globalShortcut = typeof raw.globalShortcut === 'string' ? raw.globalShortcut.trim() : s.globalShortcut;
   const bool = (v: unknown, d: boolean) => (typeof v === 'boolean' ? v : d);
   s.typeAnswer = bool(raw.typeAnswer, s.typeAnswer);
+  s.autoTranslate = bool(raw.autoTranslate, s.autoTranslate);
   s.clipboardPrefill = bool(raw.clipboardPrefill, s.clipboardPrefill);
   s.closeToTray = bool(raw.closeToTray, s.closeToTray);
   s.reminderEnabled = bool(raw.reminderEnabled, s.reminderEnabled);

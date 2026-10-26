@@ -2678,3 +2678,38 @@ p {
   color: #fff;
   border-color: transparent;
 }
+.assist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: -6px;
+}
+.assist-alts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.assist-alts .chip {
+  font-size: 12px;
+}
+.assist-example {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  color: var(--text-2);
+}
+.assist-credit {
+  font-size: 11px;
+  color: var(--text-3);
+}
+.reader-bubble-translation {
+  padding: 0 8px 0 4px;
+  color: #e7e5e4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+  font-style: italic;
+}

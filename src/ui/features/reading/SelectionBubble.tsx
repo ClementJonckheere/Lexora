@@ -1,5 +1,6 @@
 import { useEffect, useState, type RefObject } from 'react';
-import { BookmarkPlus, PenLine, Volume2 } from 'lucide-react';
+import { translate } from '@/core/translate/translate';
+import { BookmarkPlus, Loader2, PenLine, Volume2 } from 'lucide-react';
 import { useApp } from '@/app/store';
 import { expressionKey } from '@/core/domain/text';
 import type { Note } from '@/core/domain/types';
@@ -89,7 +90,43 @@ export function useReaderSelection(
   return [sel, clear];
 }
 
-export function SelectionBubble({ sel, universeId, onAdd }: { sel: ReaderSelection; universeId: string; onAdd: () => void }) {
+export interface SelectionTranslation {
+  text: string | null;
+  loading: boolean;
+}
+
+/** Traduction de la sélection (MyMemory), après une courte pause, mise en cache. */
+export function useSelectionTranslation(sel: ReaderSelection | null, language: string, enabled: boolean): SelectionTranslation {
+  const [state, setState] = useState<{ for: string; text: string | null; loading: boolean }>({ for: '', text: null, loading: false });
+  const expression = sel && !sel.error && !sel.known ? sel.expression : '';
+  useEffect(() => {
+    if (!enabled || !expression) return;
+    const ctrl = new AbortController();
+    const t = setTimeout(() => {
+      setState({ for: expression, text: null, loading: true });
+      translate(expression, language, 'fr', ctrl.signal)
+        .then((r) => !ctrl.signal.aborted && setState({ for: expression, text: r.text, loading: false }))
+        .catch(() => !ctrl.signal.aborted && setState({ for: expression, text: null, loading: false }));
+    }, 250);
+    return () => {
+      clearTimeout(t);
+      ctrl.abort();
+    };
+  }, [expression, language, enabled]);
+  return state.for === expression ? state : { text: null, loading: enabled && !!expression };
+}
+
+export function SelectionBubble({
+  sel,
+  universeId,
+  translation,
+  onAdd,
+}: {
+  sel: ReaderSelection;
+  universeId: string;
+  translation: SelectionTranslation;
+  onAdd: () => void;
+}) {
   return (
     <div
       className={`reader-bubble ${sel.below ? 'reader-bubble--below' : ''}`}
@@ -105,6 +142,11 @@ export function SelectionBubble({ sel, universeId, onAdd }: { sel: ReaderSelecti
           {sel.known && (
             <span className="reader-bubble-text" title="Déjà dans vos fiches">
               <strong>{sel.known.expression}</strong> — {sel.known.translation}
+            </span>
+          )}
+          {!sel.known && (translation.loading || translation.text) && (
+            <span className="reader-bubble-translation" title={translation.text ?? 'Traduction…'}>
+              {translation.loading ? <Loader2 size={13} className="spin" /> : translation.text}
             </span>
           )}
           <button className="reader-bubble-btn reader-bubble-btn--primary" onClick={onAdd}>

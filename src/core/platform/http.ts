@@ -1,7 +1,7 @@
 import { isTauri } from './env';
 
 /**
- * Requêtes vers Gutendex et Project Gutenberg.
+ * Requêtes vers Gutendex, Project Gutenberg, MyMemory (traduction) et Tatoeba (exemples).
  * - Application : via la couche native (tauri-plugin-http), limitée à ces domaines ;
  *   Project Gutenberg n'autorise pas les requêtes directes depuis une page web.
  * - Aperçu navigateur : via le proxy du serveur de développement (vite.config.ts).
@@ -11,6 +11,8 @@ const PROXIES: [string, string][] = [
   ['https://gutendex.com/', '/proxy/gutendex/'],
   ['https://www.gutenberg.org/', '/proxy/gutenberg/'],
   ['https://gutenberg.org/', '/proxy/gutenberg/'],
+  ['https://api.mymemory.translated.net/', '/proxy/mymemory/'],
+  ['https://tatoeba.org/', '/proxy/tatoeba/'],
 ];
 
 export class HttpError extends Error {

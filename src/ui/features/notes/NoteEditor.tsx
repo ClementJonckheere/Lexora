@@ -12,6 +12,7 @@ import { TagInput } from '@/ui/components/TagInput';
 import { confirm } from '@/ui/components/Confirm';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { readPref, writePref } from '@/ui/prefs';
+import { TranslateAssist } from './TranslateAssist';
 
 interface Draft {
   expression: string;
@@ -41,6 +42,7 @@ function NoteEditorDialog() {
   const collections = useApp((s) => s.collections);
   const universes = useApp((s) => s.universes);
   const current = useApp((s) => s.universe);
+  const autoTranslate = useApp((s) => s.settings.autoTranslate);
   const { closeEditor, openEditor, saveNote, deleteNotes, toast } = useApp.getState();
 
   const existing = editor.noteId ? notesById.get(editor.noteId) : undefined;
@@ -82,8 +84,15 @@ function NoteEditorDialog() {
 
   useEffect(() => {
     // Expression déjà fournie (ex. sélection dans un livre) : on commence par la traduction.
-    const toTranslation = !existing && !!editor.prefill?.expression && !initial.translation;
-    setTimeout(() => (toTranslation ? document.getElementById('f-translation')?.focus() : exprRef.current?.focus()), 0);
+    // Traduction déjà proposée : sélectionnée, pour la valider ou la remplacer en tapant.
+    const toTranslation = !existing && !!editor.prefill?.expression;
+    setTimeout(() => {
+      const t = document.getElementById('f-translation') as HTMLInputElement | null;
+      if (toTranslation && t) {
+        t.focus();
+        t.select();
+      } else exprRef.current?.focus();
+    }, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -287,6 +296,26 @@ function NoteEditorDialog() {
             }}
           />
         </Field>
+
+        <TranslateAssist
+          expression={draft.expression}
+          language={language}
+          translation={draft.translation}
+          examples={draft.examples}
+          auto={autoTranslate && !existing && !!editor.prefill?.expression && !editor.prefill?.translation}
+          onTranslation={(t) => set('translation', t)}
+          onExample={(text, previous) =>
+            setDraft((d) => {
+              const ex = [...d.examples];
+              const at = previous != null ? ex.indexOf(previous) : -1;
+              const empty = ex.findIndex((e) => !e.trim());
+              if (at >= 0) ex[at] = text;
+              else if (empty >= 0) ex[empty] = text;
+              else ex.push(text);
+              return { ...d, examples: ex };
+            })
+          }
+        />
 
         <Field label={draft.examples.length > 1 ? 'Exemples' : 'Exemple'} optional error={errors.examples}>
           <div className="stack stack--sm">

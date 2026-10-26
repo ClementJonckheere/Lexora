@@ -104,6 +104,12 @@ export function SettingsPage() {
           >
             <Switch label="Taper la réponse" checked={settings.typeAnswer} onChange={(v) => update({ typeAnswer: v })} />
           </Setting>
+          <Setting
+            title="Traduction automatique"
+            desc="Quand vous sélectionnez un mot dans un livre (ou faites un ajout rapide), la traduction française est proposée automatiquement (MyMemory, gratuit). Désactivé : utilisez le bouton « Traduire » de la fiche. Les mots sont envoyés à ce service."
+          >
+            <Switch label="Traduction automatique" checked={settings.autoTranslate} onChange={(v) => update({ autoTranslate: v })} />
+          </Setting>
           <Setting title="Directions révisées" desc="Chaque direction est suivie séparément. Français → langue entraîne la production orale.">
             <select className="select" value={settings.directions} onChange={(e) => update({ directions: e.target.value as DirectionMode })}>
               <option value="both">Les deux</option>

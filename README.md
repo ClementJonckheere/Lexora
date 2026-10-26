@@ -44,7 +44,9 @@ Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à
   - *Mes livres* : couverture, progression ; la position de lecture est synchronisée entre appareils (le texte, lui, est téléchargé sur chaque appareil).
   - **Lecteur plein écran** en double page (une page si la fenêtre est étroite) : `←` `→`, `Espace`, molette ; `+` / `−` pour la taille du texte ; papier ivoire, blanc ou nuit ; police sans ou serif ; `T` table des chapitres ; `F` plein écran ; `Échap` pour quitter.
   - **Enregistrer un mot en lisant** : double-clic sur un mot (ou sélection d'une expression), puis `Entrée` dans la bulle. La fiche s'ouvre pré-remplie : l'expression (ponctuation et majuscule de début de phrase retirées), **la phrase du livre comme exemple** et la source (« Lu dans … ») ; il ne reste qu'à taper la traduction. Si l'expression est déjà dans vos fiches, la bulle affiche sa traduction et propose d'ajouter la phrase comme nouvel exemple. `P` la prononce. Aucun service externe n'est utilisé.
+  - **Traduction dans la bulle** : la traduction française proposée s'affiche dès la sélection et pré-remplit la fiche (modifiable). Désactivable : *Paramètres → Traduction automatique*.
   - *Niveau estimé, sans IA* : sur un extrait du texte, on mesure combien de mots courants (liste de fréquence de la langue) il faut connaître pour comprendre 90 % du texte, et la longueur des phrases ; le chinois et le japonais sont mesurés par caractères. Calibré sur des livres de référence (Alice ≈ B1, Treasure Island ≈ B2, Pride and Prejudice ≈ B2/C1, Moby-Dick ≈ C2). C'est une indication, pas une certification ; le niveau est recalculé sur le texte entier au téléchargement.
+- **Traduire et trouver un exemple** (formulaire d'ajout, `Ctrl+T`) : traduction française proposée par [MyMemory](https://mymemory.translated.net) (gratuit, sans clé, environ 5 000 caractères par jour) avec d'autres traductions possibles en un clic, et phrases d'exemple réelles de [Tatoeba](https://tatoeba.org) (écrites et traduites par des bénévoles, avec leur traduction française ; « Autre exemple » pour en changer). Seuls les champs vides sont remplis, tout reste modifiable et la saisie manuelle reste possible. Pas d'IA générative : rien n'est inventé.
 - **Statistiques** : chiffres réels uniquement (voir §6).
 - **Paramètres** : compte et synchronisation, réglages de mémorisation, voix (une par langue), raccourci global, import/export, sauvegardes.
 
@@ -243,6 +245,7 @@ Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 ## Sources et licences des données
 
 - Livres : [Project Gutenberg](https://www.gutenberg.org) (œuvres du domaine public), catalogue via [Gutendex](https://gutendex.com).
+- Traductions : [MyMemory](https://mymemory.translated.net) (Translated) ; phrases d'exemple : [Tatoeba](https://tatoeba.org), licence CC BY 2.0 FR. Les expressions à traduire sont envoyées à ces services, uniquement à la demande (bouton) ou lors d'une sélection dans un livre si la traduction automatique est activée.
 - Listes de fréquence (`public/reading/freq/`) : dérivées de [FrequencyWords](https://github.com/hermitdave/FrequencyWords) (Hermit Dave, sous-titres OpenSubtitles 2018), contenu sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) ; régénérables avec `scripts/build-frequency.mjs`.
 
 ## Raccourcis clavier
@@ -257,6 +260,7 @@ Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 | Windows | `Alt+Maj+L` (réglable) | Ajout rapide depuis n'importe quelle application (pré-rempli avec le texte copié) |
 | Partout | `Ctrl+K` | Recherche dans toutes les langues |
 | Formulaire | `Entrée` / `Ctrl+Entrée` / `Échap` | Champ suivant / enregistrer / fermer |
+| Formulaire | `Ctrl+T` | Traduire et trouver un exemple |
 | Accueil, Réviser | `Espace` / `Entrée` | Session de 5 mots / toutes les révisions |
 | Session | `Espace` | Afficher la réponse (puis la note suggérée, « Retenu » par défaut) |
 | Session (réponse tapée) | `Entrée` | Vérifier la réponse saisie |
