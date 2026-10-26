@@ -95,18 +95,34 @@ jobs:
         id: signing
         shell: bash
         run: |
-          if [ -n "$KEY" ]; then echo "enabled=true" >> "$GITHUB_OUTPUT"; else
+          # Tolère les espaces / retours à la ligne ajoutés par un copier-coller.
+          CLEAN=$(printf '%s' "$KEY" | tr -d ' \t\r\n')
+          if [ -z "$CLEAN" ]; then
             echo "enabled=false" >> "$GITHUB_OUTPUT"
             echo '{"bundle":{"createUpdaterArtifacts":false}}' > "$RUNNER_TEMP/nosign.json"
             echo "::warning::Secret TAURI_SIGNING_PRIVATE_KEY absent : pas de mise à jour automatique publiée."
+            exit 0
           fi
+          if ! printf '%s' "$CLEAN" | base64 -d > /dev/null 2>&1; then
+            echo "::error::Le secret TAURI_SIGNING_PRIVATE_KEY est incomplet ou mal copié (${#CLEAN} caractères lus, une clé Lexora en fait 348 et se termine par « == »). Recollez la ligne entière."
+            exit 1
+          fi
+          printf '%s' "$CLEAN" > "$RUNNER_TEMP/updater.key"
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
         env:
           KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
       # Configuration Supabase (secrets du dépôt) : sans eux, l'application fonctionne sans compte ni synchronisation.
       - name: Construction
         shell: bash
         run: |
-          if [ "${{ steps.signing.outputs.enabled }}" = "true" ]; then npm run app:build; else npm run app:build -- --config "$RUNNER_TEMP/nosign.json"; fi
+          if [ "${{ steps.signing.outputs.enabled }}" = "true" ]; then
+            export TAURI_SIGNING_PRIVATE_KEY="$(cat "$RUNNER_TEMP/updater.key")"
+            export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="$(printf '%s' "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" | tr -d ' \t\r\n')"
+            npm run app:build
+          else
+            unset TAURI_SIGNING_PRIVATE_KEY
+            npm run app:build -- --config "$RUNNER_TEMP/nosign.json"
+          fi
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
