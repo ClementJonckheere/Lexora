@@ -50,6 +50,7 @@ export function SessionSummary({
   labels = ['Oublié', 'Difficile', 'Retenu', 'Facile'],
   children,
   note,
+  details,
 }: {
   title: string;
   tally: Tally;
@@ -57,6 +58,8 @@ export function SessionSummary({
   labels?: string[];
   children: ReactNode;
   note?: ReactNode;
+  /** Bilan détaillé (mots maîtrisés, à surveiller…). */
+  details?: ReactNode;
 }) {
   const total = tally[1] + tally[2] + tally[3] + tally[4];
   const minutes = Math.max(1, Math.round((Date.now() - startedAt) / 60_000));
@@ -75,6 +78,7 @@ export function SessionSummary({
           </div>
         ))}
       </div>
+      {details}
       {note && <p className="muted small" style={{ marginBottom: 16 }}>{note}</p>}
       <div className="row" style={{ justifyContent: 'center' }}>
         {children}

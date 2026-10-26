@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { CheckCircle2, Flame, PencilLine, Shuffle, Zap } from 'lucide-react';
+import { CheckCircle2, ChevronDown, ChevronRight, Flame, PencilLine, Shuffle, SlidersHorizontal, Zap } from 'lucide-react';
 import { useApp, type SessionConfig } from '@/app/store';
 import { formatDue } from '@/core/domain/dates';
 import { directionShort, type Direction } from '@/core/domain/types';
@@ -8,6 +8,8 @@ import { settingsFor } from '@/core/domain/settings';
 import { clozeCandidates, difficultNotes } from '@/core/srs/practice';
 import { hasScope, scopeIds, scopeNotes, type ReviewScope } from '@/core/srs/scope';
 import { readPref, writePref } from '@/ui/prefs';
+import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
+import { estimateMinutes } from '@/core/repo/progressRepo';
 import { Button, Kbd, Segmented } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { State } from 'ts-fsrs';
@@ -71,6 +73,15 @@ export function ReviewPage() {
   const dir = direction === 'mix' ? null : direction;
   const due = useDueCounts(scope, dir);
   const nextDue = useNextDue();
+  const progress = useDailyProgress();
+  const minutes = estimateMinutes(due.review + due.learning, due.new, progress.medianDurationMs);
+  // Options (direction, filtres) repliées par défaut ; ouvertes si l'une est active.
+  const [showOptions, setShowOptions] = useState(() => hasScope(stored) || readPref<boolean>('review.options', false));
+  const toggleOptions = () => {
+    setShowOptions(!showOptions);
+    writePref('review.options', !showOptions);
+  };
+  const activeOptions = (direction !== 'mix' ? 1 : 0) + (scope.collectionId ? 1 : 0) + (scope.category ? 1 : 0) + (scope.tag ? 1 : 0);
 
   const scoped = useMemo(() => scopeNotes(notes, scope),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,13 +97,13 @@ export function ReviewPage() {
   useHotkeys(
     {
       enter: () => due.total > 0 && startScheduled(null),
-      space: () => due.total > 0 && startScheduled(5),
+      space: () => due.total > 0 && startScheduled(due.total > 5 ? 5 : null),
     },
     { enabled: !overlay },
   );
 
   // Tailles proposées : inutile d'afficher « 20 mots » s'il n'y en a que 7.
-  const sizes = [5, 10, 20].filter((_, i, arr) => i === 0 || arr[i - 1] < due.total);
+  const sizes = [5, 10, 20].filter((n) => n < due.total);
 
   return (
     <div className="page">
@@ -122,7 +133,13 @@ export function ReviewPage() {
               )}
             </p>
           </div>
-          <div className="row row--wrap">
+          <button className="link small options-toggle" onClick={toggleOptions} aria-expanded={showOptions}>
+            <SlidersHorizontal size={14} /> Options{activeOptions ? ` (${activeOptions})` : ''}{' '}
+            {showOptions ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          </button>
+        </div>
+        {showOptions && (
+          <div className="row row--wrap review-options">
             {settings.directions === 'both' && (
               <Segmented
                 value={direction}
@@ -184,18 +201,23 @@ export function ReviewPage() {
               </button>
             )}
           </div>
-        </div>
+        )}
 
         {due.total > 0 ? (
-          <div className="size-buttons">
-            {sizes.map((n, i) => (
-              <Button key={n} size="lg" variant={i === 0 ? 'primary' : 'secondary'} onClick={() => startScheduled(n)} shortcut={i === 0 ? 'Espace' : undefined}>
-                <Zap size={16} /> {n} mots
-              </Button>
-            ))}
-            <Button size="lg" onClick={() => startScheduled(null)} shortcut="Entrée">
-              Toutes ({due.total})
+          <div className="stack stack--sm">
+            <Button size="lg" variant="primary" className="review-now" onClick={() => startScheduled(null)} shortcut="Entrée">
+              Réviser maintenant ({due.total}) <span className="review-now-time">· environ {minutes} min</span>
             </Button>
+            {due.total > 5 && (
+              <div className="row row--wrap" style={{ gap: 8 }}>
+                <span className="muted small">Peu de temps ?</span>
+                {sizes.map((n, i) => (
+                  <Button key={n} size="sm" onClick={() => startScheduled(n)} shortcut={i === 0 ? 'Espace' : undefined}>
+                    <Zap size={14} /> {n} mots
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <div className="row" style={{ color: 'var(--mastered)' }}>

@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
+import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
+import { cardMastery } from '@/core/srs/scheduler';
 import { State } from 'ts-fsrs';
 import { attempt, errorMessage, useApp, type SessionConfig } from '@/app/store';
-import { formatInterval } from '@/core/domain/dates';
+import { formatDue, formatInterval } from '@/core/domain/dates';
 import { languageInfo } from '@/core/domain/languages';
 import type { CardRecord } from '@/core/domain/types';
 import { directionLabel } from '@/core/domain/types';
@@ -24,9 +26,22 @@ const GRADE_CLASS: Record<Grade, string> = { 1: 'again', 2: 'hard', 3: 'good', 4
 
 interface UndoEntry {
   before: CardRecord;
+  after: CardRecord;
+  noteId: string;
   logId: string;
   grade: Grade;
 }
+
+/** Mots oubliés au moins ce nombre de fois : signalés comme « à retravailler ». */
+const LEECH_LAPSES = 4;
+/** En dessous de ce nombre de réponses au total, l'explication des 4 boutons reste affichée. */
+const BEGINNER_REVIEWS = 30;
+const GRADE_HELP: Record<Grade, string> = {
+  1: 'je ne savais pas',
+  2: 'retrouvé avec effort',
+  3: 'retrouvé',
+  4: 'immédiat, trop facile',
+};
 
 /** Révision planifiée (FSRS) : chaque réponse met à jour la fiche et l'historique. */
 export function ScheduledSession({ config }: { config: Extract<SessionConfig, { kind: 'scheduled' }> }) {
@@ -66,6 +81,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   const tally = useRef<Tally>({ 1: 0, 2: 0, 3: 0, 4: 0 });
   const undoStack = useRef<UndoEntry[]>([]);
   const shownAt = useRef(Date.now());
+  const progress = useDailyProgress();
 
   const item = session.queue.current;
   const note = item ? notesById.get(item.noteId) : undefined;
@@ -122,7 +138,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
       const out = review(scheduler, card, grade, now);
       const logId = await recordReview(db, out.card, out.log, now - shownAt.current);
       session.cards.set(card.id, out.card);
-      undoStack.current.push({ before: card, logId, grade });
+      undoStack.current.push({ before: card, after: out.card, noteId: item.noteId, logId, grade });
       tally.current[grade]++;
       session.queue.advance(out.card.due - now);
       resetCard();
@@ -193,7 +209,9 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   );
 
   if (finished) {
-    return <Finished tally={tally.current} startedAt={session.startedAt} config={config} canUndo={undoStack.current.length > 0} onUndo={undo} />;
+    return (
+      <Finished tally={tally.current} startedAt={session.startedAt} config={config} canUndo={undoStack.current.length > 0} onUndo={undo} answers={undoStack.current} />
+    );
   }
   if (!item || !note || !card) return null;
 
@@ -236,6 +254,18 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
             {verdict === 'skipped' && 'Sans réponse'}
           </div>
         )}
+        {revealed && card.lapses >= LEECH_LAPSES && (
+          <div className="leech-hint">
+            <AlertTriangle size={15} />
+            <span>
+              Mot difficile : oublié {card.lapses} fois. Ajoutez un exemple personnel, une astuce dans la note, ou découpez l’expression en plus petits
+              morceaux.
+            </span>
+            <button className="link small" onClick={() => openEditor(note.id)}>
+              Modifier (E)
+            </button>
+          </div>
+        )}
       </Flashcard>
       <div className="session-actions">
         {!revealed ? (
@@ -256,6 +286,16 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
               </button>
             ))}
           </div>
+        )}
+        {revealed && progress.totalReviews + undoStack.current.length < BEGINNER_REVIEWS && (
+          <p className="grade-help">
+            {GRADES.map((g) => (
+              <span key={g.grade}>
+                <strong>{g.label}</strong> : {GRADE_HELP[g.grade]}
+              </span>
+            ))}
+            <span className="muted">La prochaine révision s’adapte à votre réponse.</span>
+          </p>
         )}
         <div className="session-hints">
           <span>
@@ -285,14 +325,19 @@ function Finished({
   config,
   canUndo,
   onUndo,
+  answers,
 }: {
   tally: Tally;
   startedAt: number;
   config: Extract<SessionConfig, { kind: 'scheduled' }>;
   canUndo: boolean;
   onUndo: () => void;
+  answers: UndoEntry[];
 }) {
-  const { navigate, refresh } = useApp.getState();
+  const { navigate, refresh, showNote } = useApp.getState();
+  const notesById = useApp((s) => s.notesById);
+  const threshold = useApp((s) => s.settings.masteryThresholdDays);
+  const report = useMemo(() => summarize(answers, threshold), [answers, threshold]);
   useEffect(() => void refresh().catch(() => undefined), [refresh]);
   const due = useDueCounts(config, config.direction ?? null);
   const more = due.total;
@@ -310,6 +355,46 @@ function Finished({
         title={more > 0 ? 'Session terminée' : 'Tout est révisé pour aujourd’hui'}
         tally={tally}
         startedAt={startedAt}
+        details={
+          <>
+        {(report.mastered.length > 0 || report.toWatch.length > 0 || report.nextDue) && (
+          <div className="summary-report">
+            {report.mastered.length > 0 && (
+              <div>
+                <strong style={{ color: 'var(--mastered)' }}>Maîtrisés</strong>
+                <span>
+                  {report.mastered.length} mot{report.mastered.length > 1 ? 's' : ''} :{' '}
+                  {report.mastered.slice(0, 5).map((id) => notesById.get(id)?.expression).filter(Boolean).join(', ')}
+                  {report.mastered.length > 5 ? '…' : ''}
+                </span>
+              </div>
+            )}
+            {report.toWatch.length > 0 && (
+              <div>
+                <strong style={{ color: 'var(--again)' }}>À surveiller</strong>
+                <span>
+                  {report.toWatch.slice(0, 6).map((id, i) => (
+                    <span key={id}>
+                      {i > 0 && ', '}
+                      <button className="link" onClick={() => showNote(id)}>
+                        {notesById.get(id)?.expression}
+                      </button>
+                    </span>
+                  ))}
+                  {report.toWatch.length > 6 ? '…' : ''} — ils reviendront bientôt.
+                </span>
+              </div>
+            )}
+            {report.nextDue && (
+              <div>
+                <strong>Prochaine révision</strong>
+                <span>{formatDue(report.nextDue)}</span>
+              </div>
+            )}
+          </div>
+        )}
+          </>
+        }
         note={more > 0 ? `Encore ${more} fiche${more > 1 ? 's' : ''} à réviser aujourd'hui.` : 'Les prochaines révisions sont planifiées automatiquement.'}
       >
         {more > 0 && (
@@ -323,4 +408,24 @@ function Finished({
       </SessionSummary>
     </SessionFrame>
   );
+}
+
+/** Bilan : mots passés « maîtrisés », mots oubliés pendant la session, prochaine échéance. */
+function summarize(answers: UndoEntry[], threshold: number) {
+  const first = new Map<string, UndoEntry>();
+  const last = new Map<string, UndoEntry>();
+  const forgot = new Set<string>();
+  for (const a of answers) {
+    if (!first.has(a.after.id)) first.set(a.after.id, a);
+    last.set(a.after.id, a);
+    if (a.grade === 1) forgot.add(a.noteId);
+  }
+  const mastered = new Set<string>();
+  for (const [cardId, l] of last) {
+    const f = first.get(cardId)!;
+    if (cardMastery(l.after, threshold) === 'mastered' && cardMastery(f.before, threshold) !== 'mastered') mastered.add(l.noteId);
+  }
+  const now = Date.now();
+  const dues = [...last.values()].map((l) => l.after.due).filter((d) => d > now);
+  return { mastered: [...mastered], toWatch: [...forgot], nextDue: dues.length ? Math.min(...dues) : null };
 }

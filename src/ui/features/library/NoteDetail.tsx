@@ -150,6 +150,14 @@ export function NoteDetail({
         </button>
       )}
 
+      {Math.max(...Object.values(note.cards).map((c) => c?.lapses ?? 0)) >= 4 && (
+        <div className="leech-hint" style={{ marginTop: 0 }}>
+          <span>
+            Mot difficile (oublié {Math.max(...Object.values(note.cards).map((c) => c?.lapses ?? 0))} fois) : ajoutez un exemple personnel, une astuce dans la
+            note, ou découpez l’expression.
+          </span>
+        </div>
+      )}
       <hr className="divider" />
 
       <div className="stack">

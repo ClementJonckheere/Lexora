@@ -123,6 +123,8 @@ function Reader({
   const flowRef = useRef<HTMLDivElement>(null);
   const target = useRef<Target>({ kind: 'block', block: start.block });
   const current = useRef({ chapter, block: start.block });
+  /** Première mise en page faite : avant, la position enregistrée ne doit pas être écrasée. */
+  const laidOut = useRef(false);
   const [sel, clearSel] = useReaderSelection(flowRef, stageRef, chapters[chapter].blocks, language);
   const autoTranslate = useApp((s) => s.settings.autoTranslate);
   const deeplKey = useApp((s) => s.settings.deeplKey);
@@ -192,7 +194,7 @@ function Reader({
       const r = el.getBoundingClientRect();
       setSize((s) => {
         if (Math.abs(s.w - r.width) < 1 && Math.abs(s.h - r.height) < 1) return s;
-        target.current = { kind: 'block', block: current.current.block };
+        if (laidOut.current) target.current = { kind: 'block', block: current.current.block };
         return { w: r.width, h: r.height };
       });
     };
@@ -238,10 +240,12 @@ function Reader({
     }
     setSpread(Math.min(s, nSpreads - 1));
     target.current = { kind: 'start' };
+    laidOut.current = true;
   }, [chapter, fontSize, font, flowW, flowH, colW, gap, columns, blockPages]);
 
   // Position courante : le bloc visible en haut de la page de gauche.
   useEffect(() => {
+    if (!laidOut.current) return;
     const starts = blockPages();
     if (!starts.length) return;
     const firstPage = spread * columns;

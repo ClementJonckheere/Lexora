@@ -86,6 +86,9 @@ export function SettingsPage() {
           <div className="card-header">
             <h2 className="card-title">Mémorisation</h2>
           </div>
+          <Setting title="Objectif du jour" desc="Nombre de réponses par jour, toutes langues confondues : affiché sur l'accueil avec votre série de jours consécutifs.">
+            <NumberInput value={settings.dailyGoal} min={5} max={500} onCommit={(v) => update({ dailyGoal: Math.round(v) })} />
+          </Setting>
           <Setting title="Nouveaux mots par jour" desc="Plafond par défaut, pour chaque univers. Les autres mots attendent leur tour.">
             <NumberInput value={settings.newPerDay} min={0} max={200} onCommit={(v) => update({ newPerDay: Math.round(v) })} />
           </Setting>
