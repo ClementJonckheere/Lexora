@@ -102,7 +102,7 @@ async function buildLanguage(language: string) {
   let factor = formsFactor(language);
   if (spaced && language !== 'en' && ranksMeasured.length >= 15) {
     const median = ranksMeasured[Math.floor(ranksMeasured.length / 2)];
-    factor = Math.round(Math.min(5, Math.max(1, median / REFERENCE_MEDIAN_RANK)) * 100) / 100;
+    factor = Math.round(Math.min(10, Math.max(1, median / REFERENCE_MEDIAN_RANK)) * 100) / 100;
   }
   if (language === 'en') factor = 1;
   for (const b of kept) if (spaced && b.vocabRank > 0) b.level = classifyWords(b.vocabRank, b.sentenceLength, b.sample, factor);
