@@ -2,7 +2,8 @@ import { httpGet, httpGetJson, httpGetText } from '../platform/http';
 import { opdsUrl, parseOpds } from './opds';
 import { decodeText, parseGutenberg, type ParsedBook } from './gutenberg';
 import { catalogUrl, parseCatalogPage, type CatalogBook, type GutendexPage } from './gutendex';
-import { estimateLevel, ranksFromList, sampleForLevel, type FrequencyRanks, type LevelEstimate } from './level';
+import { estimateLevel, ranksFromList, sampleForLevel, type FrequencyRanks, type Level, type LevelEstimate } from './level';
+import { normalizeSearch } from '../domain/text';
 
 /** Accès réseau au catalogue et aux livres (Gutendex, Project Gutenberg). */
 
@@ -43,6 +44,54 @@ export async function searchCatalog(language: string, search: string, pageUrl?: 
       throw err; // l'erreur de Gutendex est la plus parlante
     }
   }
+}
+
+/* ------------------------------------------------ catalogue fourni --- */
+
+/** Livre du catalogue préparé par la CI (scripts/build-catalog.ts), niveau déjà estimé. */
+export interface BundledBook extends CatalogBook {
+  level: Level | null;
+  vocabRank: number;
+  sentenceLength: number;
+}
+
+export interface BundledCatalog {
+  generatedAt: string;
+  /** Taille du catalogue complet de la langue (Gutendex). */
+  total: number;
+  books: BundledBook[];
+}
+
+const bundleCache = new Map<string, Promise<BundledCatalog | null>>();
+
+/** Catalogue fourni avec l'application pour la langue (null s'il n'y en a pas) : aucun accès réseau. */
+export function loadBundledCatalog(language: string): Promise<BundledCatalog | null> {
+  let p = bundleCache.get(language);
+  if (!p) {
+    p = fetch(`/reading/catalog/${encodeURIComponent(language)}.json`)
+      .then(async (res) => {
+        const type = res.headers.get('content-type') ?? '';
+        if (!res.ok || type.includes('html')) return null;
+        const data = (await res.json()) as BundledCatalog;
+        return Array.isArray(data.books) && data.books.length ? data : null;
+      })
+      .catch(() => null);
+    bundleCache.set(language, p);
+  }
+  return p;
+}
+
+/** Page de Gutendex qui suit les livres fournis (32 par page ; les doublons sont écartés à l'affichage). */
+export function pageAfter(language: string, count: number): string {
+  return `${catalogUrl(language)}&page=${Math.floor(count / 32) + 1}`;
+}
+
+/** Recherche instantanée (titre, auteur, sujets) dans les livres fournis, sans tenir compte des accents. */
+export function matchesSearch(book: CatalogBook, search: string): boolean {
+  const words = normalizeSearch(search).split(/\s+/).filter(Boolean);
+  if (!words.length) return true;
+  const hay = normalizeSearch([book.title, ...book.authors, ...book.subjects].join(' '));
+  return words.every((w) => hay.includes(w));
 }
 
 const ranksCache = new Map<string, Promise<FrequencyRanks | null>>();

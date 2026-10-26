@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, Check, Compass, Loader2, Search, Trash2 } from 'lucide-react';
 import { attempt, errorMessage, useApp } from '@/app/store';
-import { LevelQueue, searchCatalog } from '@/core/reading/catalog';
+import { LevelQueue, loadBundledCatalog, matchesSearch, pageAfter, searchCatalog, type BundledBook, type BundledCatalog } from '@/core/reading/catalog';
 import type { CatalogBook } from '@/core/reading/gutendex';
 import { LEVEL_LABEL, LEVELS, withinLevel, type Level } from '@/core/reading/level';
 import type { Book, CachedLevel } from '@/core/repo/booksRepo';
@@ -149,6 +149,23 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
   const [, setTick] = useState(0);
   const pagesLoaded = useRef(0);
   const request = useRef<AbortController | null>(null);
+  /** Catalogue fourni avec l'application (undefined : en cours de lecture, null : absent pour cette langue). */
+  const [bundle, setBundle] = useState<BundledCatalog | null | undefined>(undefined);
+  useEffect(() => {
+    let alive = true;
+    setBundle(undefined);
+    void loadBundledCatalog(language).then((b) => alive && setBundle(b));
+    return () => {
+      alive = false;
+    };
+  }, [language]);
+  const bundleLevels = useMemo(() => {
+    const m = new Map<string, CachedLevel>();
+    for (const b of bundle?.books ?? []) if (b.level) m.set(b.key, { level: b.level, vocabRank: b.vocabRank, sentenceLength: b.sentenceLength });
+    return m;
+  }, [bundle]);
+  /** Livres affichés avant ceux du réseau (catalogue fourni filtré par la recherche). */
+  const base = useRef<CatalogBook[]>([]);
 
   const queue = useMemo(
     () =>
@@ -180,15 +197,16 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
       if (ctrl.signal.aborted) return;
       pagesLoaded.current = pageUrl ? pagesLoaded.current + 1 : 1;
       setResults((r) => {
-        const seen = new Set(r.map((b) => b.key));
-        return [...(pageUrl ? r : []), ...page.books.filter((b) => !pageUrl || !seen.has(b.key))];
+        const kept = pageUrl ? r : base.current;
+        const seen = new Set(kept.map((b) => b.key));
+        return [...kept, ...page.books.filter((b) => !seen.has(b.key))];
       });
       setNext(page.next);
-      setTotal(page.count);
+      if (!base.current.length || page.count != null) setTotal((t) => (base.current.length ? Math.max(t ?? 0, page.count ?? 0) : page.count));
       setSource(page.source);
-      if (!pageUrl) rememberPage(language, search, page);
+      if (!pageUrl && !base.current.length) rememberPage(language, search, page);
       const cached = useApp.getState().bookLevels;
-      queue.add(page.books.filter((b) => !cached.has(b.key)));
+      queue.add(page.books.filter((b) => !cached.has(b.key) && !bundleLevels.has(b.key)));
     } catch (err) {
       if (!ctrl.signal.aborted) setError(errorMessage(err));
     } finally {
@@ -201,8 +219,28 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
   };
 
   useEffect(() => {
+    if (bundle === undefined) return; // catalogue fourni pas encore lu (quelques millisecondes)
     queue.clear();
     pagesLoaded.current = 0;
+    setError(null);
+    if (bundle) {
+      // Catalogue fourni : affichage immédiat, sans réseau. Une recherche interroge en plus tout le catalogue.
+      const local = search ? bundle.books.filter((b) => matchesSearch(b, search)) : bundle.books;
+      base.current = local;
+      setResults(local);
+      setTotal(bundle.total);
+      setSource('gutendex');
+      const known = useApp.getState().bookLevels;
+      queue.add(local.filter((b) => !b.level && !known.has(b.key)));
+      if (!search) {
+        setNext(pageAfter(language, bundle.books.length));
+        return;
+      }
+      setNext(null);
+      void load(null);
+      return () => request.current?.abort();
+    }
+    base.current = [];
     // Dernier résultat connu affiché tout de suite, puis actualisé en arrière-plan.
     const cached = cachedPage(language, search);
     setResults(cached?.books ?? []);
@@ -216,9 +254,9 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
     void load(null);
     return () => request.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [language, search]);
+  }, [language, search, bundle]);
 
-  const levelOf = (b: CatalogBook): CachedLevel | undefined => levels.get(b.key);
+  const levelOf = (b: CatalogBook): CachedLevel | undefined => levels.get(b.key) ?? bundleLevels.get(b.key);
   const visible = results.filter((b) => {
     if (maxLevel === 'all') return true;
     const l = levelOf(b);
@@ -256,14 +294,16 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
       </div>
       <p className="muted small row" style={{ margin: 0, gap: 6 }}>
         {loading && <Loader2 size={13} className="spin" />}
-        {loading && !results.length
+        {bundle === undefined
+          ? 'Chargement…'
+          : loading && !results.length
           ? slow
             ? 'Le catalogue répond lentement, encore un instant…'
             : 'Recherche dans le catalogue…'
           : [
               total != null ? `${total.toLocaleString('fr-FR')} livre${total > 1 ? 's' : ''} dans le catalogue` : `${results.length} livres`,
               source === 'gutenberg' ? 'via gutenberg.org (Gutendex ne répond pas)' : null,
-              loading ? 'actualisation…' : null,
+              loading ? (base.current.length ? 'recherche dans tout le catalogue…' : 'actualisation…') : null,
               error && results.length ? `actualisation impossible (${error})` : null,
               pending ? `estimation du niveau : ${results.length - pending}/${results.length}` : null,
               maxLevel !== 'all' ? `${confirmed} à votre niveau (≤ ${maxLevel}) parmi ${results.length - pending} analysés` : null,
@@ -331,7 +371,11 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
 /* ------------------------------------------------------------ Fiche livre --- */
 
 function BookDetail({ book, onClose }: { book: CatalogBook; onClose: () => void }) {
-  const level = useApp((s) => s.bookLevels.get(book.key));
+  const stored = useApp((s) => s.bookLevels.get(book.key));
+  // Livre du catalogue fourni : niveau déjà estimé à la préparation du catalogue.
+  const bundled = book as Partial<BundledBook>;
+  const level: CachedLevel | undefined =
+    stored ?? (bundled.level ? { level: bundled.level, vocabRank: bundled.vocabRank ?? 0, sentenceLength: bundled.sentenceLength ?? 0 } : undefined);
   const owned = useApp((s) => s.books.some((b) => b.key === book.key && b.universeId === s.universe?.id));
   const { addBook, navigate, toast } = useApp.getState();
   const [busy, setBusy] = useState(false);

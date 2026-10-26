@@ -5,6 +5,7 @@ import { catalogUrl, displayName, parseCatalogPage, shortTitle, textFormat, type
 import { estimateLevel, ranksFromList, sampleForLevel, withinLevel } from './level';
 import { cleanSelection, sentenceAround, sourceNote, startsSentence } from './selection';
 import { opdsUrl, parseOpds } from './opds';
+import { matchesSearch, pageAfter } from './catalog';
 
 const fixture = (name: string) => readFileSync(new URL(`./__fixtures__/${name}`, import.meta.url), 'utf8');
 const alice = fixture('pg11-alice.txt');
@@ -217,5 +218,20 @@ describe('catalogue de secours (OPDS gutenberg.org)', () => {
     expect(books[0].coverUrl).toBe('https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg');
     expect(next).toBe('https://www.gutenberg.org/ebooks/search.opds/?query=l.en&sort_order=downloads&start_index=26');
     expect(new URL(opdsUrl('es', 'quijote')).searchParams.get('query')).toBe('l.es quijote');
+  });
+});
+
+describe('catalogue fourni', () => {
+  const book = { key: 'gutenberg:1342', gutenbergId: 1342, title: 'Pride and Prejudice', authors: ['Jane Austen'], language: 'en', coverUrl: null, textUrl: '', subjects: ['Courtship -- Fiction'], downloads: 1, children: false };
+  it('recherche locale sans accents ni casse, sur titre, auteur et sujets', () => {
+    expect(matchesSearch(book, 'austen')).toBe(true);
+    expect(matchesSearch(book, 'PRIDE austen')).toBe(true);
+    expect(matchesSearch(book, 'courtship')).toBe(true);
+    expect(matchesSearch(book, 'dickens')).toBe(false);
+    expect(matchesSearch({ ...book, title: 'Les Misérables' }, 'miserables')).toBe(true);
+  });
+  it('page de Gutendex qui suit les livres fournis', () => {
+    expect(new URL(pageAfter('en', 200)).searchParams.get('page')).toBe('7');
+    expect(new URL(pageAfter('es', 10)).searchParams.get('languages')).toBe('es');
   });
 });
