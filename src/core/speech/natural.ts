@@ -29,10 +29,18 @@ async function invoke(body: Record<string, unknown>): Promise<unknown> {
   if ([0, 401, 403, 404, 503].includes(status)) unavailableUntil = Date.now() + RETRY_AFTER_MS;
   if (status === 429) throw new VoiceUnavailable('quota de la voix naturelle atteint');
   if (status === 401 || status === 403) throw new VoiceUnavailable('compte non autorisé pour la voix naturelle', true);
+  // Aucune réponse lisible : hors ligne, ou fonction absente / en échec au démarrage (Supabase répond alors
+  // sans en-têtes CORS, ce que l'application ne voit que comme une erreur réseau).
+  if (status === 0) throw new VoiceUnavailable(unreachable(), true);
   throw new VoiceUnavailable(
-    status === 404 ? 'fonction « speak » non déployée' : status === 503 ? 'clé Azure non configurée sur le serveur' : `serveur (${status || 'réseau'})`,
+    status === 404 ? 'fonction « speak » non déployée' : status === 503 ? 'clé Azure non configurée sur le serveur' : `erreur du serveur (${status})`,
     status === 404 || status === 503,
   );
+}
+
+function unreachable(): string {
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return 'pas de connexion Internet';
+  return "fonction « speak » injoignable : dans Supabase (Edge Functions), vérifiez qu'elle est déployée sous ce nom exact, puis regardez son onglet Logs";
 }
 
 /* ------------------------------------------------------------ cache --- */

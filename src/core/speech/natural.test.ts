@@ -26,4 +26,13 @@ describe('naturalVoiceUrl', () => {
     await naturalVoiceUrl('tackle', 'en-US').catch(() => undefined);
     expect(invoke).toHaveBeenCalledTimes(1);
   });
+
+  it('erreur réseau : explication claire, sans avertissement à chaque lecture', async () => {
+    vi.resetModules();
+    const fresh = await import('./natural');
+    invoke.mockResolvedValue({ data: null, error: { name: 'FunctionsFetchError', context: new TypeError('Failed to fetch') } });
+    const err = await fresh.naturalVoiceUrl('give up', 'en-US').catch((e) => e);
+    expect(err.silent).toBe(true);
+    expect(err.message).toMatch(/injoignable/);
+  });
 });

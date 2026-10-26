@@ -35,8 +35,9 @@ async function call<T>(body: Record<string, unknown>): Promise<T> {
   if ([0, 401, 403, 404, 503].includes(status)) unavailableUntil = Date.now() + RETRY_AFTER_MS;
   if (status === 429) throw new SharedUnavailable('quota DeepL du mois atteint');
   if (status === 401 || status === 403) throw new SharedUnavailable('compte non autorisé pour DeepL', true);
+  if (status === 0) throw new SharedUnavailable('fonction « translate » injoignable (hors ligne, ou fonction absente dans Supabase)', true);
   throw new SharedUnavailable(
-    status === 404 ? 'fonction « translate » non déployée' : status === 503 ? 'clé DeepL non configurée sur le serveur' : `serveur (${status || 'réseau'})`,
+    status === 404 ? 'fonction « translate » non déployée' : status === 503 ? 'clé DeepL non configurée sur le serveur' : `erreur du serveur (${status})`,
     status === 404 || status === 503,
   );
 }
