@@ -22,6 +22,8 @@ export default defineConfig({
     proxy: {
       '/proxy/gutendex': { target: 'https://gutendex.com', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/gutendex/, '') },
       '/proxy/mymemory': { target: 'https://api.mymemory.translated.net', changeOrigin: true, rewrite: (p) => p.replace(/^\/proxy\/mymemory/, '') },
+      '/proxy/deepl-free': { target: 'https://api-free.deepl.com', changeOrigin: true, rewrite: (p) => p.replace(/^\/proxy\/deepl-free/, '') },
+      '/proxy/deepl': { target: 'https://api.deepl.com', changeOrigin: true, rewrite: (p) => p.replace(/^\/proxy\/deepl/, '') },
       '/proxy/tatoeba': { target: 'https://tatoeba.org', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/tatoeba/, '') },
       '/proxy/gutenberg': { target: 'https://www.gutenberg.org', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/gutenberg/, '') },
     },

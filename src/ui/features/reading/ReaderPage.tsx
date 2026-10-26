@@ -125,7 +125,8 @@ function Reader({
   const current = useRef({ chapter, block: start.block });
   const [sel, clearSel] = useReaderSelection(flowRef, stageRef, chapters[chapter].blocks, language);
   const autoTranslate = useApp((s) => s.settings.autoTranslate);
-  const selTranslation = useSelectionTranslation(sel, language, autoTranslate);
+  const deeplKey = useApp((s) => s.settings.deeplKey);
+  const selTranslation = useSelectionTranslation(sel, language, autoTranslate, deeplKey);
 
   /** Expression sélectionnée → fiche pré-remplie (la phrase du livre comme exemple, la source en note). */
   const addSelection = () => {

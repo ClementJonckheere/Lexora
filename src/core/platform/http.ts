@@ -1,7 +1,7 @@
 import { isTauri } from './env';
 
 /**
- * Requêtes vers Gutendex, Project Gutenberg, MyMemory (traduction) et Tatoeba (exemples).
+ * Requêtes vers Gutendex, Project Gutenberg, DeepL et MyMemory (traduction), Tatoeba (exemples).
  * - Application : via la couche native (tauri-plugin-http), limitée à ces domaines ;
  *   Project Gutenberg n'autorise pas les requêtes directes depuis une page web.
  * - Aperçu navigateur : via le proxy du serveur de développement (vite.config.ts).
@@ -13,6 +13,8 @@ const PROXIES: [string, string][] = [
   ['https://gutenberg.org/', '/proxy/gutenberg/'],
   ['https://api.mymemory.translated.net/', '/proxy/mymemory/'],
   ['https://tatoeba.org/', '/proxy/tatoeba/'],
+  ['https://api-free.deepl.com/', '/proxy/deepl-free/'],
+  ['https://api.deepl.com/', '/proxy/deepl/'],
 ];
 
 export class HttpError extends Error {
@@ -36,6 +38,10 @@ export interface GetOptions {
   signal?: AbortSignal;
   /** Délai maximal de la requête complète (ms). */
   timeoutMs?: number;
+  method?: 'GET' | 'POST';
+  headers?: Record<string, string>;
+  /** Corps JSON (POST). */
+  json?: unknown;
 }
 
 const DEFAULT_TIMEOUT = 45_000;
@@ -49,8 +55,10 @@ async function doFetch(url: string, init: RequestInit): Promise<Response> {
 }
 
 export async function httpGet(url: string, opts: GetOptions = {}): Promise<Uint8Array> {
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = { ...opts.headers };
   if (opts.range) headers.Range = `bytes=${opts.range[0]}-${opts.range[1]}`;
+  if (opts.json !== undefined) headers['Content-Type'] = 'application/json';
+  const body = opts.json !== undefined ? JSON.stringify(opts.json) : undefined;
   const host = new URL(url).host;
   const ctrl = new AbortController();
   const onAbort = () => ctrl.abort();
@@ -67,7 +75,7 @@ export async function httpGet(url: string, opts: GetOptions = {}): Promise<Uint8
   const run = async (): Promise<Uint8Array> => {
     let res: Response;
     try {
-      res = await doFetch(url, { headers, signal: ctrl.signal });
+      res = await doFetch(url, { method: opts.method ?? (body ? 'POST' : 'GET'), headers, body, signal: ctrl.signal });
     } catch (err) {
       if (opts.signal?.aborted || ctrl.signal.aborted) throw err;
       throw new HttpError(0, `Connexion à ${host} impossible : ${err instanceof Error ? err.message : String(err)}`);

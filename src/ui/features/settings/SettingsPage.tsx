@@ -11,7 +11,8 @@ import { languageInfo } from '@/core/domain/languages';
 import { Button, Switch } from '@/ui/components/ui';
 import { AccountSection } from '@/ui/features/account/AccountSection';
 import { checkUpdates } from '@/app/desktop';
-import { getAutostart, setAutostart } from '@/core/platform/desktop';
+import { getAutostart, openExternal, setAutostart } from '@/core/platform/desktop';
+import { deeplUsage } from '@/core/translate/translate';
 
 function Setting({ title, desc, children }: { title: string; desc?: ReactNode; children: ReactNode }) {
   return (
@@ -110,6 +111,7 @@ export function SettingsPage() {
           >
             <Switch label="Traduction automatique" checked={settings.autoTranslate} onChange={(v) => update({ autoTranslate: v })} />
           </Setting>
+          <DeeplSetting value={settings.deeplKey} onSave={(v) => update({ deeplKey: v })} />
           <Setting title="Directions révisées" desc="Chaque direction est suivie séparément. Français → langue entraîne la production orale.">
             <select className="select" value={settings.directions} onChange={(e) => update({ directions: e.target.value as DirectionMode })}>
               <option value="both">Les deux</option>
@@ -404,5 +406,79 @@ function DesktopSection() {
         </Button>
       </Setting>
     </section>
+  );
+}
+
+/** Clé DeepL facultative : enregistrée sur cet appareil uniquement (ni synchronisée, ni dans les sauvegardes). */
+function DeeplSetting({ value, onSave }: { value: string; onSave: (v: string) => Promise<unknown> }) {
+  const [draft, setDraft] = useState(value);
+  const [show, setShow] = useState(false);
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => setDraft(value), [value]);
+
+  const check = async (key: string) => {
+    setBusy(true);
+    setStatus(null);
+    try {
+      const u = await deeplUsage(key);
+      const fmt = (n: number) => n.toLocaleString('fr-FR');
+      setStatus({ ok: true, text: `Clé valide · ${fmt(u.used)} / ${fmt(u.limit)} caractères utilisés ce mois-ci.` });
+    } catch (err) {
+      setStatus({ ok: false, text: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+  const save = async () => {
+    const key = draft.trim();
+    await onSave(key);
+    if (key) await check(key);
+    else setStatus(null);
+  };
+
+  return (
+    <Setting
+      title="Clé DeepL (facultatif)"
+      desc={
+        <>
+          Traduction plus fiable, qui tient compte de la phrase (« at last turned sulky » → « a fini par bouder »). Clé gratuite : 500 000 caractères par mois,
+          à créer sur{' '}
+          <button type="button" className="link" onClick={() => void openExternal('https://www.deepl.com/fr/pro-api')}>
+            deepl.com/pro-api
+          </button>{' '}
+          (offre « DeepL API Free »). Enregistrée sur cet appareil uniquement. Sans clé, MyMemory est utilisé.
+          {status && <div className={status.ok ? 'small' : 'field-error'} style={status.ok ? { color: 'var(--mastered)', marginTop: 4 } : { marginTop: 4 }}>{status.text}</div>}
+        </>
+      }
+    >
+      <div className="stack stack--sm" style={{ alignItems: 'flex-end' }}>
+        <input
+          className="input"
+          style={{ width: 260 }}
+          type={show ? 'text' : 'password'}
+          value={draft}
+          placeholder="xxxxxxxx-xxxx-…:fx"
+          autoComplete="off"
+          spellCheck={false}
+          aria-label="Clé DeepL"
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && void save()}
+        />
+        <div className="row">
+          <button type="button" className="link small" onClick={() => setShow(!show)}>
+            {show ? 'Masquer' : 'Afficher'}
+          </button>
+          {value && draft.trim() === value && (
+            <Button size="sm" onClick={() => void check(value)} disabled={busy}>
+              Vérifier
+            </Button>
+          )}
+          <Button size="sm" variant="primary" onClick={() => void save()} disabled={busy || draft.trim() === value}>
+            {draft.trim() || !value ? 'Enregistrer' : 'Retirer la clé'}
+          </Button>
+        </div>
+      </div>
+    </Setting>
   );
 }

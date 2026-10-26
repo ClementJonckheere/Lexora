@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { myMemoryUrl, parseMyMemory, TranslationError } from './translate';
+import { deeplEndpoint, deeplError, deeplRequest, deeplSupports, myMemoryUrl, parseMyMemory, tidy, TranslationError } from './translate';
 import { parseTatoeba, rankExamples, tatoebaUrl } from './examples';
 
 describe('traduction (MyMemory)', () => {
@@ -26,7 +26,7 @@ describe('traduction (MyMemory)', () => {
       },
       'fellow-passenger',
     );
-    expect(r).toEqual({ text: 'compagnon de voyage', alternatives: ['compagnon de route', 'co-voyageur'] });
+    expect(r).toEqual({ text: 'compagnon de voyage', alternatives: ['compagnon de route', 'co-voyageur'], provider: 'mymemory' });
   });
 
   it('quota atteint ou langue non prise en charge : message clair', () => {
@@ -34,6 +34,60 @@ describe('traduction (MyMemory)', () => {
       parseMyMemory({ responseStatus: 429, responseData: { translatedText: 'MYMEMORY WARNING: YOU USED ALL AVAILABLE FREE TRANSLATIONS FOR TODAY' } }, 'x'),
     ).toThrow(/Quota/);
     expect(() => parseMyMemory({ responseStatus: '403', responseData: { translatedText: "'XX' IS AN INVALID TARGET LANGUAGE" } }, 'x')).toThrow(TranslationError);
+  });
+});
+
+describe('fiabilité des traductions', () => {
+  it('retire la ponctuation parasite (« anxieux.) »)', () => {
+    expect(tidy('anxieux.)', 'anxiously')).toBe('anxieux');
+    expect(tidy('« bonjour »', 'hello')).toBe('bonjour');
+    expect(tidy('Quoi ?', 'What?')).toBe('Quoi ?');
+  });
+
+  it('écarte une entrée de mémoire qui ne correspond pas au texte demandé, préfère la traduction automatique', () => {
+    const r = parseMyMemory(
+      {
+        responseStatus: 200,
+        responseData: { translatedText: 'anxieux.)' },
+        matches: [
+          { segment: 'anxious.)', translation: 'anxieux.)', quality: '74', 'created-by': 'Anonymous' },
+          { segment: 'anxiously', translation: 'anxieusement', quality: '70', 'created-by': 'MT!' },
+        ],
+      },
+      'anxiously',
+    );
+    expect(r.text).toBe('anxieusement');
+  });
+
+  it('garde une entrée de mémoire exacte et de bonne qualité', () => {
+    const r = parseMyMemory(
+      {
+        responseStatus: 200,
+        responseData: { translatedText: 'x' },
+        matches: [
+          { segment: 'Take for granted', translation: 'considérer comme acquis', quality: '90', 'created-by': 'Translator' },
+          { segment: 'take for granted', translation: 'prendre pour accordé', quality: '70', 'created-by': 'MT!' },
+        ],
+      },
+      'take for granted',
+    );
+    expect(r.text).toBe('considérer comme acquis');
+  });
+
+  it('DeepL : serveur selon la clé, contexte de la phrase, erreurs lisibles', () => {
+    expect(deeplEndpoint('abc:fx', 'translate')).toBe('https://api-free.deepl.com/v2/translate');
+    expect(deeplEndpoint('abc', 'usage')).toBe('https://api.deepl.com/v2/usage');
+    expect(deeplRequest('last turned sulky', 'en', 'fr', 'she had quite a long argument with the Lory, who at last turned sulky')).toEqual({
+      text: ['last turned sulky'],
+      source_lang: 'EN',
+      target_lang: 'FR',
+      context: 'she had quite a long argument with the Lory, who at last turned sulky',
+    });
+    expect(deeplRequest('hello', 'en', 'fr', 'hello')).not.toHaveProperty('context');
+    expect(deeplSupports('zh')).toBe(true);
+    expect(deeplSupports('xx')).toBe(false);
+    expect(deeplError(456)).toMatch(/quota/);
+    expect(deeplError(403)).toMatch(/clé/);
   });
 });
 

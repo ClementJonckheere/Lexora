@@ -109,3 +109,13 @@ export async function notify(title: string, body: string): Promise<boolean> {
   }
   return false;
 }
+
+/** Ouvre une adresse dans le navigateur par défaut. */
+export async function openExternal(url: string): Promise<void> {
+  if (!isTauri()) {
+    window.open(url, '_blank', 'noopener');
+    return;
+  }
+  const { openUrl } = await import('@tauri-apps/plugin-opener');
+  await openUrl(url);
+}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Languages, Loader2, RefreshCw } from 'lucide-react';
-import { errorMessage } from '@/app/store';
+import { errorMessage, useApp } from '@/app/store';
 import { translate, type TranslationResult } from '@/core/translate/translate';
 import { findExamples, type ExampleSentence } from '@/core/translate/examples';
 import { Kbd } from '@/ui/components/ui';
@@ -29,7 +29,10 @@ export function TranslateAssist({
   /** Remplace l'exemple `previous` s'il est encore présent tel quel, sinon remplit le premier champ vide. */
   onExample: (text: string, previous: string | null) => void;
 }) {
+  const deeplKey = useApp((s) => s.settings.deeplKey);
   const [busy, setBusy] = useState(false);
+  /** Traduction de la phrase d'exemple déjà présente (phrase d'un livre, par exemple). */
+  const [sentence, setSentence] = useState<{ for: string; text: string | null; busy: boolean; error?: string } | null>(null);
   const [result, setResult] = useState<TranslationResult | null>(null);
   const [found, setFound] = useState<ExampleSentence[]>([]);
   const [shown, setShown] = useState(-1);
@@ -57,12 +60,15 @@ export function TranslateAssist({
     setBusy(true);
     setErrors([]);
     const wantExample = fields.current.examples.every((e) => !e.trim());
-    const [t, ex] = await Promise.allSettled([translate(q, language, 'fr', c.signal), findExamples(q, language, c.signal)]);
+    // Phrase déjà présente (livre, exemple saisi) : contexte pour choisir le bon sens.
+    const context = fields.current.examples.find((e) => e.trim()) ?? '';
+    const [t, ex] = await Promise.allSettled([translate(q, language, 'fr', { signal: c.signal, deeplKey, context }), findExamples(q, language, c.signal)]);
     if (c.signal.aborted) return;
     const errs: string[] = [];
     if (t.status === 'fulfilled') {
       setResult(t.value);
       if (!fields.current.translation.trim()) onTranslation(t.value.text);
+      if (t.value.fallbackReason) errs.push(`DeepL indisponible (${t.value.fallbackReason}) : traduction MyMemory.`);
     } else errs.push(`Traduction : ${errorMessage(t.reason)}`);
     if (ex.status === 'fulfilled') {
       setFound(ex.value);
@@ -90,6 +96,19 @@ export function TranslateAssist({
     inserted.current = s.text;
     setShown(i);
   };
+
+  const translateSentence = async (text: string) => {
+    setSentence({ for: text, text: null, busy: true });
+    try {
+      const r = await translate(text, language, 'fr', { deeplKey });
+      setSentence({ for: text, text: r.text, busy: false });
+    } catch (err) {
+      setSentence({ for: text, text: null, busy: false, error: errorMessage(err) });
+    }
+  };
+  // Premier exemple sans traduction connue (pas un exemple Tatoeba) : traduction à la demande.
+  const firstExample = examples.find((e) => e.trim()) ?? '';
+  const exampleKnown = found.some((f) => f.text === firstExample && f.translation);
 
   const alternatives = result ? [result.text, ...result.alternatives].filter((a) => a !== translation.trim()) : [];
   const current = shown >= 0 ? found[shown] : null;
@@ -133,12 +152,32 @@ export function TranslateAssist({
         </div>
       )}
       {shown === -2 && <div className="muted small">Aucune phrase d'exemple trouvée pour cette expression.</div>}
+      {firstExample && !exampleKnown && (
+        <div className="assist-example small">
+          {sentence?.for === firstExample && sentence.text ? (
+            <>
+              <span className="muted">Phrase traduite</span>
+              <em>« {sentence.text} »</em>
+            </>
+          ) : (
+            <button type="button" className="link small" disabled={sentence?.for === firstExample && sentence.busy} onClick={() => void translateSentence(firstExample)}>
+              {sentence?.for === firstExample && sentence.busy ? 'Traduction de la phrase…' : 'Traduire la phrase d’exemple (pour le contexte)'}
+            </button>
+          )}
+          {sentence?.for === firstExample && sentence.error && <span className="field-error">{sentence.error}</span>}
+        </div>
+      )}
       {errors.map((e) => (
         <div key={e} className="field-error">
           {e}
         </div>
       ))}
-      {(result || found.length > 0) && <div className="assist-credit">Traduction : MyMemory · Exemples : Tatoeba (CC BY 2.0 FR) · tout reste modifiable</div>}
+      {(result || found.length > 0) && (
+        <div className="assist-credit">
+          Traduction : {result?.provider === 'deepl' ? 'DeepL (avec le contexte de la phrase)' : 'MyMemory'} · Exemples : Tatoeba (CC BY 2.0 FR) · tout reste modifiable
+          {!deeplKey && ' · plus fiable avec une clé DeepL (Paramètres)'}
+        </div>
+      )}
     </div>
   );
 }

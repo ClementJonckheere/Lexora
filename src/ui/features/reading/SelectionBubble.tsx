@@ -96,15 +96,17 @@ export interface SelectionTranslation {
 }
 
 /** Traduction de la sélection (MyMemory), après une courte pause, mise en cache. */
-export function useSelectionTranslation(sel: ReaderSelection | null, language: string, enabled: boolean): SelectionTranslation {
+export function useSelectionTranslation(sel: ReaderSelection | null, language: string, enabled: boolean, deeplKey: string): SelectionTranslation {
   const [state, setState] = useState<{ for: string; text: string | null; loading: boolean }>({ for: '', text: null, loading: false });
   const expression = sel && !sel.error && !sel.known ? sel.expression : '';
+  // La phrase du livre sert de contexte (DeepL) : « at last turned sulky » → « a fini par bouder ».
+  const context = sel?.sentence ?? '';
   useEffect(() => {
     if (!enabled || !expression) return;
     const ctrl = new AbortController();
     const t = setTimeout(() => {
       setState({ for: expression, text: null, loading: true });
-      translate(expression, language, 'fr', ctrl.signal)
+      translate(expression, language, 'fr', { signal: ctrl.signal, deeplKey, context })
         .then((r) => !ctrl.signal.aborted && setState({ for: expression, text: r.text, loading: false }))
         .catch(() => !ctrl.signal.aborted && setState({ for: expression, text: null, loading: false }));
     }, 250);
@@ -112,7 +114,7 @@ export function useSelectionTranslation(sel: ReaderSelection | null, language: s
       clearTimeout(t);
       ctrl.abort();
     };
-  }, [expression, language, enabled]);
+  }, [expression, language, enabled, deeplKey, context]);
   return state.for === expression ? state : { text: null, loading: enabled && !!expression };
 }
 

@@ -53,6 +53,12 @@
         },
         {
           "url": "https://api.tatoeba.org/*"
+        },
+        {
+          "url": "https://api-free.deepl.com/*"
+        },
+        {
+          "url": "https://api.deepl.com/*"
         }
       ]
     }
