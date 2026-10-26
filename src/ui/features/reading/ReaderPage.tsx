@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, ChevronLeft, ChevronRight, List, Loader2, Maximize2, Minimize2, X } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
-import { progressAt, splitChapterTitle, type ParsedBook } from '@/core/reading/gutenberg';
+import { chapterDisplay, progressAt, splitChapterTitle, type ParsedBook } from '@/core/reading/gutenberg';
 import { isFullscreen, setFullscreen } from '@/core/platform/fullscreen';
 import { Button, EmptyState, Modal } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
@@ -408,7 +408,7 @@ function Reader({
                     ? segments(b.text, known[i]).map((seg, k) => {
                         const note = seg.noteId ? notesById.get(seg.noteId) : undefined;
                         return note ? (
-                          <span key={k} className="known-word" title={`${note.expression} — ${note.translation}`}>
+                          <span key={k} className="known-word" title={`${note.expression} : ${note.translation}`}>
                             {seg.text}
                           </span>
                         ) : (
@@ -487,7 +487,7 @@ function Reader({
                 autoFocus={i === chapter}
               >
                 <span className="muted small">{i + 1}</span>
-                <span>{c.title || `Partie ${i + 1}`}</span>
+                <span>{chapterDisplay(c.title) || `Partie ${i + 1}`}</span>
               </button>
             ))}
           </div>

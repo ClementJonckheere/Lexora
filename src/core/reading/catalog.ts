@@ -1,7 +1,7 @@
 import { httpGet, httpGetJson, httpGetText } from '../platform/http';
 import { opdsUrl, parseOpds } from './opds';
 import { decodeText, parseGutenberg, type ParsedBook } from './gutenberg';
-import { catalogUrl, parseCatalogPage, type CatalogBook, type GutendexPage } from './gutendex';
+import { catalogUrl, parseCatalogPage, shortTitle, type CatalogBook, type GutendexPage } from './gutendex';
 import { estimateLevel, ranksFromList, sampleForLevel, type FrequencyRanks, type Level, type LevelEstimate } from './level';
 import { normalizeSearch } from '../domain/text';
 
@@ -75,7 +75,10 @@ export function loadBundledCatalog(language: string): Promise<BundledCatalog | n
         const type = res.headers.get('content-type') ?? '';
         if (!res.ok || type.includes('html')) return null;
         const data = (await res.json()) as BundledCatalog;
-        return Array.isArray(data.books) && data.books.length ? data : null;
+        if (!Array.isArray(data.books) || !data.books.length) return null;
+        // Catalogues préparés avant le nettoyage des titres.
+        for (const b of data.books) b.title = shortTitle(b.title);
+        return data;
       })
       .catch(() => null);
     bundleCache.set(language, p);

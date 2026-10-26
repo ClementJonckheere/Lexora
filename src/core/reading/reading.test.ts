@@ -106,6 +106,8 @@ describe('catalogue Gutendex', () => {
     expect(displayName('Doyle, Arthur Conan, Sir')).toBe('Arthur Conan Doyle');
     expect(displayName('Homer')).toBe('Homer');
     expect(shortTitle('Moby Dick; Or, The Whale')).toBe('Moby Dick');
+    expect(shortTitle('The Works of Edgar Allan Poe — Volume 2')).toBe('The Works of Edgar Allan Poe, Volume 2');
+    expect(shortTitle('Democracy—false or true? : $b A prologue and a dream')).toBe('Democracy, false or true?');
     expect(textFormat({ 'text/plain; charset=utf-8': 'a.txt', 'text/plain': 'b.zip', 'text/plain; charset=us-ascii': 'c.txt' })).toBe('a.txt');
     const url = new URL(catalogUrl('es', ' quijote '));
     expect(url.searchParams.get('languages')).toBe('es');
@@ -180,6 +182,10 @@ describe('sélection dans un livre', () => {
   it('mention de la source', () => {
     expect(sourceNote("Alice's Adventures in Wonderland", 'Lewis Carroll', 'CHAPTER I. Down the Rabbit-Hole')).toBe(
       "Lu dans « Alice's Adventures in Wonderland » (Lewis Carroll), CHAPTER I. Down the Rabbit-Hole.",
+    );
+    // Livres téléchargés avec l'ancien séparateur.
+    expect(sourceNote('Treasure Island', 'R. L. Stevenson', 'CHAPTER I — The Old Sea-dog')).toBe(
+      'Lu dans « Treasure Island » (R. L. Stevenson), CHAPTER I. The Old Sea-dog.',
     );
   });
 });

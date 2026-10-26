@@ -62,8 +62,11 @@ export function displayName(name: string): string {
 
 /** Titre sans sous-titre interminable : « Pride and Prejudice », pas « …; Or, … ». */
 export function shortTitle(title: string): string {
-  const main = title.split(/\r?\n|\s*[:;]\s+(?=[A-ZÀ-ÖØ-Þ])/)[0].trim();
-  return main.length > 3 ? main : title.trim();
+  // « $b » : marqueur de sous-champ des notices de bibliothèque, parfois resté dans le titre.
+  const clean = title.replace(/\s*\$[a-z]\s+/g, ' ');
+  const main = clean.split(/\r?\n|\s*[:;]\s+(?=[A-ZÀ-ÖØ-Þ$])/)[0].trim();
+  // « My Life — Volume 1 » → « My Life, Volume 1 ».
+  return (main.length > 3 ? main : clean.trim()).replace(/\s*[—–]\s*/g, ', ');
 }
 
 const CHILDREN = /children|juvenile|picture books|fairy tales|nursery|enfant|jeunesse|kinder|infantil/i;

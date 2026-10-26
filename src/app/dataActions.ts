@@ -37,7 +37,7 @@ export function describeReport(r: ImportReport): string {
 
 export async function importCandidates(candidates: ImportCandidate[]): Promise<ImportReport> {
   const s = state();
-  if (!s.universe) throw new Error('Créez d’abord un univers.');
+  if (!s.universe) throw new Error("Créez d'abord un univers.");
   const report = await importNotes(s.db, candidates, s.notes, { universeId: s.universe.id, language: s.universe.language });
   await s.refresh();
   scheduleSync();

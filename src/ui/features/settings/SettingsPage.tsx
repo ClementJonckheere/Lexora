@@ -220,7 +220,7 @@ export function SettingsPage() {
             desc={
               isTauri()
                 ? "Ouvre l'ajout rapide depuis n'importe quelle application, tant que Lexora est lancé. Exemple : Alt+Shift+L. Vide = désactivé."
-                : 'Disponible dans l’application de bureau.'
+                : "Disponible dans l'application de bureau."
             }
           >
             <ShortcutInput value={settings.globalShortcut} disabled={!isTauri()} onCommit={(v) => update({ globalShortcut: v })} />
@@ -544,7 +544,7 @@ function NaturalVoiceSetting({ enabled, onChange }: { enabled: boolean; onChange
     setBusy(true);
     try {
       await checkNaturalVoice();
-      setState({ ok: true, text: 'Active. Les sons sont gardés sur cet appareil : chaque expression n’est demandée qu’une fois.' });
+      setState({ ok: true, text: "Active. Les sons sont gardés sur cet appareil : chaque expression n'est demandée qu'une fois." });
     } catch (err) {
       setState({ ok: false, text: `Non disponible : ${err instanceof Error ? err.message : String(err)}. La voix de Windows est utilisée.` });
     } finally {

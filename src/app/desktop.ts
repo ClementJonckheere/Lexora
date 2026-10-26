@@ -44,12 +44,12 @@ async function maybeRemind(now = new Date()) {
   if (readPref<string>('reminder.lastDay', '') === today) return;
   const message = reminderMessage();
   writePref('reminder.lastDay', today);
-  if (message) await notify('Lexora — c’est l’heure de réviser', message);
+  if (message) await notify("C'est l'heure de réviser", message);
 }
 
 async function refreshTooltip() {
   const total = dueByUniverse().reduce((a, d) => a + d.total, 0);
-  await setTrayTooltip(total ? `Lexora — ${total} fiche${total > 1 ? 's' : ''} à réviser` : 'Lexora — tout est à jour').catch(() => undefined);
+  await setTrayTooltip(total ? `Lexora : ${total} fiche${total > 1 ? 's' : ''} à réviser` : 'Lexora : tout est à jour').catch(() => undefined);
 }
 
 export async function checkUpdates(manual = false): Promise<void> {

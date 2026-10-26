@@ -1,4 +1,4 @@
-# Lexora — carnet de vocabulaire multilingue & mémorisation espacée
+# Lexora : carnet de vocabulaire multilingue & mémorisation espacée
 
 Lexora **n'enseigne pas les langues**. Il ne propose aucun cours, aucune leçon ni aucun contenu que vous n'avez pas ajouté vous-même.
 Vous apprenez par vos propres moyens (lecture, vidéos, travail, conversations). Lexora sert à :
@@ -48,7 +48,7 @@ Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à
   - **Vos mots surlignés dans le livre** : les expressions déjà enregistrées (formes conjuguées comprises : « peeped » pour « to peep », « took it for granted » pour « to take for granted ») sont soulignées, traduction au survol ; le pied de page indique combien de vos mots le chapitre contient. *Mes mots : Surligner / Masquer*.
   - **Traduction dans la bulle** : la traduction française proposée s'affiche dès la sélection et pré-remplit la fiche (modifiable). Désactivable : *Paramètres → Traduction automatique*.
   - *Niveau estimé, sans IA* : sur un extrait du texte, on mesure combien de mots courants (liste de fréquence de la langue) il faut connaître pour comprendre 90 % du texte, et la longueur des phrases ; le chinois et le japonais sont mesurés par caractères. Calibré sur des livres de référence en anglais (Alice ≈ B1, Treasure Island ≈ B2, Pride and Prejudice ≈ B2/C1, Moby-Dick ≈ C2) ; pour les autres langues, un facteur mesuré sur leurs livres les plus lus (listes de 50 000 formes, flexions plus nombreuses) donne au classique « moyen » le même niveau qu'en anglais. C'est une indication, pas une certification ; le niveau est recalculé sur le texte entier au téléchargement.
-- **Traduire et trouver un exemple** (formulaire d'ajout, `Ctrl+T`) : traduction française proposée par **[DeepL](https://www.deepl.com/fr/pro-api)** via une clé partagée gardée sur le serveur Supabase (fonction `translate`, voir [docs/SUPABASE.md](docs/SUPABASE.md) ; aucune clé à créer pour les utilisateurs), ou via une clé personnelle facultative (*Paramètres*) — la phrase de l'exemple ou du livre lui est transmise comme contexte, ce qui donne le bon sens (« at last turned sulky » → « a fini par bouder ») ; sinon par [MyMemory](https://mymemory.translated.net) (gratuit, sans clé, environ 5 000 caractères par jour ; ses entrées de mémoire collaborative qui ne correspondent pas exactement au texte sont écartées au profit de sa traduction automatique) avec d'autres traductions possibles en un clic. « Traduire la phrase d'exemple » affiche le sens de la phrase entière, et phrases d'exemple réelles de [Tatoeba](https://tatoeba.org) (écrites et traduites par des bénévoles, avec leur traduction française ; « Autre exemple » pour en changer). Le [Wiktionnaire](https://en.wiktionary.org) ajoute la **nature du mot** (verbe, nom, adjectif…) et ses définitions. Seuls les champs vides sont remplis, tout reste modifiable et la saisie manuelle reste possible. Pas d'IA générative : rien n'est inventé.
+- **Traduire et trouver un exemple** (formulaire d'ajout, `Ctrl+T`) : traduction française proposée par **[DeepL](https://www.deepl.com/fr/pro-api)** via une clé partagée gardée sur le serveur Supabase (fonction `translate`, voir [docs/SUPABASE.md](docs/SUPABASE.md) ; aucune clé à créer pour les utilisateurs), ou via une clé personnelle facultative (*Paramètres*). La phrase de l'exemple ou du livre lui est transmise comme contexte, ce qui donne le bon sens (« at last turned sulky » → « a fini par bouder ») ; sinon par [MyMemory](https://mymemory.translated.net) (gratuit, sans clé, environ 5 000 caractères par jour ; ses entrées de mémoire collaborative qui ne correspondent pas exactement au texte sont écartées au profit de sa traduction automatique) avec d'autres traductions possibles en un clic. « Traduire la phrase d'exemple » affiche le sens de la phrase entière, et phrases d'exemple réelles de [Tatoeba](https://tatoeba.org) (écrites et traduites par des bénévoles, avec leur traduction française ; « Autre exemple » pour en changer). Le [Wiktionnaire](https://en.wiktionary.org) ajoute la **nature du mot** (verbe, nom, adjectif…) et ses définitions. Seuls les champs vides sont remplis, tout reste modifiable et la saisie manuelle reste possible. Pas d'IA générative : rien n'est inventé.
 - **Statistiques** : chiffres réels uniquement (voir §6).
 - **Paramètres** : compte et synchronisation, réglages de mémorisation, voix (une par langue), raccourci global, import/export, sauvegardes.
 
@@ -174,7 +174,7 @@ Thème clair, fond blanc cassé, indigo comme couleur d'action, gris très clair
 
 ## Installation (Windows)
 
-### Option A — récupérer l'installateur
+### Option A : récupérer l'installateur
 
 Le workflow GitHub Actions `CI & installateur Windows` construit automatiquement l'installateur à chaque push sur `main`, à chaque tag `v*` et sur demande depuis l'onglet *Actions* → *Run workflow* :
 
@@ -196,7 +196,7 @@ Dès la version 2.1.0, Lexora vérifie au démarrage (puis toutes les 6 h, ou *P
 - **Démarrage avec Windows** (option, fenêtre masquée) et **rappel quotidien** à l'heure choisie s'il reste des révisions.
 - **Ajout rapide** `Alt+Maj+L` depuis n'importe quelle application, pré-rempli avec le texte copié s'il ressemble à un mot ou une expression.
 
-### Option B — compiler soi-même
+### Option B : compiler soi-même
 
 Prérequis, une seule fois :
 

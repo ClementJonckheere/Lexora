@@ -3,7 +3,7 @@ import type { Queryable } from './types';
 import { expressionKey } from '../domain/text';
 
 /**
- * v2 — univers (une langue par univers) et synchronisation entre appareils.
+ * v2 : univers (une langue par univers) et synchronisation entre appareils.
  *
  * - Identifiants universels (UUID) au lieu d'entiers locaux.
  * - Colonnes de synchronisation sur chaque table partagée :

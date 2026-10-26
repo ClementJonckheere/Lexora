@@ -130,7 +130,7 @@ function BulkImportDialog() {
                     <td>{r.translation}</td>
                     <td className="muted">{r.examples.join(' · ')}</td>
                     <td className={r.error ? 'status-err' : r.duplicate ? 'status-warn' : 'status-ok'}>
-                      {r.error ?? (r.duplicate ? 'Doublon — ignoré' : 'OK')}
+                      {r.error ?? (r.duplicate ? 'Doublon, ignoré' : 'OK')}
                     </td>
                   </tr>
                 ))}

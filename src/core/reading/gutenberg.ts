@@ -122,7 +122,7 @@ export function parseGutenberg(raw: string): ParsedBook {
       // « CHAPTER I. » suivi d'une ligne de titre.
       const next = pieces[i + 1];
       if (next !== undefined && isSubtitle(next) && !isHeading(next) && title.length < 30) {
-        title = `${title.replace(/\.$/, '')} — ${cleanInline(next)}`;
+        title = `${title.replace(/\.$/, '')}. ${cleanInline(next)}`;
         i++;
       }
       current = { title, blocks: [] };
@@ -160,6 +160,11 @@ export function splitChapterTitle(title: string): { label: string; name: string 
   const m = /^(.*?\b(?:[IVXLCDM]+|\d+)\b)\.?\s*(?:[—–-]\s*)?(\S.*)$/u.exec(title);
   if (m && m[1].length <= 30 && !/^[IVXLCDM\d]+$/.test(m[2])) return { label: m[1], name: m[2] };
   return { label: title, name: '' };
+}
+
+/** Titre affiché : « CHAPTER I. Titre » (les livres déjà téléchargés gardent l'ancien séparateur « — »). */
+export function chapterDisplay(title: string): string {
+  return title.replace(/\s+[—–]\s+/u, '. ');
 }
 
 /** Nombre total de blocs (sert au pourcentage de progression). */

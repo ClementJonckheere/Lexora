@@ -129,7 +129,7 @@ export function ReviewPage() {
               ) : notes.length === 0 ? (
                 'Ajoutez du vocabulaire : chaque expression devient automatiquement une fiche.'
               ) : (
-                <>Tout est à jour{nextDue ? ` — prochaine révision ${formatDue(nextDue)}` : ''}.</>
+                <>Tout est à jour.{nextDue ? ` Prochaine révision ${formatDue(nextDue)}.` : ''}</>
               )}
             </p>
           </div>
@@ -146,7 +146,7 @@ export function ReviewPage() {
                 onChange={setDirection}
                 options={[
                   { value: 'mix', label: 'Les deux' },
-                  { value: 'fr_en', label: directionShort('fr_en', language), title: `Retrouver l’expression (${universeName}) à partir du français` },
+                  { value: 'fr_en', label: directionShort('fr_en', language), title: `Retrouver l'expression (${universeName}) à partir du français` },
                   { value: 'en_fr', label: directionShort('en_fr', language), title: 'Retrouver le sens français' },
                 ]}
               />
@@ -206,7 +206,7 @@ export function ReviewPage() {
         {due.total > 0 ? (
           <div className="stack stack--sm">
             <Button size="lg" variant="primary" className="review-now" onClick={() => startScheduled(null)} shortcut="Entrée">
-              Réviser maintenant ({due.total}) <span className="review-now-time">· environ {minutes} min</span>
+              Réviser les {due.total} fiche{due.total > 1 ? 's' : ''} <span className="review-now-time">(environ {minutes} min)</span>
             </Button>
             {due.total > 5 && (
               <div className="row row--wrap" style={{ gap: 8 }}>
@@ -238,7 +238,7 @@ export function ReviewPage() {
           title="Mots difficiles"
           desc="Les expressions que vous oubliez régulièrement (au moins 2 oublis)."
           count={hardCount}
-          empty="Aucun mot difficile pour l’instant."
+          empty="Aucun mot difficile pour l'instant."
           onStart={(limit) => start({ kind: 'practice', mode: 'difficult', limit, direction: dir, ...scope })}
         />
         <ModeCard
@@ -246,7 +246,7 @@ export function ReviewPage() {
           title="Phrases à trous"
           desc="Complétez vos propres exemples. Utilise uniquement les phrases de vos notes."
           count={clozeCount}
-          empty="Ajoutez des exemples contenant l’expression pour activer ce mode."
+          empty="Ajoutez des exemples contenant l'expression pour activer ce mode."
           onStart={(limit) => start({ kind: 'practice', mode: 'cloze', limit, ...scope })}
         />
         <ModeCard
@@ -260,7 +260,7 @@ export function ReviewPage() {
         <ModeCard
           icon={<Ear size={18} />}
           title="Écoute"
-          desc="Écoutez l’expression, puis tapez ce que vous entendez ou son sens en français."
+          desc="Écoutez l'expression, puis tapez ce que vous entendez ou son sens en français."
           count={scoped.length}
           empty="Votre bibliothèque est vide."
           onStart={(limit) => start({ kind: 'practice', mode: 'listen', limit, ...scope })}

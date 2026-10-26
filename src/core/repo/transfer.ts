@@ -49,10 +49,10 @@ export function isBackup(data: unknown): data is Backup {
 export async function restoreBackup(db: Database, backup: Backup, now = Date.now()): Promise<void> {
   if (!isBackup(backup)) throw new Error("Ce fichier n'est pas une sauvegarde Lexora.");
   if (backup.schemaVersion < 2) {
-    throw new Error('Sauvegarde d’une ancienne version de Lexora : utilisez plutôt « Importer » avec un export CSV.');
+    throw new Error("Sauvegarde d'une ancienne version de Lexora : utilisez plutôt « Importer » avec un export CSV.");
   }
   if (backup.schemaVersion > LATEST_VERSION) {
-    throw new Error('Sauvegarde créée par une version plus récente de Lexora : mettez l’application à jour.');
+    throw new Error("Sauvegarde créée par une version plus récente de Lexora : mettez l'application à jour.");
   }
   await db.transaction(async (tx) => {
     for (const t of TABLES) {
@@ -75,7 +75,7 @@ export async function restoreBackup(db: Database, backup: Backup, now = Date.now
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Import de notes (collage, CSV, JSON simple) — fusion, doublons ignorés.   */
+/*  Import de notes (collage, CSV, JSON simple) : fusion, doublons ignorés.   */
 /* -------------------------------------------------------------------------- */
 
 export interface ImportCandidate extends NoteInput {

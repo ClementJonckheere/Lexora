@@ -251,7 +251,7 @@ function NoteEditorDialog() {
           <div className="notice" role="status">
             <AlertTriangle size={16} style={{ flex: 'none', marginTop: 1 }} />
             <div style={{ flex: 1 }}>
-              Déjà dans la bibliothèque : <strong>{duplicates[0].expression}</strong> — {duplicates[0].translation}
+              Déjà dans la bibliothèque : <strong>{duplicates[0].expression}</strong> : {duplicates[0].translation}
               {dupAck && <div className="small">Appuyez à nouveau sur Enregistrer pour créer un doublon.</div>}
             </div>
             <button type="button" className="link" onClick={() => openEditor(duplicates[0].id)}>

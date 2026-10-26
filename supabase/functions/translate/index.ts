@@ -1,4 +1,4 @@
-// Lexora — traduction DeepL partagée (Supabase Edge Function).
+// Lexora : traduction DeepL partagée (Supabase Edge Function).
 //
 // La clé DeepL reste sur le serveur (secret DEEPL_API_KEY) : elle n'est ni dans le dépôt ni dans
 // l'application. Seuls les utilisateurs connectés à Lexora peuvent s'en servir ; ALLOWED_EMAILS

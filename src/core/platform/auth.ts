@@ -37,7 +37,7 @@ export const authConfigured = Boolean(URL_ && KEY);
 let client: SupabaseClient | null = null;
 
 export function supabase(): SupabaseClient {
-  if (!authConfigured) throw new Error('Supabase n’est pas configuré (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).');
+  if (!authConfigured) throw new Error("Supabase n'est pas configuré (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).");
   if (!client) {
     client = createClient(URL_!, KEY!, {
       auth: {

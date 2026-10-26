@@ -180,7 +180,7 @@ export function TranslateAssist({
             </>
           ) : (
             <button type="button" className="link small" disabled={sentence?.for === firstExample && sentence.busy} onClick={() => void translateSentence(firstExample)}>
-              {sentence?.for === firstExample && sentence.busy ? 'Traduction de la phrase…' : 'Traduire la phrase d’exemple (pour le contexte)'}
+              {sentence?.for === firstExample && sentence.busy ? 'Traduction de la phrase…' : "Traduire la phrase d'exemple (pour le contexte)"}
             </button>
           )}
           {sentence?.for === firstExample && sentence.error && <span className="field-error">{sentence.error}</span>}

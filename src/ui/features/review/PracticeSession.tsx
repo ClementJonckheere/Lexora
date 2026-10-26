@@ -26,7 +26,7 @@ function scopedNotes(config: PracticeConfig) {
 function Banner() {
   return (
     <span className="practice-banner" title="Les réponses sont enregistrées dans l'historique mais ne changent pas les dates de révision.">
-      Entraînement libre · planification inchangée
+      Entraînement libre, sans effet sur vos révisions
     </span>
   );
 }
@@ -53,7 +53,7 @@ function PracticeFinished({ config, tally, startedAt }: { config: PracticeConfig
         title={`${MODE_TITLE[config.mode]} terminé${config.mode === 'cloze' ? 'es' : 'e'}`}
         tally={tally}
         startedAt={startedAt}
-        labels={config.mode === 'cloze' || config.mode === 'listen' ? ['Ratées', '—', 'Justes', '—'] : undefined}
+        labels={config.mode === 'cloze' || config.mode === 'listen' ? ['Ratées', '', 'Justes', ''] : undefined}
         note="Entraînement libre : vos dates de révision n'ont pas changé."
       >
         <Button variant="primary" onClick={again} shortcut="Entrée">
@@ -281,13 +281,13 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
             <div className={`verdict ${ok ? 'verdict--ok' : 'verdict--ko'}`}>
               {ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
               {verdict === 'exact' && 'Exact'}
-              {verdict === 'close' && `Juste — forme exacte : ${item.cloze.answers.join(' … ')}`}
+              {verdict === 'close' && `Juste, forme exacte : ${item.cloze.answers.join(' … ')}`}
               {verdict === 'wrong' && `Réponse : ${item.cloze.answers.join(' … ')}`}
               {verdict === 'skipped' && `Réponse : ${item.cloze.answers.join(' … ')}`}
             </div>
             {note && (
               <p className="muted" style={{ marginTop: 10 }}>
-                <strong className="text-2">{note.expression}</strong> — {note.translation}
+                <strong className="text-2">{note.expression}</strong> : {note.translation}
               </p>
             )}
           </div>

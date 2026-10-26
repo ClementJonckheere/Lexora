@@ -258,7 +258,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
           <div className="leech-hint">
             <AlertTriangle size={15} />
             <span>
-              Mot difficile : oublié {card.lapses} fois. Ajoutez un exemple personnel, une astuce dans la note, ou découpez l’expression en plus petits
+              Mot difficile : oublié {card.lapses} fois. Ajoutez un exemple personnel, une astuce dans la note, ou découpez l'expression en plus petits
               morceaux.
             </span>
             <button className="link small" onClick={() => openEditor(note.id)}>
@@ -294,7 +294,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
                 <strong>{g.label}</strong> : {GRADE_HELP[g.grade]}
               </span>
             ))}
-            <span className="muted">La prochaine révision s’adapte à votre réponse.</span>
+            <span className="muted">La prochaine révision s'adapte à votre réponse.</span>
           </p>
         )}
         <div className="session-hints">
@@ -352,7 +352,7 @@ function Finished({
   return (
     <SessionFrame completed={1} total={1} onQuit={() => navigate({ name: 'home' })}>
       <SessionSummary
-        title={more > 0 ? 'Session terminée' : 'Tout est révisé pour aujourd’hui'}
+        title={more > 0 ? 'Session terminée' : "Tout est révisé pour aujourd'hui"}
         tally={tally}
         startedAt={startedAt}
         details={
@@ -381,7 +381,7 @@ function Finished({
                       </button>
                     </span>
                   ))}
-                  {report.toWatch.length > 6 ? '…' : ''} — ils reviendront bientôt.
+                  {report.toWatch.length > 6 ? '…' : '.'} Ils reviendront bientôt.
                 </span>
               </div>
             )}

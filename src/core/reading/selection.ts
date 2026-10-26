@@ -1,4 +1,5 @@
 import { languageInfo } from '../domain/languages';
+import { chapterDisplay } from './gutenberg';
 
 /**
  * Sélection dans un livre : l'expression choisie et la phrase du livre qui la contient
@@ -134,6 +135,6 @@ export function startsSentence(text: string, start: number): boolean {
 
 /** Mention de la source, enregistrée dans la note. */
 export function sourceNote(title: string, author: string, chapterTitle: string): string {
-  const where = chapterTitle ? `, ${chapterTitle.replace(/\s+—\s+.*$/, '').trim()}` : '';
+  const where = chapterTitle ? `, ${chapterDisplay(chapterTitle).replace(/\.$/, '').trim()}` : '';
   return `Lu dans « ${title} »${author ? ` (${author})` : ''}${where}.`;
 }

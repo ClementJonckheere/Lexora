@@ -1,4 +1,4 @@
-// Lexora — voix naturelle partagée (Supabase Edge Function, Azure AI Speech).
+// Lexora : voix naturelle partagée (Supabase Edge Function, Azure AI Speech).
 //
 // La clé Azure reste sur le serveur (secrets AZURE_SPEECH_KEY et AZURE_SPEECH_REGION) : elle n'est
 // ni dans le dépôt ni dans l'application. Seuls les utilisateurs connectés à Lexora peuvent s'en

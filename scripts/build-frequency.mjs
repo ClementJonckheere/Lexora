@@ -1,5 +1,5 @@
 // Construit les listes de fréquence utilisées pour estimer le niveau des livres.
-// Source : FrequencyWords (Hermit Dave), sous-titres OpenSubtitles 2018 — contenu CC BY-SA 4.0.
+// Source : FrequencyWords (Hermit Dave), sous-titres OpenSubtitles 2018, contenu CC BY-SA 4.0.
 // https://github.com/hermitdave/FrequencyWords
 //
 // Usage : node scripts/build-frequency.mjs <dossier des fichiers xx_50k.txt>

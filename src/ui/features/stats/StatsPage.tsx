@@ -6,7 +6,7 @@ import { formatDate } from '@/core/domain/dates';
 import { computeStats, type Stats } from '@/core/repo/statsRepo';
 import { EmptyState } from '@/ui/components/ui';
 
-const pct = (v: number | null) => (v == null ? '—' : `${Math.round(v * 100)} %`);
+const pct = (v: number | null) => (v == null ? '-' : `${Math.round(v * 100)} %`);
 const WEEKDAY = new Intl.DateTimeFormat('fr-FR', { weekday: 'short' });
 
 export function StatsPage() {

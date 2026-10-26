@@ -125,7 +125,7 @@ for (const language of wanted.length ? wanted : LANGS) {
   } catch (err) {
     failures++;
     // Une langue en échec garde son fichier précédent.
-    console.error(`${language} : échec (${err instanceof Error ? err.message : err}) — fichier précédent conservé`);
+    console.error(`${language} : échec (${err instanceof Error ? err.message : err}) : fichier précédent conservé`);
   }
 }
 if (failures === (wanted.length || LANGS.length)) process.exit(1);

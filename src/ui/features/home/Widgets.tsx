@@ -35,12 +35,12 @@ export function GoalRing({ progress }: { progress: DailyProgress }) {
         </text>
       </svg>
       <div className="goal-text">
-        <strong>{reached ? 'Objectif atteint' : `${goal - done} réponse${goal - done > 1 ? 's' : ''} pour l’objectif`}</strong>
+        <strong>{reached ? 'Objectif atteint' : `${goal - done} réponse${goal - done > 1 ? 's' : ''} pour l'objectif`}</strong>
         <span className={`streak ${progress.streakDays ? '' : 'streak--none'}`}>
           <Flame size={14} />
           {progress.streakDays
-            ? `${progress.streakDays} jour${progress.streakDays > 1 ? 's' : ''} d’affilée${progress.streakAtRisk ? ' — révisez aujourd’hui pour continuer' : ''}`
-            : 'Commencez une série aujourd’hui'}
+            ? `${progress.streakDays} jour${progress.streakDays > 1 ? 's' : ''} d'affilée${progress.streakAtRisk ? ", révisez aujourd'hui pour continuer" : ''}`
+            : "Commencez une série aujourd'hui"}
         </span>
       </div>
     </div>
@@ -92,7 +92,7 @@ export function GettingStarted({ progress }: { progress: DailyProgress }) {
       action: () => navigate({ name: 'review' }),
       cta: 'Réviser',
     },
-    { done: books > 0, label: 'Ouvrir un livre à votre niveau', hint: 'Double-cliquez sur un mot pour l’enregistrer', action: () => navigate({ name: 'reading' }), cta: 'Lecture' },
+    { done: books > 0, label: 'Ouvrir un livre à votre niveau', hint: "Double-cliquez sur un mot pour l'enregistrer", action: () => navigate({ name: 'reading' }), cta: 'Lecture' },
   ];
   if (hidden || steps.every((s) => s.done)) return null;
   const hide = () => {

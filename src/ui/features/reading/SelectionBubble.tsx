@@ -152,7 +152,7 @@ export function SelectionBubble({
         <>
           {sel.known && (
             <span className="reader-bubble-text" title="Déjà dans vos fiches">
-              <strong>{sel.known.expression}</strong> — {sel.known.translation}
+              <strong>{sel.known.expression}</strong> : {sel.known.translation}
             </span>
           )}
           {!sel.known && (translation.loading || translation.text) && (

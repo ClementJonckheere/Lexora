@@ -77,7 +77,7 @@ export const LANGUAGES: LanguageInfo[] = [
     color: '#be123c',
     noSpaces: true,
     transcription: 'Lecture (kana / rōmaji)',
-    placeholder: { expression: 'よろしくお願いします', translation: 'Enchanté / merci d’avance', example: 'これからよろしくお願いします。' },
+    placeholder: { expression: 'よろしくお願いします', translation: "Enchanté / merci d'avance", example: 'これからよろしくお願いします。' },
   },
   {
     code: 'ko',
@@ -109,7 +109,7 @@ const GENERIC: LanguageInfo = {
   name: 'Langue',
   speech: '',
   color: '#57534e',
-  placeholder: { expression: 'Expression', translation: 'Traduction', example: 'Phrase d’exemple' },
+  placeholder: { expression: 'Expression', translation: 'Traduction', example: "Phrase d'exemple" },
 };
 
 export function languageInfo(code: string): LanguageInfo {

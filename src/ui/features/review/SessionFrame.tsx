@@ -64,14 +64,16 @@ export function SessionSummary({
   const total = tally[1] + tally[2] + tally[3] + tally[4];
   const minutes = Math.max(1, Math.round((Date.now() - startedAt) / 60_000));
   const success = total ? Math.round(((total - tally[1]) / total) * 100) : 0;
+  // Un libellé vide masque la case (phrases à trous, écoute : seulement « Ratées » et « Justes »).
+  const shown = ([1, 2, 3, 4] as const).filter((g) => labels[g - 1]);
   return (
     <div className="card summary">
       <div className="summary-title">{title}</div>
       <p className="muted" style={{ marginTop: 6 }}>
         {total} réponse{total > 1 ? 's' : ''} · {success} % de réussite · {minutes} min
       </p>
-      <div className="summary-stats">
-        {([1, 2, 3, 4] as const).map((g) => (
+      <div className="summary-stats" style={{ gridTemplateColumns: `repeat(${shown.length}, 1fr)` }}>
+        {shown.map((g) => (
           <div key={g}>
             <strong style={{ color: ['', 'var(--again)', 'var(--hard)', 'var(--good)', 'var(--easy)'][g] }}>{tally[g]}</strong>
             <span>{labels[g - 1]}</span>

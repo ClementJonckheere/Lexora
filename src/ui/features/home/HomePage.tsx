@@ -90,7 +90,7 @@ export function HomePage() {
         <div className="hero-facts">
           <span>
             <strong>{due.total}</strong> {due.total > 1 ? 'fiches à réviser' : 'fiche à réviser'} aujourd'hui
-            {due.total > 0 && <span className="muted"> · environ {minutes} min</span>}
+            {due.total > 0 && <span className="muted">, environ {minutes} min</span>}
           </span>
           <span>
             <strong>{recentCount}</strong> {recentCount > 1 ? 'nouveaux mots enregistrés' : 'nouveau mot enregistré'} ces 7 derniers jours
@@ -101,7 +101,7 @@ export function HomePage() {
         </div>
         <div className="hero-actions">
           <Button variant="primary" size="lg" onClick={due.total > 0 ? startAll : () => navigate({ name: 'review' })} shortcut="Entrée">
-            {due.total > 0 ? 'Commencer les révisions' : 'Tout est à jour — s’entraîner'} <ArrowRight size={17} />
+            {due.total > 0 ? 'Commencer les révisions' : "S'entraîner librement"} <ArrowRight size={17} />
           </Button>
           <Button size="lg" onClick={() => openEditor()} shortcut="N">
             <Plus size={17} /> Ajouter du vocabulaire

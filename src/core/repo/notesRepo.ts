@@ -194,7 +194,7 @@ export async function updateNote(db: Database, id: string, input: NoteInput, lan
       id,
     ],
   );
-  if (res.rowsAffected === 0) throw new Error('Cette note n’existe plus.');
+  if (res.rowsAffected === 0) throw new Error("Cette note n'existe plus.");
 }
 
 /** Suppression douce de notes et de leurs fiches. */

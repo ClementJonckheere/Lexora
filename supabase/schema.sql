@@ -1,5 +1,5 @@
 -- =============================================================================
---  Lexora — schéma Supabase (PostgreSQL)
+--  Lexora : schéma Supabase (PostgreSQL)
 --  À exécuter une fois dans Supabase : SQL Editor → New query → coller → Run.
 --  Le script est ré-exécutable sans risque (IF NOT EXISTS / OR REPLACE).
 --
