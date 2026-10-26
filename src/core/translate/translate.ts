@@ -7,7 +7,7 @@ import { HttpError, httpGetJson } from '../platform/http';
  * - MyMemory (gratuit, sans clé) sinon, ou si DeepL est indisponible.
  */
 
-export type TranslationProvider = 'deepl' | 'mymemory';
+export type TranslationProvider = 'deepl' | 'deepl-shared' | 'mymemory';
 
 export interface TranslationResult {
   /** Meilleure traduction proposée. */
@@ -23,6 +23,8 @@ export interface TranslateOptions {
   /** Phrase où apparaît l'expression : DeepL s'en sert pour choisir le bon sens (non traduite). */
   context?: string;
   deeplKey?: string;
+  /** DeepL partagé (clé sur le serveur Supabase), utilisé sans clé personnelle. */
+  shared?: (req: { text: string; source_lang: string; target_lang: string; context?: string }) => Promise<string>;
   signal?: AbortSignal;
 }
 
@@ -145,6 +147,11 @@ export function deeplRequest(text: string, from: string, to: string, context?: s
   };
 }
 
+function deeplRequestShared(text: string, from: string, to: string, context?: string) {
+  const r = deeplRequest(text, from, to, context);
+  return { text: r.text[0], source_lang: r.source_lang, target_lang: r.target_lang, ...(r.context ? { context: r.context } : {}) };
+}
+
 export function deeplError(status: number): string {
   if (status === 403 || status === 401) return 'clé DeepL refusée (vérifiez-la dans les Paramètres)';
   if (status === 456) return 'quota DeepL du mois atteint';
@@ -197,17 +204,26 @@ export function translate(text: string, from: string, to = 'fr', opts: Translate
   const q = text.trim();
   if (!q) return Promise.reject(new TranslationError('Rien à traduire.'));
   if (from === to) return Promise.resolve({ text: q, alternatives: [], provider: 'mymemory' });
-  const useDeepl = !!opts.deeplKey?.trim() && deeplSupports(from);
-  const key = `${useDeepl ? 'deepl' : 'mm'}|${from}|${to}|${q.toLowerCase()}|${useDeepl ? (opts.context ?? '') : ''}`;
+  const personal = !!opts.deeplKey?.trim() && deeplSupports(from);
+  const shared = !personal && !!opts.shared && deeplSupports(from);
+  const ctxKey = personal || shared ? (opts.context ?? '') : '';
+  const key = `${personal ? 'deepl' : shared ? 'shared' : 'mm'}|${from}|${to}|${q.toLowerCase()}|${ctxKey}`;
   let p = cache.get(key);
   if (!p) {
     const myMemory = () => httpGetJson<MyMemoryResponse>(myMemoryUrl(q, from, to), { signal: opts.signal, timeoutMs: 15_000 }).then((r) => parseMyMemory(r, q));
-    p = useDeepl
-      ? translateDeepl(q, from, to, opts.deeplKey!, opts.context, opts.signal).catch(async (err) => {
+    const viaShared = async (): Promise<TranslationResult> => {
+      const t = tidy(await opts.shared!(deeplRequestShared(q, from, to, opts.context)), q);
+      if (!t) throw new TranslationError('Réponse DeepL vide.');
+      return { text: matchCase(q, t), alternatives: [], provider: 'deepl-shared' };
+    };
+    const first = personal ? () => translateDeepl(q, from, to, opts.deeplKey!, opts.context, opts.signal) : shared ? viaShared : null;
+    p = first
+      ? first().catch(async (err) => {
           if (opts.signal?.aborted) throw err;
-          // DeepL indisponible (quota, clé, réseau) : MyMemory prend le relais, en le signalant.
+          // DeepL indisponible (quota, clé, serveur, réseau) : MyMemory prend le relais, en le signalant.
           const r = await myMemory();
-          return { ...r, fallbackReason: err instanceof Error ? err.message : String(err) };
+          const silent = !!(err as { silent?: boolean }).silent;
+          return { ...r, fallbackReason: silent ? undefined : err instanceof Error ? err.message : String(err) };
         })
       : myMemory();
     cache.set(key, p);

@@ -1,5 +1,6 @@
 import { useEffect, useState, type RefObject } from 'react';
 import { translate } from '@/core/translate/translate';
+import { sharedDeepl } from '@/core/translate/shared';
 import { BookmarkPlus, Loader2, PenLine, Volume2 } from 'lucide-react';
 import { useApp } from '@/app/store';
 import { expressionKey } from '@/core/domain/text';
@@ -106,7 +107,7 @@ export function useSelectionTranslation(sel: ReaderSelection | null, language: s
     const ctrl = new AbortController();
     const t = setTimeout(() => {
       setState({ for: expression, text: null, loading: true });
-      translate(expression, language, 'fr', { signal: ctrl.signal, deeplKey, context })
+      translate(expression, language, 'fr', { signal: ctrl.signal, deeplKey, shared: sharedDeepl, context })
         .then((r) => !ctrl.signal.aborted && setState({ for: expression, text: r.text, loading: false }))
         .catch(() => !ctrl.signal.aborted && setState({ for: expression, text: null, loading: false }));
     }, 250);

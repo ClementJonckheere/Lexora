@@ -113,3 +113,21 @@ Copier `.env.example` en `.env` à la racine et remplir les deux valeurs, puis `
 | « … base Supabase à mettre à jour : relancez supabase/schema.sql » | Une nouvelle version de Lexora ajoute des colonnes : relancez le script (étape 2). |
 | « Synchronisation en échec : … permission denied » | Le script `schema.sql` n'a pas été exécuté (ou pas entièrement). |
 | L'application démarre sans écran de connexion | Les secrets `VITE_SUPABASE_*` n'étaient pas définis au moment du build. |
+
+## Traduction DeepL partagée (facultatif, recommandé)
+
+Une seule clé DeepL sert à tous les utilisateurs de Lexora, sans rien à configurer de leur côté. La clé est gardée **sur le serveur Supabase** (fonction `translate`) : elle n'apparaît ni dans le dépôt ni dans l'installateur, et seuls les comptes connectés à Lexora peuvent s'en servir. Sans cette fonction, Lexora utilise MyMemory.
+
+1. **Clé DeepL** : créez un compte « DeepL API Free » sur <https://www.deepl.com/fr/pro-api> (gratuit jusqu'à 500 000 caractères par mois, partagés entre tous les utilisateurs). Copiez la clé dans *Compte → Clés API* (elle se termine par `:fx`).
+2. **Fonction** : dans Supabase, menu **Edge Functions** → **Deploy a new function** → **Via Editor**.
+   - Nom : `translate` (exactement).
+   - Remplacez le code proposé par tout le contenu de [`supabase/functions/translate/index.ts`](../supabase/functions/translate/index.ts) → **Deploy function**.
+   - Laissez activée la vérification du jeton (*Verify JWT* / *Enforce JWT verification*).
+3. **Secrets** : **Edge Functions** → **Secrets** (ou *Project Settings → Edge Functions*) → **Add new secret** :
+   - `DEEPL_API_KEY` = votre clé DeepL ;
+   - facultatif : `ALLOWED_EMAILS` = les adresses Google autorisées, séparées par des virgules (`a@gmail.com,b@gmail.com,c@gmail.com`). Recommandé : sans cette liste, tout compte Google qui installe Lexora pourrait consommer votre quota.
+4. **Vérification** : dans Lexora, *Paramètres → Traduction DeepL partagée → Vérifier* affiche « Active · … caractères utilisés ce mois-ci ».
+
+Avec la ligne de commande Supabase, les étapes 2 et 3 s'écrivent : `supabase functions deploy translate` puis `supabase secrets set DEEPL_API_KEY=… ALLOWED_EMAILS=…`.
+
+Les mots sélectionnés et leur phrase sont envoyés à DeepL (via cette fonction) pour être traduits. Une clé DeepL personnelle saisie dans les Paramètres reste prioritaire sur la clé partagée.

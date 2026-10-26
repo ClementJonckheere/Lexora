@@ -3,6 +3,7 @@ import { Languages, Loader2, RefreshCw } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import { translate, type TranslationResult } from '@/core/translate/translate';
 import { findExamples, type ExampleSentence } from '@/core/translate/examples';
+import { sharedDeepl } from '@/core/translate/shared';
 import { Kbd } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 
@@ -62,7 +63,7 @@ export function TranslateAssist({
     const wantExample = fields.current.examples.every((e) => !e.trim());
     // Phrase déjà présente (livre, exemple saisi) : contexte pour choisir le bon sens.
     const context = fields.current.examples.find((e) => e.trim()) ?? '';
-    const [t, ex] = await Promise.allSettled([translate(q, language, 'fr', { signal: c.signal, deeplKey, context }), findExamples(q, language, c.signal)]);
+    const [t, ex] = await Promise.allSettled([translate(q, language, 'fr', { signal: c.signal, deeplKey, shared: sharedDeepl, context }), findExamples(q, language, c.signal)]);
     if (c.signal.aborted) return;
     const errs: string[] = [];
     if (t.status === 'fulfilled') {
@@ -100,7 +101,7 @@ export function TranslateAssist({
   const translateSentence = async (text: string) => {
     setSentence({ for: text, text: null, busy: true });
     try {
-      const r = await translate(text, language, 'fr', { deeplKey });
+      const r = await translate(text, language, 'fr', { deeplKey, shared: sharedDeepl });
       setSentence({ for: text, text: r.text, busy: false });
     } catch (err) {
       setSentence({ for: text, text: null, busy: false, error: errorMessage(err) });
@@ -174,8 +175,7 @@ export function TranslateAssist({
       ))}
       {(result || found.length > 0) && (
         <div className="assist-credit">
-          Traduction : {result?.provider === 'deepl' ? 'DeepL (avec le contexte de la phrase)' : 'MyMemory'} · Exemples : Tatoeba (CC BY 2.0 FR) · tout reste modifiable
-          {!deeplKey && ' · plus fiable avec une clé DeepL (Paramètres)'}
+          Traduction : {result?.provider === 'mymemory' ? 'MyMemory' : 'DeepL (avec le contexte de la phrase)'} · Exemples : Tatoeba (CC BY 2.0 FR) · tout reste modifiable
         </div>
       )}
     </div>

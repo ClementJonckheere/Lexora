@@ -13,6 +13,8 @@ import { AccountSection } from '@/ui/features/account/AccountSection';
 import { checkUpdates } from '@/app/desktop';
 import { getAutostart, openExternal, setAutostart } from '@/core/platform/desktop';
 import { deeplUsage } from '@/core/translate/translate';
+import { sharedDeeplUsage } from '@/core/translate/shared';
+import { authConfigured } from '@/core/platform/auth';
 
 function Setting({ title, desc, children }: { title: string; desc?: ReactNode; children: ReactNode }) {
   return (
@@ -111,6 +113,7 @@ export function SettingsPage() {
           >
             <Switch label="Traduction automatique" checked={settings.autoTranslate} onChange={(v) => update({ autoTranslate: v })} />
           </Setting>
+          {authConfigured && <SharedDeeplStatus />}
           <DeeplSetting value={settings.deeplKey} onSave={(v) => update({ deeplKey: v })} />
           <Setting title="Directions révisées" desc="Chaque direction est suivie séparément. Français → langue entraîne la production orale.">
             <select className="select" value={settings.directions} onChange={(e) => update({ directions: e.target.value as DirectionMode })}>
@@ -439,15 +442,14 @@ function DeeplSetting({ value, onSave }: { value: string; onSave: (v: string) =>
 
   return (
     <Setting
-      title="Clé DeepL (facultatif)"
+      title="Clé DeepL personnelle (facultatif)"
       desc={
         <>
-          Traduction plus fiable, qui tient compte de la phrase (« at last turned sulky » → « a fini par bouder »). Clé gratuite : 500 000 caractères par mois,
-          à créer sur{' '}
+          Inutile si la traduction DeepL partagée est active. Sinon, clé gratuite (500 000 caractères par mois) à créer sur{' '}
           <button type="button" className="link" onClick={() => void openExternal('https://www.deepl.com/fr/pro-api')}>
             deepl.com/pro-api
           </button>{' '}
-          (offre « DeepL API Free »). Enregistrée sur cet appareil uniquement. Sans clé, MyMemory est utilisé.
+          (offre « DeepL API Free »). Enregistrée sur cet appareil uniquement ; prioritaire sur la clé partagée.
           {status && <div className={status.ok ? 'small' : 'field-error'} style={status.ok ? { color: 'var(--mastered)', marginTop: 4 } : { marginTop: 4 }}>{status.text}</div>}
         </>
       }
@@ -479,6 +481,47 @@ function DeeplSetting({ value, onSave }: { value: string; onSave: (v: string) =>
           </Button>
         </div>
       </div>
+    </Setting>
+  );
+}
+
+/** État de la traduction DeepL partagée (clé détenue par le serveur Supabase). */
+function SharedDeeplStatus() {
+  const [state, setState] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const check = async () => {
+    setBusy(true);
+    try {
+      const u = await sharedDeeplUsage();
+      const fmt = (n: number) => n.toLocaleString('fr-FR');
+      setState({ ok: true, text: `Active · ${fmt(u.used)} / ${fmt(u.limit)} caractères utilisés ce mois-ci (tous les utilisateurs).` });
+    } catch (err) {
+      setState({ ok: false, text: `Non disponible : ${err instanceof Error ? err.message : String(err)}. Les traductions passent par MyMemory.` });
+    } finally {
+      setBusy(false);
+    }
+  };
+  useEffect(() => {
+    void check();
+  }, []);
+  return (
+    <Setting
+      title="Traduction DeepL partagée"
+      desc={
+        <>
+          Traduction fiable qui tient compte de la phrase (« at last turned sulky » → « a fini par bouder »), sans clé à créer : la clé est gardée sur le serveur
+          Lexora et réservée aux comptes connectés.
+          {state && (
+            <div className={state.ok ? 'small' : 'field-error'} style={state.ok ? { color: 'var(--mastered)', marginTop: 4 } : { marginTop: 4 }}>
+              {state.text}
+            </div>
+          )}
+        </>
+      }
+    >
+      <Button size="sm" onClick={() => void check()} disabled={busy}>
+        {busy ? 'Vérification…' : 'Vérifier'}
+      </Button>
     </Setting>
   );
 }
