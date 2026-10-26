@@ -144,12 +144,34 @@ create table if not exists public.settings (
   primary key (user_id, key)
 );
 
+-- ------------------------------------------------------- livres (lecture) ---
+create table if not exists public.books (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  book_key           text not null,
+  universe_id        uuid not null,
+  title              text not null,
+  authors            jsonb not null default '[]'::jsonb,
+  language           text not null,
+  cover_url          text not null default '',
+  text_url           text not null,
+  level              text not null default '',
+  chapter            integer not null default 0,
+  block              integer not null default 0,
+  progress           double precision not null default 0,
+  added_at           bigint not null,
+  last_read_at       bigint,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0,
+  primary key (user_id, book_key)
+);
+
 -- ------------------------------------ index, déclencheurs, sécurité (RLS) ---
 do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);

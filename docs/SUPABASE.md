@@ -21,7 +21,7 @@ l'**URL du projet** et la **clé publique** (`anon` / `publishable`).
 2. Coller tout le contenu de [`supabase/schema.sql`](../supabase/schema.sql) → **Run**.
 3. Vérifier dans **Table Editor** : `universes`, `notes`, `cards`, `collections`, `review_logs`, `practice_logs`, `settings`, toutes marquées *RLS enabled*.
 
-Le script peut être relancé sans risque. **À relancer après la mise à jour vers Lexora 2.1.0** (nouvelles colonnes `notes.suspended` et `universes.new_per_day`).
+Le script peut être relancé sans risque. **À relancer après chaque mise à jour qui le demande** : 2.1.0 (colonnes `notes.suspended`, `universes.new_per_day`), 2.2.0 (table `books`, position de lecture).
 
 ## 3. Créer l'identifiant Google (Google Cloud)
 

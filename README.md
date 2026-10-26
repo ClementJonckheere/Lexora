@@ -30,7 +30,7 @@ Tout le reste (planification, ordre, rythme, catégorie) est automatique.
 
 ## 2. Pages
 
-Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à réviser par langue), puis **Accueil · Bibliothèque · Réviser · Collections · Statistiques · Paramètres**. En bas : le compte et l'état de synchronisation, **Rechercher (`Ctrl+K`)** et **+ Ajouter (`N`)**.
+Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à réviser par langue), puis **Accueil · Bibliothèque · Réviser · Collections · Lecture · Statistiques · Paramètres**. En bas : le compte et l'état de synchronisation, **Rechercher (`Ctrl+K`)** et **+ Ajouter (`N`)**.
 
 - **Connexion** (premier lancement) : « Continuer avec Google ». Le navigateur s'ouvre et l'application récupère la session. Elle reste ensuite connectée, y compris hors ligne.
 - **Choix de la première langue** : grille de langues (anglais, espagnol, portugais, allemand, italien, russe, chinois, japonais, coréen, arabe, néerlandais, ou toute autre langue par son code ISO).
@@ -39,6 +39,11 @@ Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à
 - **Bibliothèque** : tableau compact et virtualisé (des milliers de lignes restent fluides). Recherche instantanée dans la langue de l'univers **et** en français, sans tenir compte des accents (ni du « to » initial en anglais). Les filtres se combinent : maîtrise, non maîtrisées, date d'ajout, catégorie, tag, collection, favoris. Tri par date, ordre alphabétique ou maîtrise. Le bouton **Masquer le français** (`H`) permet de s'autoévaluer : on clique sur une traduction pour la révéler. Un clic sur une ligne ouvre le détail : exemples, note, état FSRS de chaque direction, historique des réponses.
 - **Réviser** : sessions de 5 / 10 / 20 mots ou toutes les révisions du jour. On peut choisir la direction (les deux, français → langue ou langue → français) et limiter à une collection. Trois modes d'**entraînement libre** : mots difficiles, phrases à trous et aléatoire.
 - **Collections** : listes personnalisées (Business English, Phrasal Verbs…). Une note peut appartenir à plusieurs collections. Chaque collection se révise et s'entraîne séparément.
+- **Lecture** : des livres libres de droits dans la langue de l'univers (catalogue de [Project Gutenberg](https://www.gutenberg.org) via l'API [Gutendex](https://gutendex.com), sans clé).
+  - *Découvrir* : couvertures, recherche par titre ou auteur, **niveau estimé** de chaque livre (A1 → C2) et filtre **Niveau maximum** pour n'afficher que les livres accessibles. Avec un filtre, la suite du catalogue est chargée automatiquement tant qu'il y a trop peu de livres adaptés.
+  - *Mes livres* : couverture, progression ; la position de lecture est synchronisée entre appareils (le texte, lui, est téléchargé sur chaque appareil).
+  - **Lecteur plein écran** en double page (une page si la fenêtre est étroite) : `←` `→`, `Espace`, molette ; `+` / `−` pour la taille du texte ; papier ivoire, blanc ou nuit ; police sans ou serif ; `T` table des chapitres ; `F` plein écran ; `Échap` pour quitter.
+  - *Niveau estimé, sans IA* : sur un extrait du texte, on mesure combien de mots courants (liste de fréquence de la langue) il faut connaître pour comprendre 90 % du texte, et la longueur des phrases ; le chinois et le japonais sont mesurés par caractères. Calibré sur des livres de référence (Alice ≈ B1, Treasure Island ≈ B2, Pride and Prejudice ≈ B2/C1, Moby-Dick ≈ C2). C'est une indication, pas une certification ; le niveau est recalculé sur le texte entier au téléchargement.
 - **Statistiques** : chiffres réels uniquement (voir §6).
 - **Paramètres** : compte et synchronisation, réglages de mémorisation, voix (une par langue), raccourci global, import/export, sauvegardes.
 
@@ -225,7 +230,7 @@ Voir le guide pas à pas [docs/SUPABASE.md](docs/SUPABASE.md) :
 
 Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 
-**Mise à jour 2.1.0** : relancer `supabase/schema.sql` dans l'éditeur SQL de Supabase (colonnes `notes.suspended` et `universes.new_per_day`). Le script est idempotent. Sans cela, la synchronisation affiche « base Supabase à mettre à jour ».
+**Mise à jour 2.2.0** : relancer `supabase/schema.sql` (nouvelle table `books` pour la position de lecture). **Mise à jour 2.1.0** : relancer `supabase/schema.sql` dans l'éditeur SQL de Supabase (colonnes `notes.suspended` et `universes.new_per_day`). Le script est idempotent. Sans cela, la synchronisation affiche « base Supabase à mettre à jour ».
 
 ## Données, sauvegarde et restauration
 
@@ -234,13 +239,18 @@ Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 - **Sauvegarde complète** (*Paramètres → Sauvegarder*) : un fichier JSON avec tous les univers, les notes, les fiches FSRS, l'historique et les réglages. Il se **restaure** à l'identique, et la restauration se propage aux appareils synchronisés. Une copie de sécurité de la base est faite avant chaque restauration.
 - **Export** CSV (UTF-8, `;`, s'ouvre directement dans Excel) et JSON de l'univers courant. **Import** CSV et JSON dans l'univers courant, doublons ignorés.
 
+## Sources et licences des données
+
+- Livres : [Project Gutenberg](https://www.gutenberg.org) (œuvres du domaine public), catalogue via [Gutendex](https://gutendex.com).
+- Listes de fréquence (`public/reading/freq/`) : dérivées de [FrequencyWords](https://github.com/hermitdave/FrequencyWords) (Hermit Dave, sous-titres OpenSubtitles 2018), contenu sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) ; régénérables avec `scripts/build-frequency.mjs`.
+
 ## Raccourcis clavier
 
 | Où | Touche | Action |
 |---|---|---|
 | Partout | `N` / `Ctrl+N` | Ajouter une expression |
 | Partout | `Ctrl+Maj+V` | Coller plusieurs expressions |
-| Partout | `Ctrl+1` … `Ctrl+6` | Changer de page |
+| Partout | `Ctrl+1` … `Ctrl+7` | Changer de page (`Ctrl+5` : Lecture) |
 | Partout | `Alt+1` … `Alt+9` · `Ctrl+U` | Changer d'univers (langue) · Gérer les univers |
 | Partout | `?` | Aide des raccourcis |
 | Windows | `Alt+Maj+L` (réglable) | Ajout rapide depuis n'importe quelle application (pré-rempli avec le texte copié) |
@@ -253,3 +263,4 @@ Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 | Session | `Z` · `E` · `P` · `S` · `Échap` | Annuler · Modifier · Prononcer · Suspendre la note · Quitter |
 | Bibliothèque | `/` · `↑` `↓` · `E` · `F` · `H` · `P` · `Suppr` | Rechercher · Parcourir · Modifier · Favori · Masquer le français · Prononcer · Supprimer (annulable) |
 | Bibliothèque | `X` · `Ctrl+clic` · `Maj+clic` · `Ctrl+A` · `Échap` | Sélection multiple (actions groupées : collection, tag, déplacer vers un autre univers, suspendre, supprimer) · Désélectionner |
+| Lecteur | `←` `→` · `Espace` · `+` `−` · `T` · `F` · `Échap` | Page précédente / suivante · Taille du texte · Chapitres · Plein écran · Quitter |

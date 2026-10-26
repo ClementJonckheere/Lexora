@@ -4,7 +4,9 @@ import type { RemoteRow, SyncTable } from './tables';
 
 /** Erreur PostgREST lisible ; colonne absente = schéma Supabase pas à jour. */
 function describe(error: { message: string; code?: string }): string {
-  const missing = error.code === 'PGRST204' || error.code === '42703' || /column .* does not exist|Could not find the '.*' column/i.test(error.message);
+  const missing =
+    ['PGRST204', 'PGRST205', '42703', '42P01'].includes(error.code ?? '') ||
+    /column .* does not exist|relation .* does not exist|Could not find the .* (column|table)/i.test(error.message);
   return missing ? `${error.message} — base Supabase à mettre à jour : relancez supabase/schema.sql dans l'éditeur SQL de Supabase.` : error.message;
 }
 

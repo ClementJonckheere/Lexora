@@ -9,6 +9,12 @@ import * as collectionsRepo from '@/core/repo/collectionsRepo';
 import * as universesRepo from '@/core/repo/universesRepo';
 import { countNewIntroduced, loadForgetCounts } from '@/core/repo/reviewRepo';
 import { loadSettings, saveSettings } from '@/core/repo/settingsRepo';
+import * as booksRepo from '@/core/repo/booksRepo';
+import type { Book, CachedLevel } from '@/core/repo/booksRepo';
+import type { CatalogBook } from '@/core/reading/gutendex';
+import type { ParsedBook } from '@/core/reading/gutenberg';
+import type { LevelEstimate } from '@/core/reading/level';
+import { downloadBook, downloadCover, levelOfText, loadRanks } from '@/core/reading/catalog';
 import { createScheduler, type Scheduler } from '@/core/srs/scheduler';
 import { authConfigured, currentUser, signInWithGoogle, signOut as authSignOut, type AccountUser } from '@/core/platform/auth';
 import { bindAccount, getSyncState, resetLocalData } from '@/core/sync/engine';
@@ -28,6 +34,8 @@ export type Route =
   | { name: 'collections' }
   | { name: 'collection'; id: string }
   | { name: 'stats' }
+  | { name: 'reading' }
+  | { name: 'reader'; bookKey: string }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';
@@ -104,6 +112,12 @@ interface AppState {
   newIntroducedToday: number;
   /** Incrémenté à chaque modification des données. */
   revision: number;
+  /** Livres de tous les univers (espace lecture). */
+  books: Book[];
+  /** Couvertures enregistrées sur cet appareil. */
+  bookCovers: Map<string, string>;
+  /** Niveaux estimés des livres du catalogue (cache local). */
+  bookLevels: Map<string, CachedLevel>;
 
   route: Route;
   /** Change à chaque navigation : force le remontage d'une page (ex. nouvelle session). */
@@ -162,6 +176,15 @@ interface AppState {
   deleteCollection(id: string): Promise<void>;
   addToCollection(collectionId: string, noteIds: string[]): Promise<void>;
   removeFromCollection(collectionId: string, noteIds: string[]): Promise<void>;
+
+  /** Télécharge un livre du catalogue et l'ajoute à « Mes livres » de l'univers courant. */
+  addBook(book: CatalogBook): Promise<void>;
+  /** Texte du livre (téléchargé à nouveau s'il a été ajouté sur un autre appareil). */
+  openBookText(key: string): Promise<ParsedBook>;
+  removeBook(key: string): Promise<void>;
+  /** Position de lecture : enregistrée sans recharger l'application. */
+  saveBookProgress(key: string, chapter: number, block: number, progress: number): Promise<void>;
+  setBookLevel(key: string, estimate: LevelEstimate): Promise<void>;
 }
 
 let toastSeq = 1;
@@ -225,6 +248,9 @@ export const useApp = create<AppState>((set, get) => {
     forgetCounts: new Map(),
     newIntroducedToday: 0,
     revision: 0,
+    books: [],
+    bookCovers: new Map(),
+    bookLevels: new Map(),
 
     route: { name: 'home' },
     routeKey: 0,
@@ -263,11 +289,14 @@ export const useApp = create<AppState>((set, get) => {
     async refresh() {
       const d = db();
       const { settings } = get();
-      const [universes, allNotes, allCollections, forgetCounts] = await Promise.all([
+      const [universes, allNotes, allCollections, forgetCounts, books, bookCovers, bookLevels] = await Promise.all([
         universesRepo.loadUniverses(d),
         notesRepo.loadNotes(d),
         collectionsRepo.loadCollections(d),
         loadForgetCounts(d),
+        booksRepo.loadBooks(d),
+        booksRepo.loadCovers(d),
+        booksRepo.loadLevels(d),
       ]);
       const wanted = get().universe?.id ?? readPref<string | null>('universeId', null);
       const current = universes.find((u) => u.id === wanted) ?? universes[0] ?? null;
@@ -284,6 +313,9 @@ export const useApp = create<AppState>((set, get) => {
         collections: current ? allCollections.filter((c) => c.universeId === current.id) : [],
         forgetCounts,
         newIntroducedToday,
+        books,
+        bookCovers,
+        bookLevels,
         revision: s.revision + 1,
         ...(changedUniverse ? { libraryFilters: DEFAULT_FILTERS, selectedNoteId: null } : {}),
       }));
@@ -480,6 +512,41 @@ export const useApp = create<AppState>((set, get) => {
     async addToCollection(collectionId, noteIds) {
       await collectionsRepo.addToCollection(db(), collectionId, noteIds);
       await afterWrite();
+    },
+    async addBook(book) {
+      const u = universe();
+      const d = db();
+      const [content, cover, ranks] = await Promise.all([downloadBook(book), downloadCover(book.coverUrl), loadRanks(book.language)]);
+      // Niveau mesuré sur le livre entier (plus précis que l'extrait du catalogue).
+      const estimate = ranks ? levelOfText(content, ranks, book.language) : null;
+      if (estimate) await booksRepo.saveLevel(d, book.key, estimate);
+      await booksRepo.saveBook(d, book, u.id, estimate?.level ?? get().bookLevels.get(book.key)?.level ?? null, content, cover);
+      await afterWrite();
+    },
+    async openBookText(key) {
+      const d = db();
+      const local = await booksRepo.loadBookText(d, key);
+      if (local) return local;
+      const book = get().books.find((b) => b.key === key);
+      if (!book) throw new Error('Livre introuvable.');
+      const [content, cover] = await Promise.all([downloadBook(book), downloadCover(book.coverUrl || null)]);
+      await booksRepo.saveBookText(d, key, content, cover);
+      if (cover) set((s) => ({ bookCovers: new Map(s.bookCovers).set(key, cover) }));
+      return content;
+    },
+    async removeBook(key) {
+      await booksRepo.removeBook(db(), key);
+      await afterWrite();
+    },
+    async saveBookProgress(key, chapter, block, progress) {
+      await booksRepo.saveProgress(db(), key, chapter, block, progress);
+      const now = Date.now();
+      set((s) => ({ books: s.books.map((b) => (b.key === key ? { ...b, chapter, block, progress, lastReadAt: now, updatedAt: now } : b)) }));
+      scheduleSync();
+    },
+    async setBookLevel(key, estimate) {
+      await booksRepo.saveLevel(db(), key, estimate);
+      set((s) => ({ bookLevels: new Map(s.bookLevels).set(key, { level: estimate.level, vocabRank: estimate.vocabRank, sentenceLength: estimate.sentenceLength }) }));
     },
     async removeFromCollection(collectionId, noteIds) {
       await collectionsRepo.removeFromCollection(db(), collectionId, noteIds);

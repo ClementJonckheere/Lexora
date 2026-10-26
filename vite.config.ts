@@ -18,6 +18,11 @@ export default defineConfig({
     host: host || false,
     hmr: host ? { protocol: 'ws', host, port: 1421 } : undefined,
     watch: { ignored: ['**/src-tauri/**'] },
+    // Aperçu navigateur : Gutendex et Project Gutenberg n'autorisent pas les requêtes directes (CORS).
+    proxy: {
+      '/proxy/gutendex': { target: 'https://gutendex.com', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/gutendex/, '') },
+      '/proxy/gutenberg': { target: 'https://www.gutenberg.org', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/gutenberg/, '') },
+    },
   },
   envPrefix: ['VITE_', 'TAURI_ENV_*'],
   build: {

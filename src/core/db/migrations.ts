@@ -132,6 +132,46 @@ MIGRATIONS.push(MIGRATION_V2, {
     'ALTER TABLE notes ADD COLUMN suspended INTEGER NOT NULL DEFAULT 0',
     'ALTER TABLE universes ADD COLUMN new_per_day INTEGER',
   ],
+}, {
+  version: 4,
+  name: 'espace lecture : livres, textes téléchargés, niveaux estimés',
+  statements: [
+    // Livres de l'utilisateur et position de lecture (synchronisés).
+    `CREATE TABLE books (
+      book_key      TEXT PRIMARY KEY,
+      universe_id   TEXT    NOT NULL,
+      title         TEXT    NOT NULL,
+      authors       TEXT    NOT NULL DEFAULT '[]',
+      language      TEXT    NOT NULL,
+      cover_url     TEXT    NOT NULL DEFAULT '',
+      text_url      TEXT    NOT NULL,
+      level         TEXT    NOT NULL DEFAULT '',
+      chapter       INTEGER NOT NULL DEFAULT 0,
+      block         INTEGER NOT NULL DEFAULT 0,
+      progress      REAL    NOT NULL DEFAULT 0,
+      added_at      INTEGER NOT NULL,
+      last_read_at  INTEGER,
+      updated_at    INTEGER NOT NULL,
+      deleted       INTEGER NOT NULL DEFAULT 0,
+      dirty         INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_books_universe ON books(universe_id, deleted)',
+    // Texte mis en forme et couverture, propres à cet appareil (re-téléchargeables).
+    `CREATE TABLE book_texts (
+      book_key    TEXT PRIMARY KEY,
+      content     TEXT    NOT NULL,
+      cover       TEXT    NOT NULL DEFAULT '',
+      fetched_at  INTEGER NOT NULL
+    )`,
+    // Niveaux estimés des livres du catalogue (cache local).
+    `CREATE TABLE book_levels (
+      book_key         TEXT PRIMARY KEY,
+      level            TEXT    NOT NULL,
+      vocab_rank       INTEGER NOT NULL DEFAULT 0,
+      sentence_length  REAL    NOT NULL DEFAULT 0,
+      computed_at      INTEGER NOT NULL
+    )`,
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

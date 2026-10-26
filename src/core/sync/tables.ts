@@ -43,6 +43,15 @@ export const SYNC_TABLES: SyncTable[] = [
     ],
   },
   { name: 'practice_logs', key: 'id', columns: ['id', 'note_id', 'mode', 'rating', 'created_at', ...SYNC] },
+  {
+    name: 'books',
+    key: 'book_key',
+    columns: [
+      'book_key', 'universe_id', 'title', 'authors', 'language', 'cover_url', 'text_url', 'level', 'chapter', 'block',
+      'progress', 'added_at', 'last_read_at', ...SYNC,
+    ],
+    json: ['authors'],
+  },
   { name: 'settings', key: 'key', columns: ['key', 'value', 'updated_at'], noTombstone: true },
 ];
 

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BarChart3, BookOpen, Brain, Home, Layers, Plus, Search, Settings as SettingsIcon } from 'lucide-react';
+import { BarChart3, BookOpen, Brain, Home, Layers, Library, Plus, Search, Settings as SettingsIcon } from 'lucide-react';
 import { useApp, type Route } from '@/app/store';
 import { registerGlobalShortcut } from '@/core/platform/globalShortcut';
 import { readClipboardExpression } from '@/core/platform/desktop';
@@ -19,6 +19,8 @@ import { SessionPage } from './features/review/SessionPage';
 import { CollectionPage, CollectionsPage } from './features/collections/CollectionsPage';
 import { StatsPage } from './features/stats/StatsPage';
 import { SettingsPage } from './features/settings/SettingsPage';
+import { ReadingPage } from './features/reading/ReadingPage';
+import { ReaderPage } from './features/reading/ReaderPage';
 import { AccountConflictScreen, FirstSyncScreen, LoginScreen } from './features/account/AuthScreens';
 import { SidebarAccount } from './features/account/SyncIndicator';
 import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/universes/Universes';
@@ -28,8 +30,9 @@ const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string
   { route: 'library', label: 'Bibliothèque', icon: BookOpen, key: '2' },
   { route: 'review', label: 'Réviser', icon: Brain, key: '3' },
   { route: 'collections', label: 'Collections', icon: Layers, key: '4' },
-  { route: 'stats', label: 'Statistiques', icon: BarChart3, key: '5' },
-  { route: 'settings', label: 'Paramètres', icon: SettingsIcon, key: '6' },
+  { route: 'reading', label: 'Lecture', icon: Library, key: '5' },
+  { route: 'stats', label: 'Statistiques', icon: BarChart3, key: '6' },
+  { route: 'settings', label: 'Paramètres', icon: SettingsIcon, key: '7' },
 ];
 
 let lastPrefill = '';
@@ -104,7 +107,9 @@ function ShortcutsHelp() {
     ['N  ou  Ctrl+N', 'Ajouter une expression'],
     ['Ctrl+Maj+V', 'Coller plusieurs expressions'],
     ['Ctrl+K', 'Recherche instantanée'],
-    ['Ctrl+1 … 6', 'Changer de page'],
+    ['Ctrl+1 … 7', 'Changer de page'],
+    ['Lecture : ← → · Espace', 'Page précédente / suivante'],
+    ['Lecture : + − · T · F', 'Taille du texte · Chapitres · Plein écran'],
     ['Alt+1 … 9', "Changer d'univers (langue)"],
     ['Ctrl+Entrée', 'Enregistrer le formulaire'],
     ['Accueil : Entrée / Espace', 'Toutes les révisions / 5 mots'],
@@ -152,6 +157,10 @@ function Page() {
       return <CollectionsPage />;
     case 'collection':
       return <CollectionPage key={route.id} id={route.id} />;
+    case 'reading':
+      return <ReadingPage key={key} />;
+    case 'reader':
+      return <ReaderPage key={route.bookKey} bookKey={route.bookKey} />;
     case 'stats':
       return <StatsPage />;
     case 'settings':
@@ -186,6 +195,7 @@ export function App() {
   useEffect(() => (appReady ? startDesktopIntegration() : undefined), [appReady]);
 
   const inSession = route.name === 'session';
+  const focus = inSession || route.name === 'reader';
 
   useHotkeys(
     {
@@ -201,8 +211,9 @@ export function App() {
             'mod+2': () => navigate({ name: 'library' }),
             'mod+3': () => navigate({ name: 'review' }),
             'mod+4': () => navigate({ name: 'collections' }),
-            'mod+5': () => navigate({ name: 'stats' }),
-            'mod+6': () => navigate({ name: 'settings' }),
+            'mod+5': () => navigate({ name: 'reading' }),
+            'mod+6': () => navigate({ name: 'stats' }),
+            'mod+7': () => navigate({ name: 'settings' }),
             'mod+u': () => useApp.getState().setUniversesOpen(true),
             ...Object.fromEntries(Array.from({ length: 9 }, (_, i) => [`alt+${i + 1}`, () => switchUniverse(i)])),
           }),
@@ -243,8 +254,8 @@ export function App() {
 
   return (
     <>
-      <div className={`app ${inSession ? 'app--focus' : ''}`}>
-        {!inSession && <Sidebar />}
+      <div className={`app ${focus ? 'app--focus' : ''}`}>
+        {!focus && <Sidebar />}
         <main className="main">
           <Page />
         </main>

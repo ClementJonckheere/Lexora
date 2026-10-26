@@ -7,6 +7,7 @@ import { createUniverse, loadUniverses } from '../repo/universesRepo';
 import { recordReview } from '../repo/reviewRepo';
 import { loadSettings, saveSettings } from '../repo/settingsRepo';
 import { createScheduler, review } from '../srs/scheduler';
+import { loadBookText, loadBooks, removeBook, saveBook, saveProgress } from '../repo/booksRepo';
 import { bindAccount, pendingChanges, resetLocalData, syncOnce } from './engine';
 import { MemoryRemote } from './memoryRemote';
 
@@ -73,6 +74,36 @@ describe('synchronisation entre appareils', () => {
     await syncOnce(b, remote);
     await syncOnce(a, remote);
     expect(await loadNotes(a)).toEqual([]);
+  });
+
+  it('livres : la position de lecture suit l’utilisateur, le texte reste local', async () => {
+    const remote = new MemoryRemote();
+    const pc = await createMemoryDatabase();
+    const phone = await createMemoryDatabase();
+    const u = await createUniverse(pc, 'Anglais', 'en');
+    const book = {
+      key: 'gutenberg:11', gutenbergId: 11, title: "Alice's Adventures in Wonderland", authors: ['Lewis Carroll'], language: 'en',
+      coverUrl: 'https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg', textUrl: 'https://www.gutenberg.org/ebooks/11.txt.utf-8',
+      subjects: [], downloads: 1, children: true,
+    };
+    const content = { chapters: [{ title: 'CHAPTER I', blocks: [{ kind: 'p' as const, text: 'Alice was beginning…' }] }] };
+    await saveBook(pc, book, u, 'B1', content, '');
+    await saveProgress(pc, book.key, 3, 12, 0.27);
+    await syncOnce(pc, remote);
+    await syncOnce(phone, remote);
+    const [b] = await loadBooks(phone);
+    expect(b).toMatchObject({ key: 'gutenberg:11', universeId: u, authors: ['Lewis Carroll'], level: 'B1', chapter: 3, block: 12, progress: 0.27 });
+    expect(await loadBookText(phone, book.key)).toBeNull();
+    expect(await loadBookText(pc, book.key)).toEqual(content);
+
+    // Ré-ajout sur le mobile : la position est conservée ; retrait sur le PC : propagé.
+    await saveBook(phone, book, u, 'B1', content, '');
+    expect((await loadBooks(phone))[0].chapter).toBe(3);
+    await new Promise((r) => setTimeout(r, 5));
+    await removeBook(pc, book.key);
+    await syncOnce(pc, remote);
+    await syncOnce(phone, remote);
+    expect(await loadBooks(phone)).toHaveLength(0);
   });
 
   it('pagination : plus de 500 lignes', async () => {
