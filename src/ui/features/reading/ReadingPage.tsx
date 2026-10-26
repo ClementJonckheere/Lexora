@@ -14,6 +14,30 @@ import { BookCover, LevelBadge } from './BookCover';
 type Tab = 'mine' | 'discover';
 type MaxLevel = Level | 'all';
 
+interface CachedPage {
+  books: CatalogBook[];
+  next: string | null;
+  count: number | null;
+  source: 'gutendex' | 'gutenberg';
+}
+/** Pages déjà chargées pendant cette session (recherches comprises). */
+const memoryCache = new Map<string, CachedPage>();
+/** Première page de chaque langue, gardée d'une session à l'autre : affichage immédiat. */
+const storedKey = (language: string) => `reading.catalog.v1.${language}`;
+
+function cachedPage(language: string, search: string): CachedPage | null {
+  const mem = memoryCache.get(`${language}|${search.toLowerCase()}`);
+  if (mem) return mem;
+  if (search) return null;
+  const stored = readPref<CachedPage | null>(storedKey(language), null);
+  return stored && Array.isArray(stored.books) ? stored : null;
+}
+
+function rememberPage(language: string, search: string, page: CachedPage) {
+  memoryCache.set(`${language}|${search.toLowerCase()}`, page);
+  if (!search) writePref(storedKey(language), page);
+}
+
 /** Nombre minimal de livres affichés avant de charger automatiquement la page suivante (filtre de niveau). */
 const MIN_VISIBLE = 12;
 /** Pages chargées automatiquement au plus, pour une recherche. */
@@ -115,8 +139,11 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
   const [search, setSearch] = useState('');
   const [results, setResults] = useState<CatalogBook[]>([]);
   const [next, setNext] = useState<string | null>(null);
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState<number | null>(0);
+  const [source, setSource] = useState<'gutendex' | 'gutenberg'>('gutendex');
   const [loading, setLoading] = useState(false);
+  /** Chargement plus long que d'habitude (Gutendex est parfois lent). */
+  const [slow, setSlow] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [failed, setFailed] = useState<Set<string>>(new Set());
   const [, setTick] = useState(0);
@@ -145,30 +172,47 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
     const ctrl = new AbortController();
     request.current = ctrl;
     setLoading(true);
+    setSlow(false);
     setError(null);
+    const slowTimer = setTimeout(() => setSlow(true), 4000);
     try {
       const page = await searchCatalog(language, search, pageUrl, ctrl.signal);
       if (ctrl.signal.aborted) return;
-      pagesLoaded.current++;
+      pagesLoaded.current = pageUrl ? pagesLoaded.current + 1 : 1;
       setResults((r) => {
         const seen = new Set(r.map((b) => b.key));
         return [...(pageUrl ? r : []), ...page.books.filter((b) => !pageUrl || !seen.has(b.key))];
       });
       setNext(page.next);
       setTotal(page.count);
+      setSource(page.source);
+      if (!pageUrl) rememberPage(language, search, page);
       const cached = useApp.getState().bookLevels;
       queue.add(page.books.filter((b) => !cached.has(b.key)));
     } catch (err) {
       if (!ctrl.signal.aborted) setError(errorMessage(err));
     } finally {
-      if (request.current === ctrl) setLoading(false);
+      clearTimeout(slowTimer);
+      if (request.current === ctrl) {
+        setLoading(false);
+        setSlow(false);
+      }
     }
   };
 
   useEffect(() => {
     queue.clear();
     pagesLoaded.current = 0;
-    setResults([]);
+    // Dernier résultat connu affiché tout de suite, puis actualisé en arrière-plan.
+    const cached = cachedPage(language, search);
+    setResults(cached?.books ?? []);
+    setNext(cached?.next ?? null);
+    setTotal(cached?.count ?? 0);
+    if (cached) {
+      setSource(cached.source);
+      const levels = useApp.getState().bookLevels;
+      queue.add(cached.books.filter((b) => !levels.has(b.key)));
+    }
     void load(null);
     return () => request.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,15 +254,25 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
           ]}
         />
       </div>
-      <p className="muted small" style={{ margin: 0 }}>
+      <p className="muted small row" style={{ margin: 0, gap: 6 }}>
+        {loading && <Loader2 size={13} className="spin" />}
         {loading && !results.length
-          ? 'Recherche dans le catalogue…'
-          : `${total.toLocaleString('fr-FR')} livre${total > 1 ? 's' : ''} dans le catalogue${pending ? ` · estimation du niveau : ${results.length - pending}/${results.length}` : ''}${
-              maxLevel !== 'all' ? ` · ${confirmed} à votre niveau (≤ ${maxLevel}) parmi ${results.length - pending} analysés` : ''
-            }`}
+          ? slow
+            ? 'Le catalogue répond lentement, encore un instant…'
+            : 'Recherche dans le catalogue…'
+          : [
+              total != null ? `${total.toLocaleString('fr-FR')} livre${total > 1 ? 's' : ''} dans le catalogue` : `${results.length} livres`,
+              source === 'gutenberg' ? 'via gutenberg.org (Gutendex ne répond pas)' : null,
+              loading ? 'actualisation…' : null,
+              error && results.length ? `actualisation impossible (${error})` : null,
+              pending ? `estimation du niveau : ${results.length - pending}/${results.length}` : null,
+              maxLevel !== 'all' ? `${confirmed} à votre niveau (≤ ${maxLevel}) parmi ${results.length - pending} analysés` : null,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
       </p>
 
-      {error && (
+      {error && !results.length && (
         <div className="notice notice--error">
           <strong>Catalogue indisponible.</strong> {error}{' '}
           <button className="link" onClick={() => void load(null)}>
@@ -259,7 +313,7 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
         })}
       </div>
 
-      {(loading || next) && (
+      {((loading && results.length === 0) || next) && (
         <div className="row" style={{ justifyContent: 'center', padding: '8px 0 24px' }}>
           {loading ? (
             <span className="muted row">

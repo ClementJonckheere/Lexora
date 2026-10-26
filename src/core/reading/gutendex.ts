@@ -77,7 +77,7 @@ export function textFormat(formats: Record<string, string>): string | null {
 
 export function toCatalogBook(b: GutendexBook, language: string): CatalogBook | null {
   const textUrl = textFormat(b.formats);
-  if (!textUrl || b.media_type !== 'Text') return null;
+  if (!textUrl || b.media_type !== 'Text' || b.copyright === true) return null;
   const cover = b.formats['image/jpeg'] ?? null;
   return {
     key: bookKey(b.id),
@@ -94,9 +94,13 @@ export function toCatalogBook(b: GutendexBook, language: string): CatalogBook | 
   };
 }
 
-/** Adresse de recherche : livres dans la langue, avec un fichier texte, par popularité. */
+/**
+ * Adresse de recherche : livres dans la langue, par popularité.
+ * Sans filtre de format ni de droits côté serveur (ces filtres rendent Gutendex très lent) :
+ * les livres sans fichier texte sont écartés ici.
+ */
 export function catalogUrl(language: string, search = ''): string {
-  const params = new URLSearchParams({ languages: language, mime_type: 'text/plain', copyright: 'false' });
+  const params = new URLSearchParams({ languages: language });
   if (search.trim()) params.set('search', search.trim());
   return `${GUTENDEX}?${params}`;
 }

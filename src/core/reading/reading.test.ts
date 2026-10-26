@@ -4,6 +4,7 @@ import { decodeText, isHeading, parseGutenberg, progressAt, splitChapterTitle, s
 import { catalogUrl, displayName, parseCatalogPage, shortTitle, textFormat, type GutendexPage } from './gutendex';
 import { estimateLevel, ranksFromList, sampleForLevel, withinLevel } from './level';
 import { cleanSelection, sentenceAround, sourceNote, startsSentence } from './selection';
+import { opdsUrl, parseOpds } from './opds';
 
 const fixture = (name: string) => readFileSync(new URL(`./__fixtures__/${name}`, import.meta.url), 'utf8');
 const alice = fixture('pg11-alice.txt');
@@ -106,7 +107,7 @@ describe('catalogue Gutendex', () => {
     const url = new URL(catalogUrl('es', ' quijote '));
     expect(url.searchParams.get('languages')).toBe('es');
     expect(url.searchParams.get('search')).toBe('quijote');
-    expect(url.searchParams.get('mime_type')).toBe('text/plain');
+    expect(url.searchParams.has('mime_type')).toBe(false);
   });
 });
 
@@ -177,5 +178,44 @@ describe('sélection dans un livre', () => {
     expect(sourceNote("Alice's Adventures in Wonderland", 'Lewis Carroll', 'CHAPTER I. Down the Rabbit-Hole')).toBe(
       "Lu dans « Alice's Adventures in Wonderland » (Lewis Carroll), CHAPTER I. Down the Rabbit-Hole.",
     );
+  });
+});
+
+describe('catalogue de secours (OPDS gutenberg.org)', () => {
+  const feed = `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:opds="http://opds-spec.org/">
+  <id>https://www.gutenberg.org/ebooks/search.opds/?query=l.en</id>
+  <title>Books: l.en (sorted by popularity)</title>
+  <link rel="next" title="Next Page" type="application/atom+xml;profile=opds-catalog" href="/ebooks/search.opds/?query=l.en&amp;sort_order=downloads&amp;start_index=26"/>
+  <entry>
+    <id>https://www.gutenberg.org/ebooks/search.opds/?query=l.en&amp;sort_order=title</id>
+    <title>Sort Alphabetically by Title</title>
+  </entry>
+  <entry>
+    <updated>2026-10-25T00:00:00Z</updated>
+    <title>Pride and Prejudice</title>
+    <content type="text">Jane Austen</content>
+    <id>https://www.gutenberg.org/ebooks/1342.opds</id>
+    <link type="application/atom+xml;profile=opds-catalog" rel="subsection" href="/ebooks/1342.opds"/>
+    <link type="image/jpeg" rel="http://opds-spec.org/image/thumbnail" href="/cache/epub/1342/pg1342.cover.small.jpg"/>
+  </entry>
+  <entry>
+    <title>Alice&#39;s Adventures in Wonderland</title>
+    <author><name>Carroll, Lewis</name></author>
+    <link rel="subsection" href="/ebooks/11.opds"/>
+    <id>urn:gutenberg:11</id>
+  </entry>
+</feed>`;
+
+  it('lit les livres, ignore la navigation, suit la page suivante', () => {
+    const { books, next } = parseOpds(feed, 'en');
+    expect(books.map((b) => [b.gutenbergId, b.title, b.authors[0]])).toEqual([
+      [1342, 'Pride and Prejudice', 'Jane Austen'],
+      [11, "Alice's Adventures in Wonderland", 'Lewis Carroll'],
+    ]);
+    expect(books[0].textUrl).toBe('https://www.gutenberg.org/ebooks/1342.txt.utf-8');
+    expect(books[0].coverUrl).toBe('https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg');
+    expect(next).toBe('https://www.gutenberg.org/ebooks/search.opds/?query=l.en&sort_order=downloads&start_index=26');
+    expect(new URL(opdsUrl('es', 'quijote')).searchParams.get('query')).toBe('l.es quijote');
   });
 });

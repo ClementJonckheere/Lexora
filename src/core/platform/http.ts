@@ -32,7 +32,11 @@ export interface GetOptions {
   /** Octets [start, end] (inclus). Le serveur peut renvoyer le fichier entier. */
   range?: [number, number];
   signal?: AbortSignal;
+  /** Délai maximal de la requête complète (ms). */
+  timeoutMs?: number;
 }
+
+const DEFAULT_TIMEOUT = 45_000;
 
 async function doFetch(url: string, init: RequestInit): Promise<Response> {
   if (isTauri()) {
@@ -45,20 +49,44 @@ async function doFetch(url: string, init: RequestInit): Promise<Response> {
 export async function httpGet(url: string, opts: GetOptions = {}): Promise<Uint8Array> {
   const headers: Record<string, string> = {};
   if (opts.range) headers.Range = `bytes=${opts.range[0]}-${opts.range[1]}`;
-  let res: Response;
+  const host = new URL(url).host;
+  const ctrl = new AbortController();
+  const onAbort = () => ctrl.abort();
+  opts.signal?.addEventListener('abort', onAbort);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  // Un serveur qui ne répond pas ne doit jamais laisser l'interface en attente indéfiniment
+  // (y compris pendant la lecture du corps de la réponse).
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      ctrl.abort();
+      reject(new HttpError(0, `${host} ne répond pas (délai dépassé).`));
+    }, opts.timeoutMs ?? DEFAULT_TIMEOUT);
+  });
+  const run = async (): Promise<Uint8Array> => {
+    let res: Response;
+    try {
+      res = await doFetch(url, { headers, signal: ctrl.signal });
+    } catch (err) {
+      if (opts.signal?.aborted || ctrl.signal.aborted) throw err;
+      throw new HttpError(0, `Connexion à ${host} impossible : ${err instanceof Error ? err.message : String(err)}`);
+    }
+    // 416 : fichier plus court que la plage demandée → on le prend en entier.
+    if (res.status === 416 && opts.range) return httpGet(url, { signal: opts.signal, timeoutMs: opts.timeoutMs });
+    if (!res.ok) throw new HttpError(res.status, `${host} a répondu ${res.status}.`);
+    return new Uint8Array(await res.arrayBuffer());
+  };
   try {
-    res = await doFetch(url, { headers, signal: opts.signal });
-  } catch (err) {
-    if (opts.signal?.aborted) throw err;
-    throw new HttpError(0, 'Connexion impossible. Vérifiez votre accès à Internet.');
+    return await Promise.race([run(), timeout]);
+  } finally {
+    clearTimeout(timer);
+    opts.signal?.removeEventListener('abort', onAbort);
   }
-  // 416 : fichier plus court que la plage demandée → on le prend en entier.
-  if (res.status === 416 && opts.range) return httpGet(url, { signal: opts.signal });
-  if (!res.ok) throw new HttpError(res.status, `Le serveur a répondu ${res.status}.`);
-  return new Uint8Array(await res.arrayBuffer());
 }
 
-export async function httpGetJson<T>(url: string, signal?: AbortSignal): Promise<T> {
-  const bytes = await httpGet(url, { signal });
-  return JSON.parse(new TextDecoder().decode(bytes)) as T;
+export async function httpGetText(url: string, opts: GetOptions = {}): Promise<string> {
+  return new TextDecoder().decode(await httpGet(url, opts));
+}
+
+export async function httpGetJson<T>(url: string, opts: GetOptions = {}): Promise<T> {
+  return JSON.parse(await httpGetText(url, opts)) as T;
 }

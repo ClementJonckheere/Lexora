@@ -1,4 +1,5 @@
-import { httpGet, httpGetJson } from '../platform/http';
+import { httpGet, httpGetJson, httpGetText } from '../platform/http';
+import { opdsUrl, parseOpds } from './opds';
 import { decodeText, parseGutenberg, type ParsedBook } from './gutenberg';
 import { catalogUrl, parseCatalogPage, type CatalogBook, type GutendexPage } from './gutendex';
 import { estimateLevel, ranksFromList, sampleForLevel, type FrequencyRanks, type LevelEstimate } from './level';
@@ -8,12 +9,40 @@ import { estimateLevel, ranksFromList, sampleForLevel, type FrequencyRanks, type
 export interface CatalogResult {
   books: CatalogBook[];
   next: string | null;
-  count: number;
+  /** Taille du catalogue (null : inconnue, catalogue de secours). */
+  count: number | null;
+  source: 'gutendex' | 'gutenberg';
 }
 
+/** Gutendex est souvent lent : au-delà, on interroge directement gutenberg.org. */
+const GUTENDEX_PATIENCE_MS = 12_000;
+
+async function fromGutendex(url: string, language: string, signal?: AbortSignal): Promise<CatalogResult> {
+  const page = await httpGetJson<GutendexPage>(url, { signal, timeoutMs: GUTENDEX_PATIENCE_MS });
+  return { ...parseCatalogPage(page, language), source: 'gutendex' };
+}
+
+async function fromGutenberg(url: string, language: string, signal?: AbortSignal): Promise<CatalogResult> {
+  const page = parseOpds(await httpGetText(url, { signal, timeoutMs: 30_000 }), language);
+  return { ...page, count: null, source: 'gutenberg' };
+}
+
+/**
+ * Une page du catalogue. `pageUrl` (page suivante) garde la source de la première page.
+ * Gutendex en premier (métadonnées plus riches), gutenberg.org en secours.
+ */
 export async function searchCatalog(language: string, search: string, pageUrl?: string | null, signal?: AbortSignal): Promise<CatalogResult> {
-  const page = await httpGetJson<GutendexPage>(pageUrl ?? catalogUrl(language, search), signal);
-  return parseCatalogPage(page, language);
+  if (pageUrl) return pageUrl.startsWith('https://gutendex.com/') ? fromGutendex(pageUrl, language, signal) : fromGutenberg(pageUrl, language, signal);
+  try {
+    return await fromGutendex(catalogUrl(language, search), language, signal);
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    try {
+      return await fromGutenberg(opdsUrl(language, search), language, signal);
+    } catch {
+      throw err; // l'erreur de Gutendex est la plus parlante
+    }
+  }
 }
 
 const ranksCache = new Map<string, Promise<FrequencyRanks | null>>();
