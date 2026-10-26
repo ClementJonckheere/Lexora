@@ -25,6 +25,14 @@ export interface ReaderSelection {
 
 const BUBBLE_H = 46;
 
+/** Position (en caractères) d'un point de la sélection dans le texte de l'élément. */
+function textOffset(el: HTMLElement, node: Node, offset: number): number {
+  const r = document.createRange();
+  r.selectNodeContents(el);
+  r.setEnd(node, offset);
+  return r.toString().length;
+}
+
 /**
  * Suit la sélection de texte dans le livre : expression nettoyée, phrase qui la contient,
  * position de la bulle. Rien n'est envoyé à un service externe.
@@ -60,9 +68,9 @@ export function useReaderSelection(
       }
       const block = blocks[Number(startEl.dataset.b)];
       if (!block) return setSel(null);
-      // Le paragraphe est un seul nœud texte : les décalages de la sélection sont ceux du texte du livre.
-      const startOffset = range.startContainer.nodeType === Node.TEXT_NODE ? range.startOffset : 0;
-      const endOffset = range.endContainer.nodeType === Node.TEXT_NODE ? range.endOffset : block.text.length;
+      // Décalages dans le texte du paragraphe, même s'il est découpé (mots connus surlignés).
+      const startOffset = textOffset(startEl, range.startContainer, range.startOffset);
+      const endOffset = textOffset(startEl, range.endContainer, range.endOffset);
       const raw = block.text.slice(startOffset, endOffset);
       const lead = raw.length - raw.trimStart().length;
       const { expression, error } = cleanSelection(raw, language, startsSentence(block.text, startOffset + lead));

@@ -6,6 +6,8 @@ import { estimateLevel, ranksFromList, sampleForLevel, withinLevel } from './lev
 import { cleanSelection, sentenceAround, sourceNote, startsSentence } from './selection';
 import { opdsUrl, parseOpds } from './opds';
 import { matchesSearch, pageAfter } from './catalog';
+import { buildKnownIndex, findKnown, segments } from './known';
+import type { Note } from '../domain/types';
 
 const fixture = (name: string) => readFileSync(new URL(`./__fixtures__/${name}`, import.meta.url), 'utf8');
 const alice = fixture('pg11-alice.txt');
@@ -233,5 +235,38 @@ describe('catalogue fourni', () => {
   it('page de Gutendex qui suit les livres fournis', () => {
     expect(new URL(pageAfter('en', 200)).searchParams.get('page')).toBe('7');
     expect(new URL(pageAfter('es', 10)).searchParams.get('languages')).toBe('es');
+  });
+});
+
+describe('mots connus dans le livre', () => {
+  const n = (id: string, expression: string) => ({ id, expression }) as unknown as Note;
+  const notes = [n('a', 'to take for granted'), n('b', 'remarkable'), n('c', 'to go'), n('d', 'take')];
+  const text = "There was nothing so VERY remarkable in that. He took it for granted, then went home and took a break.";
+
+  it('expressions entières, formes fléchies et irrégulières, sans chevauchement', () => {
+    const idx = buildKnownIndex(notes, 'en');
+    const found = findKnown(text, idx).map((r) => [text.slice(r.start, r.end), r.noteId]);
+    expect(found).toEqual([
+      ['remarkable', 'b'],
+      ['took it for granted', 'a'],
+      ['went', 'c'],
+      ['took', 'd'],
+    ]);
+    const segs = segments(text, findKnown(text, idx));
+    expect(segs.map((s) => s.text).join('')).toBe(text);
+  });
+
+  it('expression de plusieurs mots : pas de surlignage partiel', () => {
+    const idx = buildKnownIndex([n('a', 'to take for granted')], 'en');
+    expect(findKnown('Take a seat.', idx)).toEqual([]);
+  });
+
+  it('chinois : sous-chaînes, la plus longue d’abord', () => {
+    const idx = buildKnownIndex([n('a', '学生'), n('b', '大学生')], 'zh');
+    const t = '他是大学生，我也是学生。';
+    expect(findKnown(t, idx).map((r) => [t.slice(r.start, r.end), r.noteId])).toEqual([
+      ['大学生', 'b'],
+      ['学生', 'a'],
+    ]);
   });
 });

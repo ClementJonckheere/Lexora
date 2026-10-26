@@ -2895,3 +2895,16 @@ p {
   min-width: 130px;
   flex-shrink: 0;
 }
+.known-word {
+  text-decoration: underline;
+  text-decoration-color: rgb(99 102 241 / 0.55);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  background: rgb(99 102 241 / 0.07);
+  border-radius: 2px;
+  cursor: help;
+}
+.reader--night .known-word {
+  text-decoration-color: rgb(165 180 252 / 0.6);
+  background: rgb(165 180 252 / 0.08);
+}

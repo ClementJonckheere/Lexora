@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, ChevronLeft, ChevronRight, List, Loader2, Maximize2, Minimize2, X } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import { progressAt, splitChapterTitle, type ParsedBook } from '@/core/reading/gutenberg';
@@ -8,6 +8,7 @@ import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { speakText } from '@/ui/speech';
 import { readPref, writePref } from '@/ui/prefs';
 import { sourceNote } from '@/core/reading/selection';
+import { buildKnownIndex, findKnown, segments } from '@/core/reading/known';
 import { SelectionBubble, useReaderSelection, useSelectionTranslation } from './SelectionBubble';
 
 type Paper = 'ivory' | 'white' | 'night';
@@ -125,6 +126,23 @@ function Reader({
   const current = useRef({ chapter, block: start.block });
   /** Première mise en page faite : avant, la position enregistrée ne doit pas être écrasée. */
   const laidOut = useRef(false);
+  // Mots déjà enregistrés dans cette langue : surlignés dans le texte, traduction au survol.
+  const [highlight, setHighlightState] = useState(() => readPref<boolean>('reader.highlight', true));
+  const setHighlight = (v: boolean) => {
+    setHighlightState(v);
+    writePref('reader.highlight', v);
+  };
+  const universeNotes = useApp((s) => s.allNotes);
+  const knownIndex = useMemo(
+    () => buildKnownIndex(universeNotes.filter((n) => n.universeId === universeId), language),
+    [universeNotes, universeId, language],
+  );
+  const notesById = useApp((s) => s.notesById);
+  const known = useMemo(
+    () => (highlight ? chapters[chapter].blocks.map((b) => findKnown(b.text, knownIndex)) : null),
+    [highlight, chapters, chapter, knownIndex],
+  );
+  const knownInChapter = useMemo(() => new Set(known?.flatMap((r) => r.map((x) => x.noteId)) ?? []).size, [known]);
   const [sel, clearSel] = useReaderSelection(flowRef, stageRef, chapters[chapter].blocks, language);
   const autoTranslate = useApp((s) => s.settings.autoTranslate);
   const deeplKey = useApp((s) => s.settings.deeplKey);
@@ -386,7 +404,18 @@ function Reader({
               )}
               {ch.blocks.map((b, i) => (
                 <p key={i} data-b={i} className={b.kind === 'verse' ? 'reader-verse' : undefined}>
-                  {b.text}
+                  {known?.[i]?.length
+                    ? segments(b.text, known[i]).map((seg, k) => {
+                        const note = seg.noteId ? notesById.get(seg.noteId) : undefined;
+                        return note ? (
+                          <span key={k} className="known-word" title={`${note.expression} — ${note.translation}`}>
+                            {seg.text}
+                          </span>
+                        ) : (
+                          seg.text
+                        );
+                      })
+                    : b.text}
                 </p>
               ))}
             </div>
@@ -408,6 +437,7 @@ function Reader({
           <small>
             {chapterNo && `Chapitre ${chapterNo} · `}
             {progress} % du livre
+            {highlight && knownInChapter > 0 && ` · ${knownInChapter} de vos mots dans ce chapitre`}
           </small>
         </div>
         <button className="reader-pill reader-pill--lg" onClick={next} disabled={atEnd}>
@@ -422,6 +452,15 @@ function Reader({
               {p.label}
             </button>
           ))}
+        </div>
+        <span style={{ marginLeft: 16 }}>Mes mots</span>
+        <div className="reader-choice">
+          <button aria-pressed={highlight} onClick={() => setHighlight(true)} title="Souligner les mots déjà enregistrés (traduction au survol)">
+            Surligner
+          </button>
+          <button aria-pressed={!highlight} onClick={() => setHighlight(false)}>
+            Masquer
+          </button>
         </div>
         <span style={{ marginLeft: 16 }}>Police</span>
         <div className="reader-choice">
