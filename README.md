@@ -79,7 +79,7 @@ Un aperçu indique pour chaque ligne si elle est valide, doublon ou en erreur. U
 | Base de données | **SQLite** (rusqlite, SQLite embarqué) | Un fichier local, transactions, mode WAL. |
 | Compte & synchronisation | **Supabase** (Auth Google + PostgreSQL avec RLS) | Comptes gérés, sécurité par ligne, offre gratuite suffisante ; même compte sur PC et mobile. |
 | Répétition espacée | **FSRS** via `ts-fsrs` (bibliothèque de référence de l'Open Spaced Repetition) | Algorithme moderne, plus précis que SM-2 (Anki historique). |
-| Prononciation | Enregistrements de vraies personnes ([Wiktionnaire](https://en.wiktionary.org) / Wikimedia Commons, dont [Lingua Libre](https://lingualibre.org)), sinon synthèse vocale du système (Web Speech API) | Prononciation naturelle quand elle existe ; voix Windows locales, hors ligne, en secours. Désactivable : *Paramètres → Prononciation enregistrée*. |
+| Prononciation | Enregistrements de vraies personnes ([Wiktionnaire](https://en.wiktionary.org) / Wikimedia Commons, dont [Lingua Libre](https://lingualibre.org)), sinon **voix naturelle** neuronale ([Azure AI Speech](https://learn.microsoft.com/azure/ai-services/speech-service/) via la fonction Supabase `speak`, clé côté serveur, sons gardés en cache sur l'appareil), sinon synthèse vocale du système (Web Speech API, voix « Natural » de Windows préférées) | Prononciation claire et naturelle ; voix Windows locales, hors ligne, en secours. Réglages : *Paramètres → Prononciation enregistrée* et *Voix naturelle* ; installation : [docs/SUPABASE.md](docs/SUPABASE.md). |
 | Tests | Vitest (logique métier sur une vraie base SQLite en mémoire via sql.js), synchronisation contre PostgreSQL + PostgREST réels, `cargo test` (couche native) | |
 
 **Séparation des responsabilités** :
@@ -247,6 +247,7 @@ Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 ## Sources et licences des données
 
 - Livres : [Project Gutenberg](https://www.gutenberg.org) (œuvres du domaine public), catalogue via [Gutendex](https://gutendex.com).
+- Voix naturelle : [Azure AI Speech](https://learn.microsoft.com/azure/ai-services/speech-service/) (Microsoft) ; les expressions à prononcer lui sont envoyées.
 - Définitions, nature du mot et prononciations enregistrées : [Wiktionnaire](https://en.wiktionary.org) et [Wikimedia Commons](https://commons.wikimedia.org) (CC BY-SA), dont les enregistrements [Lingua Libre](https://lingualibre.org).
 - Traductions : [DeepL](https://www.deepl.com) (clé personnelle facultative), [MyMemory](https://mymemory.translated.net) (Translated) ; phrases d'exemple : [Tatoeba](https://tatoeba.org), licence CC BY 2.0 FR. Les expressions à traduire sont envoyées à ces services, uniquement à la demande (bouton) ou lors d'une sélection dans un livre si la traduction automatique est activée.
 - Listes de fréquence (`public/reading/freq/`) : dérivées de [FrequencyWords](https://github.com/hermitdave/FrequencyWords) (Hermit Dave, sous-titres OpenSubtitles 2018), contenu sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) ; régénérables avec `scripts/build-frequency.mjs`.

@@ -131,3 +131,25 @@ Une seule clé DeepL sert à tous les utilisateurs de Lexora, sans rien à confi
 Avec la ligne de commande Supabase, les étapes 2 et 3 s'écrivent : `supabase functions deploy translate` puis `supabase secrets set DEEPL_API_KEY=… ALLOWED_EMAILS=…`.
 
 Les mots sélectionnés et leur phrase sont envoyés à DeepL (via cette fonction) pour être traduits. Une clé DeepL personnelle saisie dans les Paramètres reste prioritaire sur la clé partagée.
+
+## Voix naturelle partagée (facultatif, recommandé)
+
+Une voix neuronale de qualité studio ([Azure AI Speech](https://learn.microsoft.com/azure/ai-services/speech-service/), Microsoft) remplace la voix de Windows pour toutes les expressions et phrases qui n'ont pas d'enregistrement humain (Wiktionnaire). Comme pour DeepL, la clé est gardée **sur le serveur Supabase** (fonction `speak`) et seuls les comptes connectés peuvent s'en servir. Sans cette fonction, Lexora utilise la voix de Windows.
+
+1. **Clé Azure** : créez un compte sur <https://portal.azure.com> (Azure demande une carte bancaire pour vérifier l'identité ; le niveau gratuit **F0** n'est jamais facturé).
+   - **Create a resource** → cherchez **Speech** (*Azure AI services → Speech service*) → **Create**.
+   - *Region* : **West Europe** ; *Pricing tier* : **Free F0** (500 000 caractères par mois, partagés entre tous les utilisateurs ; chaque expression n'est synthétisée qu'une fois par appareil, puis gardée en cache).
+   - Une fois la ressource créée : **Keys and Endpoint** → copiez **KEY 1** et la **Location/Region** (`westeurope`).
+2. **Fonction** : dans Supabase, **Edge Functions** → **Deploy a new function** → **Via Editor**.
+   - Nom : `speak` (exactement).
+   - Remplacez le code proposé par tout le contenu de [`supabase/functions/speak/index.ts`](../supabase/functions/speak/index.ts) → **Deploy function**.
+   - Laissez activée la vérification du jeton (*Verify JWT* / *Enforce JWT verification*).
+3. **Secrets** : **Edge Functions** → **Secrets** → **Add new secret** :
+   - `AZURE_SPEECH_KEY` = la clé KEY 1 ;
+   - `AZURE_SPEECH_REGION` = `westeurope` (la région de la ressource) ;
+   - `ALLOWED_EMAILS` est commun aux deux fonctions (déjà ajouté pour DeepL).
+4. **Vérification** : dans Lexora, *Paramètres → Voix naturelle → Vérifier* affiche « Active ».
+
+Avec la ligne de commande Supabase : `supabase functions deploy speak` puis `supabase secrets set AZURE_SPEECH_KEY=… AZURE_SPEECH_REGION=westeurope`.
+
+Les expressions à prononcer sont envoyées à Azure (via cette fonction). La voix naturelle se désactive dans *Paramètres → Voix naturelle*.

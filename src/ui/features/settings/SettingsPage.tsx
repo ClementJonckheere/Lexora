@@ -14,6 +14,7 @@ import { checkUpdates } from '@/app/desktop';
 import { getAutostart, openExternal, setAutostart } from '@/core/platform/desktop';
 import { deeplUsage } from '@/core/translate/translate';
 import { sharedDeeplUsage } from '@/core/translate/shared';
+import { checkNaturalVoice } from '@/core/speech/natural';
 import { authConfigured } from '@/core/platform/auth';
 
 function Setting({ title, desc, children }: { title: string; desc?: ReactNode; children: ReactNode }) {
@@ -167,6 +168,7 @@ export function SettingsPage() {
           >
             <Switch label="Prononciation enregistrée" checked={settings.recordedVoice} onChange={(v) => update({ recordedVoice: v })} />
           </Setting>
+          {authConfigured && <NaturalVoiceSetting enabled={settings.naturalVoice} onChange={(v) => update({ naturalVoice: v })} />}
           {speechSupported() ? (
             <>
               <Setting
@@ -531,6 +533,50 @@ function SharedDeeplStatus() {
       <Button size="sm" onClick={() => void check()} disabled={busy}>
         {busy ? 'Vérification…' : 'Vérifier'}
       </Button>
+    </Setting>
+  );
+}
+
+function NaturalVoiceSetting({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
+  const [state, setState] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const check = async () => {
+    setBusy(true);
+    try {
+      await checkNaturalVoice();
+      setState({ ok: true, text: 'Active. Les sons sont gardés sur cet appareil : chaque expression n’est demandée qu’une fois.' });
+    } catch (err) {
+      setState({ ok: false, text: `Non disponible : ${err instanceof Error ? err.message : String(err)}. La voix de Windows est utilisée.` });
+    } finally {
+      setBusy(false);
+    }
+  };
+  useEffect(() => {
+    if (enabled) void check();
+  }, [enabled]);
+  return (
+    <Setting
+      title="Voix naturelle"
+      desc={
+        <>
+          Voix de qualité studio (Microsoft Azure) à la place de la voix de Windows, pour toutes les expressions et phrases sans enregistrement. Clé gardée sur le
+          serveur Lexora, réservée aux comptes connectés ; nécessite Internet.
+          {enabled && state && (
+            <div className={state.ok ? 'small' : 'field-error'} style={state.ok ? { color: 'var(--mastered)', marginTop: 4 } : { marginTop: 4 }}>
+              {state.text}
+            </div>
+          )}
+        </>
+      }
+    >
+      <div className="row">
+        {enabled && (
+          <Button size="sm" onClick={() => void check()} disabled={busy}>
+            {busy ? 'Vérification…' : 'Vérifier'}
+          </Button>
+        )}
+        <Switch label="Voix naturelle" checked={enabled} onChange={onChange} />
+      </div>
     </Setting>
   );
 }

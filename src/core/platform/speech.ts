@@ -37,15 +37,19 @@ export function voicesFor<T extends VoiceLike>(voices: T[], language: string): T
 }
 
 /**
- * Choix de la voix : celle choisie dans les réglages, sinon la variante régionale attendue
+ * Choix de la voix : celle choisie dans les réglages, sinon une voix « Natural », sinon la variante régionale attendue
  * (es-ES, pt-PT, zh-CN…) en local, sinon toute voix locale de la langue, sinon toute voix de la langue.
  * Jamais une voix d'une autre langue.
  */
 export function chooseVoice<T extends VoiceLike>(voices: T[], language: string, preferred = ''): T | undefined {
   const candidates = voicesFor(voices, language);
   const exact = norm(languageInfo(language).speech || language);
+  const natural = (v: T) => /natural/i.test(v.name);
   return (
     candidates.find((v) => v.voiceURI === preferred) ??
+    // Voix neuronales de Windows / Edge (« … Online (Natural) ») : bien plus fluides, quand elles existent.
+    candidates.find((v) => natural(v) && norm(v.lang) === exact) ??
+    candidates.find(natural) ??
     candidates.find((v) => v.localService && norm(v.lang) === exact) ??
     candidates.find((v) => norm(v.lang) === exact) ??
     candidates.find((v) => v.localService) ??

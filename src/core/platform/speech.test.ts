@@ -31,4 +31,9 @@ describe('choix de la voix selon la langue de l’univers', () => {
     expect(chooseVoice(voices, 'pt')).toBeUndefined();
     expect(voicesFor(voices, 'ja')).toEqual([]);
   });
+  it('préfère une voix neuronale « Natural » quand il y en a une', () => {
+    const withNatural = [...voices, v('Microsoft Aria Online (Natural) - English (United States)', 'en-US', false)];
+    expect(chooseVoice(withNatural, 'en')?.name).toMatch(/Aria Online \(Natural\)/);
+    expect(chooseVoice(withNatural, 'en', 'Microsoft Zira')?.name).toBe('Microsoft Zira');
+  });
 });
