@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { decodeText, isHeading, parseGutenberg, progressAt, splitChapterTitle, stripBoilerplate } from './gutenberg';
 import { catalogUrl, displayName, parseCatalogPage, shortTitle, textFormat, type GutendexPage } from './gutendex';
 import { estimateLevel, ranksFromList, sampleForLevel, withinLevel } from './level';
+import { cleanSelection, sentenceAround, sourceNote, startsSentence } from './selection';
 
 const fixture = (name: string) => readFileSync(new URL(`./__fixtures__/${name}`, import.meta.url), 'utf8');
 const alice = fixture('pg11-alice.txt');
@@ -132,5 +133,49 @@ describe('niveau estimé', () => {
     const easy = '我是学生。你好吗？我很好。我们去学校。他的朋友在家。今天天气很好。'.repeat(40);
     const est = estimateLevel(easy, zh, 'zh');
     expect(est?.level).toMatch(/^A/);
+  });
+});
+
+describe('sélection dans un livre', () => {
+  const para =
+    "There was nothing so VERY remarkable in that; nor did Alice think it so VERY much out of the way to hear the Rabbit say to itself, 'Oh dear! Oh dear! I shall be late!' Mr. Bennet replied that he had not. Suddenly she ran.";
+  const at = (s: string) => [para.indexOf(s), para.indexOf(s) + s.length] as const;
+
+  it('extrait la phrase du livre qui contient la sélection', () => {
+    expect(sentenceAround(para, ...at('remarkable'))).toBe(
+      "There was nothing so VERY remarkable in that; nor did Alice think it so VERY much out of the way to hear the Rabbit say to itself, 'Oh dear! Oh dear! I shall be late!'",
+    );
+    expect(sentenceAround(`"I can't," said Tom. "It's late!" He left.`, 13, 16)).toBe(`"I can't," said Tom.`);
+    expect(sentenceAround(`He said “Go home!” and left. Then it rained.`, 3, 7)).toBe('He said “Go home!” and left.');
+    expect(sentenceAround(para, ...at('replied'))).toBe('Mr. Bennet replied that he had not.');
+    expect(sentenceAround(para, ...at('ran'))).toBe('Suddenly she ran.');
+    expect(sentenceAround('我是学生。你好吗？我很好。', 6, 7)).toBe('你好吗？');
+  });
+
+  it('phrase trop longue : la proposition autour de la sélection', () => {
+    const long = `${'Lorem ipsum dolor sit amet, '.repeat(6)}the big brown fox jumped over the fence, ${'consectetur adipiscing elit, '.repeat(6)}end.`;
+    const s = sentenceAround(long, long.indexOf('jumped'), long.indexOf('jumped') + 6);
+    expect(s.length).toBeLessThan(200);
+    expect(s).toContain('jumped over the fence');
+    expect(s.startsWith('…')).toBe(true);
+  });
+
+  it('nettoie la sélection', () => {
+    expect(cleanSelection(' "Suddenly, ', 'en', true)).toEqual({ expression: 'suddenly' });
+    expect(cleanSelection('VERY', 'en', false)).toEqual({ expression: 'very' });
+    expect(cleanSelection('I shall', 'en', true)).toEqual({ expression: 'I shall' });
+    expect(cleanSelection('Haus', 'de', true)).toEqual({ expression: 'Haus' });
+    expect(cleanSelection('take for granted.', 'en', false)).toEqual({ expression: 'take for granted' });
+    expect(cleanSelection('a b c d e f g h i', 'en', false).error).toMatch(/trop longue/);
+    expect(cleanSelection('…', 'en', false).error).toBeTruthy();
+    expect(startsSentence(para, para.indexOf('Suddenly'))).toBe(true);
+    expect(startsSentence(para, para.indexOf('Bennet'))).toBe(false);
+    expect(startsSentence(para, para.indexOf('Oh dear! I') + 9)).toBe(true);
+  });
+
+  it('mention de la source', () => {
+    expect(sourceNote("Alice's Adventures in Wonderland", 'Lewis Carroll', 'CHAPTER I. Down the Rabbit-Hole')).toBe(
+      "Lu dans « Alice's Adventures in Wonderland » (Lewis Carroll), CHAPTER I. Down the Rabbit-Hole.",
+    );
   });
 });

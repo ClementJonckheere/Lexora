@@ -5,7 +5,10 @@ import { progressAt, splitChapterTitle, type ParsedBook } from '@/core/reading/g
 import { isFullscreen, setFullscreen } from '@/core/platform/fullscreen';
 import { Button, EmptyState, Modal } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
+import { speakText } from '@/ui/speech';
 import { readPref, writePref } from '@/ui/prefs';
+import { sourceNote } from '@/core/reading/selection';
+import { SelectionBubble, useReaderSelection } from './SelectionBubble';
 
 type Paper = 'ivory' | 'white' | 'night';
 type FontFamily = 'sans' | 'serif';
@@ -74,6 +77,7 @@ export function ReaderPage({ bookKey }: { bookKey: string }) {
       title={book.title}
       author={book.authors.join(', ')}
       language={book.language}
+      universeId={book.universeId}
       start={{ chapter: book.chapter, block: book.block }}
       onPosition={(chapter, block) => void saveBookProgress(bookKey, chapter, block, progressAt(text, chapter, block))}
       onClose={close}
@@ -86,6 +90,7 @@ function Reader({
   title,
   author,
   language,
+  universeId,
   start,
   onPosition,
   onClose,
@@ -94,6 +99,7 @@ function Reader({
   title: string;
   author: string;
   language: string;
+  universeId: string;
   start: { chapter: number; block: number };
   onPosition: (chapter: number, block: number) => void;
   onClose: () => void;
@@ -117,6 +123,16 @@ function Reader({
   const flowRef = useRef<HTMLDivElement>(null);
   const target = useRef<Target>({ kind: 'block', block: start.block });
   const current = useRef({ chapter, block: start.block });
+  const [sel, clearSel] = useReaderSelection(flowRef, stageRef, chapters[chapter].blocks, language);
+
+  /** Expression sélectionnée → fiche pré-remplie (la phrase du livre comme exemple, la source en note). */
+  const addSelection = () => {
+    if (!sel || sel.error || !sel.expression) return;
+    const { openEditor } = useApp.getState();
+    if (sel.known) openEditor(sel.known.id, { examples: [sel.sentence] });
+    else openEditor(null, { expression: sel.expression, examples: [sel.sentence], comment: sourceNote(title, author, chapters[chapter].title) });
+    clearSel();
+  };
 
   const twoPages = size.w >= TWO_PAGES_MIN;
   const flowW = Math.max(0, size.w - 2 * PAD_X);
@@ -233,8 +249,16 @@ function Reader({
     target.current = where;
     setChapter(c);
   };
-  const next = () => (spread < spreads - 1 ? setSpread(spread + 1) : goChapter(chapter + 1, { kind: 'start' }));
-  const prev = () => (spread > 0 ? setSpread(spread - 1) : goChapter(chapter - 1, { kind: 'end' }));
+  const next = () => {
+    clearSel();
+    if (spread < spreads - 1) setSpread(spread + 1);
+    else goChapter(chapter + 1, { kind: 'start' });
+  };
+  const prev = () => {
+    clearSel();
+    if (spread > 0) setSpread(spread - 1);
+    else goChapter(chapter - 1, { kind: 'end' });
+  };
   const atEnd = spread >= spreads - 1 && chapter >= chapters.length - 1;
   const atStart = spread === 0 && chapter === 0;
   const fontIndex = FONT_SIZES.indexOf(fontSize);
@@ -256,7 +280,10 @@ function Reader({
       '-': smaller,
       t: () => setTocOpen(true),
       f: () => void toggleFullscreen(),
-      escape: () => (full ? void toggleFullscreen() : onClose()),
+      enter: addSelection,
+      a: addSelection,
+      p: () => sel?.expression && !sel.error && speakText(sel.expression, universeId),
+      escape: () => (sel ? clearSel() : full ? void toggleFullscreen() : onClose()),
     },
     { enabled: !overlay && !tocOpen },
   );
@@ -287,6 +314,7 @@ function Reader({
           <strong>{title}</strong>
           <span>{author}</span>
         </div>
+        <span className="reader-hint">Double-clic ou sélection : enregistrer un mot</span>
         <div className="reader-tools">
           <button className="reader-pill" onClick={smaller} disabled={fontIndex === 0} title="Réduire le texte (−)">
             A−
@@ -349,6 +377,7 @@ function Reader({
               ))}
             </div>
           </div>
+          {sel && !overlay && <SelectionBubble sel={sel} universeId={universeId} onAdd={addSelection} />}
           <button className="reader-edge reader-edge--prev" onClick={prev} disabled={atStart} aria-label="Page précédente" />
           <button className="reader-edge reader-edge--next" onClick={next} disabled={atEnd} aria-label="Page suivante" />
         </div>

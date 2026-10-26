@@ -52,12 +52,14 @@ function NoteEditorDialog() {
   const universeNotes = notes.filter((n) => n.universeId === universe?.id);
   const universeCollections = collections.filter((c) => c.universeId === universe?.id);
 
+  // Exemple proposé (ex. phrase d'un livre) ajouté à ceux d'une note existante.
+  const mergedExamples = existing ? [...new Set([...existing.examples, ...(editor.prefill?.examples ?? [])])].filter(Boolean) : [];
   const initial: Draft = existing
     ? {
         expression: existing.expression,
         translation: existing.translation,
         pronunciation: existing.pronunciation,
-        examples: existing.examples.length ? existing.examples : [''],
+        examples: mergedExamples.length ? mergedExamples : [''],
         comment: existing.comment,
         category: existing.categoryAuto ? '' : existing.category,
         tags: existing.tags,
@@ -74,12 +76,15 @@ function NoteEditorDialog() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [saving, setSaving] = useState(false);
   const [dupAck, setDupAck] = useState(false);
-  const [more, setMore] = useState<boolean>(() => readPref('editor.more', false) || (isEdit && hasExtras(initial)));
+  const [more, setMore] = useState<boolean>(() => readPref('editor.more', false) || ((isEdit || !!editor.prefill?.comment) && hasExtras(initial)));
   const [keepOpen, setKeepOpen] = useState<boolean>(() => readPref('editor.keepOpen', false));
   const exprRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setTimeout(() => exprRef.current?.focus(), 0);
+    // Expression déjà fournie (ex. sélection dans un livre) : on commence par la traduction.
+    const toTranslation = !existing && !!editor.prefill?.expression && !initial.translation;
+    setTimeout(() => (toTranslation ? document.getElementById('f-translation')?.focus() : exprRef.current?.focus()), 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const set = <K extends keyof Draft>(k: K, v: Draft[K]) => {
