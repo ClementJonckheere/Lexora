@@ -4,6 +4,7 @@ import { decodeText, parseGutenberg, type ParsedBook } from './gutenberg';
 import { catalogUrl, parseCatalogPage, shortTitle, type CatalogBook, type GutendexPage } from './gutendex';
 import { estimateLevel, ranksFromList, sampleForLevel, type FrequencyRanks, type Level, type LevelEstimate } from './level';
 import { normalizeSearch } from '../domain/text';
+import { BAND_EDGES, type VocabBank } from './coverage';
 
 /** Accès réseau au catalogue et aux livres (Gutendex, Project Gutenberg). */
 
@@ -53,6 +54,8 @@ export interface BundledBook extends CatalogBook {
   level: Level | null;
   vocabRank: number;
   sentenceLength: number;
+  /** Profil de fréquence (voir coverage.ts) : couverture de vocabulaire de chaque lecteur. */
+  profile?: number[];
 }
 
 export interface BundledCatalog {
@@ -99,23 +102,53 @@ export function matchesSearch(book: CatalogBook, search: string): boolean {
   return words.every((w) => hay.includes(w));
 }
 
+const listCache = new Map<string, Promise<string | null>>();
 const ranksCache = new Map<string, Promise<FrequencyRanks | null>>();
 
-/** Liste de fréquence de la langue (fournie avec l'application), null si la langue n'en a pas. */
-export function loadRanks(language: string): Promise<FrequencyRanks | null> {
-  let p = ranksCache.get(language);
+/** Texte de la liste de fréquence fournie (un mot par ligne, du plus fréquent au plus rare), null si absente. */
+function loadFrequencyText(language: string): Promise<string | null> {
+  let p = listCache.get(language);
   if (!p) {
     p = fetch(`/reading/freq/${encodeURIComponent(language)}.txt`)
       .then(async (res) => {
         const type = res.headers.get('content-type') ?? '';
         // Un serveur de développement renvoie index.html pour un fichier absent.
         if (!res.ok || type.includes('html')) return null;
-        return ranksFromList(await res.text());
+        return res.text();
       })
       .catch(() => null);
+    listCache.set(language, p);
+  }
+  return p;
+}
+
+/** Liste de fréquence de la langue (fournie avec l'application), null si la langue n'en a pas. */
+export function loadRanks(language: string): Promise<FrequencyRanks | null> {
+  let p = ranksCache.get(language);
+  if (!p) {
+    p = loadFrequencyText(language).then((t) => (t ? ranksFromList(t) : null));
     ranksCache.set(language, p);
   }
   return p;
+}
+
+/** Liste de fréquence sous forme de tableau (test de vocabulaire). */
+export async function loadFrequencyList(language: string): Promise<string[] | null> {
+  const t = await loadFrequencyText(language);
+  return t ? t.split('\n').map((w) => w.trim()).filter(Boolean) : null;
+}
+
+/** Banque de mots du test préparée par la CI (null : absente, le test utilise la liste de fréquence seule). */
+export async function loadVocabBank(language: string): Promise<VocabBank | null> {
+  try {
+    const res = await fetch(`/reading/vocab/${encodeURIComponent(language)}.json`);
+    const type = res.headers.get('content-type') ?? '';
+    if (!res.ok || type.includes('html')) return null;
+    const data = (await res.json()) as VocabBank;
+    return Array.isArray(data.bands) && data.bands.length === BAND_EDGES.length ? data : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Taille de l'extrait téléchargé pour estimer le niveau (début du fichier). */

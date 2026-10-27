@@ -10,6 +10,11 @@ export interface SyncTable {
   json?: string[];
   /** La table n'a pas de colonne « deleted » (réglages). */
   noTombstone?: boolean;
+  /**
+   * Table ajoutée après coup : si le serveur ne la connaît pas encore (schema.sql pas relancé),
+   * elle est ignorée (les données restent sur l'appareil) au lieu de bloquer toute la synchronisation.
+   */
+  optional?: boolean;
 }
 
 const SYNC = ['updated_at', 'deleted'];
@@ -53,6 +58,14 @@ export const SYNC_TABLES: SyncTable[] = [
     json: ['authors'],
   },
   { name: 'settings', key: 'key', columns: ['key', 'value', 'updated_at'], noTombstone: true },
+  { name: 'word_marks', key: 'mark_key', columns: ['mark_key', 'universe_id', 'word', 'known', ...SYNC], optional: true },
+  {
+    name: 'vocab_tests',
+    key: 'universe_id',
+    columns: ['universe_id', 'bands', 'vocab_size', 'false_alarm', 'taken_at', ...SYNC],
+    json: ['bands'],
+    optional: true,
+  },
 ];
 
 export type RemoteRow = Record<string, unknown> & { server_updated_at?: number };

@@ -2935,3 +2935,28 @@ p {
   margin-top: 14px; padding: 10px 12px; border-radius: var(--radius-sm);
   background: var(--surface-2); font-size: 13px; text-align: left;
 }
+
+/* Test de vocabulaire */
+.vocab-intro { max-width: 560px; padding: 28px 32px; text-align: left; display: grid; gap: 10px; }
+.vocab-question { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+.vocab-word { font-size: 44px; font-weight: 600; letter-spacing: 0.01em; }
+.vocab-btn { min-width: 190px; justify-content: center; }
+.vocab-result { max-width: 620px; }
+.vocab-bars { display: grid; grid-template-columns: repeat(11, 1fr); gap: 6px; align-items: end; height: 140px; margin: 18px 0 6px; }
+.vocab-bar { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; }
+.vocab-bar-fill { width: 100%; border-radius: 4px 4px 0 0; background: var(--primary); opacity: 0.85; }
+.vocab-bar small { font-size: 10px; color: var(--text-3); }
+.coverage-badge { font-variant-numeric: tabular-nums; }
+.coverage-badge--easy { background: var(--surface-2); }
+.coverage-badge--comfort { background: color-mix(in srgb, var(--mastered) 18%, transparent); color: var(--mastered); }
+.coverage-badge--effort { background: color-mix(in srgb, var(--hard) 16%, transparent); color: var(--hard); }
+.coverage-badge--hard { background: color-mix(in srgb, var(--again) 14%, transparent); color: var(--again); }
+.vocab-card { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.chapter-words { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.chapter-word { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: var(--radius-sm); background: var(--surface-2); }
+.chapter-word--done { opacity: 0.6; }
+.chapter-word-text { font-weight: 600; min-width: 120px; }
+.switch-inline { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+.reader-pill-count { margin-left: 4px; font-weight: 600; }
+/* Fenêtres ouvertes depuis le lecteur (chapitres, mots du chapitre) : couleurs de l'application, pas celles du lecteur. */
+.reader .modal { color: var(--text); }

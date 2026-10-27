@@ -21,6 +21,7 @@ import { StatsPage } from './features/stats/StatsPage';
 import { SettingsPage } from './features/settings/SettingsPage';
 import { ReadingPage } from './features/reading/ReadingPage';
 import { ReaderPage } from './features/reading/ReaderPage';
+import { VocabTestPage } from '@/ui/features/reading/VocabTest';
 import { AccountConflictScreen, FirstSyncScreen, LoginScreen } from './features/account/AuthScreens';
 import { SidebarAccount } from './features/account/SyncIndicator';
 import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/universes/Universes';
@@ -161,6 +162,8 @@ function Page() {
       return <ReadingPage key={key} />;
     case 'reader':
       return <ReaderPage key={route.bookKey} bookKey={route.bookKey} />;
+    case 'vocab-test':
+      return <VocabTestPage key={key} />;
     case 'stats':
       return <StatsPage />;
     case 'settings':
@@ -195,7 +198,7 @@ export function App() {
   useEffect(() => (appReady ? startDesktopIntegration() : undefined), [appReady]);
 
   const inSession = route.name === 'session';
-  const focus = inSession || route.name === 'reader';
+  const focus = inSession || route.name === 'reader' || route.name === 'vocab-test';
 
   useHotkeys(
     {

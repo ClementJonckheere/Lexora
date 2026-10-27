@@ -4,6 +4,8 @@ import { openDatabase } from '@/core/db/open';
 import { startOfStudyDay } from '@/core/domain/dates';
 import { DEFAULT_SETTINGS, primaryDirection, settingsUpgrade, type Settings } from '@/core/domain/settings';
 import type { FrequencyRanks } from '@/core/reading/level';
+import * as knowledgeRepo from '@/core/repo/knowledgeRepo';
+import type { VocabTestResult } from '@/core/repo/knowledgeRepo';
 import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode, Universe } from '@/core/domain/types';
 import * as notesRepo from '@/core/repo/notesRepo';
 import * as collectionsRepo from '@/core/repo/collectionsRepo';
@@ -38,6 +40,7 @@ export type Route =
   | { name: 'stats' }
   | { name: 'reading' }
   | { name: 'reader'; bookKey: string }
+  | { name: 'vocab-test' }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';
@@ -122,6 +125,10 @@ interface AppState {
   bookCovers: Map<string, string>;
   /** Niveaux estimés des livres du catalogue (cache local). */
   bookLevels: Map<string, CachedLevel>;
+  /** Dernier test de vocabulaire de l'univers courant. */
+  vocabTest: VocabTestResult | null;
+  /** Mots marqués « connu » / « inconnu » dans l'univers courant. */
+  wordMarks: Map<string, boolean>;
 
   route: Route;
   /** Change à chaque navigation : force le remontage d'une page (ex. nouvelle session). */
@@ -189,6 +196,9 @@ interface AppState {
   /** Position de lecture : enregistrée sans recharger l'application. */
   saveBookProgress(key: string, chapter: number, block: number, progress: number): Promise<void>;
   setBookLevel(key: string, estimate: LevelEstimate): Promise<void>;
+  /** Marque des mots comme connus (true), inconnus (false) ou retire la marque (null). */
+  markWords(words: string[], known: boolean | null): Promise<void>;
+  saveVocabTest(result: VocabTestResult): Promise<void>;
 }
 
 let toastSeq = 1;
@@ -256,6 +266,8 @@ export const useApp = create<AppState>((set, get) => {
     books: [],
     bookCovers: new Map(),
     bookLevels: new Map(),
+    vocabTest: null,
+    wordMarks: new Map(),
 
     route: { name: 'home' },
     routeKey: 0,
@@ -311,6 +323,7 @@ export const useApp = create<AppState>((set, get) => {
         ? await countNewIntroduced(d, startOfStudyDay(Date.now(), settings.dayStartHour), primaryDirection(settings), current.id)
         : 0;
       const changedUniverse = current?.id !== get().universe?.id;
+      const knowledge = current ? { test: await knowledgeRepo.loadVocabTest(d, current.id), marks: await knowledgeRepo.loadMarks(d, current.id) } : null;
       if (current && get().frequencyRanks?.language !== current.language) {
         const language = current.language;
         void loadRanks(language).then((ranks) => {
@@ -329,6 +342,8 @@ export const useApp = create<AppState>((set, get) => {
         books,
         bookCovers,
         bookLevels,
+        vocabTest: knowledge?.test ?? null,
+        wordMarks: knowledge?.marks ?? new Map(),
         revision: s.revision + 1,
         ...(changedUniverse ? { libraryFilters: DEFAULT_FILTERS, selectedNoteId: null } : {}),
       }));
@@ -555,6 +570,28 @@ export const useApp = create<AppState>((set, get) => {
       await booksRepo.saveProgress(db(), key, chapter, block, progress);
       const now = Date.now();
       set((s) => ({ books: s.books.map((b) => (b.key === key ? { ...b, chapter, block, progress, lastReadAt: now, updatedAt: now } : b)) }));
+      scheduleSync();
+    },
+    async markWords(words, known) {
+      const u = get().universe;
+      if (!u || !words.length) return;
+      await knowledgeRepo.setMarks(db(), u.id, words, known);
+      set((s) => {
+        const marks = new Map(s.wordMarks);
+        for (const w of words) {
+          const word = w.trim().toLowerCase();
+          if (known === null) marks.delete(word);
+          else marks.set(word, known);
+        }
+        return { wordMarks: marks };
+      });
+      scheduleSync();
+    },
+    async saveVocabTest(result) {
+      const u = get().universe;
+      if (!u) return;
+      await knowledgeRepo.saveVocabTest(db(), u.id, result);
+      set({ vocabTest: result });
       scheduleSync();
     },
     async setBookLevel(key, estimate) {

@@ -1,6 +1,7 @@
 name: Catalogue de lecture
 
-# Prépare public/reading/catalog/*.json (livres populaires + niveau estimé) et l'enregistre dans la branche.
+# Prépare public/reading/catalog/*.json (livres populaires, niveau estimé, profil de fréquence) et
+# public/reading/vocab/*.json (banque de mots du test de vocabulaire), puis les enregistre dans la branche.
 # Le build suivant de l'application l'inclut : l'onglet « Découvrir » s'affiche sans attendre Gutendex.
 on:
   workflow_dispatch:
@@ -32,7 +33,8 @@ jobs:
       - run: npx vite-node scripts/build-catalog.ts
       - name: Enregistrer le catalogue
         run: |
-          git add public/reading/catalog
+          mkdir -p public/reading/vocab
+          git add public/reading/catalog public/reading/vocab
           if git diff --cached --quiet; then echo "Catalogue inchangé."; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

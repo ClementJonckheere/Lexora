@@ -180,6 +180,33 @@ MIGRATIONS.push(MIGRATION_V2, {
     'ALTER TABLE review_logs ADD COLUMN typed_ms INTEGER',
     'ALTER TABLE review_logs ADD COLUMN typed_chars INTEGER',
   ],
+}, {
+  version: 6,
+  name: 'mots connus et test de vocabulaire',
+  statements: [
+    // Mot marqué « connu » (ou « inconnu ») par l'utilisateur, par univers ; clé « univers|mot ».
+    `CREATE TABLE word_marks (
+      mark_key     TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      word         TEXT    NOT NULL,
+      known        INTEGER NOT NULL DEFAULT 1,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_word_marks_universe ON word_marks(universe_id, deleted)',
+    // Dernier test de vocabulaire de chaque univers : part de mots connus par tranche de fréquence.
+    `CREATE TABLE vocab_tests (
+      universe_id  TEXT PRIMARY KEY,
+      bands        TEXT    NOT NULL DEFAULT '[]',
+      vocab_size   INTEGER NOT NULL DEFAULT 0,
+      false_alarm  REAL    NOT NULL DEFAULT 0,
+      taken_at     INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;
