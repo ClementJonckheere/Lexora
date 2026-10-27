@@ -1,0 +1,793 @@
+{
+ "version": 1,
+ "generatedAt": "2026-10-27T20:43:00.422Z",
+ "sentences": 2039572,
+ "withFrench": 336747,
+ "minCandidates": 30,
+ "short": [
+  "mixed-conditionals (16)"
+ ],
+ "counts": {
+  "be": {
+   "total": 420765,
+   "withFrench": 82255,
+   "samples": [
+    "Today is June 18th and it is Muiriel's birthday!",
+    "Muiriel is 20 now.",
+    "The password is \"Muiriel\".",
+    "I'm at a loss for words.",
+    "This is never going to end."
+   ]
+  },
+  "was-were": {
+   "total": 201292,
+   "withFrench": 24013,
+   "samples": [
+    "That was an evil bunny.",
+    "I was in the mountains.",
+    "The last person I told my idea to thought I was nuts.",
+    "That was probably what influenced their decision.",
+    "When I woke up, I was sad."
+   ]
+  },
+  "subject-object-pronouns": {
+   "total": 186595,
+   "withFrench": 29258,
+   "samples": [
+    "Education in this world disappoints me.",
+    "I'll call them tomorrow when I come back.",
+    "I told them to send me another ticket.",
+    "You're so impatient with me.",
+    "He's kicking me!"
+   ]
+  },
+  "possessive-adjectives": {
+   "total": 256764,
+   "withFrench": 46741,
+   "samples": [
+    "You are in my way.",
+    "I'll do my best not to disturb your studying.",
+    "The last person I told my idea to thought I was nuts.",
+    "That's MY line!",
+    "That was probably what influenced their decision."
+   ]
+  },
+  "articles": {
+   "total": 727540,
+   "withFrench": 127091,
+   "samples": [
+    "The password is \"Muiriel\".",
+    "I'm at a loss for words.",
+    "That was an evil bunny.",
+    "I was in the mountains.",
+    "Is it a recent picture?"
+   ]
+  },
+  "plural-forms": {
+   "total": 54597,
+   "withFrench": 8827,
+   "samples": [
+    "Most people think I'm crazy.",
+    "I may be antisocial, but it doesn't mean I don't talk to people.",
+    "Most people write about their daily life.",
+    "I hate it when there are a lot of people.",
+    "Thanks for having explained to me at last why people take me for an idiot."
+   ]
+  },
+  "this-that": {
+   "total": 109716,
+   "withFrench": 22239,
+   "samples": [
+    "This is never going to end.",
+    "Education in this world disappoints me.",
+    "This will cost €30.",
+    "I can only wonder if this is the same for everyone else.",
+    "This is what I would have said."
+   ]
+  },
+  "present-simple": {
+   "total": 40394,
+   "withFrench": 7082,
+   "samples": [
+    "It depends on the context.",
+    "It seems interesting to me.",
+    "Whatever I do, she says I can do better.",
+    "I wish I could care more about my grades but it seems that, at a certain point of my life, I decided they wouldn't be so important anymore.",
+    "\"She likes music.\" \"So do I.\""
+   ]
+  },
+  "do-questions": {
+   "total": 139604,
+   "withFrench": 23918,
+   "samples": [
+    "I just don't know what to say.",
+    "I don't know if I have the time.",
+    "It's because you don't want to be alone.",
+    "It doesn't surprise me.",
+    "I don't want to be lame; I want to be cool!!"
+   ]
+  },
+  "wh-questions": {
+   "total": 88205,
+   "withFrench": 16695,
+   "samples": [
+    "How many close friends do you have?",
+    "Why do you ask?",
+    "How long did you stay?",
+    "What did you answer?",
+    "Where is the problem?"
+   ]
+  },
+  "there-is": {
+   "total": 15820,
+   "withFrench": 3226,
+   "samples": [
+    "Then there is a problem...",
+    "I hate it when there are a lot of people.",
+    "There are many words that I don't understand.",
+    "Let me know if there is anything I can do.",
+    "There are too many things to do!"
+   ]
+  },
+  "have-got": {
+   "total": 4638,
+   "withFrench": 1131,
+   "samples": [
+    "My computer has got to be useful for something.",
+    "I've got a pacemaker.",
+    "I've got a frog in my throat.",
+    "I've got mosquito bites all over my arm.",
+    "You've got to learn to hold your tongue."
+   ]
+  },
+  "can": {
+   "total": 73552,
+   "withFrench": 13371,
+   "samples": [
+    "Sometimes he can be a strange guy.",
+    "I can only wonder if this is the same for everyone else.",
+    "I can't live that kind of life.",
+    "Sometimes I can't help showing emotions.",
+    "One can always find time."
+   ]
+  },
+  "imperative": {
+   "total": 29829,
+   "withFrench": 7094,
+   "samples": [
+    "Let's try something.",
+    "Let's consider the worst that could happen.",
+    "Don't underestimate my power.",
+    "Don't expect others to think for you!",
+    "Please don't cry."
+   ]
+  },
+  "prepositions-time-place": {
+   "total": 11964,
+   "withFrench": 1646,
+   "samples": [
+    "For some reason I feel more alive at night.",
+    "In the 1950's, the Finns were cited as having one of the least healthy diets in the world.",
+    "One hundred and fifty thousand couples are expected to get married in Shanghai in 2006.",
+    "It's just five in the morning, but nevertheless it is light out.",
+    "I usually take a shower in the evening."
+   ]
+  },
+  "frequency-adverbs": {
+   "total": 56724,
+   "withFrench": 8766,
+   "samples": [
+    "This is never going to end.",
+    "Sometimes he can be a strange guy.",
+    "I always liked mysterious characters more.",
+    "I never liked biology.",
+    "I've always wondered what it'd be like to have siblings."
+   ]
+  },
+  "present-continuous": {
+   "total": 84581,
+   "withFrench": 14869,
+   "samples": [
+    "I'm going to go.",
+    "He's kicking me!",
+    "That is intriguing.",
+    "You are saying you intentionally hide your good looks?",
+    "She's asking how that's possible."
+   ]
+  },
+  "past-simple-regular": {
+   "total": 121852,
+   "withFrench": 20435,
+   "samples": [
+    "I thought you liked to learn new things.",
+    "After that, I left, but then I realized that I forgot my backpack at their house.",
+    "Even though he apologized, I'm still furious.",
+    "You wanted to tell me about freedom?",
+    "If I wanted to scare you, I would tell you what I dreamt about a few weeks ago."
+   ]
+  },
+  "past-simple-irregular": {
+   "total": 166340,
+   "withFrench": 25113,
+   "samples": [
+    "I told them to send me another ticket.",
+    "The last person I told my idea to thought I was nuts.",
+    "Back in high school, I got up at 6 a.m. every morning.",
+    "When I woke up, I was sad.",
+    "I thought you liked to learn new things."
+   ]
+  },
+  "past-participle": {
+   "total": 92059,
+   "withFrench": 13144,
+   "samples": [
+    "This is what I would have said.",
+    "This is always the way it has been.",
+    "I think my living with you has influenced your way of living.",
+    "I wouldn't have thought I would someday look up \"Viagra\" in Wikipedia.",
+    "I shouldn't have logged off."
+   ]
+  },
+  "past-questions": {
+   "total": 78254,
+   "withFrench": 7136,
+   "samples": [
+    "I didn't know where it came from.",
+    "I didn't like it.",
+    "If you didn't know me that way then you simply didn't know me.",
+    "I didn't want this to happen.",
+    "You're lucky because he didn't bite you."
+   ]
+  },
+  "past-continuous": {
+   "total": 40664,
+   "withFrench": 3493,
+   "samples": [
+    "I was wondering if you were going to show up today.",
+    "\"This is what I was looking for!\" he exclaimed.",
+    "You found me where no one else was looking.",
+    "I was trying to kill time.",
+    "I was rereading the letters you sent to me."
+   ]
+  },
+  "uncountables": {
+   "total": 12501,
+   "withFrench": 2456,
+   "samples": [
+    "What changes the world is communication, not information.",
+    "From the doctor's grim expression, it was clear he had somber news for the patient.",
+    "The news article painted the defendant as a guilty man, even though he had been proven innocent.",
+    "There cannot be progress without communication.",
+    "I'm too lazy to do my homework."
+   ]
+  },
+  "countables": {
+   "total": 44050,
+   "withFrench": 7263,
+   "samples": [
+    "How many close friends do you have?",
+    "If you look at the lyrics, they don't really mean much.",
+    "I hate it when there are a lot of people.",
+    "There are many words that I don't understand.",
+    "I don't like it when mathematicians who know much more than I do can't express themselves explicitly."
+   ]
+  },
+  "comparatives": {
+   "total": 33981,
+   "withFrench": 5809,
+   "samples": [
+    "You're in better shape than I am.",
+    "That's the stupidest thing I've ever said.",
+    "I have nothing better to do.",
+    "Whatever I do, she says I can do better.",
+    "Their communication may be much more complex than we thought."
+   ]
+  },
+  "possessive-s": {
+   "total": 68768,
+   "withFrench": 6108,
+   "samples": [
+    "Today is June 18th and it is Muiriel's birthday!",
+    "You're just running away from life's problems.",
+    "You're by my side; everything's fine now.",
+    "Despite Trang's constant affirmations of love, Spenser is still afraid someday she will fall out of love with him.",
+    "Spenser's sarcastic and joking remarks are often misinterpreted as signs of ambivalence and often taken too seriously."
+   ]
+  },
+  "going-to": {
+   "total": 20446,
+   "withFrench": 2385,
+   "samples": [
+    "I'm going to go.",
+    "I was wondering if you were going to show up today.",
+    "First, I'm going to do an outline of my new website.",
+    "I wonder how long it's going to take.",
+    "Tonight we're going to church."
+   ]
+  },
+  "will": {
+   "total": 95028,
+   "withFrench": 15182,
+   "samples": [
+    "I will be back soon.",
+    "This will cost €30.",
+    "That won't happen.",
+    "I'll do my best not to disturb your studying.",
+    "I'll call them tomorrow when I come back."
+   ]
+  },
+  "must-have-to": {
+   "total": 38445,
+   "withFrench": 5953,
+   "samples": [
+    "I have to go to sleep.",
+    "It would be something I'd have to program.",
+    "In order to do that, you have to take risks.",
+    "I have to go to bed.",
+    "I suppose that behind each thing we have to do, there's something we want to do..."
+   ]
+  },
+  "should": {
+   "total": 35022,
+   "withFrench": 4142,
+   "samples": [
+    "You should sleep.",
+    "I shouldn't have logged off.",
+    "When you're beginning to look like the photo in your passport, you should go on a holiday.",
+    "Those who live in glass houses should not throw stones.",
+    "You should have listened to me."
+   ]
+  },
+  "adverbs-manner": {
+   "total": 117417,
+   "withFrench": 14745,
+   "samples": [
+    "It is unfortunately true.",
+    "Oh, there's a butterfly!",
+    "That was probably what influenced their decision.",
+    "I am a flawed person, but these are flaws that can easily be fixed.",
+    "Maybe it will be exactly the same for him."
+   ]
+  },
+  "verb-patterns": {
+   "total": 100351,
+   "withFrench": 11790,
+   "samples": [
+    "It's because you don't want to be alone.",
+    "I once wanted to be an astrophysicist.",
+    "I don't want to be lame; I want to be cool!!",
+    "When I grow up, I want to be a king.",
+    "I don't want to lose my ideas, even though some of them are a bit extreme."
+   ]
+  },
+  "present-perfect": {
+   "total": 89113,
+   "withFrench": 12832,
+   "samples": [
+    "That's the stupidest thing I've ever said.",
+    "I've always wondered what it'd be like to have siblings.",
+    "This is what I would have said.",
+    "This is always the way it has been.",
+    "I think my living with you has influenced your way of living."
+   ]
+  },
+  "for-since": {
+   "total": 6017,
+   "withFrench": 985,
+   "samples": [
+    "I can't take it anymore! I haven't slept for three days!",
+    "Will you listen to me for a few minutes?",
+    "You look tired. You ought to rest for an hour or two.",
+    "You must keep quiet for a few days.",
+    "Our American neighbor will have lived in Japan for five years next year."
+   ]
+  },
+  "perfect-continuous": {
+   "total": 6567,
+   "withFrench": 717,
+   "samples": [
+    "What do you think I've been doing?",
+    "You have been thinking about this problem the whole morning. Take a break; go eat lunch.",
+    "I've been waiting for hours.",
+    "It's been snowing all night.",
+    "I have been reflecting on what you said to me."
+   ]
+  },
+  "past-perfect": {
+   "total": 16185,
+   "withFrench": 1634,
+   "samples": [
+    "At the age of six he had learned to use the typewriter and told the teacher that he did not need to learn to write by hand.",
+    "Though his stay in Europe was transient, Spenser felt he had learned much more about interactions with other people from traveling than he did at college.",
+    "The news article painted the defendant as a guilty man, even though he had been proven innocent.",
+    "For a moment there, I thought he had gone mad.",
+    "What famous songs do you wish you had composed, and why?"
+   ]
+  },
+  "used-to": {
+   "total": 6207,
+   "withFrench": 662,
+   "samples": [
+    "Miyazaki is not what it used to be.",
+    "I used to go fishing in my school days.",
+    "I used to play tennis when I was a student.",
+    "During summers, I used to go to Miami.",
+    "In summer, we used to go swimming in the river."
+   ]
+  },
+  "first-conditional": {
+   "total": 5624,
+   "withFrench": 846,
+   "samples": [
+    "If you know that something unpleasant will happen, that you will go to the dentist for example, or to France, then that is not good.",
+    "If you don't listen to us, we will have to resort to coercion.",
+    "If Spenser doesn't keep adding and translating sentences, the other contributors will surely surpass him.",
+    "You will say and do things your parents said and did, even if you swore you would never do them.",
+    "If you teach me how to dance, I will show you my hidden scars."
+   ]
+  },
+  "time-clauses": {
+   "total": 9223,
+   "withFrench": 1541,
+   "samples": [
+    "I suppose it's different when you think about it over the long term.",
+    "I'll call them tomorrow when I come back.",
+    "When I grow up, I want to be a king.",
+    "If you don't want to put on sunscreen, that's your problem. Just don't come complaining to me when you get a sunburn.",
+    "Look at me when I talk to you!"
+   ]
+  },
+  "second-conditional": {
+   "total": 8187,
+   "withFrench": 958,
+   "samples": [
+    "If I wanted to scare you, I would tell you what I dreamt about a few weeks ago.",
+    "It would be so cool if I could speak ten languages!",
+    "Why would you marry a woman if you like men?",
+    "If I gave no answer, I would not have spoken.",
+    "My parents would repudiate my brother if they ever found out he was gay."
+   ]
+  },
+  "passive": {
+   "total": 62980,
+   "withFrench": 9611,
+   "samples": [
+    "\"To tell you the truth, I am scared of heights.\" \"You are a coward!\"",
+    "Rye was called the grain of poverty.",
+    "In the 1950's, the Finns were cited as having one of the least healthy diets in the world.",
+    "They were left speechless.",
+    "It is said that \"Hamlet\" is the most interesting play ever written."
+   ]
+  },
+  "relatives-defining": {
+   "total": 7097,
+   "withFrench": 759,
+   "samples": [
+    "Poor is not the one who has too little, but the one who wants too much.",
+    "You don't marry someone you can live with — you marry the person whom you cannot live without.",
+    "Our opinion is an idea which we have; our conviction an idea which has us.",
+    "The people who come on the Maury Povich show often make pretentious claims about their lovers cheating on them.",
+    "His father would never sanction his engagement to a girl who did not share the same religious beliefs as their family."
+   ]
+  },
+  "deduction-present": {
+   "total": 9673,
+   "withFrench": 1395,
+   "samples": [
+    "I may be antisocial, but it doesn't mean I don't talk to people.",
+    "I found a solution, but I found it so fast that it can't be the right solution.",
+    "It can't be!",
+    "Their communication may be much more complex than we thought.",
+    "It may be that the happiness awaiting us is not at all the sort of happiness we would want."
+   ]
+  },
+  "reported-statements": {
+   "total": 31432,
+   "withFrench": 925,
+   "samples": [
+    "I never said I was fragile.",
+    "He told me he would go to Venice.",
+    "You told her that you had finished the work three days before.",
+    "He said he would give us his decision for sure by Friday.",
+    "The doctors said he would never again be able to walk without some support."
+   ]
+  },
+  "quantifiers": {
+   "total": 29287,
+   "withFrench": 4995,
+   "samples": [
+    "They are too busy fighting against each other to care for common ideals.",
+    "Back in high school, I got up at 6 a.m. every morning.",
+    "Every person who is alone is alone because they are afraid of others.",
+    "If I wanted to scare you, I would tell you what I dreamt about a few weeks ago.",
+    "I suppose that behind each thing we have to do, there's something we want to do..."
+   ]
+  },
+  "say-tell": {
+   "total": 149791,
+   "withFrench": 11254,
+   "samples": [
+    "I just don't know what to say.",
+    "I told them to send me another ticket.",
+    "The last person I told my idea to thought I was nuts.",
+    "That's the stupidest thing I've ever said.",
+    "I'm just saying!"
+   ]
+  },
+  "gerund-infinitive-meaning": {
+   "total": 19543,
+   "withFrench": 2609,
+   "samples": [
+    "Stop seeing me as a \"normal\" person!",
+    "Stop asking me for a drink! Go get it yourself.",
+    "Jimmy tried to cajole his parents into letting him drive across the country with his friends.",
+    "Stop criticizing me!",
+    "Never try to die."
+   ]
+  },
+  "subject-questions": {
+   "total": 5031,
+   "withFrench": 943,
+   "samples": [
+    "What keeps you up so late?",
+    "Who wants some hot chocolate?",
+    "What made you change your mind?",
+    "What famous songs do you wish you had composed, and why?",
+    "Who buys this type of art?"
+   ]
+  },
+  "purpose-to": {
+   "total": 7255,
+   "withFrench": 942,
+   "samples": [
+    "In order to do that, you have to take risks.",
+    "This is my friend Rachel. We went to high school together.",
+    "It has been so long since I last went to Disneyland with my family.",
+    "We went to London last year.",
+    "Prosecutors in court have to substantiate their claims in order to prove a suspect is guilty."
+   ]
+  },
+  "preposition-ing": {
+   "total": 29549,
+   "withFrench": 4341,
+   "samples": [
+    "I think my living with you has influenced your way of living.",
+    "Thanks for having explained to me at last why people take me for an idiot.",
+    "I will play Sudoku then instead of continuing to bother you.",
+    "It's useless to keep on thinking any more.",
+    "\"Thank you for helping me.\" \"Don't mention it.\""
+   ]
+  },
+  "indirect-questions": {
+   "total": 31771,
+   "withFrench": 4139,
+   "samples": [
+    "I just don't know what to say.",
+    "I've always wondered what it'd be like to have siblings.",
+    "I didn't know where it came from.",
+    "I don't know what you mean.",
+    "I don't know how to demonstrate it, since it's too obvious!"
+   ]
+  },
+  "too-enough": {
+   "total": 17406,
+   "withFrench": 3156,
+   "samples": [
+    "They are too busy fighting against each other to care for common ideals.",
+    "I found a solution, but I found it so fast that it can't be the right solution.",
+    "It's too bad that I don't need to lose weight.",
+    "I don't speak French well enough!",
+    "You're not fast enough."
+   ]
+  },
+  "make-let": {
+   "total": 14110,
+   "withFrench": 2101,
+   "samples": [
+    "Seriously though, episode 21 made me almost cry while laughing.",
+    "It's no use pretending to make me believe that I believe things you don't believe!",
+    "Let me know if there is anything I can do.",
+    "Let me know if I need to make any changes.",
+    "I don't know what to say to make you feel better."
+   ]
+  },
+  "phrasal-verbs": {
+   "total": 7361,
+   "withFrench": 1209,
+   "samples": [
+    "I suppose it's different when you think about it over the long term.",
+    "I hate those spiders. They're always there to freak me out when I'm cleaning.",
+    "It's over between us. Give me back my ring!",
+    "The king was tired of his sycophants always praising him, so he sent them away.",
+    "Con artists take advantage of the credulity of inexperienced investors and swindle them out of their money."
+   ]
+  },
+  "question-tags": {
+   "total": 21614,
+   "withFrench": 1249,
+   "samples": [
+    "It's not much of a surprise, is it?",
+    "\"She likes music.\" \"So do I.\"",
+    "\"I feel like playing cards.\" \"So do I.\"",
+    "Well, the night is quite long, isn't it?",
+    "She's really smart, isn't she?"
+   ]
+  },
+  "third-conditional": {
+   "total": 472,
+   "withFrench": 96,
+   "samples": [
+    "If it had not been for your advice, I would have failed.",
+    "If it had not been for your raincoat, I would have been drenched to the skin.",
+    "If I had had more time, I would have written to you.",
+    "I could have done better if I had had more time.",
+    "I would have written a longer letter if I'd had more time."
+   ]
+  },
+  "mixed-conditionals": {
+   "total": 79,
+   "withFrench": 16,
+   "samples": [
+    "If he had stayed at home that day, he would not have met with disaster.",
+    "If he had failed the exam, what would he have done?",
+    "If I had worked hard in my youth, I would be successful now.",
+    "If I had bought the painting then, I would be rich now.",
+    "If I had taken that plane, I would be dead now."
+   ]
+  },
+  "wish": {
+   "total": 5109,
+   "withFrench": 628,
+   "samples": [
+    "I wish I could go to Japan.",
+    "I wish I could care more about my grades but it seems that, at a certain point of my life, I decided they wouldn't be so important anymore.",
+    "What famous songs do you wish you had composed, and why?",
+    "If only we'd stop trying to be happy we could have a pretty good time.",
+    "I wish she would stop playing that stupid music."
+   ]
+  },
+  "passive-modals": {
+   "total": 8704,
+   "withFrench": 988,
+   "samples": [
+    "An expert is someone who knows some of the worst mistakes that can be made in his field, and how to avoid them.",
+    "When you send a telegram, brevity is essential because you will be charged for every word.",
+    "You may be disappointed if you fail, but you are doomed if you don't try.",
+    "Advertising may be described as the science of arresting the human intelligence long enough to get money from it.",
+    "You should be ashamed of your ignorance."
+   ]
+  },
+  "have-something-done": {
+   "total": 2210,
+   "withFrench": 351,
+   "samples": [
+    "You should get your hair cut.",
+    "You should get your car fixed.",
+    "We got our roof blown off in the gale.",
+    "You must get the job done before the deadline.",
+    "We enjoyed seeing the city, but we got a little tired."
+   ]
+  },
+  "relatives-non-defining": {
+   "total": 2366,
+   "withFrench": 257,
+   "samples": [
+    "Holy crap, who's the asshole who dares call me in the middle of the night?!",
+    "Generally, who visits their parents more, sons or daughters?",
+    "You should visit Kyoto, which is famous for its old temples and shrines.",
+    "Were I to die, who would look after my children?",
+    "And the banquet sponsor tasted the water, which had turned into wine."
+   ]
+  },
+  "deduction-past": {
+   "total": 3542,
+   "withFrench": 485,
+   "samples": [
+    "Seeing that you're not surprised, I think you must have known.",
+    "I couldn't have done it without you. Thank you.",
+    "You may have read this book already.",
+    "You could have done it.",
+    "Your mother must have been beautiful when she was young."
+   ]
+  },
+  "reported-questions": {
+   "total": 9235,
+   "withFrench": 877,
+   "samples": [
+    "I told them to send me another ticket.",
+    "I've always wondered what it'd be like to have siblings.",
+    "Baffled by Sherlock Holmes' cryptic remarks, Watson wondered whether Holmes was intentionally concealing his thoughts about the crime.",
+    "He asked me if I could speak English.",
+    "The doctor told me to give up smoking."
+   ]
+  },
+  "future-continuous": {
+   "total": 2542,
+   "withFrench": 250,
+   "samples": [
+    "I'm very happy you'll be visiting Tokyo next month.",
+    "You'll be hearing from us soon.",
+    "I'll be waiting for you at the usual place.",
+    "You'll be crying before long.",
+    "He will be sleeping when you get to his house."
+   ]
+  },
+  "future-perfect": {
+   "total": 242,
+   "withFrench": 71,
+   "samples": [
+    "You will have heard this story before.",
+    "If you read this book again, you will have read it three times.",
+    "I will have left when you return.",
+    "He will have left here by the time you return.",
+    "I will have left here before you return."
+   ]
+  },
+  "be-used-to": {
+   "total": 1286,
+   "withFrench": 254,
+   "samples": [
+    "We men are used to waiting for the women.",
+    "You will soon get used to speaking in public.",
+    "It is difficult for foreigners to get used to Japanese food.",
+    "Salt is used to season food.",
+    "British people are used to standing in queues."
+   ]
+  },
+  "inversion": {
+   "total": 399,
+   "withFrench": 87,
+   "samples": [
+    "Never did I dream of meeting you here.",
+    "No sooner had I gone out than it began to rain.",
+    "Scarcely had I reached home before the telephone rang.",
+    "Hardly had the rain stopped when the ground began to freeze.",
+    "No sooner had Helen come home than she fell sick."
+   ]
+  },
+  "cleft-sentences": {
+   "total": 3299,
+   "withFrench": 721,
+   "samples": [
+    "It is inevitable that I go to France someday, I just don't know when.",
+    "It is regrettable that you did not start earlier.",
+    "It is best that you stop smoking.",
+    "What grade is your sister in?",
+    "It is important that you attach your photo to the application form."
+   ]
+  },
+  "participle-clauses": {
+   "total": 2581,
+   "withFrench": 552,
+   "samples": [
+    "Come on, play with me, I'm so bored!",
+    "Denying she was an anarchist, Katja maintained she wished only to make changes in our government, not to destroy it.",
+    "Shocked by the events of September 11th, politicians all over the world condemned the terrorists for their reprehensible deed.",
+    "Assuming your story is true, what should I do?",
+    "Judging from what you say, he must be a great scholar."
+   ]
+  },
+  "subjunctive": {
+   "total": 311,
+   "withFrench": 36,
+   "samples": [
+    "I suggest that we go out on Friday.",
+    "However, I recommend that you take the JR Narita Express (a train leaves every 30-60 minutes from the airport), to avoid the complexity of changing trains.",
+    "Sarah demanded that she be given a refund.",
+    "I proposed that she come with me.",
+    "My father suggested that we go camping."
+   ]
+  },
+  "emphatic-do": {
+   "total": 3596,
+   "withFrench": 569,
+   "samples": [
+    "I don't like it when mathematicians who know much more than I do can't express themselves explicitly.",
+    "Though his stay in Europe was transient, Spenser felt he had learned much more about interactions with other people from traveling than he did at college.",
+    "What you don't have is better than what you do have.",
+    "We can travel through time. And we do at the remarkable rate of one second per second.",
+    "I think it is good that books still exist, but they do make me sleepy."
+   ]
+  }
+ }
+}
