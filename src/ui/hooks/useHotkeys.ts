@@ -18,7 +18,8 @@ export function comboOf(e: KeyboardEvent): string {
   if (e.shiftKey && (e.key.length > 1 || e.ctrlKey || e.metaKey || e.altKey)) parts.push('shift');
   let key = e.key === ' ' ? 'space' : e.key.toLowerCase();
   // Pavé numérique / AZERTY : les chiffres arrivent via e.code.
-  if (/^Digit\d$/.test(e.code) && !e.ctrlKey && !e.altKey) key = e.code.slice(5);
+  // AZERTY : « 1 » arrive comme « & » ; on se fie à la touche physique pour les chiffres.
+  if (/^Digit\d$/.test(e.code)) key = e.code.slice(5);
   if (/^Numpad\d$/.test(e.code)) key = e.code.slice(6);
   parts.push(key);
   return parts.join('+');

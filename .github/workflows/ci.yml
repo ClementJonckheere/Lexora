@@ -40,9 +40,44 @@ jobs:
       - run: npm run build
       - run: cargo test --manifest-path src-tauri/Cargo.toml
 
+  sync-integration:
+    name: Synchronisation (PostgreSQL + PostgREST réels)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGPASSWORD: postgres
+      LEXORA_POSTGREST: http://localhost:3999
+      LEXORA_JWT_SECRET: lexora-ci-secret-lexora-ci-secret-0123456
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Schéma Supabase
+        run: |
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f supabase/test/auth-stub.sql
+          psql -h localhost -U postgres -v ON_ERROR_STOP=1 -f supabase/schema.sql
+          psql -h localhost -U postgres -c "create role authenticator login password 'auth' noinherit; grant authenticated, anon to authenticator;"
+      - name: PostgREST
+        run: |
+          curl -sSL https://github.com/PostgREST/postgrest/releases/download/v12.2.3/postgrest-v12.2.3-linux-static-x64.tar.xz | tar xJ
+          PGRST_DB_URI="postgres://authenticator:auth@localhost:5432/postgres" PGRST_DB_SCHEMAS=public PGRST_DB_ANON_ROLE=anon \
+            PGRST_JWT_SECRET="$LEXORA_JWT_SECRET" PGRST_SERVER_PORT=3999 nohup ./postgrest > postgrest.log 2>&1 &
+          for i in $(seq 1 30); do curl -s localhost:3999/ >/dev/null && break; sleep 1; done
+      - run: npx vitest run src/core/sync/supabase.integration.test.ts
+
   windows:
     name: Installateur Windows
-    needs: test
+    needs: [test, sync-integration]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +90,44 @@ jobs:
         with:
           workspaces: src-tauri
       - run: npm ci
-      - run: npm run app:build
+      # Signature des mises à jour : sans la clé privée (secret), l'installateur est construit sans fichiers de mise à jour.
+      - name: Signature des mises à jour
+        id: signing
+        shell: bash
+        run: |
+          # Tolère les espaces / retours à la ligne ajoutés par un copier-coller.
+          CLEAN=$(printf '%s' "$KEY" | tr -d ' \t\r\n')
+          if [ -z "$CLEAN" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo '{"bundle":{"createUpdaterArtifacts":false}}' > "$RUNNER_TEMP/nosign.json"
+            echo "::warning::Secret TAURI_SIGNING_PRIVATE_KEY absent : pas de mise à jour automatique publiée."
+            exit 0
+          fi
+          if ! printf '%s' "$CLEAN" | base64 -d > /dev/null 2>&1; then
+            echo "::error::Le secret TAURI_SIGNING_PRIVATE_KEY est incomplet ou mal copié (${#CLEAN} caractères lus, une clé Lexora en fait 348 et se termine par « == »). Recollez la ligne entière."
+            exit 1
+          fi
+          printf '%s' "$CLEAN" > "$RUNNER_TEMP/updater.key"
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+        env:
+          KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      # Configuration Supabase (secrets du dépôt) : sans eux, l'application fonctionne sans compte ni synchronisation.
+      - name: Construction
+        shell: bash
+        run: |
+          if [ "${{ steps.signing.outputs.enabled }}" = "true" ]; then
+            export TAURI_SIGNING_PRIVATE_KEY="$(cat "$RUNNER_TEMP/updater.key")"
+            export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="$(printf '%s' "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" | tr -d ' \t\r\n')"
+            npm run app:build
+          else
+            unset TAURI_SIGNING_PRIVATE_KEY
+            npm run app:build -- --config "$RUNNER_TEMP/nosign.json"
+          fi
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
       - name: Publier les installateurs (artefacts)
         uses: actions/upload-artifact@v4
         with:
@@ -65,11 +137,22 @@ jobs:
           path: |
             src-tauri/target/release/bundle/nsis/*.exe
             src-tauri/target/release/bundle/msi/*.msi
-      - name: Brouillon de release (tags v*)
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          draft: true
-          files: |
-            src-tauri/target/release/bundle/nsis/*.exe
-            src-tauri/target/release/bundle/msi/*.msi
+      # Mise à jour automatique : une release publique v<version> par version (latest.json + installateurs signés).
+      # Pour publier une nouvelle version, augmenter « version » dans package.json, src-tauri/Cargo.toml et tauri.conf.json.
+      - name: Release v<version> (mise à jour automatique)
+        if: github.event_name == 'push' && steps.signing.outputs.enabled == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          TAG="v$VERSION"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release $TAG déjà publiée : rien à faire."
+            exit 0
+          fi
+          BUNDLE=src-tauri/target/release/bundle
+          node scripts/updater-manifest.mjs "$BUNDLE" "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG" latest.json
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Lexora $VERSION" --latest \
+            --notes "Installez Lexora_${VERSION}_x64-setup.exe. Les versions installées se mettent à jour automatiquement." \
+            latest.json $BUNDLE/nsis/*.exe $BUNDLE/nsis/*.exe.sig $BUNDLE/msi/*.msi $BUNDLE/msi/*.msi.sig

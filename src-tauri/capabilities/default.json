@@ -2,12 +2,15 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Permissions de la fenêtre principale",
-  "windows": ["main"],
+  "windows": [
+    "main"
+  ],
   "permissions": [
     "core:default",
     "core:window:allow-show",
     "core:window:allow-unminimize",
     "core:window:allow-set-focus",
+    "opener:default",
     "dialog:allow-open",
     "dialog:allow-save",
     "dialog:allow-message",
@@ -15,6 +18,52 @@
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
     "global-shortcut:allow-unregister-all",
-    "global-shortcut:allow-is-registered"
+    "global-shortcut:allow-is-registered",
+    "updater:default",
+    "process:allow-restart",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
+    "clipboard-manager:allow-read-text",
+    "notification:default",
+    "core:window:allow-hide",
+    "core:window:allow-is-visible",
+    "core:window:allow-set-fullscreen",
+    "core:window:allow-is-fullscreen",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://gutendex.com/*"
+        },
+        {
+          "url": "https://www.gutenberg.org/*"
+        },
+        {
+          "url": "https://gutenberg.org/*"
+        },
+        {
+          "url": "https://*.gutenberg.org/*"
+        },
+        {
+          "url": "https://api.mymemory.translated.net/*"
+        },
+        {
+          "url": "https://tatoeba.org/*"
+        },
+        {
+          "url": "https://api.tatoeba.org/*"
+        },
+        {
+          "url": "https://api-free.deepl.com/*"
+        },
+        {
+          "url": "https://api.deepl.com/*"
+        },
+        {
+          "url": "https://en.wiktionary.org/*"
+        }
+      ]
+    }
   ]
 }

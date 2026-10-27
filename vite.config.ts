@@ -18,6 +18,16 @@ export default defineConfig({
     host: host || false,
     hmr: host ? { protocol: 'ws', host, port: 1421 } : undefined,
     watch: { ignored: ['**/src-tauri/**'] },
+    // Aperçu navigateur : Gutendex et Project Gutenberg n'autorisent pas les requêtes directes (CORS).
+    proxy: {
+      '/proxy/gutendex': { target: 'https://gutendex.com', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/gutendex/, '') },
+      '/proxy/mymemory': { target: 'https://api.mymemory.translated.net', changeOrigin: true, rewrite: (p) => p.replace(/^\/proxy\/mymemory/, '') },
+      '/proxy/deepl-free': { target: 'https://api-free.deepl.com', changeOrigin: true, rewrite: (p) => p.replace(/^\/proxy\/deepl-free/, '') },
+      '/proxy/deepl': { target: 'https://api.deepl.com', changeOrigin: true, rewrite: (p) => p.replace(/^\/proxy\/deepl/, '') },
+      '/proxy/wiktionary': { target: 'https://en.wiktionary.org', changeOrigin: true, rewrite: (p) => p.replace(/^\/proxy\/wiktionary/, '') },
+      '/proxy/tatoeba': { target: 'https://tatoeba.org', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/tatoeba/, '') },
+      '/proxy/gutenberg': { target: 'https://www.gutenberg.org', changeOrigin: true, followRedirects: true, rewrite: (p) => p.replace(/^\/proxy\/gutenberg/, '') },
+    },
   },
   envPrefix: ['VITE_', 'TAURI_ENV_*'],
   build: {

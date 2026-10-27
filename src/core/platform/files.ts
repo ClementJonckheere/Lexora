@@ -75,8 +75,3 @@ export async function backupDbFile(): Promise<string> {
   const { invoke } = await import('@tauri-apps/api/core');
   return invoke<string>('backup_now');
 }
-
-export async function restoreDbFile(path: string): Promise<void> {
-  const { invoke } = await import('@tauri-apps/api/core');
-  await invoke('restore_db_file', { path });
-}

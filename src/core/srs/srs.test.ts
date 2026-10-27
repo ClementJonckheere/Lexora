@@ -14,8 +14,8 @@ const scheduler = createScheduler(settings);
 let cardSeq = 1;
 function card(noteId: number, direction: Direction, patch: Partial<CardRecord> = {}): CardRecord {
   return {
-    id: cardSeq++,
-    noteId,
+    id: String(cardSeq++),
+    noteId: String(noteId),
     direction,
     state: State.New,
     due: NOW - DAY,
@@ -33,7 +33,9 @@ function card(noteId: number, direction: Direction, patch: Partial<CardRecord> =
 
 function note(id: number, cards: Partial<Record<Direction, Partial<CardRecord>>> = {}, createdAt = NOW - id * 1000): Note {
   return {
-    id,
+    id: String(id),
+    universeId: 'u',
+    pronunciation: '',
     expression: `expr ${id}`,
     translation: `trad ${id}`,
     expressionKey: `expr ${id}`,
@@ -41,6 +43,7 @@ function note(id: number, cards: Partial<Record<Direction, Partial<CardRecord>>>
     category: '',
     categoryAuto: true,
     isFavorite: false,
+    suspended: false,
     createdAt,
     updatedAt: createdAt,
     examples: [],
@@ -125,7 +128,7 @@ describe('file de révision', () => {
     const seenYesterday = note(1, { fr_en: { ...reviewState(3), lastReview: NOW - DAY } });
     const seenToday = note(2, { fr_en: { ...reviewState(3), lastReview: NOW - 60_000 } });
     const q = buildQueue([seenYesterday, seenToday], opts());
-    expect(q).toEqual([expect.objectContaining({ noteId: 1, direction: 'en_fr', kind: 'new' })]);
+    expect(q).toEqual([expect.objectContaining({ noteId: '1', direction: 'en_fr', kind: 'new' })]);
   });
 
   it('priorité : apprentissage → révisions fragiles → nouveaux ; limite appliquée', () => {
@@ -136,7 +139,7 @@ describe('file de révision', () => {
       note(4),
     ];
     const q = buildQueue(notes, opts({ limit: 3 }));
-    expect(q.map((i) => i.noteId)).toEqual([1, 2, 3]);
+    expect(q.map((i) => i.noteId)).toEqual(['1', '2', '3']);
     const all = buildQueue(notes, opts());
     expect(all.map((i) => i.kind)).toContain('new');
     expect(all[0].kind).toBe('learning');
@@ -157,8 +160,8 @@ describe('file de révision', () => {
 
   it('filtre par direction et par collection', () => {
     const notes = [note(1, { fr_en: reviewState(-1), en_fr: reviewState(-1) }), note(2, { fr_en: reviewState(-1), en_fr: reviewState(4) })];
-    expect(buildQueue(notes, opts({ direction: 'en_fr' }))).toEqual([expect.objectContaining({ noteId: 1, direction: 'en_fr' })]);
-    expect(buildQueue(notes, opts({ noteIds: new Set([2]) })).map((i) => i.noteId)).toEqual([2]);
+    expect(buildQueue(notes, opts({ direction: 'en_fr' }))).toEqual([expect.objectContaining({ noteId: '1', direction: 'en_fr' })]);
+    expect(buildQueue(notes, opts({ noteIds: new Set(['2']) })).map((i) => i.noteId)).toEqual(['2']);
   });
 
   it('les fiches non dues ne sont pas proposées', () => {
@@ -185,5 +188,19 @@ describe('session', () => {
     s.advance();
     expect(s.finished).toBe(true);
     expect(s.completed).toBe(5);
+  });
+
+  it('retire les fiches d’une note suspendue, même après annulation', () => {
+    const s = new SessionQueue(['a1', 'b', 'a2', 'c']);
+    s.advance(); // a1
+    s.remove((i) => i.startsWith('a'));
+    expect(s.current).toBe('b');
+    expect(s.completed).toBe(2);
+    s.undo();
+    expect(s.current).toBe('b');
+    s.advance();
+    s.advance();
+    expect(s.finished).toBe(true);
+    expect(s.completed).toBe(4);
   });
 });

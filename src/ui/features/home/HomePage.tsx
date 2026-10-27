@@ -7,6 +7,10 @@ import { Button, EmptyState } from '@/ui/components/ui';
 import { useDueCounts } from '@/ui/features/review/ReviewPage';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { DAY } from '@/core/domain/dates';
+import { UniversesOverview } from '@/ui/features/universes/Universes';
+import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
+import { estimateMinutes } from '@/core/repo/progressRepo';
+import { GettingStarted, GoalRing, ResumeReading } from './Widgets';
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -25,6 +29,8 @@ export function HomePage() {
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate, openEditor, showNote } = useApp.getState();
   const due = useDueCounts();
+  const progress = useDailyProgress();
+  const minutes = estimateMinutes(due.review + due.learning, due.new, progress.medianDurationMs);
 
   const recentCount = useMemo(() => notes.filter((n) => n.createdAt >= Date.now() - 7 * DAY).length, [notes]);
   const latest = notes.slice(0, 6);
@@ -77,10 +83,14 @@ export function HomePage() {
   return (
     <div className="page">
       <section className="card hero">
-        <h1 className="hero-title">{greeting()}, prêt à réviser ?</h1>
+        <div className="hero-top">
+          <h1 className="hero-title">{greeting()}, prêt à réviser ?</h1>
+          <GoalRing progress={progress} />
+        </div>
         <div className="hero-facts">
           <span>
             <strong>{due.total}</strong> {due.total > 1 ? 'fiches à réviser' : 'fiche à réviser'} aujourd'hui
+            {due.total > 0 && <span className="muted">, environ {minutes} min</span>}
           </span>
           <span>
             <strong>{recentCount}</strong> {recentCount > 1 ? 'nouveaux mots enregistrés' : 'nouveau mot enregistré'} ces 7 derniers jours
@@ -91,7 +101,7 @@ export function HomePage() {
         </div>
         <div className="hero-actions">
           <Button variant="primary" size="lg" onClick={due.total > 0 ? startAll : () => navigate({ name: 'review' })} shortcut="Entrée">
-            {due.total > 0 ? 'Commencer les révisions' : 'Tout est à jour — s’entraîner'} <ArrowRight size={17} />
+            {due.total > 0 ? 'Commencer les révisions' : "S'entraîner librement"} <ArrowRight size={17} />
           </Button>
           <Button size="lg" onClick={() => openEditor()} shortcut="N">
             <Plus size={17} /> Ajouter du vocabulaire
@@ -102,7 +112,11 @@ export function HomePage() {
             </Button>
           )}
         </div>
+        <UniversesOverview />
       </section>
+
+      <GettingStarted progress={progress} />
+      <ResumeReading />
 
       {notes.length === 0 ? (
         <div className="card">

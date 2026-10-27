@@ -5,8 +5,17 @@ import { backupNowToAppFolder, backupToFile, exportToCsv, exportToJson, importFr
 import type { DirectionMode, Settings } from '@/core/domain/settings';
 import { getAppInfo, type AppInfo } from '@/core/platform/files';
 import { isTauri } from '@/core/platform/env';
-import { loadVoices, speak, speechSupported } from '@/core/platform/speech';
+import { loadVoices, speechSupported } from '@/core/platform/speech';
+import { speakText } from '@/ui/speech';
+import { languageInfo } from '@/core/domain/languages';
 import { Button, Switch } from '@/ui/components/ui';
+import { AccountSection } from '@/ui/features/account/AccountSection';
+import { checkUpdates } from '@/app/desktop';
+import { getAutostart, openExternal, setAutostart } from '@/core/platform/desktop';
+import { deeplUsage } from '@/core/translate/translate';
+import { sharedDeeplUsage } from '@/core/translate/shared';
+import { checkNaturalVoice } from '@/core/speech/natural';
+import { authConfigured } from '@/core/platform/auth';
 
 function Setting({ title, desc, children }: { title: string; desc?: ReactNode; children: ReactNode }) {
   return (
@@ -50,11 +59,16 @@ export function SettingsPage() {
   const db = useApp((s) => s.db);
   const [info, setInfo] = useState<AppInfo | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const universe = useApp((s) => s.universe);
+  const language = universe?.language ?? 'en';
+  const lang = languageInfo(language);
 
   useEffect(() => {
     getAppInfo().then(setInfo).catch(() => setInfo(null));
-    loadVoices().then(setVoices);
   }, []);
+  useEffect(() => {
+    loadVoices(language).then(setVoices);
+  }, [language]);
 
   const update = (patch: Partial<Settings>) => attempt(() => useApp.getState().updateSettings(patch), 'Réglage enregistré');
 
@@ -68,18 +82,48 @@ export function SettingsPage() {
       </div>
 
       <div className="stack">
+        <AccountSection />
         <section className="card settings-section">
           <div className="card-header">
             <h2 className="card-title">Mémorisation</h2>
           </div>
-          <Setting title="Nouveaux mots par jour" desc="Plafond de mots introduits chaque jour en révision. Les autres attendent leur tour.">
+          <Setting title="Objectif du jour" desc="Nombre de réponses par jour, toutes langues confondues : affiché sur l'accueil avec votre série de jours consécutifs.">
+            <NumberInput value={settings.dailyGoal} min={5} max={500} onCommit={(v) => update({ dailyGoal: Math.round(v) })} />
+          </Setting>
+          <Setting title="Nouveaux mots par jour" desc="Plafond par défaut, pour chaque univers. Les autres mots attendent leur tour.">
             <NumberInput value={settings.newPerDay} min={0} max={200} onCommit={(v) => update({ newPerDay: Math.round(v) })} />
           </Setting>
-          <Setting title="Directions révisées" desc="Chaque direction est suivie séparément. FR → EN entraîne la production orale.">
+          {universe && (
+            <Setting
+              title={`Nouveaux mots par jour · ${universe.name}`}
+              desc="Plafond propre à cet univers (par exemple moins de nouveaux mots en chinois). Vide = réglage par défaut."
+            >
+              <OptionalNumberInput
+                value={universe.newPerDay}
+                placeholder={`Défaut (${settings.newPerDay})`}
+                onCommit={(v) => void attempt(() => useApp.getState().setUniverseNewPerDay(universe.id, v), 'Réglage enregistré')}
+              />
+            </Setting>
+          )}
+          <Setting
+            title="Taper la réponse (français → langue)"
+            desc="Avant de dévoiler, vous tapez l'expression : Lexora vérifie (formes conjuguées tolérées) et propose la note. Plus exigeant, idéal pour l'expression orale."
+          >
+            <Switch label="Taper la réponse" checked={settings.typeAnswer} onChange={(v) => update({ typeAnswer: v })} />
+          </Setting>
+          <Setting
+            title="Traduction automatique"
+            desc="Quand vous sélectionnez un mot dans un livre (ou faites un ajout rapide), la traduction française est proposée automatiquement (MyMemory, gratuit). Désactivé : utilisez le bouton « Traduire » de la fiche. Les mots sont envoyés à ce service."
+          >
+            <Switch label="Traduction automatique" checked={settings.autoTranslate} onChange={(v) => update({ autoTranslate: v })} />
+          </Setting>
+          {authConfigured && <SharedDeeplStatus />}
+          <DeeplSetting value={settings.deeplKey} onSave={(v) => update({ deeplKey: v })} />
+          <Setting title="Directions révisées" desc="Chaque direction est suivie séparément. Français → langue entraîne la production orale.">
             <select className="select" value={settings.directions} onChange={(e) => update({ directions: e.target.value as DirectionMode })}>
               <option value="both">Les deux</option>
-              <option value="fr_en">FR → EN uniquement</option>
-              <option value="en_fr">EN → FR uniquement</option>
+              <option value="fr_en">Français → langue uniquement</option>
+              <option value="en_fr">Langue → français uniquement</option>
             </select>
           </Setting>
           <Setting
@@ -118,11 +162,29 @@ export function SettingsPage() {
           <div className="card-header">
             <h2 className="card-title">Prononciation & raccourcis</h2>
           </div>
+          <Setting
+            title="Prononciation enregistrée"
+            desc="Quand elle existe, la prononciation d'une vraie personne (Wiktionnaire, Wikimedia Commons, Lingua Libre) remplace la voix de synthèse pour les mots et expressions courtes. Nécessite Internet ; sinon, voix de synthèse."
+          >
+            <Switch label="Prononciation enregistrée" checked={settings.recordedVoice} onChange={(v) => update({ recordedVoice: v })} />
+          </Setting>
+          {authConfigured && <NaturalVoiceSetting enabled={settings.naturalVoice} onChange={(v) => update({ naturalVoice: v })} />}
           {speechSupported() ? (
             <>
-              <Setting title="Voix anglaise" desc="Voix installées sur votre système (fonctionnent hors ligne).">
+              <Setting
+                title={`Voix · ${lang.name}`}
+                desc={
+                  voices.length
+                    ? 'Voix installées sur cet appareil (fonctionnent hors ligne). Réglage propre à chaque langue.'
+                    : `Aucune voix ${lang.name.toLowerCase()} installée. Windows : Paramètres → Heure et langue → Voix → Ajouter des voix.`
+                }
+              >
                 <div className="row">
-                  <select className="select" value={settings.ttsVoice} onChange={(e) => update({ ttsVoice: e.target.value })}>
+                  <select
+                    className="select"
+                    value={settings.ttsVoices[language] ?? ''}
+                    onChange={(e) => update({ ttsVoices: { ...settings.ttsVoices, [language]: e.target.value } })}
+                  >
                     <option value="">Automatique</option>
                     {voices.map((v) => (
                       <option key={v.voiceURI} value={v.voiceURI}>
@@ -130,7 +192,7 @@ export function SettingsPage() {
                       </option>
                     ))}
                   </select>
-                  <Button icon variant="ghost" title="Tester" onClick={() => speak('We need to tackle this issue.', { voice: settings.ttsVoice, rate: settings.ttsRate })}>
+                  <Button icon variant="ghost" title="Tester" onClick={() => speakText(lang.placeholder.example)}>
                     <Volume2 size={16} />
                   </Button>
                 </div>
@@ -158,23 +220,37 @@ export function SettingsPage() {
             desc={
               isTauri()
                 ? "Ouvre l'ajout rapide depuis n'importe quelle application, tant que Lexora est lancé. Exemple : Alt+Shift+L. Vide = désactivé."
-                : 'Disponible dans l’application de bureau.'
+                : "Disponible dans l'application de bureau."
             }
           >
             <ShortcutInput value={settings.globalShortcut} disabled={!isTauri()} onCommit={(v) => update({ globalShortcut: v })} />
           </Setting>
+          <Setting
+            title="Pré-remplir avec le texte copié"
+            desc="Copiez un mot dans un article ou une vidéo sous-titrée, appuyez sur le raccourci : l'expression est déjà saisie."
+          >
+            <Switch label="Pré-remplir avec le texte copié" checked={settings.clipboardPrefill} onChange={(v) => update({ clipboardPrefill: v })} />
+          </Setting>
         </section>
+
+        <DesktopSection />
 
         <section className="card settings-section">
           <div className="card-header">
             <h2 className="card-title">Données</h2>
           </div>
-          <Setting title="Importer" desc="CSV (Excel, Anki, Quizlet…) ou JSON. Les doublons sont ignorés automatiquement.">
+          <Setting
+            title={`Importer dans « ${universe?.name ?? ''} »`}
+            desc="CSV (Excel, Anki, Quizlet…) ou JSON. Les doublons sont ignorés automatiquement."
+          >
             <Button onClick={importFromFile}>
               <FileUp size={15} /> Importer
             </Button>
           </Setting>
-          <Setting title="Exporter le vocabulaire" desc={`${notes.length} expressions, avec exemples, tags et collections.`}>
+          <Setting
+            title={`Exporter « ${universe?.name ?? ''} »`}
+            desc={`${notes.length} expressions, avec exemples, tags et collections.`}
+          >
             <div className="row">
               <Button onClick={exportToCsv}>
                 <Download size={15} /> CSV
@@ -184,12 +260,18 @@ export function SettingsPage() {
               </Button>
             </div>
           </Setting>
-          <Setting title="Sauvegarde complète" desc="Fichier unique : notes, fiches de mémorisation, historique des révisions et réglages.">
+          <Setting
+            title="Sauvegarde complète"
+            desc="Fichier unique, tous univers : notes, fiches de mémorisation, historique des révisions et réglages."
+          >
             <Button variant="primary" onClick={backupToFile}>
               <HardDriveDownload size={15} /> Sauvegarder
             </Button>
           </Setting>
-          <Setting title="Restaurer une sauvegarde" desc="Remplace toutes les données actuelles (une copie de sécurité est faite avant dans l'application).">
+          <Setting
+            title="Restaurer une sauvegarde"
+            desc="Remplace toutes les données (tous univers) par celles de la sauvegarde, y compris sur vos autres appareils synchronisés."
+          >
             <Button onClick={restoreFromFile}>
               <RotateCcw size={15} /> Restaurer
             </Button>
@@ -247,5 +329,254 @@ function ShortcutInput({ value, disabled, onCommit }: { value: string; disabled?
       onBlur={() => draft.trim() !== value && onCommit(draft.trim())}
       onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
     />
+  );
+}
+
+function OptionalNumberInput({ value, placeholder, onCommit }: { value: number | null; placeholder: string; onCommit: (v: number | null) => void }) {
+  const [draft, setDraft] = useState(value == null ? '' : String(value));
+  useEffect(() => setDraft(value == null ? '' : String(value)), [value]);
+  const commit = () => {
+    const t = draft.trim();
+    const v = t === '' ? null : Math.round(Number(t));
+    if (v !== null && (!Number.isFinite(v) || v < 0)) return setDraft(value == null ? '' : String(value));
+    if (v !== value) onCommit(v);
+  };
+  return (
+    <input
+      className="input"
+      type="number"
+      min={0}
+      max={200}
+      value={draft}
+      placeholder={placeholder}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+    />
+  );
+}
+
+/** Intégration à Windows : démarrage, zone de notification, rappel, mises à jour. */
+function DesktopSection() {
+  const settings = useApp((s) => s.settings);
+  const update = useApp((s) => s.update);
+  const [autostart, setAutostartState] = useState<boolean | null>(null);
+  const [info, setInfo] = useState<AppInfo | null>(null);
+  const [checking, setChecking] = useState(false);
+  const save = (patch: Partial<Settings>) => attempt(() => useApp.getState().updateSettings(patch), 'Réglage enregistré');
+
+  useEffect(() => {
+    getAutostart().then(setAutostartState).catch(() => setAutostartState(null));
+    getAppInfo().then(setInfo).catch(() => setInfo(null));
+  }, []);
+
+  if (!isTauri()) return null;
+
+  return (
+    <section className="card settings-section">
+      <div className="card-header">
+        <h2 className="card-title">Windows</h2>
+      </div>
+      <Setting title="Lancer Lexora au démarrage de Windows" desc="Démarre discrètement dans la zone de notification : le raccourci d'ajout et le rappel sont toujours actifs.">
+        <Switch
+          label="Lancer au démarrage"
+          checked={!!autostart}
+          onChange={(v) =>
+            void attempt(async () => {
+              await setAutostart(v);
+              setAutostartState(v);
+            }, v ? 'Lexora démarrera avec Windows' : 'Démarrage automatique désactivé')
+          }
+        />
+      </Setting>
+      <Setting title="Fermer la fenêtre = réduire dans la zone de notification" desc="Lexora reste actif près de l'horloge. Pour quitter : clic droit sur l'icône → Quitter.">
+        <Switch label="Réduire à la fermeture" checked={settings.closeToTray} onChange={(v) => void save({ closeToTray: v })} />
+      </Setting>
+      <Setting title="Rappel quotidien" desc="Notification Windows à l'heure choisie, seulement s'il reste des révisions (une fois par jour).">
+        <div className="row">
+          <input
+            className="input"
+            type="time"
+            style={{ width: 110 }}
+            value={settings.reminderTime}
+            disabled={!settings.reminderEnabled}
+            onChange={(e) => e.target.value && void save({ reminderTime: e.target.value })}
+          />
+          <Switch label="Rappel quotidien" checked={settings.reminderEnabled} onChange={(v) => void save({ reminderEnabled: v })} />
+        </div>
+      </Setting>
+      <Setting
+        title="Mises à jour"
+        desc={update ? `Version ${update.version} disponible : utilisez le bouton « Installer » en bas de la barre latérale.` : `Version installée : ${info?.version ?? '…'}. Les mises à jour sont vérifiées automatiquement.`}
+      >
+        <Button
+          disabled={checking}
+          onClick={() => {
+            setChecking(true);
+            void checkUpdates(true).finally(() => setChecking(false));
+          }}
+        >
+          {checking ? 'Vérification…' : 'Rechercher'}
+        </Button>
+      </Setting>
+    </section>
+  );
+}
+
+/** Clé DeepL facultative : enregistrée sur cet appareil uniquement (ni synchronisée, ni dans les sauvegardes). */
+function DeeplSetting({ value, onSave }: { value: string; onSave: (v: string) => Promise<unknown> }) {
+  const [draft, setDraft] = useState(value);
+  const [show, setShow] = useState(false);
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  useEffect(() => setDraft(value), [value]);
+
+  const check = async (key: string) => {
+    setBusy(true);
+    setStatus(null);
+    try {
+      const u = await deeplUsage(key);
+      const fmt = (n: number) => n.toLocaleString('fr-FR');
+      setStatus({ ok: true, text: `Clé valide · ${fmt(u.used)} / ${fmt(u.limit)} caractères utilisés ce mois-ci.` });
+    } catch (err) {
+      setStatus({ ok: false, text: err instanceof Error ? err.message : String(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+  const save = async () => {
+    const key = draft.trim();
+    await onSave(key);
+    if (key) await check(key);
+    else setStatus(null);
+  };
+
+  return (
+    <Setting
+      title="Clé DeepL personnelle (facultatif)"
+      desc={
+        <>
+          Inutile si la traduction DeepL partagée est active. Sinon, clé gratuite (500 000 caractères par mois) à créer sur{' '}
+          <button type="button" className="link" onClick={() => void openExternal('https://www.deepl.com/fr/pro-api')}>
+            deepl.com/pro-api
+          </button>{' '}
+          (offre « DeepL API Free »). Enregistrée sur cet appareil uniquement ; prioritaire sur la clé partagée.
+          {status && <div className={status.ok ? 'small' : 'field-error'} style={status.ok ? { color: 'var(--mastered)', marginTop: 4 } : { marginTop: 4 }}>{status.text}</div>}
+        </>
+      }
+    >
+      <div className="stack stack--sm" style={{ alignItems: 'flex-end' }}>
+        <input
+          className="input"
+          style={{ width: 260 }}
+          type={show ? 'text' : 'password'}
+          value={draft}
+          placeholder="xxxxxxxx-xxxx-…:fx"
+          autoComplete="off"
+          spellCheck={false}
+          aria-label="Clé DeepL"
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && void save()}
+        />
+        <div className="row">
+          <button type="button" className="link small" onClick={() => setShow(!show)}>
+            {show ? 'Masquer' : 'Afficher'}
+          </button>
+          {value && draft.trim() === value && (
+            <Button size="sm" onClick={() => void check(value)} disabled={busy}>
+              Vérifier
+            </Button>
+          )}
+          <Button size="sm" variant="primary" onClick={() => void save()} disabled={busy || draft.trim() === value}>
+            {draft.trim() || !value ? 'Enregistrer' : 'Retirer la clé'}
+          </Button>
+        </div>
+      </div>
+    </Setting>
+  );
+}
+
+/** État de la traduction DeepL partagée (clé détenue par le serveur Supabase). */
+function SharedDeeplStatus() {
+  const [state, setState] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const check = async () => {
+    setBusy(true);
+    try {
+      const u = await sharedDeeplUsage();
+      const fmt = (n: number) => n.toLocaleString('fr-FR');
+      setState({ ok: true, text: `Active · ${fmt(u.used)} / ${fmt(u.limit)} caractères utilisés ce mois-ci (tous les utilisateurs).` });
+    } catch (err) {
+      setState({ ok: false, text: `Non disponible : ${err instanceof Error ? err.message : String(err)}. Les traductions passent par MyMemory.` });
+    } finally {
+      setBusy(false);
+    }
+  };
+  useEffect(() => {
+    void check();
+  }, []);
+  return (
+    <Setting
+      title="Traduction DeepL partagée"
+      desc={
+        <>
+          Traduction fiable qui tient compte de la phrase (« at last turned sulky » → « a fini par bouder »), sans clé à créer : la clé est gardée sur le serveur
+          Lexora et réservée aux comptes connectés.
+          {state && (
+            <div className={state.ok ? 'small' : 'field-error'} style={state.ok ? { color: 'var(--mastered)', marginTop: 4 } : { marginTop: 4 }}>
+              {state.text}
+            </div>
+          )}
+        </>
+      }
+    >
+      <Button size="sm" onClick={() => void check()} disabled={busy}>
+        {busy ? 'Vérification…' : 'Vérifier'}
+      </Button>
+    </Setting>
+  );
+}
+
+function NaturalVoiceSetting({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
+  const [state, setState] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const check = async () => {
+    setBusy(true);
+    try {
+      await checkNaturalVoice();
+      setState({ ok: true, text: "Active. Les sons sont gardés sur cet appareil : chaque expression n'est demandée qu'une fois." });
+    } catch (err) {
+      setState({ ok: false, text: `Non disponible : ${err instanceof Error ? err.message : String(err)}. La voix de Windows est utilisée.` });
+    } finally {
+      setBusy(false);
+    }
+  };
+  useEffect(() => {
+    if (enabled) void check();
+  }, [enabled]);
+  return (
+    <Setting
+      title="Voix naturelle"
+      desc={
+        <>
+          Voix de qualité studio (Microsoft Azure) à la place de la voix de Windows, pour toutes les expressions et phrases sans enregistrement. Clé gardée sur le
+          serveur Lexora, réservée aux comptes connectés ; nécessite Internet.
+          {enabled && state && (
+            <div className={state.ok ? 'small' : 'field-error'} style={state.ok ? { color: 'var(--mastered)', marginTop: 4 } : { marginTop: 4 }}>
+              {state.text}
+            </div>
+          )}
+        </>
+      }
+    >
+      <div className="row">
+        {enabled && (
+          <Button size="sm" onClick={() => void check()} disabled={busy}>
+            {busy ? 'Vérification…' : 'Vérifier'}
+          </Button>
+        )}
+        <Switch label="Voix naturelle" checked={enabled} onChange={onChange} />
+      </div>
+    </Setting>
   );
 }

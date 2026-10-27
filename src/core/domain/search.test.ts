@@ -17,7 +17,9 @@ const DAY = 86_400_000;
 
 function n(id: number, expression: string, translation: string, extra: Partial<Note> = {}): Note {
   return {
-    id,
+    id: String(id),
+    universeId: 'u',
+    pronunciation: '',
     expression,
     translation,
     expressionKey: expression.toLowerCase(),
@@ -25,6 +27,7 @@ function n(id: number, expression: string, translation: string, extra: Partial<N
     category: '',
     categoryAuto: true,
     isFavorite: false,
+    suspended: false,
     createdAt: NOW - id * DAY,
     updatedAt: NOW,
     examples: [],
@@ -37,13 +40,13 @@ function n(id: number, expression: string, translation: string, extra: Partial<N
 
 const notes = [
   n(1, 'To tackle an issue', "S'attaquer à un problème", { tags: ['work'], examples: ['We need to tackle this issue.'] }),
-  n(2, 'To figure out', 'Comprendre / trouver', { isFavorite: true, category: 'Phrasal verb', collectionIds: [7] }),
+  n(2, 'To figure out', 'Comprendre / trouver', { isFavorite: true, category: 'Phrasal verb', collectionIds: ['7'] }),
   n(3, 'To take for granted', 'Considérer comme acquis'),
   n(40, 'Issue', 'Problème, question'),
 ];
 const index = buildIndex(notes);
 const mastery: Record<number, Mastery> = { 1: 'new', 2: 'learning', 3: 'mastered', 40: 'new' };
-const run = (f: Partial<NoteFilters>) => filterNotes(notes, index, { ...base, ...f }, (x) => mastery[x.id], NOW).map((x) => x.id);
+const run = (f: Partial<NoteFilters>) => filterNotes(notes, index, { ...base, ...f }, (x) => mastery[Number(x.id)], NOW).map((x) => Number(x.id));
 
 describe('bibliothèque : recherche et filtres', () => {
   it('cherche en anglais et en français, sans accents, par pertinence', () => {
@@ -58,7 +61,7 @@ describe('bibliothèque : recherche et filtres', () => {
     expect(run({ favoritesOnly: true })).toEqual([2]);
     expect(run({ category: 'Phrasal verb' })).toEqual([2]);
     expect(run({ tag: 'WORK' })).toEqual([1]);
-    expect(run({ collectionId: 7 })).toEqual([2]);
+    expect(run({ collectionId: '7' })).toEqual([2]);
     expect(run({ mastery: 'not_mastered' })).toEqual([1, 2, 40]);
     expect(run({ mastery: 'new', date: '7d' })).toEqual([1]);
   });

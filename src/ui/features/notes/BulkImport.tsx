@@ -4,13 +4,11 @@ import { useApp, errorMessage } from '@/app/store';
 import { describeReport, importCandidates, importFromFile } from '@/app/dataActions';
 import { parseBulk } from '@/core/domain/bulkParse';
 import { expressionKey } from '@/core/domain/text';
+import { languageInfo } from '@/core/domain/languages';
 import { Button, Field, Modal } from '@/ui/components/ui';
 import { TagInput } from '@/ui/components/TagInput';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 
-const PLACEHOLDER = `To tackle an issue ; S'attaquer à un problème ; We need to tackle this issue.
-To figure out ; Comprendre, trouver
-To take for granted = Considérer comme acquis`;
 
 /** Import rapide par collage de plusieurs lignes. */
 export function BulkImport() {
@@ -22,10 +20,14 @@ export function BulkImport() {
 function BulkImportDialog() {
   const notes = useApp((s) => s.notes);
   const collections = useApp((s) => s.collections);
+  const universe = useApp((s) => s.universe);
+  const language = universe?.language ?? 'en';
+  const ph = languageInfo(language).placeholder;
+  const placeholder = `${ph.expression} ; ${ph.translation} ; ${ph.example}\n${ph.expression} = ${ph.translation}`;
   const { setBulkOpen, toast } = useApp.getState();
   const [text, setText] = useState('');
   const [tags, setTags] = useState<string[]>([]);
-  const [collectionId, setCollectionId] = useState<number | ''>('');
+  const [collectionId, setCollectionId] = useState<string>('');
   const [busy, setBusy] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
   useEffect(() => ref.current?.focus(), []);
@@ -36,12 +38,12 @@ function BulkImportDialog() {
   const rows = useMemo(() => {
     const seen = new Set<string>();
     return parseBulk(text).map((l) => {
-      const key = expressionKey(l.expression);
+      const key = expressionKey(l.expression, language);
       const duplicate = !l.error && (existingKeys.has(key) || seen.has(key));
       seen.add(key);
       return { ...l, duplicate };
     });
-  }, [text, existingKeys]);
+  }, [text, existingKeys, language]);
   const valid = rows.filter((r) => !r.error && !r.duplicate);
 
   const submit = async () => {
@@ -70,7 +72,7 @@ function BulkImportDialog() {
 
   return (
     <Modal
-      title="Coller plusieurs expressions"
+      title={`Coller plusieurs expressions${universe ? ` · ${universe.name}` : ''}`}
       size="wide"
       onClose={() => setBulkOpen(false)}
       footer={
@@ -98,13 +100,13 @@ function BulkImportDialog() {
       <div className="modal-body stack">
         <Field
           label="Une expression par ligne"
-          hint="Format : anglais ; français ; exemple (facultatif). Séparateurs acceptés : ; | = – - : ou tabulation (copier-coller depuis Excel)."
+          hint="Format : expression ; traduction ; exemple (facultatif). Séparateurs acceptés : ; | = – - : ou tabulation (copier-coller depuis Excel)."
         >
           <textarea
             ref={ref}
             className="textarea"
             rows={7}
-            placeholder={PLACEHOLDER}
+            placeholder={placeholder}
             value={text}
             spellCheck={false}
             onChange={(e) => setText(e.target.value)}
@@ -115,7 +117,7 @@ function BulkImportDialog() {
             <table>
               <thead>
                 <tr>
-                  <th>Anglais</th>
+                  <th>{universe?.name ?? 'Expression'}</th>
                   <th>Français</th>
                   <th>Exemple</th>
                   <th>Statut</th>
@@ -128,7 +130,7 @@ function BulkImportDialog() {
                     <td>{r.translation}</td>
                     <td className="muted">{r.examples.join(' · ')}</td>
                     <td className={r.error ? 'status-err' : r.duplicate ? 'status-warn' : 'status-ok'}>
-                      {r.error ?? (r.duplicate ? 'Doublon — ignoré' : 'OK')}
+                      {r.error ?? (r.duplicate ? 'Doublon, ignoré' : 'OK')}
                     </td>
                   </tr>
                 ))}
@@ -141,7 +143,7 @@ function BulkImportDialog() {
             <TagInput value={tags} onChange={setTags} suggestions={allTags} />
           </Field>
           <Field label="Ajouter à une collection" optional>
-            <select className="select" value={collectionId} onChange={(e) => setCollectionId(e.target.value ? Number(e.target.value) : '')}>
+            <select className="select" value={collectionId} onChange={(e) => setCollectionId(e.target.value)}>
               <option value="">Aucune</option>
               {collections.map((c) => (
                 <option key={c.id} value={c.id}>

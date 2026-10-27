@@ -1,0 +1,41 @@
+name: Catalogue de lecture
+
+# Prépare public/reading/catalog/*.json (livres populaires + niveau estimé) et l'enregistre dans la branche.
+# Le build suivant de l'application l'inclut : l'onglet « Découvrir » s'affiche sans attendre Gutendex.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 1 * *' # une fois par mois
+  push:
+    branches: [main, 'claude/**']
+    paths: ['scripts/build-catalog.ts', '.github/workflows/catalog.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: catalog-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Catalogue (Gutendex + niveaux)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx vite-node scripts/build-catalog.ts
+      - name: Enregistrer le catalogue
+        run: |
+          git add public/reading/catalog
+          if git diff --cached --quiet; then echo "Catalogue inchangé."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Catalogue de lecture : mise à jour ($(date -u +%Y-%m-%d))"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

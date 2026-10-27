@@ -3,6 +3,7 @@ export function normalizeSearch(input: string): string {
   return input
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
+    .normalize('NFC')
     .toLowerCase()
     .replace(/[‘’ʼ`´]/g, "'")
     .replace(/\s+/g, ' ')
@@ -11,14 +12,18 @@ export function normalizeSearch(input: string): string {
 
 /**
  * Clé de détection des doublons.
- * « To tackle an issue », « tackle an issue » et « to Tackle an  issue. » ont la même clé.
+ * Les accents sont conservés (« año » ≠ « ano », « мой » ≠ « мои ») ; casse, ponctuation et espaces sont ignorés.
+ * En anglais, le « to » initial est ignoré : « To tackle an issue » = « tackle an issue. ».
  */
-export function expressionKey(expression: string): string {
-  return normalizeSearch(expression)
-    .replace(/[^\p{L}\p{N}' ]+/gu, ' ')
+export function expressionKey(expression: string, language = 'en'): string {
+  const key = expression
+    .normalize('NFC')
+    .toLowerCase()
+    .replace(/[‘’ʼ`´]/g, "'")
+    .replace(/[^\p{L}\p{M}\p{N}' ]+/gu, ' ')
     .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/^to /, '');
+    .trim();
+  return language === 'en' ? key.replace(/^to /, '') : key;
 }
 
 /** Nettoie une saisie : espaces superflus, retours ligne. */
@@ -41,7 +46,12 @@ export function cleanList(items: (string | undefined | null)[] | undefined): str
   return out;
 }
 
-/** Tokens alphabétiques (anglais), apostrophes internes conservées. */
+/** Mots (toutes écritures), apostrophes internes conservées. */
 export function tokenize(input: string): string[] {
-  return normalizeSearch(input).match(/[a-z0-9]+(?:'[a-z]+)?/g) ?? [];
+  return normalizeSearch(input).match(/[\p{L}\p{N}]+(?:'[\p{L}]+)?/gu) ?? [];
+}
+
+/** Identifiant universel (synchronisation entre appareils). */
+export function newId(): string {
+  return crypto.randomUUID();
 }

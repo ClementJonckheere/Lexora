@@ -1,11 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react';
+import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
+import { cardMastery } from '@/core/srs/scheduler';
 import { State } from 'ts-fsrs';
-import { errorMessage, useApp, type SessionConfig } from '@/app/store';
-import { formatInterval } from '@/core/domain/dates';
+import { attempt, errorMessage, useApp, type SessionConfig } from '@/app/store';
+import { formatDue, formatInterval } from '@/core/domain/dates';
+import { languageInfo } from '@/core/domain/languages';
 import type { CardRecord } from '@/core/domain/types';
-import { DIRECTION_LABEL } from '@/core/domain/types';
+import { directionLabel } from '@/core/domain/types';
 import { recordReview, undoReview } from '@/core/repo/reviewRepo';
 import { buildQueue, type QueueItem } from '@/core/srs/queue';
+import { scopeIds } from '@/core/srs/scope';
+import { settingsFor } from '@/core/domain/settings';
+import { checkAnswer, type AnswerVerdict } from '@/core/domain/answer';
 import { GRADES, previewIntervals, review, type Grade } from '@/core/srs/scheduler';
 import { SessionQueue } from '@/core/srs/session';
 import { Button, Kbd } from '@/ui/components/ui';
@@ -19,33 +26,48 @@ const GRADE_CLASS: Record<Grade, string> = { 1: 'again', 2: 'hard', 3: 'good', 4
 
 interface UndoEntry {
   before: CardRecord;
-  logId: number;
+  after: CardRecord;
+  noteId: string;
+  logId: string;
   grade: Grade;
 }
+
+/** Mots oubliés au moins ce nombre de fois : signalés comme « à retravailler ». */
+const LEECH_LAPSES = 4;
+/** En dessous de ce nombre de réponses au total, l'explication des 4 boutons reste affichée. */
+const BEGINNER_REVIEWS = 30;
+const GRADE_HELP: Record<Grade, string> = {
+  1: 'je ne savais pas',
+  2: 'retrouvé avec effort',
+  3: 'retrouvé',
+  4: 'immédiat, trop facile',
+};
 
 /** Révision planifiée (FSRS) : chaque réponse met à jour la fiche et l'historique. */
 export function ScheduledSession({ config }: { config: Extract<SessionConfig, { kind: 'scheduled' }> }) {
   const db = useApp((s) => s.db)!;
   const notesById = useApp((s) => s.notesById);
+  const language = useApp((s) => s.universe?.language ?? 'en');
+  const languageName = languageInfo(language).name.toLowerCase();
   const scheduler = useApp((s) => s.scheduler);
   const settings = useApp((s) => s.settings);
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
-  const { navigate, openEditor, toast, refresh } = useApp.getState();
+  const { navigate, openEditor, toast, refresh, setSuspended } = useApp.getState();
 
   // File figée au démarrage ; l'état des fiches est suivi localement pendant la session.
   const [session] = useState(() => {
     const s = useApp.getState();
-    const noteIds = config.collectionId != null ? new Set(s.notes.filter((n) => n.collectionIds.includes(config.collectionId!)).map((n) => n.id)) : null;
+    const noteIds = scopeIds(s.notes, config);
     const items = buildQueue(s.notes, {
       now: Date.now(),
-      settings: s.settings,
+      settings: settingsFor(s.settings, s.universe),
       scheduler: s.scheduler,
       newIntroducedToday: s.newIntroducedToday,
       limit: config.limit,
       direction: config.direction,
       noteIds,
     });
-    const cards = new Map<number, CardRecord>();
+    const cards = new Map<string, CardRecord>();
     for (const n of s.notes) for (const c of Object.values(n.cards)) if (c) cards.set(c.id, c);
     return { queue: new SessionQueue<QueueItem>(items), cards, startedAt: Date.now() };
   });
@@ -54,13 +76,19 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   const rerender = () => setTick((t) => t + 1);
   const [revealed, setRevealed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [typed, setTyped] = useState('');
+  const [verdict, setVerdict] = useState<AnswerVerdict | 'skipped' | null>(null);
   const tally = useRef<Tally>({ 1: 0, 2: 0, 3: 0, 4: 0 });
   const undoStack = useRef<UndoEntry[]>([]);
   const shownAt = useRef(Date.now());
+  const progress = useDailyProgress();
 
   const item = session.queue.current;
   const note = item ? notesById.get(item.noteId) : undefined;
   const card = item ? session.cards.get(item.cardId) : undefined;
+  // « Taper la réponse » : uniquement dans le sens français → langue étudiée.
+  const typing = settings.typeAnswer && item?.direction === 'fr_en';
+  const suggested: Grade = verdict === 'exact' ? 3 : verdict === 'close' ? 2 : verdict ? 1 : 3;
 
   // Note supprimée pendant la session : on passe.
   useEffect(() => {
@@ -79,6 +107,29 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
     if (settings.autoSpeak) speakNote(note);
   }, [note, revealed, settings.autoSpeak]);
 
+  const submitTyped = () => {
+    if (!note) return;
+    setVerdict(typed.trim() ? checkAnswer(note.expression, typed, language) : 'skipped');
+    reveal();
+  };
+
+  const onTypedKey = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      submitTyped();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.currentTarget.blur();
+    }
+  };
+
+  const resetCard = () => {
+    setRevealed(false);
+    setTyped('');
+    setVerdict(null);
+    shownAt.current = Date.now();
+  };
+
   const rate = async (grade: Grade) => {
     if (!item || !card || !revealed || busy) return;
     setBusy(true);
@@ -87,11 +138,10 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
       const out = review(scheduler, card, grade, now);
       const logId = await recordReview(db, out.card, out.log, now - shownAt.current);
       session.cards.set(card.id, out.card);
-      undoStack.current.push({ before: card, logId, grade });
+      undoStack.current.push({ before: card, after: out.card, noteId: item.noteId, logId, grade });
       tally.current[grade]++;
       session.queue.advance(out.card.due - now);
-      setRevealed(false);
-      shownAt.current = Date.now();
+      resetCard();
     } catch (err) {
       toast('error', `Réponse non enregistrée : ${errorMessage(err)}`);
     } finally {
@@ -110,6 +160,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
       session.queue.undo();
       tally.current[last.grade]--;
       setRevealed(true);
+      setVerdict(null);
       toast('info', 'Dernière réponse annulée');
     } catch (err) {
       undoStack.current.push(last);
@@ -120,13 +171,28 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
     }
   };
 
+  /** Suspend la note : elle quitte la session et les révisions futures. */
+  const suspend = async () => {
+    if (!note || busy) return;
+    const id = note.id;
+    try {
+      await setSuspended([id], true);
+      session.queue.remove((i) => i.noteId === id);
+      resetCard();
+      rerender();
+      toast('info', `« ${note.expression} » suspendue`, { label: 'Annuler', run: () => void attempt(() => setSuspended([id], false), 'Révisions réactivées') });
+    } catch (err) {
+      toast('error', errorMessage(err));
+    }
+  };
+
   const quit = () => navigate({ name: 'review' });
   const finished = session.queue.finished;
 
   useHotkeys(
     {
-      space: () => (revealed ? void rate(3) : reveal()),
-      enter: () => (revealed ? void rate(3) : reveal()),
+      space: () => (revealed ? void rate(suggested) : typing ? submitTyped() : reveal()),
+      enter: () => (revealed ? void rate(suggested) : typing ? submitTyped() : reveal()),
       '1': () => void rate(1),
       '2': () => void rate(2),
       '3': () => void rate(3),
@@ -136,13 +202,16 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
       backspace: () => void undo(),
       e: () => note && openEditor(note.id),
       p: () => note && speakNote(note),
+      s: () => void suspend(),
       escape: quit,
     },
     { enabled: !overlay && !finished },
   );
 
   if (finished) {
-    return <Finished tally={tally.current} startedAt={session.startedAt} config={config} canUndo={undoStack.current.length > 0} onUndo={undo} />;
+    return (
+      <Finished tally={tally.current} startedAt={session.startedAt} config={config} canUndo={undoStack.current.length > 0} onUndo={undo} answers={undoStack.current} />
+    );
   }
   if (!item || !note || !card) return null;
 
@@ -156,21 +225,60 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
         revealed={revealed}
         meta={
           <>
-            <span>{DIRECTION_LABEL[item.direction]}</span>
+            <span>{directionLabel(item.direction, language)}</span>
             <span>·</span>
             <span>{card.state === State.Relearning ? 'À réapprendre' : KIND_LABEL[item.kind]}</span>
           </>
         }
-      />
+      >
+        {typing && !revealed && (
+          <input
+            className="input input--lg cloze-input"
+            placeholder={`Votre réponse en ${languageName}…`}
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+            onKeyDown={onTypedKey}
+            autoFocus
+            autoComplete="off"
+            spellCheck={false}
+            lang={language}
+            aria-label="Votre réponse"
+          />
+        )}
+        {verdict && revealed && (
+          <div className={`verdict ${verdict === 'exact' || verdict === 'close' ? 'verdict--ok' : 'verdict--ko'}`} style={{ marginTop: 14 }}>
+            {verdict === 'exact' || verdict === 'close' ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
+            {verdict === 'exact' && 'Exact'}
+            {verdict === 'close' && `Presque : « ${typed.trim()} »`}
+            {verdict === 'wrong' && `Votre réponse : « ${typed.trim()} »`}
+            {verdict === 'skipped' && 'Sans réponse'}
+          </div>
+        )}
+        {revealed && card.lapses >= LEECH_LAPSES && (
+          <div className="leech-hint">
+            <AlertTriangle size={15} />
+            <span>
+              Mot difficile : oublié {card.lapses} fois. Ajoutez un exemple personnel, une astuce dans la note, ou découpez l'expression en plus petits
+              morceaux.
+            </span>
+            <button className="link small" onClick={() => openEditor(note.id)}>
+              Modifier (E)
+            </button>
+          </div>
+        )}
+      </Flashcard>
       <div className="session-actions">
         {!revealed ? (
-          <Button variant="primary" className="reveal-btn" onClick={reveal} shortcut="Espace">
-            Afficher la réponse
+          <Button variant="primary" className="reveal-btn" onClick={typing ? submitTyped : reveal} shortcut={typing ? 'Entrée' : 'Espace'}>
+            {typing && typed.trim() ? 'Vérifier' : 'Afficher la réponse'}
           </Button>
         ) : (
           <div className="grades">
             {GRADES.map((g) => (
-              <button key={g.grade} className={`grade grade--${GRADE_CLASS[g.grade]}`} onClick={() => void rate(g.grade)} disabled={busy}>
+              <button
+                key={g.grade}
+                className={`grade grade--${GRADE_CLASS[g.grade]} ${verdict && g.grade === suggested ? 'grade--suggested' : ''}`}
+                onClick={() => void rate(g.grade)} disabled={busy}>
                 <span className="grade-label">{g.label}</span>
                 <span className="grade-sub">
                   <Kbd>{g.key}</Kbd> {intervals ? formatInterval(intervals[g.grade]) : ''}
@@ -179,9 +287,19 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
             ))}
           </div>
         )}
+        {revealed && progress.totalReviews + undoStack.current.length < BEGINNER_REVIEWS && (
+          <p className="grade-help">
+            {GRADES.map((g) => (
+              <span key={g.grade}>
+                <strong>{g.label}</strong> : {GRADE_HELP[g.grade]}
+              </span>
+            ))}
+            <span className="muted">La prochaine révision s'adapte à votre réponse.</span>
+          </p>
+        )}
         <div className="session-hints">
           <span>
-            <Kbd>Espace</Kbd> {revealed ? 'Retenu' : 'afficher'}
+            <Kbd>Espace</Kbd> {revealed ? GRADES.find((g) => g.grade === suggested)?.label : typing ? 'vérifier' : 'afficher'}
           </span>
           <span>
             <Kbd>Z</Kbd> annuler
@@ -191,6 +309,9 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
           </span>
           <span>
             <Kbd>P</Kbd> prononcer
+          </span>
+          <span>
+            <Kbd>S</Kbd> suspendre
           </span>
         </div>
       </div>
@@ -204,16 +325,21 @@ function Finished({
   config,
   canUndo,
   onUndo,
+  answers,
 }: {
   tally: Tally;
   startedAt: number;
   config: Extract<SessionConfig, { kind: 'scheduled' }>;
   canUndo: boolean;
   onUndo: () => void;
+  answers: UndoEntry[];
 }) {
-  const { navigate, refresh } = useApp.getState();
+  const { navigate, refresh, showNote } = useApp.getState();
+  const notesById = useApp((s) => s.notesById);
+  const threshold = useApp((s) => s.settings.masteryThresholdDays);
+  const report = useMemo(() => summarize(answers, threshold), [answers, threshold]);
   useEffect(() => void refresh().catch(() => undefined), [refresh]);
-  const due = useDueCounts(config.collectionId ?? null, config.direction ?? null);
+  const due = useDueCounts(config, config.direction ?? null);
   const more = due.total;
   const again = () => navigate({ name: 'session', config: { ...config, limit: config.limit ?? null } });
 
@@ -226,9 +352,49 @@ function Finished({
   return (
     <SessionFrame completed={1} total={1} onQuit={() => navigate({ name: 'home' })}>
       <SessionSummary
-        title={more > 0 ? 'Session terminée' : 'Tout est révisé pour aujourd’hui'}
+        title={more > 0 ? 'Session terminée' : "Tout est révisé pour aujourd'hui"}
         tally={tally}
         startedAt={startedAt}
+        details={
+          <>
+        {(report.mastered.length > 0 || report.toWatch.length > 0 || report.nextDue) && (
+          <div className="summary-report">
+            {report.mastered.length > 0 && (
+              <div>
+                <strong style={{ color: 'var(--mastered)' }}>Maîtrisés</strong>
+                <span>
+                  {report.mastered.length} mot{report.mastered.length > 1 ? 's' : ''} :{' '}
+                  {report.mastered.slice(0, 5).map((id) => notesById.get(id)?.expression).filter(Boolean).join(', ')}
+                  {report.mastered.length > 5 ? '…' : ''}
+                </span>
+              </div>
+            )}
+            {report.toWatch.length > 0 && (
+              <div>
+                <strong style={{ color: 'var(--again)' }}>À surveiller</strong>
+                <span>
+                  {report.toWatch.slice(0, 6).map((id, i) => (
+                    <span key={id}>
+                      {i > 0 && ', '}
+                      <button className="link" onClick={() => showNote(id)}>
+                        {notesById.get(id)?.expression}
+                      </button>
+                    </span>
+                  ))}
+                  {report.toWatch.length > 6 ? '…' : '.'} Ils reviendront bientôt.
+                </span>
+              </div>
+            )}
+            {report.nextDue && (
+              <div>
+                <strong>Prochaine révision</strong>
+                <span>{formatDue(report.nextDue)}</span>
+              </div>
+            )}
+          </div>
+        )}
+          </>
+        }
         note={more > 0 ? `Encore ${more} fiche${more > 1 ? 's' : ''} à réviser aujourd'hui.` : 'Les prochaines révisions sont planifiées automatiquement.'}
       >
         {more > 0 && (
@@ -242,4 +408,24 @@ function Finished({
       </SessionSummary>
     </SessionFrame>
   );
+}
+
+/** Bilan : mots passés « maîtrisés », mots oubliés pendant la session, prochaine échéance. */
+function summarize(answers: UndoEntry[], threshold: number) {
+  const first = new Map<string, UndoEntry>();
+  const last = new Map<string, UndoEntry>();
+  const forgot = new Set<string>();
+  for (const a of answers) {
+    if (!first.has(a.after.id)) first.set(a.after.id, a);
+    last.set(a.after.id, a);
+    if (a.grade === 1) forgot.add(a.noteId);
+  }
+  const mastered = new Set<string>();
+  for (const [cardId, l] of last) {
+    const f = first.get(cardId)!;
+    if (cardMastery(l.after, threshold) === 'mastered' && cardMastery(f.before, threshold) !== 'mastered') mastered.add(l.noteId);
+  }
+  const now = Date.now();
+  const dues = [...last.values()].map((l) => l.after.due).filter((d) => d > now);
+  return { mastered: [...mastered], toWatch: [...forgot], nextDue: dues.length ? Math.min(...dues) : null };
 }

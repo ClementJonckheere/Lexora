@@ -1,3 +1,4 @@
+import { languageInfo } from './languages';
 import { normalizeSearch, tokenize } from './text';
 
 /**
@@ -6,11 +7,20 @@ import { normalizeSearch, tokenize } from './text';
  * et on les remplace par des blancs.
  */
 
-const IGNORED = new Set([
-  'to', 'a', 'an', 'the',
-  'sb', 'sth', 'someone', 'somebody', 'something', 'oneself', 'one', "one's", 'ones',
-  'my', 'your', 'his', 'her', 'its', 'our', 'their',
-]);
+/** Mots-outils et marqueurs (« sth », « algo »…) jamais masqués, par langue. */
+const IGNORED: Record<string, Set<string>> = {
+  en: new Set([
+    'to', 'a', 'an', 'the',
+    'sb', 'sth', 'someone', 'somebody', 'something', 'oneself', 'one', "one's", 'ones',
+    'my', 'your', 'his', 'her', 'its', 'our', 'their',
+  ]),
+  es: new Set(['el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'se', 'algo', 'alguien', 'algn', 'alg']),
+  pt: new Set(['o', 'a', 'os', 'as', 'um', 'uma', 'se', 'algo', 'alguem', 'alguém']),
+  it: new Set(['il', 'lo', 'la', 'i', 'gli', 'le', 'un', 'uno', 'una', 'si', 'qualcosa', 'qualcuno', 'qc', 'qcn']),
+  de: new Set(['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine', 'einen', 'einem', 'sich', 'zu', 'etw', 'jdn', 'jdm', 'jemand', 'etwas']),
+  nl: new Set(['de', 'het', 'een', 'zich', 'te', 'iets', 'iemand']),
+  fr: new Set(['le', 'la', 'les', 'un', 'une', 'se', "s'"]),
+};
 
 // Verbes irréguliers fréquents : base → formes.
 const IRREGULAR: Record<string, string[]> = {
@@ -85,26 +95,62 @@ interface SentenceToken {
 
 function sentenceTokens(sentence: string): SentenceToken[] {
   const out: SentenceToken[] = [];
-  const re = /[\p{L}\p{N}]+(?:['’][\p{L}]+)?/gu;
+  const re = /[\p{L}\p{M}\p{N}]+(?:['’][\p{L}\p{M}]+)?/gu;
   for (const m of sentence.matchAll(re)) {
     out.push({ text: m[0], norm: normalizeSearch(m[0]), start: m.index!, end: m.index! + m[0].length });
   }
   return out;
 }
 
-export function clozeKeywords(expression: string): string[] {
-  return tokenize(expression).filter((t) => !IGNORED.has(t));
+export function clozeKeywords(expression: string, language = 'en'): string[] {
+  const ignored = IGNORED[language];
+  return tokenize(expression).filter((t) => !ignored?.has(t));
+}
+
+function commonPrefix(a: string, b: string): number {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return i;
+}
+
+/**
+ * Le mot de la phrase est-il une forme du mot-clé ?
+ * Anglais : formes fléchies et irréguliers. Autres langues : radical commun
+ * (« hablar » / « hablamos », « обращать » / « обращай »).
+ */
+export function wordMatches(keyword: string, token: string, language = 'en'): boolean {
+  if (keyword === token) return true;
+  if (language === 'en') return inflections(keyword).has(token);
+  if (keyword.length < 4) return false;
+  const stem = Math.max(3, keyword.length - 4);
+  return commonPrefix(keyword, token) >= stem && Math.abs(token.length - keyword.length) <= 4;
 }
 
 const MAX_GAP = 3;
 
+/** Écritures sans espaces : on repère l'expression (ou sa plus longue partie) comme sous-chaîne. */
+function buildClozeNoSpaces(expression: string, sentence: string): Cloze | null {
+  const expr = expression.trim();
+  const candidates = [expr, ...expr.split(/[\s\p{P}]+/u).filter((p) => p.length >= 2).sort((a, b) => b.length - a.length)];
+  for (const c of candidates) {
+    const i = sentence.indexOf(c);
+    if (i < 0 || !c) continue;
+    const parts: ClozePart[] = [];
+    if (i > 0) parts.push({ text: sentence.slice(0, i), blank: false });
+    parts.push({ text: c, blank: true });
+    if (i + c.length < sentence.length) parts.push({ text: sentence.slice(i + c.length), blank: false });
+    return { parts, answers: [c], keywords: [c] };
+  }
+  return null;
+}
+
 /** Construit la phrase à trous, ou `null` si l'expression n'est pas repérable dans la phrase. */
-export function buildCloze(expression: string, sentence: string): Cloze | null {
-  const keywords = clozeKeywords(expression);
+export function buildCloze(expression: string, sentence: string, language = 'en'): Cloze | null {
+  if (languageInfo(language).noSpaces) return buildClozeNoSpaces(expression, sentence);
+  const keywords = clozeKeywords(expression, language);
   if (keywords.length === 0) return null;
   const tokens = sentenceTokens(sentence);
-  const forms = keywords.map(inflections);
-  const matches = (kw: number, tok: number) => forms[kw].has(tokens[tok].norm);
+  const matches = (kw: number, tok: number) => wordMatches(keywords[kw], tokens[tok].norm, language);
 
   let picked: { tok: number; kw: number }[] | null = null;
 
@@ -165,16 +211,23 @@ export type ClozeVerdict = 'exact' | 'close' | 'wrong';
  * Compare la réponse tapée aux mots masqués.
  * « close » : bon mot mais autre forme (ex. « tackle » au lieu de « tackled »).
  */
-export function checkCloze(cloze: Cloze, typed: string): ClozeVerdict {
+export function checkCloze(cloze: Cloze, typed: string, language = 'en'): ClozeVerdict {
+  if (languageInfo(language).noSpaces) {
+    const strip = (s: string) => s.replace(/[\s\p{P}]/gu, '');
+    return strip(typed) === strip(cloze.answers.join('')) ? 'exact' : 'wrong';
+  }
   const given = tokenize(typed);
   const expected = cloze.answers.map((a) => normalizeSearch(a));
   if (given.length !== expected.length) return 'wrong';
   if (given.every((g, i) => g === expected[i])) return 'exact';
-  const ok = given.every((g, i) => g === expected[i] || inflections(cloze.keywords[i]).has(g));
+  const ok = given.every((g, i) => g === expected[i] || wordMatches(normalizeSearch(cloze.keywords[i]), g, language));
   return ok ? 'close' : 'wrong';
 }
 
 /** Indice : premières lettres de chaque mot masqué. */
 export function clozeHint(cloze: Cloze): string {
-  return cloze.answers.map((a) => `${a[0]}${'·'.repeat(Math.max(0, a.length - 1))}`).join('  ');
+  return cloze.answers.map((a) => {
+    const chars = [...a];
+    return `${chars[0]}${'·'.repeat(Math.max(0, chars.length - 1))}`;
+  }).join('  ');
 }

@@ -4,6 +4,7 @@ import type { NoteInput } from './types';
 export const LIMITS = {
   expression: 200,
   translation: 300,
+  pronunciation: 200,
   example: 600,
   comment: 4000,
   tag: 40,
@@ -14,15 +15,16 @@ export const LIMITS = {
 export interface ValidatedNote {
   expression: string;
   translation: string;
+  pronunciation: string;
   examples: string[];
   comment: string;
   category: string;
   tags: string[];
-  collectionIds: number[];
+  collectionIds: string[];
   isFavorite: boolean;
 }
 
-export type FieldErrors = Partial<Record<'expression' | 'translation' | 'examples' | 'comment' | 'category' | 'tags', string>>;
+export type FieldErrors = Partial<Record<'expression' | 'translation' | 'pronunciation' | 'examples' | 'comment' | 'category' | 'tags', string>>;
 
 export class ValidationError extends Error {
   constructor(readonly fields: FieldErrors) {
@@ -34,16 +36,18 @@ export class ValidationError extends Error {
 export function validateNote(input: NoteInput): ValidatedNote {
   const expression = cleanText(input.expression);
   const translation = cleanText(input.translation);
+  const pronunciation = cleanText(input.pronunciation);
   const examples = cleanList(input.examples);
   const comment = (input.comment ?? '').trim();
   const category = cleanText(input.category);
   const tags = cleanList(input.tags);
   const errors: FieldErrors = {};
 
-  if (!expression) errors.expression = "L'expression anglaise est obligatoire.";
+  if (!expression) errors.expression = "L'expression est obligatoire.";
   else if (expression.length > LIMITS.expression) errors.expression = `${LIMITS.expression} caractères maximum.`;
   if (!translation) errors.translation = 'La traduction française est obligatoire.';
   else if (translation.length > LIMITS.translation) errors.translation = `${LIMITS.translation} caractères maximum.`;
+  if (pronunciation.length > LIMITS.pronunciation) errors.pronunciation = `${LIMITS.pronunciation} caractères maximum.`;
   if (examples.some((e) => e.length > LIMITS.example)) errors.examples = `Chaque exemple : ${LIMITS.example} caractères maximum.`;
   if (comment.length > LIMITS.comment) errors.comment = `${LIMITS.comment} caractères maximum.`;
   if (category.length > LIMITS.category) errors.category = `${LIMITS.category} caractères maximum.`;
@@ -53,6 +57,7 @@ export function validateNote(input: NoteInput): ValidatedNote {
   return {
     expression,
     translation,
+    pronunciation,
     examples,
     comment,
     category,

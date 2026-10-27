@@ -30,7 +30,7 @@ export interface Stats {
   streakDays: number;
   activity: DayActivity[];
   forecast: { day: string; date: number; count: number }[];
-  hardest: { noteId: number; fails: number }[];
+  hardest: { noteId: string; fails: number }[];
 }
 
 export async function computeStats(
@@ -38,6 +38,7 @@ export async function computeStats(
   notes: Note[],
   settings: Settings,
   scheduler: Scheduler,
+  universeId: string,
   now = Date.now(),
 ): Promise<Stats> {
   const dirs = activeDirections(settings);
@@ -46,12 +47,18 @@ export async function computeStats(
   const since400 = startOfLocalDay(addDays(now, -400));
 
   const [newIntroducedToday, logs, totalRow, forgetCounts] = await Promise.all([
-    countNewIntroduced(db, startToday, primaryDirection(settings)),
+    countNewIntroduced(db, startToday, primaryDirection(settings), universeId),
     db.select<{ reviewed_at: number; rating: number; state: number }>(
-      'SELECT reviewed_at, rating, state FROM review_logs WHERE reviewed_at >= ? ORDER BY reviewed_at',
-      [since400],
+      `SELECT r.reviewed_at, r.rating, r.state FROM review_logs r
+         JOIN cards c ON c.id = r.card_id JOIN notes n ON n.id = c.note_id
+       WHERE r.deleted = 0 AND n.universe_id = ? AND r.reviewed_at >= ? ORDER BY r.reviewed_at`,
+      [universeId, since400],
     ),
-    db.select<{ n: number }>('SELECT COUNT(*) AS n FROM review_logs'),
+    db.select<{ n: number }>(
+      `SELECT COUNT(*) AS n FROM review_logs r JOIN cards c ON c.id = r.card_id JOIN notes n ON n.id = c.note_id
+       WHERE r.deleted = 0 AND n.universe_id = ?`,
+      [universeId],
+    ),
     loadForgetCounts(db),
   ]);
 

@@ -18,7 +18,7 @@ export function CollectionsPage() {
   const [editing, setEditing] = useState<Collection | 'new' | null>(null);
 
   const stats = useMemo(() => {
-    const m = new Map<number, { total: number; mastered: number }>();
+    const m = new Map<string, { total: number; mastered: number }>();
     for (const c of collections) m.set(c.id, { total: 0, mastered: 0 });
     for (const n of notes) {
       for (const id of n.collectionIds) {
@@ -142,13 +142,13 @@ export function CollectionDialog({ collection, onClose }: { collection: Collecti
   );
 }
 
-export function CollectionPage({ id }: { id: number }) {
+export function CollectionPage({ id }: { id: string }) {
   const collection = useApp((s) => s.collections.find((c) => c.id === id));
   const notes = useApp((s) => s.notes);
   const { navigate, openEditor, deleteCollection, toast } = useApp.getState();
   const [editing, setEditing] = useState(false);
   const [adding, setAdding] = useState(false);
-  const due = useDueCounts(id);
+  const due = useDueCounts({ collectionId: id });
   const count = useMemo(() => notes.filter((n) => n.collectionIds.includes(id)).length, [notes, id]);
 
   if (!collection) {
@@ -224,10 +224,10 @@ export function CollectionPage({ id }: { id: number }) {
   );
 }
 
-function AddExistingDialog({ collectionId, onClose }: { collectionId: number; onClose: () => void }) {
+function AddExistingDialog({ collectionId, onClose }: { collectionId: string; onClose: () => void }) {
   const notes = useApp((s) => s.notes);
   const [query, setQuery] = useState('');
-  const [picked, setPicked] = useState<Set<number>>(new Set());
+  const [picked, setPicked] = useState<Set<string>>(new Set());
   const { addToCollection, toast } = useApp.getState();
   const q = query.trim().toLowerCase();
   const candidates = notes

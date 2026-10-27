@@ -3,8 +3,10 @@ import { useApp } from '@/app/store';
 import { Button, EmptyState } from '@/ui/components/ui';
 import { CheckCircle2 } from 'lucide-react';
 import { ScheduledSession } from './ScheduledSession';
-import { ClozePractice, FlashPractice } from './PracticeSession';
+import { ClozePractice, FlashPractice, ListenPractice } from './PracticeSession';
 import { buildQueue } from '@/core/srs/queue';
+import { scopeIds } from '@/core/srs/scope';
+import { settingsFor } from '@/core/domain/settings';
 import { useState } from 'react';
 
 export function SessionPage({ config }: { config: SessionConfig }) {
@@ -12,11 +14,11 @@ export function SessionPage({ config }: { config: SessionConfig }) {
   const [empty] = useState(() => {
     if (config.kind !== 'scheduled') return false;
     const s = useApp.getState();
-    const noteIds = config.collectionId != null ? new Set(s.notes.filter((n) => n.collectionIds.includes(config.collectionId!)).map((n) => n.id)) : null;
+    const noteIds = scopeIds(s.notes, config);
     return (
       buildQueue(s.notes, {
         now: Date.now(),
-        settings: s.settings,
+        settings: settingsFor(s.settings, s.universe),
         scheduler: s.scheduler,
         newIntroducedToday: s.newIntroducedToday,
         limit: 1,
@@ -42,5 +44,6 @@ export function SessionPage({ config }: { config: SessionConfig }) {
   }
   if (config.kind === 'scheduled') return <ScheduledSession config={config} />;
   if (config.mode === 'cloze') return <ClozePractice config={config} />;
+  if (config.mode === 'listen') return <ListenPractice config={config} />;
   return <FlashPractice config={config} />;
 }

@@ -1,8 +1,10 @@
+import { scopeNotes } from '@/core/srs/scope';
 import { useEffect, useRef, useState } from 'react';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle2, Snail, Volume2, XCircle } from 'lucide-react';
 import { errorMessage, useApp, type SessionConfig } from '@/app/store';
+import { checkListening, type ListeningVerdict } from '@/core/domain/answer';
 import { checkCloze, clozeHint, type ClozeVerdict } from '@/core/domain/cloze';
-import { DIRECTION_LABEL } from '@/core/domain/types';
+import { directionLabel } from '@/core/domain/types';
 import { recordPractice } from '@/core/repo/reviewRepo';
 import { buildClozePractice, buildDifficultPractice, buildRandomPractice, type ClozeItem, type PracticeItem } from '@/core/srs/practice';
 import { GRADES, type Grade } from '@/core/srs/scheduler';
@@ -14,25 +16,24 @@ import { SessionFrame, SessionSummary, type Tally } from './SessionFrame';
 
 type PracticeConfig = Extract<SessionConfig, { kind: 'practice' }>;
 
-const MODE_TITLE = { random: 'Révision aléatoire', difficult: 'Mots difficiles', cloze: 'Phrases à trous' } as const;
+const MODE_TITLE = { random: 'Révision aléatoire', difficult: 'Mots difficiles', cloze: 'Phrases à trous', listen: 'Écoute' } as const;
 const GRADE_CLASS: Record<Grade, string> = { 1: 'again', 2: 'hard', 3: 'good', 4: 'easy' };
 
 function scopedNotes(config: PracticeConfig) {
-  const { notes } = useApp.getState();
-  return config.collectionId != null ? notes.filter((n) => n.collectionIds.includes(config.collectionId!)) : notes;
+  return scopeNotes(useApp.getState().notes.filter((n) => !n.suspended), config);
 }
 
 function Banner() {
   return (
     <span className="practice-banner" title="Les réponses sont enregistrées dans l'historique mais ne changent pas les dates de révision.">
-      Entraînement libre · planification inchangée
+      Entraînement libre, sans effet sur vos révisions
     </span>
   );
 }
 
 function usePracticeLog(mode: PracticeConfig['mode']) {
   const db = useApp((s) => s.db)!;
-  return async (noteId: number, rating: Grade) => {
+  return async (noteId: string, rating: Grade) => {
     try {
       await recordPractice(db, noteId, mode, rating);
     } catch (err) {
@@ -52,7 +53,7 @@ function PracticeFinished({ config, tally, startedAt }: { config: PracticeConfig
         title={`${MODE_TITLE[config.mode]} terminé${config.mode === 'cloze' ? 'es' : 'e'}`}
         tally={tally}
         startedAt={startedAt}
-        labels={config.mode === 'cloze' ? ['Ratées', '—', 'Justes', '—'] : undefined}
+        labels={config.mode === 'cloze' || config.mode === 'listen' ? ['Ratées', '', 'Justes', ''] : undefined}
         note="Entraînement libre : vos dates de révision n'ont pas changé."
       >
         <Button variant="primary" onClick={again} shortcut="Entrée">
@@ -68,6 +69,7 @@ function PracticeFinished({ config, tally, startedAt }: { config: PracticeConfig
 
 export function FlashPractice({ config }: { config: PracticeConfig }) {
   const notesById = useApp((s) => s.notesById);
+  const language = useApp((s) => s.universe?.language ?? 'en');
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate, openEditor } = useApp.getState();
   const log = usePracticeLog(config.mode);
@@ -79,7 +81,7 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
       config.mode === 'difficult'
         ? buildDifficultPractice(notes, s.forgetCounts, config.limit, config.direction)
         : buildRandomPractice(notes, s.settings, config.limit, config.direction);
-    return { queue: new SessionQueue<PracticeItem>(items), startedAt: Date.now(), requeued: new Set<number>() };
+    return { queue: new SessionQueue<PracticeItem>(items), startedAt: Date.now(), requeued: new Set<string>() };
   });
   const [, setTick] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -141,7 +143,7 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
           <>
             <span>{MODE_TITLE[config.mode]}</span>
             <span>·</span>
-            <span>{DIRECTION_LABEL[item.direction]}</span>
+            <span>{directionLabel(item.direction, language)}</span>
           </>
         }
       />
@@ -182,12 +184,13 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
 
 export function ClozePractice({ config }: { config: PracticeConfig }) {
   const notesById = useApp((s) => s.notesById);
+  const language = useApp((s) => s.universe?.language ?? 'en');
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate } = useApp.getState();
   const log = usePracticeLog('cloze');
 
   const [session] = useState(() => ({
-    queue: new SessionQueue<ClozeItem>(buildClozePractice(scopedNotes(config), config.limit)),
+    queue: new SessionQueue<ClozeItem>(buildClozePractice(scopedNotes(config), config.limit, useApp.getState().universe?.language ?? 'en')),
     startedAt: Date.now(),
   }));
   const [, setTick] = useState(0);
@@ -207,7 +210,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
   const check = () => {
     if (!item) return;
     if (!answer.trim()) setVerdict('skipped');
-    else setVerdict(checkCloze(item.cloze, answer));
+    else setVerdict(checkCloze(item.cloze, answer, language));
     if (note && useApp.getState().settings.autoSpeak) speakNote(note);
   };
 
@@ -250,7 +253,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
             </>
           )}
         </div>
-        <p className="cloze-sentence" lang="en">
+        <p className="cloze-sentence" lang={language}>
           {item.cloze.parts.map((p, i) =>
             p.blank ? (
               <span key={i} className={`cloze-blank ${verdict ? 'cloze-blank--revealed' : ''}`}>
@@ -271,20 +274,20 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
             onChange={(e) => setAnswer(e.target.value)}
             autoComplete="off"
             spellCheck={false}
-            lang="en"
+            lang={language}
           />
         ) : (
           <div>
             <div className={`verdict ${ok ? 'verdict--ok' : 'verdict--ko'}`}>
               {ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
               {verdict === 'exact' && 'Exact'}
-              {verdict === 'close' && `Juste — forme exacte : ${item.cloze.answers.join(' … ')}`}
+              {verdict === 'close' && `Juste, forme exacte : ${item.cloze.answers.join(' … ')}`}
               {verdict === 'wrong' && `Réponse : ${item.cloze.answers.join(' … ')}`}
               {verdict === 'skipped' && `Réponse : ${item.cloze.answers.join(' … ')}`}
             </div>
             {note && (
               <p className="muted" style={{ marginTop: 10 }}>
-                <strong className="text-2">{note.expression}</strong> — {note.translation}
+                <strong className="text-2">{note.expression}</strong> : {note.translation}
               </p>
             )}
           </div>
@@ -312,6 +315,151 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
             </Button>
           </div>
         )}
+      </div>
+    </SessionFrame>
+  );
+}
+
+/* ------------------------------------ Écoute ----------------------------------- */
+
+export function ListenPractice({ config }: { config: PracticeConfig }) {
+  const notesById = useApp((s) => s.notesById);
+  const language = useApp((s) => s.universe?.language ?? 'en');
+  const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
+  const { navigate } = useApp.getState();
+  const log = usePracticeLog('listen');
+
+  const [session] = useState(() => ({
+    queue: new SessionQueue<PracticeItem>(buildRandomPractice(scopedNotes(config), useApp.getState().settings, config.limit)),
+    startedAt: Date.now(),
+  }));
+  const [, setTick] = useState(0);
+  const [answer, setAnswer] = useState('');
+  const [verdict, setVerdict] = useState<ListeningVerdict | 'skipped' | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const tally = useRef<Tally>({ 1: 0, 2: 0, 3: 0, 4: 0 });
+
+  const item = session.queue.current;
+  const note = item ? notesById.get(item.noteId) : undefined;
+
+  useEffect(() => {
+    if (item && !note) {
+      session.queue.advance();
+      setTick((t) => t + 1);
+    }
+  });
+
+  // Chaque expression est prononcée dès qu'elle arrive.
+  useEffect(() => {
+    if (note) speakNote(note);
+  }, [note?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [item, verdict]);
+
+  const replay = (slow = false) => note && speakNote(note, { slow });
+
+  const check = () => {
+    if (!note) return;
+    setVerdict(answer.trim() ? checkListening(note.expression, note.translation, answer, language) : 'skipped');
+  };
+
+  const next = (override?: Grade) => {
+    if (!item || !verdict) return;
+    const grade: Grade = override ?? (verdict === 'wrong' || verdict === 'skipped' ? 1 : 3);
+    void log(item.noteId, grade);
+    tally.current[grade]++;
+    session.queue.advance();
+    setAnswer('');
+    setVerdict(null);
+    setTick((t) => t + 1);
+  };
+
+  useHotkeys(
+    {
+      enter: () => (verdict ? next() : check()),
+      escape: () => navigate({ name: 'review' }),
+      'mod+p': () => replay(),
+      'mod+l': () => replay(true),
+      'mod+j': () => verdict === 'wrong' && next(3),
+    },
+    { enabled: !overlay && !session.queue.finished, allowInInputs: true },
+  );
+
+  if (session.queue.finished) return <PracticeFinished config={config} tally={tally.current} startedAt={session.startedAt} />;
+  if (!item || !note) return null;
+
+  const ok = verdict === 'exact' || verdict === 'close' || verdict === 'meaning';
+
+  return (
+    <SessionFrame completed={session.queue.completed} total={session.queue.total} onQuit={() => navigate({ name: 'review' })} badge={<Banner />}>
+      <div className="card flashcard">
+        <div className="flashcard-meta">
+          <span>Écoute</span>
+        </div>
+        <div className="listen-controls">
+          <Button variant="primary" onClick={() => replay()} title="Réécouter (Ctrl P)">
+            <Volume2 size={18} /> Réécouter
+          </Button>
+          <Button onClick={() => replay(true)} title="Plus lentement (Ctrl L)">
+            <Snail size={18} /> Lentement
+          </Button>
+        </div>
+        {!verdict ? (
+          <input
+            ref={inputRef}
+            className="input input--lg cloze-input"
+            placeholder="Tapez ce que vous entendez, ou son sens en français"
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            autoComplete="off"
+            spellCheck={false}
+          />
+        ) : (
+          <div>
+            <div className={`verdict ${ok ? 'verdict--ok' : 'verdict--ko'}`}>
+              {ok ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
+              {verdict === 'exact' && 'Exact'}
+              {verdict === 'close' && 'Juste, à une forme près'}
+              {verdict === 'meaning' && 'Juste : vous avez compris le sens'}
+              {verdict === 'wrong' && 'Pas tout à fait'}
+              {verdict === 'skipped' && 'Réponse'}
+            </div>
+            <p className="listen-answer" lang={language}>
+              {note.expression}
+            </p>
+            <p className="muted">{note.translation}</p>
+          </div>
+        )}
+      </div>
+      <div className="session-actions">
+        {!verdict ? (
+          <div className="row" style={{ justifyContent: 'center' }}>
+            <Button variant="primary" onClick={check} shortcut="Entrée">
+              {answer.trim() ? 'Vérifier' : 'Afficher la réponse'}
+            </Button>
+          </div>
+        ) : (
+          <div className="row" style={{ justifyContent: 'center' }}>
+            {verdict === 'wrong' && (
+              <Button onClick={() => next(3)}>
+                J'avais juste <Kbd>Ctrl J</Kbd>
+              </Button>
+            )}
+            <Button variant="primary" onClick={() => next()} shortcut="Entrée">
+              Suivante
+            </Button>
+          </div>
+        )}
+        <div className="session-hints">
+          <span>
+            <Kbd>Ctrl P</Kbd> réécouter
+          </span>
+          <span>
+            <Kbd>Ctrl L</Kbd> lentement
+          </span>
+        </div>
       </div>
     </SessionFrame>
   );

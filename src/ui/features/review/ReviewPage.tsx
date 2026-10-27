@@ -1,25 +1,33 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { CheckCircle2, Flame, PencilLine, Shuffle, Zap } from 'lucide-react';
+import { CheckCircle2, ChevronDown, ChevronRight, Ear, Flame, PencilLine, Shuffle, SlidersHorizontal, Zap } from 'lucide-react';
 import { useApp, type SessionConfig } from '@/app/store';
 import { formatDue } from '@/core/domain/dates';
-import type { Direction } from '@/core/domain/types';
+import { directionShort, type Direction } from '@/core/domain/types';
 import { countDue } from '@/core/srs/queue';
+import { settingsFor } from '@/core/domain/settings';
 import { clozeCandidates, difficultNotes } from '@/core/srs/practice';
+import { hasScope, scopeIds, scopeNotes, type ReviewScope } from '@/core/srs/scope';
+import { readPref, writePref } from '@/ui/prefs';
+import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
+import { estimateMinutes } from '@/core/repo/progressRepo';
 import { Button, Kbd, Segmented } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { State } from 'ts-fsrs';
 
-export function useDueCounts(collectionId: number | null = null, direction: Direction | null = null) {
+export function useDueCounts(scope: ReviewScope = {}, direction: Direction | null = null) {
   const notes = useApp((s) => s.notes);
-  const settings = useApp((s) => s.settings);
+  const baseSettings = useApp((s) => s.settings);
+  const universe = useApp((s) => s.universe);
+  const settings = useMemo(() => settingsFor(baseSettings, universe), [baseSettings, universe]);
   const scheduler = useApp((s) => s.scheduler);
   const newIntroducedToday = useApp((s) => s.newIntroducedToday);
   const collections = useApp((s) => s.collections);
+  const { collectionId = null, category = null, tag = null } = scope;
   return useMemo(() => {
-    const noteIds = collectionId != null ? new Set(notes.filter((n) => n.collectionIds.includes(collectionId)).map((n) => n.id)) : null;
+    const noteIds = scopeIds(notes, { collectionId, category, tag });
     return countDue(notes, { now: Date.now(), settings, scheduler, newIntroducedToday, noteIds, direction });
     // `collections` : recalcul quand une collection change.
-  }, [notes, settings, scheduler, newIntroducedToday, collectionId, direction, collections]);
+  }, [notes, settings, scheduler, newIntroducedToday, collectionId, category, tag, direction, collections]);
 }
 
 /** Prochaine échéance (pour « tout est à jour »). */
@@ -34,6 +42,7 @@ function useNextDue() {
 
 export function ReviewPage() {
   const settings = useApp((s) => s.settings);
+  const universe = useApp((s) => s.universe);
   const notes = useApp((s) => s.notes);
   const collections = useApp((s) => s.collections);
   const forgetCounts = useApp((s) => s.forgetCounts);
@@ -41,28 +50,60 @@ export function ReviewPage() {
   const { navigate, openEditor } = useApp.getState();
 
   const [direction, setDirection] = useState<'mix' | Direction>('mix');
-  const [collectionId, setCollectionId] = useState<number | null>(null);
+  // Filtres (collection, catégorie, tag) mémorisés par univers.
+  const prefKey = `review.scope.${universe?.id ?? ''}`;
+  const [stored, setStored] = useState<ReviewScope>(() => readPref<ReviewScope>(prefKey, {}));
+  const categories = useMemo(() => [...new Set(notes.map((n) => n.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'fr')), [notes]);
+  const tags = useMemo(() => {
+    const byKey = new Map<string, string>();
+    for (const n of notes) for (const t of n.tags) if (!byKey.has(t.toLowerCase())) byKey.set(t.toLowerCase(), t);
+    return [...byKey.values()].sort((a, b) => a.localeCompare(b, 'fr'));
+  }, [notes]);
+  // Une valeur disparue (collection supprimée, tag retiré) est ignorée.
+  const scope: ReviewScope = {
+    collectionId: stored.collectionId && collections.some((c) => c.id === stored.collectionId) ? stored.collectionId : null,
+    category: stored.category && categories.includes(stored.category) ? stored.category : null,
+    tag: stored.tag && tags.some((t) => t.toLowerCase() === stored.tag!.toLowerCase()) ? stored.tag : null,
+  };
+  const setScope = (patch: Partial<ReviewScope>) => {
+    const next = { ...scope, ...patch };
+    setStored(next);
+    writePref(prefKey, next);
+  };
   const dir = direction === 'mix' ? null : direction;
-  const due = useDueCounts(collectionId, dir);
+  const due = useDueCounts(scope, dir);
   const nextDue = useNextDue();
+  const progress = useDailyProgress();
+  const minutes = estimateMinutes(due.review + due.learning, due.new, progress.medianDurationMs);
+  // Options (direction, filtres) repliées par défaut ; ouvertes si l'une est active.
+  const [showOptions, setShowOptions] = useState(() => hasScope(stored) || readPref<boolean>('review.options', false));
+  const toggleOptions = () => {
+    setShowOptions(!showOptions);
+    writePref('review.options', !showOptions);
+  };
+  const activeOptions = (direction !== 'mix' ? 1 : 0) + (scope.collectionId ? 1 : 0) + (scope.category ? 1 : 0) + (scope.tag ? 1 : 0);
 
-  const scoped = useMemo(() => (collectionId == null ? notes : notes.filter((n) => n.collectionIds.includes(collectionId))), [notes, collectionId]);
+  const scoped = useMemo(() => scopeNotes(notes, scope),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [notes, scope.collectionId, scope.category, scope.tag]);
   const hardCount = useMemo(() => difficultNotes(scoped, forgetCounts).length, [scoped, forgetCounts]);
-  const clozeCount = useMemo(() => clozeCandidates(scoped).length, [scoped]);
+  const language = useApp((s) => s.universe?.language ?? 'en');
+  const universeName = useApp((s) => s.universe?.name ?? '');
+  const clozeCount = useMemo(() => clozeCandidates(scoped, language).length, [scoped, language]);
 
   const start = (config: SessionConfig) => navigate({ name: 'session', config });
-  const startScheduled = (limit: number | null) => start({ kind: 'scheduled', limit, direction: dir, collectionId });
+  const startScheduled = (limit: number | null) => start({ kind: 'scheduled', limit, direction: dir, ...scope });
 
   useHotkeys(
     {
       enter: () => due.total > 0 && startScheduled(null),
-      space: () => due.total > 0 && startScheduled(5),
+      space: () => due.total > 0 && startScheduled(due.total > 5 ? 5 : null),
     },
     { enabled: !overlay },
   );
 
   // Tailles proposées : inutile d'afficher « 20 mots » s'il n'y en a que 7.
-  const sizes = [5, 10, 20].filter((_, i, arr) => i === 0 || arr[i - 1] < due.total);
+  const sizes = [5, 10, 20].filter((n) => n < due.total);
 
   return (
     <div className="page">
@@ -83,24 +124,30 @@ export function ReviewPage() {
               {due.total > 0 ? (
                 <>
                   {due.review} à revoir · {due.new} nouveau{due.new > 1 ? 'x' : ''} · {due.learning} en apprentissage
-                  {due.newWaiting > 0 && ` · ${due.newWaiting} nouveaux en attente (plafond ${settings.newPerDay}/jour)`}
+                  {due.newWaiting > 0 && ` · ${due.newWaiting} nouveaux en attente (plafond ${settingsFor(settings, universe).newPerDay}/jour)`}
                 </>
               ) : notes.length === 0 ? (
                 'Ajoutez du vocabulaire : chaque expression devient automatiquement une fiche.'
               ) : (
-                <>Tout est à jour{nextDue ? ` — prochaine révision ${formatDue(nextDue)}` : ''}.</>
+                <>Tout est à jour.{nextDue ? ` Prochaine révision ${formatDue(nextDue)}.` : ''}</>
               )}
             </p>
           </div>
-          <div className="row row--wrap">
+          <button className="link small options-toggle" onClick={toggleOptions} aria-expanded={showOptions}>
+            <SlidersHorizontal size={14} /> Options{activeOptions ? ` (${activeOptions})` : ''}{' '}
+            {showOptions ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          </button>
+        </div>
+        {showOptions && (
+          <div className="row row--wrap review-options">
             {settings.directions === 'both' && (
               <Segmented
                 value={direction}
                 onChange={setDirection}
                 options={[
                   { value: 'mix', label: 'Les deux' },
-                  { value: 'fr_en', label: 'FR → EN', title: 'Retrouver l’anglais à partir du français' },
-                  { value: 'en_fr', label: 'EN → FR', title: 'Retrouver le sens français' },
+                  { value: 'fr_en', label: directionShort('fr_en', language), title: `Retrouver l'expression (${universeName}) à partir du français` },
+                  { value: 'en_fr', label: directionShort('en_fr', language), title: 'Retrouver le sens français' },
                 ]}
               />
             )}
@@ -108,8 +155,8 @@ export function ReviewPage() {
               <select
                 className="select select--sm"
                 style={{ width: 'auto' }}
-                value={collectionId ?? ''}
-                onChange={(e) => setCollectionId(e.target.value ? Number(e.target.value) : null)}
+                value={scope.collectionId ?? ''}
+                onChange={(e) => setScope({ collectionId: e.target.value || null })}
                 aria-label="Collection"
               >
                 <option value="">Toute la bibliothèque</option>
@@ -120,19 +167,57 @@ export function ReviewPage() {
                 ))}
               </select>
             )}
+            {categories.length > 0 && (
+              <select
+                className="select select--sm"
+                style={{ width: 'auto' }}
+                value={scope.category ?? ''}
+                onChange={(e) => setScope({ category: e.target.value || null })}
+                aria-label="Catégorie"
+              >
+                <option value="">Toutes catégories</option>
+                {categories.map((c) => (
+                  <option key={c}>{c}</option>
+                ))}
+              </select>
+            )}
+            {tags.length > 0 && (
+              <select
+                className="select select--sm"
+                style={{ width: 'auto' }}
+                value={scope.tag ?? ''}
+                onChange={(e) => setScope({ tag: e.target.value || null })}
+                aria-label="Tag"
+              >
+                <option value="">Tous tags</option>
+                {tags.map((t) => (
+                  <option key={t}>{t}</option>
+                ))}
+              </select>
+            )}
+            {hasScope(scope) && (
+              <button className="link small" onClick={() => setScope({ collectionId: null, category: null, tag: null })}>
+                Réinitialiser
+              </button>
+            )}
           </div>
-        </div>
+        )}
 
         {due.total > 0 ? (
-          <div className="size-buttons">
-            {sizes.map((n, i) => (
-              <Button key={n} size="lg" variant={i === 0 ? 'primary' : 'secondary'} onClick={() => startScheduled(n)} shortcut={i === 0 ? 'Espace' : undefined}>
-                <Zap size={16} /> {n} mots
-              </Button>
-            ))}
-            <Button size="lg" onClick={() => startScheduled(null)} shortcut="Entrée">
-              Toutes ({due.total})
+          <div className="stack stack--sm">
+            <Button size="lg" variant="primary" className="review-now" onClick={() => startScheduled(null)} shortcut="Entrée">
+              Réviser les {due.total} fiche{due.total > 1 ? 's' : ''} <span className="review-now-time">(environ {minutes} min)</span>
             </Button>
+            {due.total > 5 && (
+              <div className="row row--wrap" style={{ gap: 8 }}>
+                <span className="muted small">Peu de temps ?</span>
+                {sizes.map((n, i) => (
+                  <Button key={n} size="sm" onClick={() => startScheduled(n)} shortcut={i === 0 ? 'Espace' : undefined}>
+                    <Zap size={14} /> {n} mots
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <div className="row" style={{ color: 'var(--mastered)' }}>
@@ -153,16 +238,16 @@ export function ReviewPage() {
           title="Mots difficiles"
           desc="Les expressions que vous oubliez régulièrement (au moins 2 oublis)."
           count={hardCount}
-          empty="Aucun mot difficile pour l’instant."
-          onStart={(limit) => start({ kind: 'practice', mode: 'difficult', limit, direction: dir, collectionId })}
+          empty="Aucun mot difficile pour l'instant."
+          onStart={(limit) => start({ kind: 'practice', mode: 'difficult', limit, direction: dir, ...scope })}
         />
         <ModeCard
           icon={<PencilLine size={18} />}
           title="Phrases à trous"
           desc="Complétez vos propres exemples. Utilise uniquement les phrases de vos notes."
           count={clozeCount}
-          empty="Ajoutez des exemples contenant l’expression pour activer ce mode."
-          onStart={(limit) => start({ kind: 'practice', mode: 'cloze', limit, collectionId })}
+          empty="Ajoutez des exemples contenant l'expression pour activer ce mode."
+          onStart={(limit) => start({ kind: 'practice', mode: 'cloze', limit, ...scope })}
         />
         <ModeCard
           icon={<Shuffle size={18} />}
@@ -170,7 +255,15 @@ export function ReviewPage() {
           desc="Parcourez votre bibliothèque au hasard, y compris les mots non programmés."
           count={scoped.length}
           empty="Votre bibliothèque est vide."
-          onStart={(limit) => start({ kind: 'practice', mode: 'random', limit, direction: dir, collectionId })}
+          onStart={(limit) => start({ kind: 'practice', mode: 'random', limit, direction: dir, ...scope })}
+        />
+        <ModeCard
+          icon={<Ear size={18} />}
+          title="Écoute"
+          desc="Écoutez l'expression, puis tapez ce que vous entendez ou son sens en français."
+          count={scoped.length}
+          empty="Votre bibliothèque est vide."
+          onStart={(limit) => start({ kind: 'practice', mode: 'listen', limit, ...scope })}
         />
       </div>
 

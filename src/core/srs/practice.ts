@@ -8,12 +8,12 @@ import { DIFFICULT_THRESHOLD } from '../repo/reviewRepo';
  */
 
 export interface PracticeItem {
-  noteId: number;
+  noteId: string;
   direction: Direction;
 }
 
 export interface ClozeItem {
-  noteId: number;
+  noteId: string;
   sentence: string;
   cloze: Cloze;
 }
@@ -36,7 +36,7 @@ function pickDirection(settings: Settings, forced: Direction | null | undefined,
   return dirs.length === 1 ? dirs[0] : rng() < 2 / 3 ? 'fr_en' : 'en_fr';
 }
 
-export function difficultNotes(notes: Note[], forgetCounts: Map<number, number>): Note[] {
+export function difficultNotes(notes: Note[], forgetCounts: Map<string, number>): Note[] {
   return notes
     .filter((n) => (forgetCounts.get(n.id) ?? 0) >= DIFFICULT_THRESHOLD)
     .sort((a, b) => (forgetCounts.get(b.id) ?? 0) - (forgetCounts.get(a.id) ?? 0));
@@ -56,7 +56,7 @@ export function buildRandomPractice(
 
 export function buildDifficultPractice(
   notes: Note[],
-  forgetCounts: Map<number, number>,
+  forgetCounts: Map<string, number>,
   limit: number | null,
   direction?: Direction | null,
   rng: Rng = Math.random,
@@ -67,12 +67,12 @@ export function buildDifficultPractice(
 }
 
 /** Notes possédant au moins un exemple dans lequel l'expression est repérable. */
-export function clozeCandidates(notes: Note[]): ClozeItem[][] {
+export function clozeCandidates(notes: Note[], language = 'en'): ClozeItem[][] {
   return notes
     .map((n) =>
       n.examples
         .map((sentence) => {
-          const cloze = buildCloze(n.expression, sentence);
+          const cloze = buildCloze(n.expression, sentence, language);
           return cloze ? { noteId: n.id, sentence, cloze } : null;
         })
         .filter((x): x is ClozeItem => x !== null),
@@ -80,8 +80,8 @@ export function clozeCandidates(notes: Note[]): ClozeItem[][] {
     .filter((list) => list.length > 0);
 }
 
-export function buildClozePractice(notes: Note[], limit: number | null, rng: Rng = Math.random): ClozeItem[] {
-  return shuffle(clozeCandidates(notes), rng)
+export function buildClozePractice(notes: Note[], limit: number | null, language = 'en', rng: Rng = Math.random): ClozeItem[] {
+  return shuffle(clozeCandidates(notes, language), rng)
     .slice(0, limit ?? undefined)
     .map((options) => options[Math.floor(rng() * options.length)]);
 }
