@@ -6,6 +6,7 @@ import { DEFAULT_SETTINGS, primaryDirection, settingsUpgrade, type Settings } fr
 import type { FrequencyRanks } from '@/core/reading/level';
 import * as knowledgeRepo from '@/core/repo/knowledgeRepo';
 import type { VocabTestResult } from '@/core/repo/knowledgeRepo';
+import type { Observation } from '@/core/reading/calibration';
 import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode, Universe } from '@/core/domain/types';
 import * as notesRepo from '@/core/repo/notesRepo';
 import * as collectionsRepo from '@/core/repo/collectionsRepo';
@@ -129,6 +130,8 @@ interface AppState {
   vocabTest: VocabTestResult | null;
   /** Mots marqués « connu » / « inconnu » dans l'univers courant. */
   wordMarks: Map<string, boolean>;
+  /** Observations en lisant (recalage du test de vocabulaire) dans l'univers courant. */
+  vocabObservations: Observation[];
 
   route: Route;
   /** Change à chaque navigation : force le remontage d'une page (ex. nouvelle session). */
@@ -199,6 +202,8 @@ interface AppState {
   /** Marque des mots comme connus (true), inconnus (false) ou retire la marque (null). */
   markWords(words: string[], known: boolean | null): Promise<void>;
   saveVocabTest(result: VocabTestResult): Promise<void>;
+  /** Enregistre des signaux de lecture (décisions, sélections, mots rencontrés). */
+  observe(list: Observation[]): Promise<void>;
 }
 
 let toastSeq = 1;
@@ -268,6 +273,7 @@ export const useApp = create<AppState>((set, get) => {
     bookLevels: new Map(),
     vocabTest: null,
     wordMarks: new Map(),
+    vocabObservations: [],
 
     route: { name: 'home' },
     routeKey: 0,
@@ -323,7 +329,13 @@ export const useApp = create<AppState>((set, get) => {
         ? await countNewIntroduced(d, startOfStudyDay(Date.now(), settings.dayStartHour), primaryDirection(settings), current.id)
         : 0;
       const changedUniverse = current?.id !== get().universe?.id;
-      const knowledge = current ? { test: await knowledgeRepo.loadVocabTest(d, current.id), marks: await knowledgeRepo.loadMarks(d, current.id) } : null;
+      const knowledge = current
+        ? {
+            test: await knowledgeRepo.loadVocabTest(d, current.id),
+            marks: await knowledgeRepo.loadMarks(d, current.id),
+            observations: await knowledgeRepo.loadObservations(d, current.id),
+          }
+        : null;
       if (current && get().frequencyRanks?.language !== current.language) {
         const language = current.language;
         void loadRanks(language).then((ranks) => {
@@ -344,6 +356,7 @@ export const useApp = create<AppState>((set, get) => {
         bookLevels,
         vocabTest: knowledge?.test ?? null,
         wordMarks: knowledge?.marks ?? new Map(),
+        vocabObservations: knowledge?.observations ?? [],
         revision: s.revision + 1,
         ...(changedUniverse ? { libraryFilters: DEFAULT_FILTERS, selectedNoteId: null } : {}),
       }));
@@ -592,6 +605,18 @@ export const useApp = create<AppState>((set, get) => {
       if (!u) return;
       await knowledgeRepo.saveVocabTest(db(), u.id, result);
       set({ vocabTest: result });
+      scheduleSync();
+    },
+    async observe(list) {
+      const u = get().universe;
+      if (!u || !list.length) return;
+      const changed = await knowledgeRepo.recordObservations(db(), u.id, list);
+      if (!changed.length) return;
+      set((s) => {
+        const key = (o: Observation) => `${o.source}|${o.word}`;
+        const replaced = new Set(changed.map(key));
+        return { vocabObservations: [...s.vocabObservations.filter((o) => !replaced.has(key(o))), ...changed] };
+      });
       scheduleSync();
     },
     async setBookLevel(key, estimate) {

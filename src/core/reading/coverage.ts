@@ -84,6 +84,12 @@ export function englishBases(w: string): string[] {
   return out;
 }
 
+/** Base d'un mot rencontré (« replied » → « reply ») et son rang : c'est sous cette forme que les signaux sont comptés. */
+export function wordBase(ranks: FrequencyRanks, word: string, language: string): { base: string; rank: number | null } {
+  const { rank, base } = lookup(ranks, word.toLowerCase().replace(/’/g, "'"), language);
+  return { base, rank: rank ?? null };
+}
+
 /** Rang de fréquence d'une forme (contraction ramenée au mot ; en anglais, la base si elle est plus fréquente), et cette base. */
 function lookup(ranks: FrequencyRanks, w: string, language: string): { rank: number | undefined; base: string } {
   let rank = ranks.get(w) ?? ranks.get(w.replace(/['’].*$/, ''));
@@ -179,11 +185,17 @@ export interface TextCoverage {
   words: number;
   /** Mots probablement inconnus, du plus fréquent dans le texte au moins fréquent. */
   unknown: UnknownWord[];
+  /**
+   * Mots que le test prédit connus (ni marqués ni dans vos notes), sous leur base : « mots rencontrés » du recalage.
+   * Un clic sur l'un d'eux en lisant est un signe qu'il est en fait inconnu.
+   */
+  predictedKnown: { word: string; rank: number }[];
 }
 
 /** Couverture exacte d'un texte (un chapitre), mot par mot, avec vos marques et vos notes. */
 export function analyzeText(text: string, ranks: FrequencyRanks, k: Knowledge, language: string): TextCoverage {
   const unknown = new Map<string, UnknownWord>();
+  const predictedKnown = new Map<string, number>();
   let known = 0;
   let words = 0;
   for (const t of tokens(text, ranks, language)) {
@@ -191,6 +203,10 @@ export function analyzeText(text: string, ranks: FrequencyRanks, k: Knowledge, l
     words++;
     const p = knownProbability(t.word, ranks, k, language);
     known += p;
+    if (p >= 0.5 && t.word.length > 1) {
+      const { rank, base } = lookup(ranks, t.word, language);
+      if (rank !== undefined && !k.marks.has(base) && !k.marks.has(t.word) && !k.noteForms.has(t.word) && !k.noteForms.has(base)) predictedKnown.set(base, rank);
+    }
     if (p < 0.5 && t.word.length > 1) {
       // Formes d'un même mot regroupées sous leur base (« humoured », « humour » → « humour »).
       const { rank, base } = lookup(ranks, t.word, language);
@@ -201,7 +217,12 @@ export function analyzeText(text: string, ranks: FrequencyRanks, k: Knowledge, l
     }
   }
   const list = [...unknown.values()].sort((a, b) => b.count - a.count || (a.rank ?? Infinity) - (b.rank ?? Infinity));
-  return { coverage: words ? known / words : 1, words, unknown: list };
+  return {
+    coverage: words ? known / words : 1,
+    words,
+    unknown: list,
+    predictedKnown: [...predictedKnown].map(([word, rank]) => ({ word, rank })),
+  };
 }
 
 /** « Confortable », « avec effort »… pour une couverture. */
@@ -250,16 +271,35 @@ export function caseStats(text: string, into: Map<string, CaseStats> = new Map()
 }
 
 /** Banque du test : jusqu'à `perBand` mots valides par tranche, tirés dans l'ordre de `rng`. */
-export function buildVocabBank(list: string[], stats: Map<string, CaseStats>, language: string, rng: () => number, perBand = 40): VocabBank {
+/** Un mot au moins autant de fois plus courant dans une autre langue est tenu pour une citation étrangère. */
+export const FOREIGN_RATIO = 10;
+
+export function buildVocabBank(
+  list: string[],
+  stats: Map<string, CaseStats>,
+  language: string,
+  rng: () => number,
+  perBand = 40,
+  /** Listes de fréquence des autres langues : écarte les mots cités d'une autre langue (« très » dans un roman anglais). */
+  others: FrequencyRanks[] = [],
+): VocabBank {
   const nounsCapitalized = CAPITALIZED_NOUNS.has(language);
+  // Début d'une contraction rencontrée dans les livres (« didn » de « didn't ») : pas un mot.
+  const contractions = new Set<string>();
+  for (const w of stats.keys()) {
+    const i = w.search(/['’]/);
+    if (i > 0) contractions.add(w.slice(0, i));
+  }
   const bands: string[][] = BAND_EDGES.map(() => []);
   list.forEach((w, i) => {
-    const b = bandOf(i + 1);
-    if (b >= BAND_EDGES.length || !/^\p{Ll}{3,}$/u.test(w)) return;
+    const rank = i + 1;
+    const b = bandOf(rank);
+    if (b >= BAND_EDGES.length || !/^\p{Ll}{3,}$/u.test(w) || contractions.has(w)) return;
     const s = stats.get(w);
     if (!s || s.total < 2) return;
     // Un nom commun s'écrit surtout en minuscules (sauf en allemand, où l'on exige seulement sa présence).
     if (!nounsCapitalized && s.lower / s.total < 0.8) return;
+    if (others.some((o) => (o.get(w) ?? Infinity) * FOREIGN_RATIO < rank)) return;
     bands[b].push(w);
   });
   return {

@@ -196,16 +196,33 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_word_marks_universe ON word_marks(universe_id, deleted)',
     // Dernier test de vocabulaire de chaque univers : part de mots connus par tranche de fréquence.
+    // Les réponses brutes (mot, réponse, temps) permettent de recalculer le résultat sans refaire le test.
     `CREATE TABLE vocab_tests (
       universe_id  TEXT PRIMARY KEY,
       bands        TEXT    NOT NULL DEFAULT '[]',
       vocab_size   INTEGER NOT NULL DEFAULT 0,
       false_alarm  REAL    NOT NULL DEFAULT 0,
+      answers      TEXT    NOT NULL DEFAULT '[]',
       taken_at     INTEGER NOT NULL,
       updated_at   INTEGER NOT NULL,
       deleted      INTEGER NOT NULL DEFAULT 0,
       dirty        INTEGER NOT NULL DEFAULT 1
     )`,
+    // Observations en lisant (recalage du test) : décision dans « Mots du chapitre », mot sélectionné,
+    // mot rencontré dans un chapitre ouvert. Clé « univers|source|mot » : un mot compte une fois par source.
+    `CREATE TABLE vocab_observations (
+      obs_key      TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      source       TEXT    NOT NULL CHECK (source IN ('chapter', 'select', 'exposure')),
+      word         TEXT    NOT NULL,
+      rank         INTEGER,
+      known        INTEGER NOT NULL,
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_vocab_observations_universe ON vocab_observations(universe_id, deleted)',
   ],
 });
 

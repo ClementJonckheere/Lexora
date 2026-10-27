@@ -133,6 +133,17 @@ describe('banque de mots et allemand', () => {
     expect(bank.bands[0]).not.toContain('went'); // une seule occurrence
   });
 
+  it('écarte les débuts de contraction et les mots cités d’une autre langue', () => {
+    const stats = caseStats("We didn't go. we didn't. He said très bien, très. The house, the house, a house.");
+    const fr = new Map([['très', 40]]);
+    const list = ['the', 'house', 'didn', ...Array.from({ length: 600 }, (_, i) => `filler${i}`), 'très'];
+    const bank = buildVocabBank(list, stats, 'en', () => 0.5, 40, [fr]);
+    const all = bank.bands.flat();
+    expect(all).toContain('house');
+    expect(all).not.toContain('didn');
+    expect(all).not.toContain('très');
+  });
+
   it('allemand : les noms communs comptent, les noms propres absents de la liste non', () => {
     const de = new Map([
       ['der', 1],
@@ -182,5 +193,24 @@ describe('formes anglaises', () => {
     const text = 'the humour the humoured the humour. '.repeat(100);
     expect(analyzeText(text, ranks, k, 'en').unknown).toEqual([{ word: 'humour', count: 300, rank: 8105, forms: ['humour', 'humoured'] }]);
     expect(analyzeText(text, ranks, { ...k, marks: new Map([['humour', true]]) }, 'en').unknown).toEqual([]);
+  });
+});
+
+describe('vérification finale et réponses brutes', async () => {
+  const { toConfirm, rescore, CONFIRM_BELOW_RANK } = await import('./vocabTest');
+  it('ne fait confirmer que les « non » sur de vrais mots très courants', () => {
+    const items = buildVocabTest(list, rng(5));
+    const answers = items.map(() => false);
+    const idx = toConfirm(items, answers);
+    expect(idx.length).toBeGreaterThan(0);
+    expect(idx.every((i) => items[i].real && items[i].rank! < CONFIRM_BELOW_RANK)).toBe(true);
+    expect(toConfirm(items, items.map(() => true))).toEqual([]);
+  });
+
+  it('recalcule le résultat sans refaire le test', () => {
+    const items = buildVocabTest(list, rng(9));
+    const yes = items.map((it) => it.real && (it.rank ?? Infinity) <= 6000);
+    const raw = items.map((it, i) => ({ word: it.word, real: it.real, band: it.band, rank: it.rank ?? null, yes: yes[i], ms: 1200 }));
+    expect(rescore(raw)).toEqual(scoreVocabTest(items, yes));
   });
 });

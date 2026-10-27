@@ -2960,3 +2960,12 @@ p {
 .reader-pill-count { margin-left: 4px; font-weight: 600; }
 /* Fenêtres ouvertes depuis le lecteur (chapitres, mots du chapitre) : couleurs de l'application, pas celles du lecteur. */
 .reader .modal { color: var(--text); }
+.vocab-criterion { padding: 8px 12px; border-radius: var(--radius-sm); background: var(--surface-2); font-weight: 600; }
+.vocab-checks { display: flex; flex-wrap: wrap; gap: 8px; }
+.vocab-check { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; background: var(--surface-2); cursor: pointer; font-weight: 500; }
+.vocab-check--on { background: color-mix(in srgb, var(--mastered) 18%, transparent); color: var(--mastered); }
+.vocab-calibration { flex-basis: 100%; }
+.vocab-calibration summary { cursor: pointer; color: var(--text-2); }
+.vocab-calibration table { width: 100%; margin-top: 8px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.vocab-calibration th, .vocab-calibration td { text-align: left; padding: 3px 8px 3px 0; border-bottom: 1px solid var(--border, #e7e5e4); }
+.vocab-calibration th { font-weight: 600; color: var(--text-2); }

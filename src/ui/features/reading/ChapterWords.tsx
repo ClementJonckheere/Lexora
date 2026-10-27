@@ -47,7 +47,9 @@ export function ChapterWords({
   source: string;
   onClose: () => void;
 }) {
-  const { markWords, openEditor, saveNote, toast } = useApp.getState();
+  const { markWords, openEditor, saveNote, toast, observe } = useApp.getState();
+  // Chaque décision est aussi une réponse de test supplémentaire (recalage par la lecture).
+  const decided = (w: UnknownWord, known: boolean) => void observe([{ source: 'chapter', word: w.word, rank: w.rank, known }]).catch(() => undefined);
   const deeplKey = useApp((s) => s.settings.deeplKey);
   const [done, setDone] = useState<Map<string, 'known' | 'added'>>(new Map());
   const [busy, setBusy] = useState<string | null>(null);
@@ -56,9 +58,10 @@ export function ChapterWords({
   const pending = list.filter((w) => !done.has(w.word));
   const mark = (word: string, state: 'known' | 'added') => setDone((d) => new Map(d).set(word, state));
 
-  const know = async (word: string) => {
-    await markWords([word], true);
-    mark(word, 'known');
+  const know = async (w: UnknownWord) => {
+    await markWords([w.word], true);
+    decided(w, true);
+    mark(w.word, 'known');
   };
 
   const addOne = (w: UnknownWord) => {
@@ -68,6 +71,7 @@ export function ChapterWords({
       examples: [exampleFor(w, blocks)].filter(Boolean),
       comment: source,
     });
+    decided(w, false);
     mark(word, 'added');
   };
 
@@ -91,6 +95,7 @@ export function ChapterWords({
           examples: example ? [example] : [],
           comment: source,
         });
+        decided(w, false);
         mark(w.word, 'added');
         added++;
       } catch (err) {
@@ -141,7 +146,7 @@ export function ChapterWords({
                     </span>
                   ) : (
                     <>
-                      <Button size="sm" onClick={() => void know(w.word)} disabled={busy !== null}>
+                      <Button size="sm" onClick={() => void know(w)} disabled={busy !== null}>
                         Je connais
                       </Button>
                       <Button size="sm" variant="primary" onClick={() => addOne(w)} disabled={busy !== null}>

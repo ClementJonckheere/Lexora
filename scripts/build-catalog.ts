@@ -133,7 +133,10 @@ async function buildLanguage(language: string) {
 
   if (coverage && freqText && stats.size) {
     const list = freqText.split('\n').map((w) => w.trim()).filter(Boolean);
-    const bank = buildVocabBank(list, stats, language, seeded(42));
+    const others = LANGS.filter((l) => l !== language && existsSync(`public/reading/freq/${l}.txt`)).map((l) =>
+      ranksFromList(readFileSync(`public/reading/freq/${l}.txt`, 'utf8')),
+    );
+    const bank = buildVocabBank(list, stats, language, seeded(42), undefined, others);
     mkdirSync(VOCAB_OUT, { recursive: true });
     writeFileSync(`${VOCAB_OUT}/${language}.json`, JSON.stringify({ version: 1, language, generatedAt: new Date().toISOString(), bands: bank.bands }));
     console.log(`${language} : banque du test, ${bank.bands.map((b) => b.length).join('/')} mots par tranche`);

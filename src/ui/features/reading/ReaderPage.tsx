@@ -11,7 +11,7 @@ import { sourceNote } from '@/core/reading/selection';
 import { buildKnownIndex, findKnown, segments } from '@/core/reading/known';
 import { SelectionBubble, useReaderSelection, useSelectionTranslation } from './SelectionBubble';
 import { ChapterWords, CHAPTER_WORDS } from './ChapterWords';
-import { analyzeText } from '@/core/reading/coverage';
+import { analyzeText, wordBase } from '@/core/reading/coverage';
 import { useKnowledge } from '@/ui/hooks/useKnowledge';
 
 type Paper = 'ivory' | 'white' | 'night';
@@ -154,6 +154,16 @@ function Reader({
     [knowledge, ranks, chapters, chapter, language],
   );
   const toLearn = analysis ? Math.min(CHAPTER_WORDS, analysis.unknown.length) : 0;
+  // Recalage du test : les mots prédits connus du chapitre ouvert sont « rencontrés » (dénominateur des clics).
+  useEffect(() => {
+    if (!analysis?.predictedKnown.length) return;
+    void useApp
+      .getState()
+      .observe(analysis.predictedKnown.map((w) => ({ source: 'exposure' as const, word: w.word, rank: w.rank, known: true })))
+      .catch(() => undefined);
+    // Une fois par chapitre : les marques ajoutées ensuite ne doivent pas relancer l'enregistrement.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chapter, !!analysis]);
   const [sel, clearSel] = useReaderSelection(flowRef, stageRef, chapters[chapter].blocks, language);
   const autoTranslate = useApp((s) => s.settings.autoTranslate);
   const deeplKey = useApp((s) => s.settings.deeplKey);
@@ -179,10 +189,28 @@ function Reader({
   const markSelectionKnown = () => {
     if (!sel || sel.error || !sel.expression || sel.known) return;
     const word = sel.expression.trim().toLowerCase();
-    const { markWords, toast } = useApp.getState();
+    const { markWords, toast, observe } = useApp.getState();
+    // Sélectionné mais connu : le clic ne compte pas comme un mot inconnu.
+    if (ranks) {
+      const { base, rank } = wordBase(ranks, word, language);
+      void observe([{ source: 'select', word: base, rank, known: true }]).catch(() => undefined);
+    }
     void markWords([word], true).then(() => toast('success', `« ${word} » compté comme connu`, { label: 'Annuler', run: () => void markWords([word], null) }));
     clearSel();
   };
+
+  // Un mot seul sélectionné (absent de vos fiches) : signe qu'il est inconnu, pour le recalage du test.
+  const selectedWord = sel && !sel.error && !sel.known && /^[\p{L}\p{M}'’-]+$/u.test(sel.expression.trim()) ? sel.expression.trim().toLowerCase() : null;
+  const lastSelected = useRef<string | null>(null);
+  const testDone = !!knowledge;
+  useEffect(() => {
+    if (!selectedWord || !ranks || !testDone || lastSelected.current === selectedWord) return;
+    lastSelected.current = selectedWord;
+    const { base, rank } = wordBase(ranks, selectedWord, language);
+    const { wordMarks, observe } = useApp.getState();
+    if (wordMarks.get(base) === true || wordMarks.get(selectedWord) === true) return;
+    void observe([{ source: 'select', word: base, rank, known: false }]).catch(() => undefined);
+  }, [selectedWord, ranks, testDone, language]);
 
   const twoPages = size.w >= TWO_PAGES_MIN;
   const flowW = Math.max(0, size.w - 2 * PAD_X);

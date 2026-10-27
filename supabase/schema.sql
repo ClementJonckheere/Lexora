@@ -185,11 +185,30 @@ create table if not exists public.vocab_tests (
   bands              jsonb not null default '[]'::jsonb,
   vocab_size         integer not null default 0,
   false_alarm        double precision not null default 0,
+  answers            jsonb not null default '[]'::jsonb,
   taken_at           bigint not null,
   updated_at         bigint not null,
   deleted            smallint not null default 0,
   server_updated_at  bigint not null default 0,
   primary key (user_id, universe_id)
+);
+-- Réponses brutes du test : [{ word, real, band, rank, yes, ms, corrected }] (analysables en SQL : jsonb_array_elements).
+alter table public.vocab_tests add column if not exists answers jsonb not null default '[]'::jsonb;
+
+-- Observations en lisant : recalage du test de vocabulaire.
+create table if not exists public.vocab_observations (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  obs_key            text not null,
+  universe_id        uuid not null,
+  source             text not null check (source in ('chapter', 'select', 'exposure')),
+  word               text not null,
+  rank               integer,
+  known              smallint not null,
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0,
+  primary key (user_id, obs_key)
 );
 
 -- ------------------------------------ index, déclencheurs, sécurité (RLS) ---
@@ -197,7 +216,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);

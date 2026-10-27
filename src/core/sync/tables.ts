@@ -62,8 +62,14 @@ export const SYNC_TABLES: SyncTable[] = [
   {
     name: 'vocab_tests',
     key: 'universe_id',
-    columns: ['universe_id', 'bands', 'vocab_size', 'false_alarm', 'taken_at', ...SYNC],
-    json: ['bands'],
+    columns: ['universe_id', 'bands', 'vocab_size', 'false_alarm', 'answers', 'taken_at', ...SYNC],
+    json: ['bands', 'answers'],
+    optional: true,
+  },
+  {
+    name: 'vocab_observations',
+    key: 'obs_key',
+    columns: ['obs_key', 'universe_id', 'source', 'word', 'rank', 'known', 'created_at', ...SYNC],
     optional: true,
   },
 ];

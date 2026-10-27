@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, Check, Compass, Loader2, Search, Trash2 } from 'lucide-react';
 import { attempt, errorMessage, useApp } from '@/app/store';
-import { COMFORT_MAX, COMFORT_MIN, coverageFromProfile, coverageLabel, supportsCoverage } from '@/core/reading/coverage';
+import { BAND_EDGES, COMFORT_MAX, COMFORT_MIN, coverageFromProfile, coverageLabel, supportsCoverage } from '@/core/reading/coverage';
+import { calibrationReport } from '@/core/reading/calibration';
 import { useKnowledge } from '@/ui/hooks/useKnowledge';
 import { LevelQueue, loadBundledCatalog, matchesSearch, pageAfter, searchCatalog, type BundledBook, type BundledCatalog } from '@/core/reading/catalog';
 import type { CatalogBook } from '@/core/reading/gutendex';
@@ -521,6 +522,8 @@ function CoverageBadge({ coverage }: { coverage: number }) {
 /** Résultat du test de vocabulaire, ou invitation à le faire. */
 function VocabCard() {
   const test = useApp((s) => s.vocabTest);
+  const observations = useApp((s) => s.vocabObservations);
+  const { refined } = useKnowledge();
   const language = useApp((s) => s.universe?.language ?? 'en');
   const { navigate } = useApp.getState();
   if (!supportsCoverage(language)) return null;
@@ -541,15 +544,58 @@ function VocabCard() {
       </div>
     );
   }
+  const signals = (refined?.decisions ?? 0) + (refined?.clicks ?? 0);
+  const report = calibrationReport(test.bands, test.answers, observations);
+  const pct = (p: number | null) => (p === null ? '-' : `${Math.round(p * 100)} %`);
   return (
     <div className="card card-pad vocab-card">
       <span className="small">
-        <strong>Votre vocabulaire : environ {test.vocabSize.toLocaleString('fr-FR')} mots</strong>
-        <span className="muted"> · test du {new Date(test.takenAt).toLocaleDateString('fr-FR')}, affiné par les mots que vous marquez en lisant</span>
+        <strong>Votre vocabulaire : environ {(refined?.vocabSize ?? test.vocabSize).toLocaleString('fr-FR')} mots</strong>
+        <span className="muted">
+          {' '}
+          · test du {new Date(test.takenAt).toLocaleDateString('fr-FR')} ({test.vocabSize.toLocaleString('fr-FR')} mots)
+          {signals > 0 ? `, recalé sur ${signals} ${signals > 1 ? 'signaux' : 'signal'} de lecture` : ', recalé ensuite par vos lectures'}
+        </span>
       </span>
       <Button size="sm" onClick={start}>
         Refaire le test
       </Button>
+      {signals > 0 && (
+        <details className="vocab-calibration">
+          <summary className="small">Précision du test face à vos lectures</summary>
+          <table className="small">
+            <thead>
+              <tr>
+                <th>Mots (rang)</th>
+                <th title="Part de mots connus prédite par le test">Prédit</th>
+                <th title="Décisions « Je connais » / « Ajouter » dans Mots du chapitre">Décisions</th>
+                <th title="Part « Je connais » parmi ces décisions">Connus</th>
+                <th title="Mots rencontrés dans les chapitres ouverts, et part sélectionnée comme inconnue">Rencontrés · cliqués</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.rows
+                .filter((r) => r.decisions || r.exposures)
+                .map((r) => (
+                  <tr key={r.band}>
+                    <td>{r.band === 0 ? `1 à ${BAND_EDGES[0]}` : `${BAND_EDGES[r.band - 1] + 1} à ${BAND_EDGES[r.band]}`}</td>
+                    <td>{pct(r.predicted)}</td>
+                    <td>{r.decisions || '-'}</td>
+                    <td>{pct(r.observedKnown)}</td>
+                    <td>
+                      {r.exposures} · {pct(r.clickRate)}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+          {report.brier !== null && (
+            <p className="muted small" style={{ margin: '6px 0 0' }}>
+              Score de Brier des décisions : {report.brier.toLocaleString('fr-FR', { maximumFractionDigits: 3 })} (0 = parfait, 0,25 = pas mieux que le hasard).
+            </p>
+          )}
+        </details>
+      )}
     </div>
   );
 }

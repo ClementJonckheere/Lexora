@@ -1,15 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Check, Loader2, Undo2, X } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import { languageInfo } from '@/core/domain/languages';
 import { BAND_EDGES } from '@/core/reading/coverage';
 import { loadFrequencyList, loadVocabBank } from '@/core/reading/catalog';
-import { buildVocabTest, scoreVocabTest, type TestItem, type VocabScore } from '@/core/reading/vocabTest';
+import { buildVocabTest, CONFIRM_BELOW_RANK, scoreVocabTest, toConfirm, type TestAnswer, type TestItem, type VocabScore } from '@/core/reading/vocabTest';
 import { Button, Kbd } from '@/ui/components/ui';
 import { SessionFrame } from '@/ui/features/review/SessionFrame';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 
 const fmt = (n: number) => n.toLocaleString('fr-FR');
+/** Le critère, rappelé au départ et sous chaque mot. */
+const CRITERION = 'Je connais = je comprendrais ce mot dans une phrase.';
 const bandLabel = (i: number) => (i === 0 ? `1 à ${fmt(BAND_EDGES[0])}` : `${fmt(BAND_EDGES[i - 1] + 1)} à ${fmt(BAND_EDGES[i])}`);
 
 /** Test de vocabulaire oui / non (environ 110 mots, 3 à 4 minutes). */
@@ -22,6 +24,11 @@ export function VocabTestPage() {
   const [started, setStarted] = useState(false);
   const [answers, setAnswers] = useState<boolean[]>([]);
   const [score, setScore] = useState<VocabScore | null>(null);
+  /** Vérification finale : « non » sur des mots très courants (erreurs de clic), à confirmer. */
+  const [checking, setChecking] = useState<number[] | null>(null);
+  const [flipped, setFlipped] = useState<Set<number>>(new Set());
+  const times = useRef<number[]>([]);
+  const shownAt = useRef(Date.now());
 
   useEffect(() => {
     let alive = true;
@@ -37,19 +44,46 @@ export function VocabTestPage() {
   const quit = () => navigate({ name: 'reading' });
   const list = Array.isArray(items) ? items : [];
   const index = answers.length;
-  const current = started && !score ? list[index] : undefined;
+  const current = started && !score && !checking ? list[index] : undefined;
+  useEffect(() => {
+    shownAt.current = Date.now();
+  }, [index, started]);
+
+  const finish = (final: boolean[], corrected: Set<number>) => {
+    const s = scoreVocabTest(list, final);
+    setScore(s);
+    setChecking(null);
+    const raw: TestAnswer[] = list.map((it, i) => ({
+      word: it.word,
+      real: it.real,
+      band: it.band,
+      rank: it.rank ?? null,
+      yes: final[i],
+      ms: Math.round(times.current[i] ?? 0),
+      ...(corrected.has(i) ? { corrected: true } : {}),
+    }));
+    void saveVocabTest({ ...s, answers: raw, takenAt: Date.now() }).catch((err) => toast('error', `Résultat non enregistré : ${errorMessage(err)}`));
+  };
 
   const answer = (yes: boolean) => {
     if (!current) return;
+    times.current[index] = Date.now() - shownAt.current;
     const next = [...answers, yes];
     setAnswers(next);
     if (next.length === list.length) {
-      const s = scoreVocabTest(list, next);
-      setScore(s);
-      void saveVocabTest({ ...s, takenAt: Date.now() }).catch((err) => toast('error', `Résultat non enregistré : ${errorMessage(err)}`));
+      const confirm = toConfirm(list, next);
+      if (confirm.length) setChecking(confirm);
+      else finish(next, new Set());
     }
   };
-  const undo = () => !score && setAnswers((a) => a.slice(0, -1));
+  const confirmChecks = () => {
+    if (!checking) return;
+    finish(
+      answers.map((a, i) => (flipped.has(i) ? true : a)),
+      flipped,
+    );
+  };
+  const undo = () => !score && !checking && setAnswers((a) => a.slice(0, -1));
 
   useHotkeys(
     {
@@ -60,9 +94,10 @@ export function VocabTestPage() {
       z: undo,
       backspace: undo,
       escape: quit,
-      enter: () => (!started && list.length ? setStarted(true) : score ? quit() : undefined),
+      enter: () => (!started && list.length ? setStarted(true) : checking ? confirmChecks() : score ? quit() : undefined),
     },
-    { enabled: true },
+    // Entrée valide aussi quand une case de la vérification a le focus.
+    { enabled: true, allowInInputs: ['enter'] },
   );
 
   return (
@@ -82,9 +117,9 @@ export function VocabTestPage() {
         <div className="card vocab-intro">
           <h1 className="summary-title">Test de vocabulaire</h1>
           <p>
-            Environ {list.length} mots en {languageName}, 3 à 4 minutes. Pour chacun, dites seulement si vous en <strong>connaissez le sens</strong>, sans
-            chercher.
+            Environ {list.length} mots en {languageName}, 3 à 4 minutes. Pour chacun, dites seulement si vous en connaissez le sens, sans chercher.
           </p>
+          <p className="vocab-criterion">{CRITERION}</p>
           <p className="muted">
             Certains mots n'existent pas. Répondre « je connais » à ces mots-là fait baisser le résultat : il vaut mieux répondre honnêtement. Le résultat sert
             à estimer, pour chaque livre, la part des mots que vous connaissez.
@@ -114,9 +149,45 @@ export function VocabTestPage() {
               <Check size={16} /> Je connais <Kbd>→</Kbd>
             </Button>
           </div>
-          <button className="link small" onClick={undo} disabled={!index} style={{ marginTop: 14 }}>
+          <p className="muted small" style={{ margin: 0 }}>
+            {CRITERION}
+          </p>
+          <button className="link small" onClick={undo} disabled={!index} style={{ marginTop: 6 }}>
             <Undo2 size={13} /> Revenir au mot précédent (Z)
           </button>
+        </div>
+      )}
+      {checking && (
+        <div className="card vocab-intro">
+          <h1 className="summary-title">Vérification</h1>
+          <p>
+            Ces mots font partie des {fmt(CONFIRM_BELOW_RANK)} plus courants. Vraiment inconnus ? Cochez ceux que vous connaissez en fait (un clic trop rapide
+            compte beaucoup ici).
+          </p>
+          <div className="vocab-checks">
+            {checking.map((i) => (
+              <label key={i} className={`vocab-check ${flipped.has(i) ? 'vocab-check--on' : ''}`} lang={universe.language}>
+                <input
+                  type="checkbox"
+                  checked={flipped.has(i)}
+                  onChange={(e) =>
+                    setFlipped((f) => {
+                      const n = new Set(f);
+                      if (e.target.checked) n.add(i);
+                      else n.delete(i);
+                      return n;
+                    })
+                  }
+                />
+                {list[i].word}
+              </label>
+            ))}
+          </div>
+          <div className="row" style={{ justifyContent: 'center', marginTop: 8 }}>
+            <Button variant="primary" onClick={confirmChecks} shortcut="Entrée">
+              {flipped.size ? `Valider (${flipped.size} corrigé${flipped.size > 1 ? 's' : ''})` : 'Oui, inconnus'}
+            </Button>
+          </div>
         </div>
       )}
       {score && <VocabResult score={score} onDone={quit} />}

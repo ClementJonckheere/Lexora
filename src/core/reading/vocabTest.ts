@@ -11,8 +11,32 @@ import { BAND_EDGES, bandOf, bandWidth, type VocabBank } from './coverage';
 export interface TestItem {
   word: string;
   real: boolean;
-  /** Tranche de fréquence (vrais mots). */
+  /** Tranche de fréquence (vrais mots ; -1 pour un mot inventé). */
   band: number;
+  /** Rang de fréquence (vrais mots). */
+  rank?: number;
+}
+
+/** Réponse brute, conservée pour recalculer le résultat sans refaire le test (et l'analyser). */
+export interface TestAnswer {
+  word: string;
+  real: boolean;
+  band: number;
+  rank: number | null;
+  /** « Je connais ». */
+  yes: boolean;
+  /** Temps de réponse. */
+  ms: number;
+  /** Réponse changée à la vérification finale (« non » sur un mot courant). */
+  corrected?: boolean;
+}
+
+/** Les « je ne connais pas » sur un mot plus courant que ce rang sont vérifiés en fin de test (erreurs de clic). */
+export const CONFIRM_BELOW_RANK = 1000;
+
+/** Index des réponses à faire confirmer : « non » sur un vrai mot très courant. */
+export function toConfirm(items: TestItem[], answers: boolean[]): number[] {
+  return items.flatMap((it, i) => (it.real && answers[i] === false && (it.rank ?? Infinity) < CONFIRM_BELOW_RANK ? [i] : []));
 }
 
 type Rng = () => number;
@@ -69,10 +93,11 @@ export function buildVocabTest(
 ): TestItem[] {
   const lexicon = new Set(list);
   const byBand = BAND_EDGES.map((_, b) => (bank.bands[b] ?? []).filter(usable));
+  const rankOf = new Map(list.map((w, i) => [w, i + 1]));
   const real: TestItem[] = byBand.flatMap((words, band) =>
     shuffle(words, rng)
       .slice(0, perBand)
-      .map((word) => ({ word, real: true, band })),
+      .map((word) => ({ word, real: true, band, rank: rankOf.get(word) })),
   );
   // Mots inventés à partir de mots courants de 5 lettres ou plus (structure crédible).
   const bases = shuffle(
@@ -147,4 +172,12 @@ export function scoreVocabTest(items: TestItem[], answers: boolean[]): VocabScor
     vocabSize: Math.round(vocabSize / 50) * 50,
     falseAlarm: Math.round(falseAlarm * 1000) / 1000,
   };
+}
+
+/** Recalcule le résultat à partir des réponses brutes enregistrées. */
+export function rescore(answers: TestAnswer[]): VocabScore {
+  return scoreVocabTest(
+    answers.map((a) => ({ word: a.word, real: a.real, band: a.band, rank: a.rank ?? undefined })),
+    answers.map((a) => a.yes),
+  );
 }
