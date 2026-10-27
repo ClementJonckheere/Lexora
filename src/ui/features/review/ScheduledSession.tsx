@@ -8,12 +8,12 @@ import { formatDue, formatInterval } from '@/core/domain/dates';
 import { languageInfo } from '@/core/domain/languages';
 import type { CardRecord } from '@/core/domain/types';
 import { directionLabel } from '@/core/domain/types';
-import { recordReview, undoReview } from '@/core/repo/reviewRepo';
+import { recordReview, typedBaseline, undoReview } from '@/core/repo/reviewRepo';
 import { buildQueue, type QueueItem } from '@/core/srs/queue';
 import { scopeIds } from '@/core/srs/scope';
 import { settingsFor } from '@/core/domain/settings';
 import type { AnswerVerdict } from '@/core/domain/answer';
-import { checkTyped, clozeFront, frequencyRank, suggestGrade } from '@/core/srs/typed';
+import { checkTyped, clozeFront, frequencyRank, MS_PER_CHAR, suggestGrade } from '@/core/srs/typed';
 import { readPref, writePref } from '@/ui/prefs';
 import { GRADES, previewIntervals, review, type Grade } from '@/core/srs/scheduler';
 import { SessionQueue } from '@/core/srs/session';
@@ -86,6 +86,13 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   const shownAt = useRef(Date.now());
   /** Temps mis pour taper la réponse (affichage → validation). */
   const answeredIn = useRef(0);
+  // Temps de réflexion habituel (réponses exactes tapées dans cet univers, sur cet appareil).
+  const universeId = useApp((s) => s.universe?.id);
+  const [baseline, setBaseline] = useState<number | null>(null);
+  useEffect(() => {
+    if (!universeId) return;
+    void typedBaseline(db, universeId, MS_PER_CHAR).then(setBaseline, () => setBaseline(null));
+  }, [db, universeId]);
   const [typedNotice, setTypedNotice] = useState(() => !readPref<boolean>('review.typedNotice.seen', false));
   const progress = useDailyProgress();
 
@@ -101,7 +108,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
     [note, item?.cardId, settings.clozeFront, language],
   );
   const answerChars = front ? front.cloze.answers.join(' ').length : (note?.expression.length ?? 0);
-  const suggested: Grade = verdict ? suggestGrade(verdict, answeredIn.current, answerChars, progress.medianDurationMs) : 3;
+  const suggested: Grade = verdict && card ? suggestGrade(verdict, answeredIn.current, answerChars, baseline, card.state) : 3;
 
   // Note supprimée pendant la session : on passe.
   useEffect(() => {
@@ -150,7 +157,9 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
     const now = Date.now();
     try {
       const out = review(scheduler, card, grade, now);
-      const logId = await recordReview(db, out.card, out.log, now - shownAt.current);
+      // Mesure de référence : réponses exactes sur des fiches en révision (un mot frais se tape plus vite).
+      const typedTiming = verdict === 'exact' && card.state === State.Review ? { ms: answeredIn.current, chars: answerChars } : null;
+      const logId = await recordReview(db, out.card, out.log, now - shownAt.current, now, typedTiming);
       session.cards.set(card.id, out.card);
       undoStack.current.push({ before: card, after: out.card, noteId: item.noteId, logId, grade });
       tally.current[grade]++;

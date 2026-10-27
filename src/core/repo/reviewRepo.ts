@@ -7,14 +7,27 @@ import type { CardRecord, Direction, PracticeMode } from '../domain/types';
  * Enregistre une révision validée : nouvel état FSRS de la fiche + entrée d'historique,
  * dans une même transaction. Retourne l'identifiant de l'historique (pour l'annulation).
  */
-export async function recordReview(db: Database, after: CardRecord, log: ReviewLog, durationMs: number, now = Date.now()): Promise<string> {
+/** Réponse exacte tapée : temps de l'affichage à la validation, et longueur de la réponse attendue. */
+export interface TypedTiming {
+  ms: number;
+  chars: number;
+}
+
+export async function recordReview(
+  db: Database,
+  after: CardRecord,
+  log: ReviewLog,
+  durationMs: number,
+  now = Date.now(),
+  typed: TypedTiming | null = null,
+): Promise<string> {
   const id = newId();
   await db.transaction(async (tx) => {
     await writeCard(tx, after, now);
     await tx.execute(
       `INSERT INTO review_logs (id, card_id, rating, state, due, stability, difficulty, elapsed_days, last_elapsed_days,
-         scheduled_days, learning_steps, reviewed_at, duration_ms, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         scheduled_days, learning_steps, reviewed_at, duration_ms, updated_at, typed_ms, typed_chars)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         after.id,
@@ -30,6 +43,8 @@ export async function recordReview(db: Database, after: CardRecord, log: ReviewL
         log.review.getTime(),
         Math.max(0, Math.round(Math.min(durationMs, 10 * 60_000))),
         now,
+        typed ? Math.max(0, Math.round(Math.min(typed.ms, 10 * 60_000))) : null,
+        typed ? typed.chars : null,
       ],
     );
   });
@@ -129,3 +144,21 @@ export async function loadForgetCounts(db: Queryable): Promise<Map<string, numbe
 }
 
 export const DIFFICULT_THRESHOLD = 2;
+
+/**
+ * Temps de réflexion habituel pour les réponses exactes tapées dans un univers : médiane du temps de saisie
+ * moins le temps de frappe estimé (`msPerChar` par caractère), sur les 200 dernières. null s'il y en a trop peu.
+ */
+export async function typedBaseline(db: Queryable, universeId: string, msPerChar: number, minSamples = 20): Promise<number | null> {
+  const rows = await db.select<{ typed_ms: number; typed_chars: number }>(
+    `SELECT r.typed_ms, r.typed_chars FROM review_logs r
+       JOIN cards c ON c.id = r.card_id
+       JOIN notes n ON n.id = c.note_id
+     WHERE r.deleted = 0 AND r.typed_ms IS NOT NULL AND n.universe_id = ?
+     ORDER BY r.reviewed_at DESC LIMIT 200`,
+    [universeId],
+  );
+  if (rows.length < minSamples) return null;
+  const thinking = rows.map((r) => Math.max(0, Number(r.typed_ms) - msPerChar * Number(r.typed_chars ?? 0))).sort((a, b) => a - b);
+  return thinking[Math.floor(thinking.length / 2)];
+}

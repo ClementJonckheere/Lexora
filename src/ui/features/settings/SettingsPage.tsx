@@ -107,7 +107,7 @@ export function SettingsPage() {
           )}
           <Setting
             title="Taper la réponse (français → langue)"
-            desc="Avant de dévoiler, vous tapez l'expression : Lexora vérifie (formes conjuguées tolérées) et propose la note. Faux : Oublié ; forme approchée : Difficile ; exact : Retenu ; exact et plus rapide que d'habitude : Facile. Entrée accepte la note, 1 à 4 la change."
+            desc="Avant de dévoiler, vous tapez l'expression : Lexora vérifie (formes conjuguées tolérées) et propose la note. Faux : Oublié ; forme approchée : Difficile ; exact : Retenu ; exact et nettement plus rapide que d'habitude : Facile (jamais sur un mot nouveau ou en réapprentissage). Entrée accepte la note, 1 à 4 la change."
           >
             <Switch label="Taper la réponse" checked={settings.typeAnswer} onChange={(v) => update({ typeAnswer: v })} />
           </Setting>
@@ -117,7 +117,7 @@ export function SettingsPage() {
           >
             <Switch label="Phrase à trous au recto" checked={settings.clozeFront} onChange={(v) => update({ clozeFront: v })} />
           </Setting>
-          <Setting title="Ordre des nouveaux mots" desc="Les plus fréquents dans la langue d'abord : vous apprenez en priorité ce que vous rencontrerez le plus souvent.">
+          <Setting title="Ordre des nouveaux mots" desc="Les plus fréquents dans la langue d'abord : vous apprenez en priorité ce que vous rencontrerez le plus souvent. Un mot en attente depuis plus de 14 jours passe devant.">
             <select className="select" value={settings.newOrder} onChange={(e) => update({ newOrder: e.target.value as Settings['newOrder'] })}>
               <option value="frequency">Les plus utiles d'abord</option>
               <option value="added">Par date d'ajout</option>

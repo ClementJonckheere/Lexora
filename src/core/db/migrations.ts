@@ -172,6 +172,14 @@ MIGRATIONS.push(MIGRATION_V2, {
       computed_at      INTEGER NOT NULL
     )`,
   ],
+}, {
+  version: 5,
+  name: 'temps de saisie des réponses tapées',
+  statements: [
+    // Propres à l'appareil (vitesse de frappe, clavier) : jamais synchronisés.
+    'ALTER TABLE review_logs ADD COLUMN typed_ms INTEGER',
+    'ALTER TABLE review_logs ADD COLUMN typed_chars INTEGER',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

@@ -4,6 +4,7 @@ import { languageInfo } from '../domain/languages';
 import { normalizeSearch } from '../domain/text';
 import type { Note } from '../domain/types';
 import type { FrequencyRanks } from '../reading/level';
+import { State } from 'ts-fsrs';
 import type { Grade } from './scheduler';
 
 /**
@@ -77,20 +78,35 @@ export function editDistance(a: string, b: string, max = Infinity): number {
   return prev[b.length];
 }
 
+/** Temps de frappe estimé par caractère de la réponse. */
+export const MS_PER_CHAR = 150;
+/** « Facile » : temps de réflexion inférieur à cette part de votre temps habituel. */
+const EASY_SHARE = 0.6;
+
 /**
- * Délai sous lequel une réponse exacte compte comme « immédiate » : la moitié de votre temps habituel
- * (médiane de vos révisions, bornée), plus le temps de frappe de la réponse.
+ * Délai sous lequel une réponse exacte compte comme « immédiate » : 60 % de votre temps de réflexion habituel
+ * (médiane de vos réponses exactes tapées dans cet univers), plus le temps de frappe de la réponse.
  */
-export function fastLimitMs(answerChars: number, medianMs: number): number {
-  const usual = Math.min(Math.max(medianMs, 4000), 20_000);
-  return usual / 2 + 150 * answerChars;
+export function fastLimitMs(answerChars: number, baselineMs: number): number {
+  return EASY_SHARE * baselineMs + MS_PER_CHAR * answerChars;
 }
 
-/** Note proposée : faux → Oublié, forme approchée → Difficile, exact → Retenu, exact et immédiat → Facile. */
-export function suggestGrade(verdict: AnswerVerdict | 'skipped', elapsedMs: number, answerChars: number, medianMs: number): Grade {
-  if (verdict === 'exact') return elapsedMs <= fastLimitMs(answerChars, medianMs) ? 4 : 3;
+/**
+ * Note proposée : faux → Oublié, forme approchée → Difficile, exact → Retenu, exact et immédiat → Facile.
+ * Jamais « Facile » sur une fiche nouvelle ou en (ré)apprentissage : un mot frais se tape vite parce qu'il est
+ * frais, pas parce qu'il est mémorisé. Ni tant que le temps habituel n'est pas connu (`baselineMs` null).
+ */
+export function suggestGrade(
+  verdict: AnswerVerdict | 'skipped',
+  elapsedMs: number,
+  answerChars: number,
+  baselineMs: number | null,
+  cardState: State,
+): Grade {
   if (verdict === 'close') return 2;
-  return 1;
+  if (verdict !== 'exact') return 1;
+  if (cardState !== State.Review || baselineMs === null) return 3;
+  return elapsedMs <= fastLimitMs(answerChars, baselineMs) ? 4 : 3;
 }
 
 /** Mot inconnu de la liste de fréquence : après tous les autres. */

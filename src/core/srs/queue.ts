@@ -4,6 +4,9 @@ import { endOfStudyDay, startOfStudyDay } from '../domain/dates';
 import type { CardRecord, Direction, Mastery, Note } from '../domain/types';
 import { cardMastery, retrievability, type Scheduler } from './scheduler';
 
+/** Ordre par utilité : un nouveau mot en attente depuis ce délai passe devant les autres (ancienneté). */
+export const NEW_WAIT_MAX_MS = 14 * 86_400_000;
+
 /** Les fiches en apprentissage dont l'échéance tombe dans ce délai sont montrées tout de suite. */
 export const LEARN_AHEAD_MS = 20 * 60_000;
 
@@ -47,7 +50,9 @@ export function collectDue(notes: Note[], opts: QueueOptions) {
   const primary = primaryDirection(settings);
   const both = settings.directions === 'both';
 
-  const newKey = (note: Note) => (opts.newRank ? opts.newRank(note) : note.createdAt);
+  // Un mot rare relevé en lisant ne doit pas attendre indéfiniment derrière les mots courants.
+  const newKey = (note: Note) =>
+    !opts.newRank ? note.createdAt : now - note.createdAt >= NEW_WAIT_MAX_MS ? Number.MIN_SAFE_INTEGER + note.createdAt : opts.newRank(note);
 
   const learning: Candidate[] = [];
   const reviews: Candidate[] = [];

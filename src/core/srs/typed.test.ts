@@ -3,7 +3,9 @@ import type { Note } from '../domain/types';
 import { DEFAULT_SETTINGS } from '../domain/settings';
 import { buildQueue } from './queue';
 import { createScheduler } from './scheduler';
-import { checkTyped, clozeFront, fastLimitMs, frequencyRank, suggestGrade, UNRANKED } from './typed';
+import { State } from 'ts-fsrs';
+import { checkTyped, clozeFront, fastLimitMs, frequencyRank, MS_PER_CHAR, suggestGrade, UNRANKED } from './typed';
+import { NEW_WAIT_MAX_MS } from './queue';
 
 const note = (expression: string, examples: string[] = [], extra: Partial<Note> = {}) =>
   ({ id: expression, universeId: 'u', expression, translation: 'trad', examples, suspended: false, createdAt: 0, cards: {}, ...extra }) as unknown as Note;
@@ -38,20 +40,25 @@ describe('recto en contexte', () => {
 });
 
 describe('note proposée', () => {
-  const median = 10_000;
+  const baseline = 5000;
+  const R = State.Review;
   it('faux → Oublié, approché → Difficile, exact → Retenu, exact et rapide → Facile', () => {
-    expect(suggestGrade('wrong', 2000, 7, median)).toBe(1);
-    expect(suggestGrade('skipped', 2000, 7, median)).toBe(1);
-    expect(suggestGrade('close', 2000, 7, median)).toBe(2);
-    expect(suggestGrade('exact', 9000, 7, median)).toBe(3);
-    expect(suggestGrade('exact', 4000, 7, median)).toBe(4);
+    expect(suggestGrade('wrong', 2000, 7, baseline, R)).toBe(1);
+    expect(suggestGrade('skipped', 2000, 7, baseline, R)).toBe(1);
+    expect(suggestGrade('close', 2000, 7, baseline, R)).toBe(2);
+    expect(suggestGrade('exact', 9000, 7, baseline, R)).toBe(3);
+    expect(suggestGrade('exact', 3000, 7, baseline, R)).toBe(4);
   });
-  it('tient compte de la longueur de la réponse et de votre rythme habituel', () => {
-    expect(fastLimitMs(20, median)).toBeGreaterThan(fastLimitMs(5, median));
-    expect(fastLimitMs(7, 20_000)).toBeGreaterThan(fastLimitMs(7, 6000));
-    // Bornes : un historique très rapide ou très lent ne rend pas « Facile » absurde.
-    expect(fastLimitMs(0, 500)).toBe(2000);
-    expect(fastLimitMs(0, 120_000)).toBe(10_000);
+  it('jamais Facile sur une fiche nouvelle ou en (ré)apprentissage', () => {
+    for (const state of [State.New, State.Learning, State.Relearning]) expect(suggestGrade('exact', 500, 7, baseline, state)).toBe(3);
+  });
+  it('jamais Facile tant que le temps habituel est inconnu', () => {
+    expect(suggestGrade('exact', 500, 7, null, R)).toBe(3);
+  });
+  it('tient compte de la longueur de la réponse et du temps habituel', () => {
+    expect(fastLimitMs(20, baseline)).toBeGreaterThan(fastLimitMs(5, baseline));
+    expect(fastLimitMs(7, 8000)).toBeGreaterThan(fastLimitMs(7, 3000));
+    expect(fastLimitMs(10, 5000)).toBe(0.6 * 5000 + 10 * MS_PER_CHAR);
   });
 });
 
@@ -77,10 +84,15 @@ describe('nouveaux mots par utilité', () => {
         createdAt,
         cards: { fr_en: { id: expression, noteId: expression, direction: 'fr_en', state: 0, due: 0, stability: 0, difficulty: 0, elapsedDays: 0, scheduledDays: 0, learningSteps: 0, reps: 0, lapses: 0, lastReview: null } },
       } as Partial<Note>);
-    const notes = [mk('tackle', 1), mk('to give up', 2), mk('serendipity', 0)];
-    const opts = { now: Date.now(), settings, scheduler: createScheduler(settings), newIntroducedToday: 0 };
+    const now = Date.now();
+    const notes = [mk('tackle', now - 2000), mk('to give up', now - 1000), mk('serendipity', now - 3000)];
+    const opts = { now, settings, scheduler: createScheduler(settings), newIntroducedToday: 0 };
     expect(buildQueue(notes, opts).map((i) => i.noteId)).toEqual(['serendipity', 'tackle', 'to give up']);
     expect(buildQueue(notes, { ...opts, newRank: (n) => frequencyRank(n, ranks, 'en') }).map((i) => i.noteId)).toEqual(['to give up', 'tackle', 'serendipity']);
+    // Un mot en attente depuis plus de 14 jours passe devant, même rare.
+    const old = mk('serendipity', opts.now - NEW_WAIT_MAX_MS - 1000);
+    const withOld = [mk('tackle', opts.now), mk('to give up', opts.now), old];
+    expect(buildQueue(withOld, { ...opts, newRank: (n) => frequencyRank(n, ranks, 'en') }).map((i) => i.noteId)).toEqual(['serendipity', 'to give up', 'tackle']);
   });
 });
 
