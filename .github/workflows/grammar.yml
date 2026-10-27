@@ -1,12 +1,14 @@
 name: Grammaire (phrases Tatoeba)
 
 # Compte, pour chaque point de grammaire anglaise, les phrases Tatoeba candidates (avec traduction française)
-# et enregistre public/grammar/en/tatoeba-counts.json dans la branche. Alerte si un point en a moins de 30.
+# et la banque d'exercices de chaque leçon (public/grammar/en/exercises), puis les enregistre dans la branche.
+# Alerte si un point en a moins de 30.
 
 on:
   workflow_dispatch:
   push:
-    paths: ['scripts/grammar-tatoeba.ts', 'src/core/learn/patterns.ts', 'public/grammar/en/points.json', '.github/workflows/grammar.yml']
+    paths:
+      ['scripts/grammar-tatoeba.ts', 'src/core/learn/patterns.ts', 'src/core/learn/exercises.ts', 'public/grammar/en/points.json', 'public/grammar/en/lessons.json', '.github/workflows/grammar.yml']
 
 permissions:
   contents: write
@@ -31,11 +33,12 @@ jobs:
           mkdir -p tatoeba && cd tatoeba
           base=https://downloads.tatoeba.org/exports/per_language
           curl -fsSL "$base/eng/eng_sentences.tsv.bz2" | bunzip2 > eng_sentences.tsv
+          curl -fsSL "$base/fra/fra_sentences.tsv.bz2" | bunzip2 > fra_sentences.tsv
           # Liens anglais → français : export par paire, sinon l'export complet des liens filtré sur le français.
           if curl -fsSL "$base/eng/eng-fra_links.tsv.bz2" | bunzip2 > eng-fra_links.tsv; then
             echo "liens eng-fra : $(wc -l < eng-fra_links.tsv)"
           else
-            curl -fsSL "$base/fra/fra_sentences.tsv.bz2" | bunzip2 | cut -f1 > fra_ids.txt
+            cut -f1 fra_sentences.tsv > fra_ids.txt
             curl -fsSL https://downloads.tatoeba.org/exports/links.tar.bz2 | tar -xjO > links.csv
             awk 'NR==FNR { fra[$1]; next } ($2 in fra) { print $1 "\t" $2 }' fra_ids.txt links.csv > eng-fra_links.tsv
             echo "liens filtrés : $(wc -l < eng-fra_links.tsv)"
@@ -44,7 +47,7 @@ jobs:
       - run: npx vite-node scripts/grammar-tatoeba.ts tatoeba
       - name: Enregistrer les comptes
         run: |
-          git add public/grammar/en/tatoeba-counts.json
+          git add public/grammar/en/tatoeba-counts.json public/grammar/en/exercises
           if git diff --cached --quiet; then echo "Comptes inchangés."; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

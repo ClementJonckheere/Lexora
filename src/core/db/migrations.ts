@@ -224,6 +224,25 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_vocab_observations_universe ON vocab_observations(universe_id, deleted)',
   ],
+}, {
+  version: 7,
+  name: 'onglet Apprendre : réponses aux exercices de grammaire',
+  statements: [
+    // Une ligne par réponse : progression d'une leçon (20 dernières réponses) et phrases signalées.
+    `CREATE TABLE grammar_answers (
+      id           TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      lesson_id    TEXT    NOT NULL,
+      item_id      TEXT    NOT NULL,
+      correct      INTEGER NOT NULL,
+      reported     INTEGER NOT NULL DEFAULT 0,
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_grammar_answers_lesson ON grammar_answers(universe_id, lesson_id, created_at)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

@@ -272,14 +272,6 @@ export function SettingsPage() {
               </Button>
             </div>
           </Setting>
-          {universe?.language === 'en' && (
-            <Setting
-              title="Repérage de la grammaire (préparation de l'onglet Apprendre)"
-              desc="Jugez, pour chaque point de grammaire anglaise, une cinquantaine de passages repérés dans de vrais livres : la précision mesurée décide si le point pourra être surligné en lisant."
-            >
-              <Button onClick={() => useApp.getState().navigate({ name: 'grammar-annotate' })}>Mesurer</Button>
-            </Setting>
-          )}
           <Setting
             title="Sauvegarde complète"
             desc="Fichier unique, tous univers : notes, fiches de mémorisation, historique des révisions et réglages."

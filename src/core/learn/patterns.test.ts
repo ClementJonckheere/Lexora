@@ -52,6 +52,11 @@ describe('motifs de repérage', () => {
     expect(text.slice(...(() => { const [d] = matchText('past-questions', text); return [d.start, d.end] as const; })())).toBe('Did');
   });
 
+  it('present perfect : pas après un modal', () => {
+    expect(found('present-perfect', "I've ever said that.")).toEqual(["'ve ever said"]);
+    expect(found('present-perfect', 'This is what I would have said. He must have gone.')).toEqual([]);
+  });
+
   it('apostrophe typographique', () => {
     expect(found('will', 'I’ll call you.')).toEqual(['’ll']);
   });

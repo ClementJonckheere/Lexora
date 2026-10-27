@@ -7,6 +7,8 @@ import type { FrequencyRanks } from '@/core/reading/level';
 import * as knowledgeRepo from '@/core/repo/knowledgeRepo';
 import type { VocabTestResult } from '@/core/repo/knowledgeRepo';
 import type { Observation } from '@/core/reading/calibration';
+import * as learnRepo from '@/core/repo/learnRepo';
+import type { GrammarAnswer } from '@/core/learn/progress';
 import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode, Universe } from '@/core/domain/types';
 import * as notesRepo from '@/core/repo/notesRepo';
 import * as collectionsRepo from '@/core/repo/collectionsRepo';
@@ -43,6 +45,8 @@ export type Route =
   | { name: 'reader'; bookKey: string }
   | { name: 'vocab-test' }
   | { name: 'grammar-annotate' }
+  | { name: 'learn' }
+  | { name: 'lesson'; id: string }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';
@@ -133,6 +137,8 @@ interface AppState {
   wordMarks: Map<string, boolean>;
   /** Observations en lisant (recalage du test de vocabulaire) dans l'univers courant. */
   vocabObservations: Observation[];
+  /** Réponses aux exercices de grammaire (onglet Apprendre) dans l'univers courant. */
+  grammarAnswers: GrammarAnswer[];
 
   route: Route;
   /** Change à chaque navigation : force le remontage d'une page (ex. nouvelle session). */
@@ -205,6 +211,9 @@ interface AppState {
   saveVocabTest(result: VocabTestResult): Promise<void>;
   /** Enregistre des signaux de lecture (décisions, sélections, mots rencontrés). */
   observe(list: Observation[]): Promise<void>;
+  answerGrammar(answer: GrammarAnswer): Promise<void>;
+  /** Phrase signalée : retirée de la leçon, ses réponses ne comptent plus. */
+  reportGrammar(lessonId: string, itemId: string): Promise<void>;
 }
 
 let toastSeq = 1;
@@ -275,6 +284,7 @@ export const useApp = create<AppState>((set, get) => {
     vocabTest: null,
     wordMarks: new Map(),
     vocabObservations: [],
+    grammarAnswers: [],
 
     route: { name: 'home' },
     routeKey: 0,
@@ -335,6 +345,7 @@ export const useApp = create<AppState>((set, get) => {
             test: await knowledgeRepo.loadVocabTest(d, current.id),
             marks: await knowledgeRepo.loadMarks(d, current.id),
             observations: await knowledgeRepo.loadObservations(d, current.id),
+            grammar: await learnRepo.loadGrammarAnswers(d, current.id),
           }
         : null;
       if (current && get().frequencyRanks?.language !== current.language) {
@@ -358,6 +369,7 @@ export const useApp = create<AppState>((set, get) => {
         vocabTest: knowledge?.test ?? null,
         wordMarks: knowledge?.marks ?? new Map(),
         vocabObservations: knowledge?.observations ?? [],
+        grammarAnswers: knowledge?.grammar ?? [],
         revision: s.revision + 1,
         ...(changedUniverse ? { libraryFilters: DEFAULT_FILTERS, selectedNoteId: null } : {}),
       }));
@@ -618,6 +630,26 @@ export const useApp = create<AppState>((set, get) => {
         const replaced = new Set(changed.map(key));
         return { vocabObservations: [...s.vocabObservations.filter((o) => !replaced.has(key(o))), ...changed] };
       });
+      scheduleSync();
+    },
+    async answerGrammar(answer) {
+      const u = get().universe;
+      if (!u) return;
+      await learnRepo.recordGrammarAnswer(db(), u.id, answer);
+      set((s) => ({ grammarAnswers: [...s.grammarAnswers, answer] }));
+      scheduleSync();
+    },
+    async reportGrammar(lessonId, itemId) {
+      const u = get().universe;
+      if (!u) return;
+      const now = Date.now();
+      await learnRepo.reportGrammarItem(db(), u.id, lessonId, itemId, now);
+      set((s) => ({
+        grammarAnswers: [
+          ...s.grammarAnswers.map((a) => (a.itemId === itemId ? { ...a, reported: true } : a)),
+          { lessonId, itemId, correct: false, reported: true, createdAt: now },
+        ],
+      }));
       scheduleSync();
     },
     async setBookLevel(key, estimate) {

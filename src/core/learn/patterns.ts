@@ -131,7 +131,8 @@ const SOURCES: Record<string, string[] | null> = {
     '\\b(?:want|wants|wanted|need|needs|needed|decide|decided|hope|hoped|plan|planned|refuse|refused|promise|promised)\\s+(?:to\\s+[a-z]+|(?:me|him|her|us|them|you)\\s+to\\s+[a-z]+)',
     `\\b(?:enjoy|enjoys|enjoyed|avoid|avoided|finish|finished|mind|minded|keep|kept|suggest|suggested|imagine|imagined)\\s+${ING}\\b`,
   ],
-  'present-perfect': [`\\b(?:have|has|'ve|haven't|hasn't)\\s+(?:not\\s+|never\\s+|ever\\s+|just\\s+|already\\s+|always\\s+)?${PARTICIPLE}\\b`],
+  // Pas après un modal (« would have said » : conditionnel passé, « must have gone » : déduction).
+  'present-perfect': [`(?<!\\b(?:would|could|should|might|must|may|will|can't|couldn't|wouldn't|shouldn't|to)\\s+)\\b(?:have|has|'ve|haven't|hasn't)\\s+(?:not\\s+|never\\s+|ever\\s+|just\\s+|already\\s+|always\\s+)?${PARTICIPLE}\\b`],
   'perfect-vs-past': null,
   'for-since': [
     `\\bsince\\s+(?:\\d{4}|last|yesterday|then|childhood|${DAYS}|${MONTHS})\\b`,

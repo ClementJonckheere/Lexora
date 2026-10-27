@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BarChart3, BookOpen, Brain, Home, Layers, Library, Plus, Search, Settings as SettingsIcon } from 'lucide-react';
+import { BarChart3, BookOpen, Brain, GraduationCap, Home, Layers, Library, Plus, Search, Settings as SettingsIcon } from 'lucide-react';
 import { useApp, type Route } from '@/app/store';
 import { registerGlobalShortcut } from '@/core/platform/globalShortcut';
 import { readClipboardExpression } from '@/core/platform/desktop';
@@ -23,6 +23,8 @@ import { ReadingPage } from './features/reading/ReadingPage';
 import { ReaderPage } from './features/reading/ReaderPage';
 import { VocabTestPage } from '@/ui/features/reading/VocabTest';
 import { GrammarAnnotatePage } from '@/ui/features/learn/GrammarAnnotate';
+import { LearnPage } from '@/ui/features/learn/LearnPage';
+import { LessonPage } from '@/ui/features/learn/LessonPage';
 import { AccountConflictScreen, FirstSyncScreen, LoginScreen } from './features/account/AuthScreens';
 import { SidebarAccount } from './features/account/SyncIndicator';
 import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/universes/Universes';
@@ -33,8 +35,9 @@ const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string
   { route: 'review', label: 'Réviser', icon: Brain, key: '3' },
   { route: 'collections', label: 'Collections', icon: Layers, key: '4' },
   { route: 'reading', label: 'Lecture', icon: Library, key: '5' },
-  { route: 'stats', label: 'Statistiques', icon: BarChart3, key: '6' },
-  { route: 'settings', label: 'Paramètres', icon: SettingsIcon, key: '7' },
+  { route: 'learn', label: 'Apprendre', icon: GraduationCap, key: '6' },
+  { route: 'stats', label: 'Statistiques', icon: BarChart3, key: '7' },
+  { route: 'settings', label: 'Paramètres', icon: SettingsIcon, key: '8' },
 ];
 
 let lastPrefill = '';
@@ -58,7 +61,7 @@ function Sidebar() {
   const route = useApp((s) => s.route);
   const { navigate, openEditor, setSearchOpen } = useApp.getState();
   const due = useDueCounts();
-  const current = route.name === 'collection' ? 'collections' : route.name;
+  const current = route.name === 'collection' ? 'collections' : route.name === 'lesson' || route.name === 'grammar-annotate' ? 'learn' : route.name;
   return (
     <nav className="sidebar" aria-label="Navigation principale">
       <div className="brand">
@@ -109,7 +112,7 @@ function ShortcutsHelp() {
     ['N  ou  Ctrl+N', 'Ajouter une expression'],
     ['Ctrl+Maj+V', 'Coller plusieurs expressions'],
     ['Ctrl+K', 'Recherche instantanée'],
-    ['Ctrl+1 … 7', 'Changer de page'],
+    ['Ctrl+1 … 8', 'Changer de page'],
     ['Lecture : ← → · Espace', 'Page précédente / suivante'],
     ['Lecture : + − · T · F', 'Taille du texte · Chapitres · Plein écran'],
     ['Alt+1 … 9', "Changer d'univers (langue)"],
@@ -167,6 +170,10 @@ function Page() {
       return <VocabTestPage key={key} />;
     case 'grammar-annotate':
       return <GrammarAnnotatePage />;
+    case 'learn':
+      return <LearnPage />;
+    case 'lesson':
+      return <LessonPage key={route.id} id={route.id} />;
     case 'stats':
       return <StatsPage />;
     case 'settings':
@@ -218,8 +225,9 @@ export function App() {
             'mod+3': () => navigate({ name: 'review' }),
             'mod+4': () => navigate({ name: 'collections' }),
             'mod+5': () => navigate({ name: 'reading' }),
-            'mod+6': () => navigate({ name: 'stats' }),
-            'mod+7': () => navigate({ name: 'settings' }),
+            'mod+6': () => navigate({ name: 'learn' }),
+            'mod+7': () => navigate({ name: 'stats' }),
+            'mod+8': () => navigate({ name: 'settings' }),
             'mod+u': () => useApp.getState().setUniversesOpen(true),
             ...Object.fromEntries(Array.from({ length: 9 }, (_, i) => [`alt+${i + 1}`, () => switchUniverse(i)])),
           }),
