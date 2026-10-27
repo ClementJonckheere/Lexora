@@ -15,7 +15,8 @@ const ancestors = (id, seen = new Set()) => {
 };
 for (const p of data.points) for (const a of ancestors(p.id)) dependents.get(a).add(p.id);
 
-const detect = (p) => (p.detect === null ? 'à mesurer' : `${Math.round(p.detect * 100)} %`);
+const detect = (p) =>
+  p.detect === null ? (p.detectN ? `à mesurer (${p.detectN} jugés)` : 'à mesurer') : `${Math.round(p.detect * 100)} % sur ${p.detectN}${p.detect >= 0.9 ? ', surligné' : ', exercices seulement'}`;
 const lines = [
   '# Parcours de grammaire anglaise (brouillon à valider)',
   '',

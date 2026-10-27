@@ -22,6 +22,7 @@ import { SettingsPage } from './features/settings/SettingsPage';
 import { ReadingPage } from './features/reading/ReadingPage';
 import { ReaderPage } from './features/reading/ReaderPage';
 import { VocabTestPage } from '@/ui/features/reading/VocabTest';
+import { GrammarAnnotatePage } from '@/ui/features/learn/GrammarAnnotate';
 import { AccountConflictScreen, FirstSyncScreen, LoginScreen } from './features/account/AuthScreens';
 import { SidebarAccount } from './features/account/SyncIndicator';
 import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/universes/Universes';
@@ -164,6 +165,8 @@ function Page() {
       return <ReaderPage key={route.bookKey} bookKey={route.bookKey} />;
     case 'vocab-test':
       return <VocabTestPage key={key} />;
+    case 'grammar-annotate':
+      return <GrammarAnnotatePage />;
     case 'stats':
       return <StatsPage />;
     case 'settings':

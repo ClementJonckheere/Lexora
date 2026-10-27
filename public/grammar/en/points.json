@@ -242,7 +242,7 @@
    "after": [
     "past-simple-irregular"
    ],
-   "example": "gone, written, taken, watched",
+   "example": "She has gone home. The letter was written in 1850.",
    "detect": null
   },
   {
@@ -304,7 +304,7 @@
    "after": [
     "adjectives"
    ],
-   "example": "bigger, more expensive, the best",
+   "example": "She is taller than me. It's the best day of my life.",
    "detect": null
   },
   {
@@ -522,7 +522,7 @@
     "subject-object-pronouns"
    ],
    "after": [],
-   "example": "The man (who) I met was French.",
+   "example": "The man who called was French.",
    "detect": null
   },
   {
@@ -545,7 +545,7 @@
     "will"
    ],
    "after": [],
-   "example": "He said (that) he was tired.",
+   "example": "He said that he was tired.",
    "detect": null
   },
   {

@@ -2969,3 +2969,11 @@ p {
 .vocab-calibration table { width: 100%; margin-top: 8px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 .vocab-calibration th, .vocab-calibration td { text-align: left; padding: 3px 8px 3px 0; border-bottom: 1px solid var(--border, #e7e5e4); }
 .vocab-calibration th { font-weight: 600; color: var(--text-2); }
+
+/* Mesure du repérage de la grammaire */
+.annotate-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.annotate-point { display: flex; flex-direction: column; gap: 4px; text-align: left; padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border, #e7e5e4); background: var(--surface); cursor: pointer; }
+.annotate-point:hover:not(:disabled) { border-color: var(--primary); }
+.annotator { display: grid; gap: 14px; max-width: 820px; }
+.annotate-sentence { font-size: 20px; line-height: 1.6; margin: 8px 0; }
+.annotate-sentence mark { background: color-mix(in srgb, var(--primary) 22%, transparent); color: inherit; border-radius: 4px; padding: 1px 3px; }

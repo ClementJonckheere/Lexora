@@ -40,12 +40,12 @@ Généré depuis [`public/grammar/en/points.json`](../public/grammar/en/points.j
 | **Présent simple ou continu** `simple-vs-continuous` | I usually walk, but today I'm driving. | Présent simple ; Présent continu (be + -ing) | - | 0 | à mesurer |
 | **Prétérit des verbes réguliers** `past-simple-regular` | We watched a film yesterday. | Présent simple | - | 7 | à mesurer (faux positif : -ed participe ou adjectif (he was tired)) |
 | **Prétérit des verbes irréguliers** `past-simple-irregular` | She went home and wrote a letter. | Prétérit des verbes réguliers | - | 6 | à mesurer |
-| **Participe passé (réguliers et irréguliers)** `past-participle` | gone, written, taken, watched | - | Prétérit des verbes irréguliers | 16 | à mesurer |
+| **Participe passé (réguliers et irréguliers)** `past-participle` | She has gone home. The letter was written in 1850. | - | Prétérit des verbes irréguliers | 16 | à mesurer |
 | **Questions et négations au prétérit (did)** `past-questions` | Did you see it? I didn't go. | Prétérit des verbes irréguliers ; Questions et négations avec do / does | - | 0 | à mesurer |
 | **Prétérit continu (was / were + -ing)** `past-continuous` | I was cooking when he called. | Prétérit de be : was / were ; Présent continu (be + -ing) | Prétérit des verbes irréguliers | 0 | à mesurer (faux positif : was + adjectif en -ing (it was interesting)) |
 | **Noms indénombrables** `uncountables` | some advice, much information, furniture | - | Formes du pluriel | 0 | à mesurer |
 | **Some / any, much / many, a lot of** `countables` | How much money? How many people? | Formes du pluriel | Noms indénombrables | 1 | à mesurer |
-| **Comparatifs et superlatifs** `comparatives` | bigger, more expensive, the best | - | Adjectif : place et invariabilité | 0 | à mesurer |
+| **Comparatifs et superlatifs** `comparatives` | She is taller than me. It's the best day of my life. | - | Adjectif : place et invariabilité | 0 | à mesurer |
 | **Le génitif 's et of** `possessive-s` | my sister's room, the end of the film | - | Adjectifs et pronoms possessifs | 0 | à mesurer (faux positif : 's = is ou has (she's gone)) |
 | **Futur avec be going to** `going-to` | It's going to rain. | Présent continu (be + -ing) | - | 0 | à mesurer (faux positif : going to + lieu (I'm going to Paris)) |
 | **Futur avec will (décision, prédiction)** `will` | I'll call you later. | - | Présent simple | 9 | à mesurer |
@@ -68,9 +68,9 @@ Généré depuis [`public/grammar/en/points.json`](../public/grammar/en/points.j
 | **When / as soon as / until + présent** `time-clauses` | Call me when you arrive. | - | Conditionnel réel (if + présent, will) | 0 | à mesurer |
 | **Conditionnel irréel (if + prétérit, would)** `second-conditional` | If I had time, I would travel. | Conditionnel réel (if + présent, will) ; Prétérit des verbes irréguliers | - | 3 | à mesurer |
 | **Passif au présent et au prétérit** `passive` | The bridge was built in 1890. | Le verbe to be au présent ; Prétérit de be : was / were ; Participe passé (réguliers et irréguliers) | - | 1 | à mesurer (faux positif : be + adjectif en -ed (she was tired)) |
-| **Relatives déterminatives (who / which / that, relatif omis)** `relatives-defining` | The man (who) I met was French. | Pronoms sujets et compléments | - | 1 | à mesurer |
+| **Relatives déterminatives (who / which / that, relatif omis)** `relatives-defining` | The man who called was French. | Pronoms sujets et compléments | - | 1 | à mesurer |
 | **Déduction au présent : must / might / can't** `deduction-present` | She must be tired. It can't be true. | Obligation : must / have to | - | 1 | à mesurer |
-| **Discours rapporté (affirmations)** `reported-statements` | He said (that) he was tired. | Plus-que-parfait (had + participe) ; Futur avec will (décision, prédiction) | - | 1 | à mesurer |
+| **Discours rapporté (affirmations)** `reported-statements` | He said that he was tired. | Plus-que-parfait (had + participe) ; Futur avec will (décision, prédiction) | - | 1 | à mesurer |
 | **Few / little / a few / a little, every / each** `quantifiers` | I have a few friends but little time. | Some / any, much / many, a lot of | - | 0 | à mesurer |
 | **Say ou tell** `say-tell` | She told me the truth. He said hello. | - | Discours rapporté (affirmations) | 0 | à mesurer |
 | **Stop / remember / try + -ing ou + to (changement de sens)** `gerund-infinitive-meaning` | I stopped smoking. I stopped to smoke. | Verbe + -ing ou verbe + to | - | 0 | à mesurer |

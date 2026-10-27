@@ -42,6 +42,7 @@ export type Route =
   | { name: 'reading' }
   | { name: 'reader'; bookKey: string }
   | { name: 'vocab-test' }
+  | { name: 'grammar-annotate' }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';
