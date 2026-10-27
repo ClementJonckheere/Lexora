@@ -107,9 +107,21 @@ export function SettingsPage() {
           )}
           <Setting
             title="Taper la réponse (français → langue)"
-            desc="Avant de dévoiler, vous tapez l'expression : Lexora vérifie (formes conjuguées tolérées) et propose la note. Plus exigeant, idéal pour l'expression orale."
+            desc="Avant de dévoiler, vous tapez l'expression : Lexora vérifie (formes conjuguées tolérées) et propose la note. Faux : Oublié ; forme approchée : Difficile ; exact : Retenu ; exact et plus rapide que d'habitude : Facile. Entrée accepte la note, 1 à 4 la change."
           >
             <Switch label="Taper la réponse" checked={settings.typeAnswer} onChange={(v) => update({ typeAnswer: v })} />
+          </Setting>
+          <Setting
+            title="Phrase à trous au recto (français → langue)"
+            desc="Quand la note a un exemple contenant l'expression, le recto montre cette phrase avec un trou et la traduction en indice. L'exemple change à chaque révision : retrouver le mot dans des contextes variés le rend plus disponible à l'oral."
+          >
+            <Switch label="Phrase à trous au recto" checked={settings.clozeFront} onChange={(v) => update({ clozeFront: v })} />
+          </Setting>
+          <Setting title="Ordre des nouveaux mots" desc="Les plus fréquents dans la langue d'abord : vous apprenez en priorité ce que vous rencontrerez le plus souvent.">
+            <select className="select" value={settings.newOrder} onChange={(e) => update({ newOrder: e.target.value as Settings['newOrder'] })}>
+              <option value="frequency">Les plus utiles d'abord</option>
+              <option value="added">Par date d'ajout</option>
+            </select>
           </Setting>
           <Setting
             title="Traduction automatique"

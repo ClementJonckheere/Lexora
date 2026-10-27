@@ -28,10 +28,14 @@ export interface QueueOptions {
   direction?: Direction | null;
   /** Limiter à un sous-ensemble de notes (collection). */
   noteIds?: Set<string> | null;
+  /** Ordre des nouveaux mots : rang d'utilité (plus petit d'abord) ; sans lui, ordre d'ajout. */
+  newRank?: ((note: Note) => number) | null;
 }
 
 interface Candidate extends QueueItem {
   sortKey: number;
+  /** Départage (nouveaux mots : date d'ajout). */
+  tie?: number;
 }
 
 /** Fiches dues, classées par priorité, sans application de limite ni de regroupement. */
@@ -42,6 +46,8 @@ export function collectDue(notes: Note[], opts: QueueOptions) {
   const directions = activeDirections(settings).filter((d) => !opts.direction || d === opts.direction);
   const primary = primaryDirection(settings);
   const both = settings.directions === 'both';
+
+  const newKey = (note: Note) => (opts.newRank ? opts.newRank(note) : note.createdAt);
 
   const learning: Candidate[] = [];
   const reviews: Candidate[] = [];
@@ -61,12 +67,12 @@ export function collectDue(notes: Note[], opts: QueueOptions) {
         if (card.due < endOfDay) reviews.push({ ...base, kind: 'review', sortKey: retrievability(scheduler, card, now) });
       } else if (card.state === State.New) {
         if (!both || direction === primary) {
-          newPrimary.push({ ...base, kind: 'new', sortKey: note.createdAt });
+          newPrimary.push({ ...base, kind: 'new', sortKey: newKey(note), tie: note.createdAt });
         } else {
           // La 2e direction n'est introduite qu'une fois la 1re vue un jour précédent.
           const sibling = note.cards[primary];
           if (sibling && sibling.state !== State.New && sibling.lastReview != null && sibling.lastReview < startOfDay) {
-            newSecondary.push({ ...base, kind: 'new', sortKey: note.createdAt });
+            newSecondary.push({ ...base, kind: 'new', sortKey: newKey(note), tie: note.createdAt });
           }
         }
       }
@@ -76,8 +82,9 @@ export function collectDue(notes: Note[], opts: QueueOptions) {
   learning.sort((a, b) => a.sortKey - b.sortKey);
   // Les plus menacées d'oubli d'abord (rétrievabilité la plus faible) ; à égalité, FR→EN.
   reviews.sort((a, b) => a.sortKey - b.sortKey || (a.direction === b.direction ? 0 : a.direction === 'fr_en' ? -1 : 1));
-  newPrimary.sort((a, b) => a.sortKey - b.sortKey || a.noteId.localeCompare(b.noteId));
-  newSecondary.sort((a, b) => a.sortKey - b.sortKey || a.noteId.localeCompare(b.noteId));
+  const byNew = (a: Candidate, b: Candidate) => a.sortKey - b.sortKey || (a.tie ?? 0) - (b.tie ?? 0) || a.noteId.localeCompare(b.noteId);
+  newPrimary.sort(byNew);
+  newSecondary.sort(byNew);
 
   const newQuota = Math.max(0, settings.newPerDay - opts.newIntroducedToday);
   const news = [...newSecondary, ...newPrimary.slice(0, newQuota)];
@@ -159,7 +166,7 @@ export function buildQueue(notes: Note[], opts: QueueOptions): QueueItem[] {
   const selN = take(n);
   const tail = take(deferred);
 
-  const strip = ({ sortKey: _s, ...item }: Candidate): QueueItem => item;
+  const strip = ({ sortKey: _s, tie: _t, ...item }: Candidate): QueueItem => item;
   return separateSiblings([...selL, ...interleave(selR, selN), ...tail].map(strip));
 }
 

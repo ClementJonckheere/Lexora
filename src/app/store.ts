@@ -2,7 +2,8 @@ import { create } from 'zustand';
 import type { Database } from '@/core/db/types';
 import { openDatabase } from '@/core/db/open';
 import { startOfStudyDay } from '@/core/domain/dates';
-import { DEFAULT_SETTINGS, primaryDirection, type Settings } from '@/core/domain/settings';
+import { DEFAULT_SETTINGS, primaryDirection, settingsUpgrade, type Settings } from '@/core/domain/settings';
+import type { FrequencyRanks } from '@/core/reading/level';
 import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode, Universe } from '@/core/domain/types';
 import * as notesRepo from '@/core/repo/notesRepo';
 import * as collectionsRepo from '@/core/repo/collectionsRepo';
@@ -111,6 +112,8 @@ interface AppState {
   collections: Collection[];
   forgetCounts: Map<string, number>;
   newIntroducedToday: number;
+  /** Liste de fréquence de la langue courante (ordre des nouveaux mots), null tant qu'elle n'est pas chargée. */
+  frequencyRanks: { language: string; ranks: FrequencyRanks } | null;
   /** Incrémenté à chaque modification des données. */
   revision: number;
   /** Livres de tous les univers (espace lecture). */
@@ -248,6 +251,7 @@ export const useApp = create<AppState>((set, get) => {
     collections: [],
     forgetCounts: new Map(),
     newIntroducedToday: 0,
+    frequencyRanks: null,
     revision: 0,
     books: [],
     bookCovers: new Map(),
@@ -269,7 +273,9 @@ export const useApp = create<AppState>((set, get) => {
     async init() {
       try {
         const database = await openDatabase();
-        const settings = await loadSettings(database);
+        let settings = await loadSettings(database);
+        const upgrade = settingsUpgrade(settings);
+        if (upgrade) settings = await saveSettings(database, upgrade);
         const lastSync = Number((await getSyncState(database, 'last_sync')) ?? 0) || null;
         set((s) => ({ db: database, settings, scheduler: createScheduler(settings), sync: { ...s.sync, lastSync } }));
         set({ status: 'ready' });
@@ -305,6 +311,12 @@ export const useApp = create<AppState>((set, get) => {
         ? await countNewIntroduced(d, startOfStudyDay(Date.now(), settings.dayStartHour), primaryDirection(settings), current.id)
         : 0;
       const changedUniverse = current?.id !== get().universe?.id;
+      if (current && get().frequencyRanks?.language !== current.language) {
+        const language = current.language;
+        void loadRanks(language).then((ranks) => {
+          if (ranks && get().universe?.language === language) set({ frequencyRanks: { language, ranks } });
+        });
+      }
       set((s) => ({
         universes,
         universe: current,

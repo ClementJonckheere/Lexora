@@ -1,6 +1,6 @@
 [package]
 name = "lexora"
-version = "2.11.2"
+version = "2.12.0"
 description = "Lexora — carnet de vocabulaire anglais et mémorisation espacée"
 authors = ["Clément Jonckheere"]
 edition = "2021"

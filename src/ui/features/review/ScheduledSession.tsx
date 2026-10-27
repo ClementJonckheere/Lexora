@@ -12,7 +12,9 @@ import { recordReview, undoReview } from '@/core/repo/reviewRepo';
 import { buildQueue, type QueueItem } from '@/core/srs/queue';
 import { scopeIds } from '@/core/srs/scope';
 import { settingsFor } from '@/core/domain/settings';
-import { checkAnswer, type AnswerVerdict } from '@/core/domain/answer';
+import type { AnswerVerdict } from '@/core/domain/answer';
+import { checkTyped, clozeFront, frequencyRank, suggestGrade } from '@/core/srs/typed';
+import { readPref, writePref } from '@/ui/prefs';
 import { GRADES, previewIntervals, review, type Grade } from '@/core/srs/scheduler';
 import { SessionQueue } from '@/core/srs/session';
 import { Button, Kbd } from '@/ui/components/ui';
@@ -66,6 +68,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
       limit: config.limit,
       direction: config.direction,
       noteIds,
+      newRank: s.settings.newOrder === 'frequency' && s.frequencyRanks?.language === s.universe?.language ? frequencyRankOf(s.frequencyRanks, s.universe?.language) : null,
     });
     const cards = new Map<string, CardRecord>();
     for (const n of s.notes) for (const c of Object.values(n.cards)) if (c) cards.set(c.id, c);
@@ -81,6 +84,9 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   const tally = useRef<Tally>({ 1: 0, 2: 0, 3: 0, 4: 0 });
   const undoStack = useRef<UndoEntry[]>([]);
   const shownAt = useRef(Date.now());
+  /** Temps mis pour taper la réponse (affichage → validation). */
+  const answeredIn = useRef(0);
+  const [typedNotice, setTypedNotice] = useState(() => !readPref<boolean>('review.typedNotice.seen', false));
   const progress = useDailyProgress();
 
   const item = session.queue.current;
@@ -88,7 +94,14 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   const card = item ? session.cards.get(item.cardId) : undefined;
   // « Taper la réponse » : uniquement dans le sens français → langue étudiée.
   const typing = settings.typeAnswer && item?.direction === 'fr_en';
-  const suggested: Grade = verdict === 'exact' ? 3 : verdict === 'close' ? 2 : verdict ? 1 : 3;
+  // Recto en contexte : une phrase d'exemple différente à chaque révision.
+  const front = useMemo(
+    () => (note && card && item?.direction === 'fr_en' && settings.clozeFront ? clozeFront(note, language, card.reps) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [note, item?.cardId, settings.clozeFront, language],
+  );
+  const answerChars = front ? front.cloze.answers.join(' ').length : (note?.expression.length ?? 0);
+  const suggested: Grade = verdict ? suggestGrade(verdict, answeredIn.current, answerChars, progress.medianDurationMs) : 3;
 
   // Note supprimée pendant la session : on passe.
   useEffect(() => {
@@ -109,7 +122,8 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
 
   const submitTyped = () => {
     if (!note) return;
-    setVerdict(typed.trim() ? checkAnswer(note.expression, typed, language) : 'skipped');
+    answeredIn.current = Date.now() - shownAt.current;
+    setVerdict(typed.trim() ? checkTyped(note, front, typed, language) : 'skipped');
     reveal();
   };
 
@@ -223,6 +237,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
         note={note}
         direction={item.direction}
         revealed={revealed}
+        front={front}
         meta={
           <>
             <span>{directionLabel(item.direction, language)}</span>
@@ -234,7 +249,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
         {typing && !revealed && (
           <input
             className="input input--lg cloze-input"
-            placeholder={`Votre réponse en ${languageName}…`}
+            placeholder={front ? "Le mot manquant (ou l'expression)…" : `Votre réponse en ${languageName}…`}
             value={typed}
             onChange={(e) => setTyped(e.target.value)}
             onKeyDown={onTypedKey}
@@ -252,6 +267,27 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
             {verdict === 'close' && `Presque : « ${typed.trim()} »`}
             {verdict === 'wrong' && `Votre réponse : « ${typed.trim()} »`}
             {verdict === 'skipped' && 'Sans réponse'}
+            <span className="verdict-grade">
+              Note proposée : <strong>{GRADES.find((g) => g.grade === suggested)?.label}</strong>
+              {suggested === 4 && ` (répondu en ${(answeredIn.current / 1000).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} s)`}
+            </span>
+          </div>
+        )}
+        {typing && typedNotice && !revealed && (
+          <div className="typed-notice">
+            <span>
+              Tapez la réponse : Lexora propose la note selon la justesse et la rapidité. <Kbd>Entrée</Kbd> pour l'accepter, <Kbd>1</Kbd> à <Kbd>4</Kbd> pour la
+              changer. Désactivable dans les Paramètres.
+            </span>
+            <button
+              className="link small"
+              onClick={() => {
+                setTypedNotice(false);
+                writePref('review.typedNotice.seen', true);
+              }}
+            >
+              Compris
+            </button>
           </div>
         )}
         {revealed && card.lapses >= LEECH_LAPSES && (
@@ -428,4 +464,15 @@ function summarize(answers: UndoEntry[], threshold: number) {
   const now = Date.now();
   const dues = [...last.values()].map((l) => l.after.due).filter((d) => d > now);
   return { mastered: [...mastered], toWatch: [...forgot], nextDue: dues.length ? Math.min(...dues) : null };
+}
+
+/** Rang d'utilité des nouveaux mots (liste de fréquence de la langue). */
+function frequencyRankOf(freq: { ranks: Map<string, number> } | null, language: string | undefined) {
+  if (!freq || !language) return null;
+  const cache = new Map<string, number>();
+  return (note: Parameters<typeof frequencyRank>[0]) => {
+    let r = cache.get(note.id);
+    if (r === undefined) cache.set(note.id, (r = frequencyRank(note, freq.ranks, language)));
+    return r;
+  };
 }

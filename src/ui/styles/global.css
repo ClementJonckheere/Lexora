@@ -2924,3 +2924,14 @@ p {
 /* Mode écoute */
 .listen-controls { display: flex; gap: 10px; justify-content: center; margin: 18px 0 22px; }
 .listen-answer { font-size: 1.6rem; font-weight: 600; margin: 14px 0 4px; }
+
+/* Recto en contexte (phrase à trous) et note proposée */
+.flashcard-cloze { margin: 4px 0 10px; }
+.flashcard-hint { color: var(--text-2); font-size: 15px; }
+.flashcard-hint::before { content: 'Indice : '; color: var(--text-3, var(--text-2)); }
+.verdict-grade { font-weight: 500; margin-left: 6px; opacity: 0.9; }
+.typed-notice {
+  display: flex; gap: 12px; align-items: baseline; justify-content: space-between;
+  margin-top: 14px; padding: 10px 12px; border-radius: var(--radius-sm);
+  background: var(--surface-2); font-size: 13px; text-align: left;
+}
