@@ -42,12 +42,21 @@ for (const v of verbs) {
 BASE_OF.set('was', 'be').set('were', 'be');
 
 
+/** Formes en -ed que les règles devinent mal, ou qui ne sont pas des verbes au passé (null). */
+const REGULAR_EXCEPTIONS: Record<string, string | null> = {
+  added: 'add', used: 'use', pleased: 'please', wasted: 'waste', owed: 'owe', tasted: 'taste', pasted: 'paste', ceased: 'cease', released: 'release',
+  naked: null, wicked: null, sacred: null, beloved: null, crooked: null, rugged: null, hundred: null, kindred: null, red: null, bed: null, shed: null,
+  need: null, feed: null, bleed: null, breed: null, speed: null, seed: null, weed: null, heed: null, deed: null, exceed: null, succeed: null, proceed: null, indeed: null,
+};
+
 /** Base verbale d'une forme passée ou d'un participe (« went » → « go », « stopped » → « stop »). `known` : liste de mots. */
 export function baseOf(form: string, known?: (w: string) => boolean): string | null {
   const w = form.toLowerCase();
   const irr = BASE_OF.get(w);
   if (irr) return irr;
+  if (w in REGULAR_EXCEPTIONS) return REGULAR_EXCEPTIONS[w];
   if (!w.endsWith('ed') || w.length < 4) return null;
+  if (w.endsWith('eed')) return w.slice(0, -1); // agreed → agree, freed → free
   const stem = w.slice(0, -2);
   const candidates = [
     w.endsWith('ied') ? `${w.slice(0, -3)}y` : null,
@@ -55,11 +64,18 @@ export function baseOf(form: string, known?: (w: string) => boolean): string | n
     `${stem}e`,
     stem,
   ].filter((c): c is string => !!c && c.length >= 2);
-  if (known) return candidates.find(known) ?? null;
-  // Sans liste de mots : règles simples (stopped → stop, liked → like, played → play).
-  if (w.endsWith('ied')) return candidates[0];
-  if (/([b-df-hj-np-tv-z])\1$/.test(stem)) return stem.slice(0, -1);
+  // Règles simples (stopped → stop, liked → like, played → play, died → die, discussed → discuss), vérifiées par
+  // la liste de mots quand elle est fournie : elle contient aussi des mots étrangers (« signe »), d'où les règles d'abord.
+  const guess = guessBase(w, stem);
+  if (!known || known(guess)) return guess;
+  return candidates.find(known) ?? null;
+}
+
+function guessBase(w: string, stem: string): string {
+  if (w.endsWith('ied')) return w.length <= 4 ? w.slice(0, -1) : `${w.slice(0, -3)}y`;
+  if (/([b-df-hj-km-rtv-y])\1$/.test(stem)) return stem.slice(0, -1);
   if (/[^aeiou][aeiou][bcdgkmnprstvz]$/.test(stem) && stem.length <= 4) return `${stem}e`;
+  if (/(?:v|z|u|c|dg|rg|ang|ung)$/.test(stem)) return `${stem}e`; // changed → change, solved → solve
   return stem;
 }
 
@@ -157,8 +173,13 @@ function auxParticiple(pointId: string, auxes: RegExp): Builder {
     if (w.length !== 2 || !auxes.test(w[0])) return null; // pas d'adverbe au milieu (never, already…) : trou net
     const base = baseOf(w[1], known);
     if (!base) return null;
+    let before = s.en.slice(0, m.start);
+    // « should've set » : conditionnel passé, pas un present perfect.
+    if (/\b(?:would|could|should|might|must|may|will|can|to)(?:n't)?\s*$/i.test(before)) return null;
+    // « I've said » → « I [have said] » : l'espace manquant avant la forme développée.
+    if (span.startsWith("'")) before += ' ';
     const answer = normalizeAnswer(span, { d: 'had', s: 'has' });
-    return { before: s.en.slice(0, m.start), after: s.en.slice(m.end), answer, hint: base };
+    return { before, after: s.en.slice(m.end), answer, hint: base };
   };
 }
 
@@ -181,6 +202,8 @@ function shuffle2(a: string, b: string, seed: number): string[] {
   return seed % 2 ? [a, b] : [b, a];
 }
 
+const ADVERBS = /^(?:first|never|always|just|also|still|often|ever|only|even|already|sometimes|usually|soon|then|again|all|both)$/;
+
 /** Verbe juste après « mot de liaison + sujet » (if it rains, when you arrive), avec la forme concurrente. */
 function clauseVerb(pointId: string, links: string, kind: 'present' | 'past'): Builder {
   const re = new RegExp(`\\b(?:${links})\\s+([a-z]+)\\s+([a-z]+)\\b`, 'i');
@@ -190,7 +213,11 @@ function clauseVerb(pointId: string, links: string, kind: 'present' | 'past'): B
     if (!m) return null;
     const [, subject, verb] = m;
     const v = verb.toLowerCase();
-    if (/^(?:will|would|won't|wouldn't|'ll|can|could|may|might|must|should|do|does|did|don't|doesn't|didn't|not)$/.test(v)) return null;
+    if (/^(?:will|would|won|wouldn|can|could|may|might|must|should|do|does|did|don|doesn|didn|not)$/.test(v)) return null;
+    // « if you don't hurry », « when I really need » : pas un verbe seul dans le trou.
+    if (s.en[m.index + m[0].length] === "'" || ADVERBS.test(v) || v.endsWith('ly')) return null;
+    // Contexte passé (« Tom was there when I needed ») : hors sujet pour « présent après when, pas will ».
+    if (kind === 'present' && /\b(?:was|were|did|had|used|didn't|wasn't|weren't)\b/i.test(s.en)) return null;
     if (kind === 'present' && /^(?:have|had|is|am|are|was|were)$/.test(v)) return null;
     // « if I had known » : conditionnel passé, pas un prétérit d'irréel.
     if (kind === 'past' && v === 'had' && /^\s+(?:[a-z]+ed|been|known|seen|done|gone|taken|given|had)\b/i.test(s.en.slice(m.index + m[0].length))) return null;
@@ -216,7 +243,7 @@ function clauseVerb(pointId: string, links: string, kind: 'present' | 'past'): B
 /** Present perfect ou prétérit : choisir entre les deux formes du même verbe. */
 const perfectOrPast: Builder = (s, known) => {
   const pp = single('present-perfect', s.en);
-  const marker = /\b(?:yesterday|ago|last\s+(?:week|month|year|night|summer|time)|in\s+(?:19|20)\d\d|when\s+(?:i|he|she|we|they)\s+was|this\s+(?:morning|week|year)|ever|never|yet|already|just|so\s+far)\b/i;
+  const marker = /\b(?:yesterday|ago|last\s+(?:week|month|year|night|summer)|in\s+(?:19|20)\d\d|when\s+(?:i|he|she|we|they)\s+was|this\s+(?:morning|week|year)|ever|never|yet(?=\s*[.?!]$)|already|just|so\s+far)\b/i;
   if (!marker.test(s.en)) return null;
   if (pp) {
     const w = words(s.en.slice(pp.start, pp.end));
@@ -231,6 +258,8 @@ const perfectOrPast: Builder = (s, known) => {
   const w = words(s.en.slice(past.start, past.end));
   if (w.length !== 2) return null;
   const [subject, verb] = w;
+  // « She had already gone » : plus-que-parfait, pas un prétérit.
+  if (/^had$/i.test(verb) && /^\s+(?:already\s+|just\s+|never\s+)?(?:[a-z]+ed|been|gone|done|seen|known|taken|given|left|come|got|gotten)\b/i.test(s.en.slice(past.end))) return null;
   const base = baseOf(verb, known);
   if (!base || !/(?:yesterday|ago|last|in\s+(?:19|20)\d\d|when)/i.test(s.en)) return null;
   const aux = SUBJECTS_3RD.test(subject) ? 'has' : 'have';
@@ -245,9 +274,15 @@ const usedTo: Builder = (s) => {
   const w = words(s.en.slice(m.start, m.end));
   if (w.length !== 3) return null;
   const verb = w[2].toLowerCase();
-  if (BASE_OF.has(verb) || /(?:ed|ing|s)$/.test(verb)) return null;
+  if (BASE_OF.has(verb) || /(?:ed|ing|s|ly)$/.test(verb)) return null;
+  const before = s.en.slice(0, m.start);
+  // « I'm not used to hard work » : « be used to », l'autre point.
+  if (/(?:\b(?:am|is|are|was|were|be|been|get|got|getting)|'m|'re|'s)(?:\s+not)?\s*$/i.test(before)) return null;
+  const subject = /\b([a-z]+)\s*$/i.exec(before)?.[1] ?? '';
+  if (!subject) return null;
+  const be = /^(?:you|we|they|people)$/i.test(subject) || (/[^s]s$/.test(subject) && !SUBJECTS_3RD.test(subject)) ? 'were' : 'was';
   const answer = `used to ${verb}`;
-  return { before: s.en.slice(0, m.start), after: s.en.slice(m.end), answer, hint: 'habitude passée', choices: shuffle2(answer, `was used to ${ingOf(verb)}`, s.id) };
+  return { before, after: s.en.slice(m.end), answer, choices: shuffle2(answer, `${be} used to ${ingOf(verb)}`, s.id) };
 };
 
 /** Fabrique de chaque leçon. */

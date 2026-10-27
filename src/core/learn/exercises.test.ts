@@ -89,3 +89,34 @@ describe('exercices par leçon', () => {
     expect(buildExercise('passive', { id: 1, en: 'The bridge was built in 1890.', fr: '' })).toBeNull();
   });
 });
+
+describe('cas relevés dans les banques générées', () => {
+  const known = (w: string) => ['sign', 'signe', 'chang', 'change', 'die', 'dy', 'discuss', 'discus', 'us', 'use'].includes(w);
+
+  it('bases : la règle passe avant la liste de mots (qui contient des mots étrangers)', () => {
+    expect(['signed', 'changed', 'died', 'discussed', 'used'].map((w) => baseOf(w, known))).toEqual(['sign', 'change', 'die', 'discuss', 'use']);
+    expect([baseOf('added'), baseOf('agreed'), baseOf('naked'), baseOf('need')]).toEqual(['add', 'agree', null, null]);
+  });
+
+  it("« don't », adverbes, contexte passé : pas d'exercice de subordonnée", () => {
+    expect(ex('first-conditional', "You will miss the train if you don't hurry.")).toBeNull();
+    expect(ex('time-clauses', 'I remember the night when I first saw the Milky Way.')).toBeNull();
+    expect(ex('time-clauses', 'Tom was there for me when I needed someone.')).toBeNull();
+  });
+
+  it('present perfect : espace après le sujet contracté, pas de modal', () => {
+    expect(ex('present-perfect', "I've drunk way too much coffee today.")).toMatchObject({ before: 'I ', answer: 'have drunk' });
+    expect(ex('present-perfect', "We should've set off earlier.")).toBeNull();
+  });
+
+  it('used to : pas de « be used to », accord de « was / were », pas d’indice qui donne la réponse', () => {
+    expect(ex('used-to', "I'm not used to hard work.")).toBeNull();
+    const e = ex('used-to', 'They used to play on the beach.', 1)!;
+    expect(e.hint).toBeUndefined();
+    expect(e.choices).toContain('were used to playing');
+  });
+
+  it("perfect-vs-past : « had already gone » n'est pas un prétérit", () => {
+    expect(ex('perfect-vs-past', 'She had already gone to bed when I called her yesterday.')).toBeNull();
+  });
+});
