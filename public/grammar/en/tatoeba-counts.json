@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-10-27T20:43:00.422Z",
+ "generatedAt": "2026-10-27T21:25:05.562Z",
  "sentences": 2039572,
  "withFrench": 336747,
  "minCandidates": 30,
@@ -361,14 +361,14 @@
    ]
   },
   "present-perfect": {
-   "total": 89113,
-   "withFrench": 12832,
+   "total": 78252,
+   "withFrench": 11424,
    "samples": [
     "That's the stupidest thing I've ever said.",
     "I've always wondered what it'd be like to have siblings.",
-    "This is what I would have said.",
     "This is always the way it has been.",
-    "I think my living with you has influenced your way of living."
+    "I think my living with you has influenced your way of living.",
+    "What do you think I've been doing?"
    ]
   },
   "for-since": {
