@@ -175,7 +175,7 @@ function auxParticiple(pointId: string, auxes: RegExp): Builder {
     if (!base) return null;
     let before = s.en.slice(0, m.start);
     // « should've set » : conditionnel passé, pas un present perfect.
-    if (/\b(?:would|could|should|might|must|may|will|can|to)(?:n't)?\s*$/i.test(before)) return null;
+    if (/(?:\b(?:would|could|should|might|must|may|will|can|to)(?:n't)?|'d)\s*$/i.test(before)) return null;
     // « I've said » → « I [have said] » : l'espace manquant avant la forme développée.
     if (span.startsWith("'")) before += ' ';
     const answer = normalizeAnswer(span, { d: 'had', s: 'has' });

@@ -107,6 +107,7 @@ describe('cas relevés dans les banques générées', () => {
   it('present perfect : espace après le sujet contracté, pas de modal', () => {
     expect(ex('present-perfect', "I've drunk way too much coffee today.")).toMatchObject({ before: 'I ', answer: 'have drunk' });
     expect(ex('present-perfect', "We should've set off earlier.")).toBeNull();
+    expect(ex('present-perfect', "I'd have won if I hadn't tripped.")).toBeNull();
   });
 
   it('used to : pas de « be used to », accord de « was / were », pas d’indice qui donne la réponse', () => {
