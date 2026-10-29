@@ -13,7 +13,7 @@ Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, 
 
 La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
 
-**État documenté : version 2.18.0.** Le parcours grammatical comporte 74 points de A1 à C1 et 40 pièges francophones ; 20 leçons B1–B2 disposent actuellement d'exercices. Le test de placement et le surlignage grammatical dans le lecteur restent à développer (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
+**État documenté : version 2.18.0.** Le parcours grammatical comporte 74 points de A1 à C1 et 40 pièges francophones ; 20 leçons B1–B2 disposent actuellement d'exercices. Le test de placement et le surlignage grammatical dans le lecteur ne sont pas encore disponibles dans l'interface (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -198,7 +198,9 @@ Thème clair, fond blanc cassé, indigo comme couleur d'action, gris très clair
 
 ### Les six chantiers de développement
 
-Les éléments suivants sont **prévus, pas encore disponibles** :
+Un premier lot du **moteur de placement** est implémenté en logique pure, avec des simulations permanentes sur les 74 points : [`src/core/learn/placement.ts`](src/core/learn/placement.ts), [méthode et limites](docs/placement-grammaire.md), [rapport chiffré reproductible](docs/placement-simulation.json). Il n'est pas branché à l'interface et n'enregistre aucun résultat utilisateur. Rejouer le rapport avec `npm run simulate:placement` ; les tests sont inclus dans `npm test` et la CI existante. Une conclusion directe exige 85 % de confiance et au moins deux réponses ; sa propagation par `requires` exige 99 %. `after` est ignoré et les pièges restent indépendants.
+
+Les chantiers suivants restent **indisponibles dans l'interface** :
 
 | Ordre proposé | Chantier | Périmètre et validation attendus |
 |---|---|---|

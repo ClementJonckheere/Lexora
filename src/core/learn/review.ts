@@ -30,6 +30,9 @@ export interface LessonReview {
   /** Révisions réussies d'affilée, et la dernière révision manquée (la leçon est alors « à retravailler »). */
   streak: number;
   lapsed: boolean;
+  /** Date de la première acquisition, et chaque révision faite (pour l'XP et l'historique). */
+  masteredAt: number | null;
+  reviews: { at: number; passed: boolean }[];
 }
 
 /** Séances : réponses consécutives à moins de 20 minutes d'écart. */
@@ -51,12 +54,15 @@ export function lessonReview(answers: GrammarAnswer[], now = Date.now()): Lesson
   let step = 0;
   let streak = 0;
   let lapsed = false;
+  let masteredAt: number | null = null;
+  const reviews: { at: number; passed: boolean }[] = [];
   for (const session of sessions(counted)) {
     // Séance commencée à l'échéance : ses 5 premières réponses font la révision.
     if (dueAt !== null && session[0].createdAt >= dueAt) {
       const first = session.slice(0, REVIEW_SIZE);
       const end = first[first.length - 1].createdAt;
       if (first.length >= REVIEW_SIZE) {
+        reviews.push({ at: end, passed: first.filter((a) => a.correct).length >= REVIEW_PASS });
         if (first.filter((a) => a.correct).length >= REVIEW_PASS) {
           step = lapsed ? 0 : Math.min(step + 1, REVIEW_INTERVALS.length - 1);
           streak = lapsed ? 1 : streak + 1;
@@ -75,10 +81,11 @@ export function lessonReview(answers: GrammarAnswer[], now = Date.now()): Lesson
       // Première acquisition : la première révision tombe trois jours plus tard.
       if (dueAt === null && window.length === MASTERY_WINDOW && window.filter(Boolean).length / MASTERY_WINDOW >= MASTERY_RATE) {
         dueAt = a.createdAt + REVIEW_INTERVALS[0] * DAY;
+        masteredAt = a.createdAt;
       }
     }
   }
-  return { scheduled: dueAt !== null, dueAt, due: dueAt !== null && now >= dueAt, step, streak, lapsed };
+  return { scheduled: dueAt !== null, dueAt, due: dueAt !== null && now >= dueAt, step, streak, lapsed, masteredAt, reviews };
 }
 
 /** « dans 3 jours », « demain », « aujourd'hui » : échéance lisible. */

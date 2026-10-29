@@ -8,7 +8,7 @@ import { isTauri } from '@/core/platform/env';
 import { loadVoices, speechSupported } from '@/core/platform/speech';
 import { speakText } from '@/ui/speech';
 import { languageInfo } from '@/core/domain/languages';
-import { Button, Switch } from '@/ui/components/ui';
+import { Button, Segmented, Switch } from '@/ui/components/ui';
 import { AccountSection } from '@/ui/features/account/AccountSection';
 import { checkUpdates } from '@/app/desktop';
 import { getAutostart, openExternal, setAutostart } from '@/core/platform/desktop';
@@ -83,6 +83,22 @@ export function SettingsPage() {
 
       <div className="stack">
         <AccountSection />
+        <section className="card settings-section">
+          <div className="card-header">
+            <h2 className="card-title">Apparence</h2>
+          </div>
+          <Setting title="Fond" desc="Clair comme du papier, ou sombre comme la nuit. « Système » suit le réglage de Windows. Propre à cet ordinateur.">
+            <Segmented
+              value={settings.theme}
+              options={[
+                { value: 'system', label: 'Système' },
+                { value: 'light', label: 'Clair' },
+                { value: 'dark', label: 'Sombre' },
+              ]}
+              onChange={(theme) => update({ theme })}
+            />
+          </Setting>
+        </section>
         <section className="card settings-section">
           <div className="card-header">
             <h2 className="card-title">Mémorisation</h2>
