@@ -1,5 +1,6 @@
 import {
   baseOf,
+  baseOfIng,
   baseOfPresent,
   ingOf,
   isAdjective,
@@ -280,10 +281,10 @@ const FR_NOW = /\ben train de\b|\b(?:maintenant|en ce moment|actuellement)\b/i;
 const presentContinuous: Builder = (s, known) => {
   const m = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(am|is|are)\\s+([a-z]+ing)\\b`), s.en);
   if (!m || EN_NOT_PRESENT.test(s.en) || FR_FUTURE_OR_COND.test(s.fr) || !FR_NOW.test(s.fr) || /\bgoing to\b/.test(s.en)) return [];
-  const base = baseOf(m[3]) ?? null;
   const ing = m[3];
-  const guessed = base ?? [ing.slice(0, -3), `${ing.slice(0, -3)}e`, ing.slice(0, -4)].find((b) => b.length > 1 && ingOf(b) === ing && plausibleBase(b, known));
-  if (!guessed) return [];
+  // hugging → hug, cuddling → cuddle : la base vérifiée par la liste de mots.
+  const guessed = baseOfIng(ing, known);
+  if (!guessed || !plausibleBase(guessed, known)) return [];
   const span = `${m[2]} ${ing}`;
   const at = m.index + m[0].length - span.length;
   return [blank(s, at, span, span, { hint: guessed, form: 'continuous' })];
@@ -341,8 +342,8 @@ const pastContinuous: Builder = (s, known) => {
   const m = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(was|were)\\s+([a-z]+ing)\\b`), s.en);
   if (!m || !/\ben train de\b/i.test(s.fr) || /\bgoing to\b/.test(s.en)) return [];
   const ing = m[3];
-  const base = [ing.slice(0, -3), `${ing.slice(0, -3)}e`, ing.slice(0, -4)].find((b) => b.length > 1 && ingOf(b) === ing && plausibleBase(b, known));
-  if (!base) return [];
+  const base = baseOfIng(ing, known);
+  if (!base || !plausibleBase(base, known)) return [];
   const span = `${m[2]} ${ing}`;
   const at = m.index + m[0].length - span.length;
   return [blank(s, at, span, span, { hint: base, form: 'continuous' })];
@@ -376,9 +377,9 @@ const countables: Builder = (s) => {
 };
 
 /** Comparatif à taper, l'adjectif en indice : tall → taller, expensive → more expensive. */
-const IRREGULAR_COMPARATIVE: Record<string, string> = { better: 'good', worse: 'bad' };
+// better / worse : comparatifs de good et de well (bad et badly) ; l'indice serait ambigu, ils sont écartés.
 const comparatives: Builder = (s, known) => {
-  const m = only(/\b(more\s+[a-z]+|[a-z]{3,}er|better|worse)\s+than\b/, s.en);
+  const m = only(/\b(more\s+[a-z]+|[a-z]{3,}er)\s+than\b/, s.en);
   // « know better than to » : une tournure, pas une comparaison.
   if (!m || /\b(?:know|knew|knows|known)\s+better\b/.test(s.en)) return [];
   const span = m[1];
@@ -386,10 +387,10 @@ const comparatives: Builder = (s, known) => {
   if (span.startsWith('more ')) {
     // « more spectators than » : un nom, pas un comparatif d'adjectif.
     adjective = span.slice(5);
-    if (!isAdjective(adjective)) return [];
-  }
-  else if (IRREGULAR_COMPARATIVE[span]) adjective = IRREGULAR_COMPARATIVE[span];
-  else {
+    // « more thin than slender » : une comparaison de deux qualités ; thinner serait refusé à tort. Seuls les
+    // adjectifs longs (useful, beautiful, surprised) prennent more.
+    if (!isAdjective(adjective) || !/(?:ful|ous|ble|ive|ent|ant|ic|al|less|ish|ed|ing|ern)$/.test(adjective)) return [];
+  } else {
     const stem = span.slice(0, -2);
     // lower → low avant « lowe » ; bigger → big ; nicer → nice ; easier → easy.
     adjective = [/ier$/.test(span) ? `${span.slice(0, -3)}y` : null, /([bdgmnpt])\1$/.test(stem) ? stem.slice(0, -1) : null, stem, `${stem}e`].find(
@@ -470,8 +471,8 @@ const verbPatterns: Builder = (s, known) => {
   const to = only(new RegExp(`\\b(?:${TO_VERBS})\\s+to\\s+([a-z]+)\\b`), s.en);
   if (ing && !to) {
     const form = ing[1];
-    const base = [form.slice(0, -3), `${form.slice(0, -3)}e`, form.slice(0, -4)].find((b) => b.length > 1 && ingOf(b) === form && plausibleBase(b, known));
-    if (!base || /^(?:thing|something|anything|nothing|everything|morning|evening|king|ring|sing|bring|spring|string|wing|ceiling|building|meeting|feeling|wedding)$/.test(form)) return [];
+    const base = baseOfIng(form, known);
+    if (!base || !plausibleBase(base, known) || /^(?:thing|something|anything|nothing|everything|morning|evening|king|ring|sing|bring|spring|string|wing|ceiling|building|meeting|feeling|wedding)$/.test(form)) return [];
     const at = ing.index + ing[0].length - form.length;
     return [blank(s, at, form, form, { choices: [form, `to ${base}`, base], form: 'ing' })];
   }

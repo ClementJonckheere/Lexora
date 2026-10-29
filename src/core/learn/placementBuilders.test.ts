@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildPlacementExercise } from './placementBuilders';
 
 // Liste de mots simulée : tout est connu sauf les formes que la vraie liste n'a pas (« lowe », « answerred »).
-const known = (w: string) => !/^(?:lowe|answerred)$/.test(w);
+const known = (w: string) => !/^(?:lowe|answerred|cuddl|hugg)$/.test(w);
 const ex = (point: string, en: string, fr: string, id = 2) => buildPlacementExercise(point, { id, en, fr }, known);
 const shown = (point: string, en: string, fr: string) => {
   const e = ex(point, en, fr);
@@ -93,5 +93,17 @@ describe('repères de la traduction', () => {
   it('« français », « jamais » ne sont pas des imparfaits ; « j’ai fait » est un passé', () => {
     expect(ex('do-questions', 'Do you speak French?', 'Parles-tu français ?')).not.toBeNull();
     expect(ex('past-simple-irregular', 'I made a cake.', "J'ai fait un gâteau.")).not.toBeNull();
+  });
+});
+
+describe('défauts relevés sur les banques générées', () => {
+  it('base des formes en -ing : hugging → hug, cuddling → cuddle', () => {
+    expect(shown('present-continuous', 'I am hugging my plush toy.', 'Je suis en train de câliner ma peluche.')).toBe('I [am hugging (hug)] my plush toy.');
+    expect(shown('present-continuous', 'I am cuddling my toy.', 'Je suis en train de câliner mon jouet.')).toBe('I [am cuddling (cuddle)] my toy.');
+  });
+  it('comparatifs : pas de « more » devant un adjectif court, pas de better / worse (good ou well)', () => {
+    expect(ex('comparatives', 'She is more thin than slender.', 'Elle est plus maigre qu’élancée.')).toBeNull();
+    expect(ex('comparatives', 'He can do it better than I can.', 'Il le fait mieux que moi.')).toBeNull();
+    expect(shown('comparatives', 'Iron is more useful than gold.', "Le fer est plus utile que l'or.")).toBe('Iron is [more useful (useful)] than gold.');
   });
 });
