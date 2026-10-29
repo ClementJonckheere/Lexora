@@ -10,8 +10,10 @@ import { DAY } from '@/core/domain/dates';
 import { UniversesOverview } from '@/ui/features/universes/Universes';
 import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
 import { estimateMinutes } from '@/core/repo/progressRepo';
-import { GettingStarted, GoalRing, ResumeReading } from './Widgets';
+import { GettingStarted, ResumeReading } from './Widgets';
 import { useLessonReviews } from '@/ui/features/learn/reviews';
+import { RankBadge } from '@/ui/features/progress/ProgressPage';
+import { useXp } from '@/ui/features/progress/useXp';
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -32,6 +34,8 @@ export function HomePage() {
   const due = useDueCounts();
   const lessonsDue = useLessonReviews().due.length;
   const progress = useDailyProgress();
+  const xp = useXp();
+  const goal = settings.dailyGoal;
   const minutes = estimateMinutes(due.review + due.learning, due.new, progress.medianDurationMs);
 
   const recentCount = useMemo(() => notes.filter((n) => n.createdAt >= Date.now() - 7 * DAY).length, [notes]);
@@ -86,7 +90,7 @@ export function HomePage() {
     <div className="page">
       <section className="hero hero--horizon">
         <div className="hero-center">
-          <GoalRing progress={progress} />
+          <RankBadge xp={xp} />
           <span className="hero-greeting">{greeting()}</span>
           <h1 className="hero-headline">
             {due.total > 0 ? `${plural(due.total, 'fiche', 'fiches')}, environ ${minutes} min.` : "Rien à réviser pour l'instant."}
@@ -108,8 +112,17 @@ export function HomePage() {
         <div className="horizon" aria-hidden="true" />
         <div className="hero-facts">
           <div>
+            <span className="hero-fact-label">Aujourd'hui</span>
+            <span title={`Objectif du jour : ${goal} réponses (réglable dans les Paramètres)`}>
+              <span className="gold">+ {xp?.today ?? 0} XP</span> · {progress.reviewsToday} / {goal} réponses
+            </span>
+          </div>
+          <div>
             <span className="hero-fact-label">Cette semaine</span>
-            <span>{plural(recentCount, 'nouveau mot', 'nouveaux mots')}</span>
+            <span>
+              {plural(recentCount, 'nouveau mot', 'nouveaux mots')}
+              {progress.streakDays > 0 && ` · ${plural(progress.streakDays, 'jour', 'jours')} d'affilée`}
+            </span>
           </div>
           <div>
             <span className="hero-fact-label">Bibliothèque</span>

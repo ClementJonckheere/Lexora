@@ -19,6 +19,7 @@ import { ReviewPage, useDueCounts } from './features/review/ReviewPage';
 import { SessionPage } from './features/review/SessionPage';
 import { CollectionPage, CollectionsPage } from './features/collections/CollectionsPage';
 import { StatsPage } from './features/stats/StatsPage';
+import { ProgressPage } from './features/progress/ProgressPage';
 import { SettingsPage } from './features/settings/SettingsPage';
 import { ReadingPage } from './features/reading/ReadingPage';
 import { ReaderPage } from './features/reading/ReaderPage';
@@ -190,6 +191,8 @@ function Page() {
       return <LessonPage key={route.id} id={route.id} startReview={route.review} />;
     case 'stats':
       return <StatsPage />;
+    case 'progress':
+      return <ProgressPage />;
     case 'settings':
       return <SettingsPage />;
   }

@@ -41,6 +41,7 @@ export type Route =
   | { name: 'collections' }
   | { name: 'collection'; id: string }
   | { name: 'stats' }
+  | { name: 'progress' }
   | { name: 'reading' }
   | { name: 'reader'; bookKey: string }
   | { name: 'vocab-test' }

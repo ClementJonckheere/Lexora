@@ -1,51 +1,10 @@
 import { useState } from 'react';
-import { BookOpen, Check, Flame, X } from 'lucide-react';
+import { BookOpen, Check, X } from 'lucide-react';
 import { useApp } from '@/app/store';
 import type { DailyProgress } from '@/core/repo/progressRepo';
 import { readPref, writePref } from '@/ui/prefs';
 import { Button } from '@/ui/components/ui';
 import { BookCover } from '@/ui/features/reading/BookCover';
-
-/** Objectif du jour (anneau) et série de jours consécutifs. */
-export function GoalRing({ progress }: { progress: DailyProgress }) {
-  const goal = useApp((s) => s.settings.dailyGoal);
-  const done = progress.reviewsToday;
-  const ratio = Math.min(1, done / Math.max(1, goal));
-  const r = 30;
-  const c = 2 * Math.PI * r;
-  const reached = done >= goal;
-  return (
-    <div className="goal" title={`Objectif du jour : ${goal} réponses (réglable dans les Paramètres)`}>
-      <svg width="76" height="76" viewBox="0 0 76 76" aria-hidden="true">
-        <circle cx="38" cy="38" r={r} className="goal-track" />
-        <circle
-          cx="38"
-          cy="38"
-          r={r}
-          className={`goal-value ${reached ? 'goal-value--done' : ''}`}
-          strokeDasharray={c}
-          strokeDashoffset={c * (1 - ratio)}
-          transform="rotate(-90 38 38)"
-        />
-        <text x="38" y="36" textAnchor="middle" className="goal-num">
-          {done}
-        </text>
-        <text x="38" y="51" textAnchor="middle" className="goal-of">
-          / {goal}
-        </text>
-      </svg>
-      <div className="goal-text">
-        <strong>{reached ? 'Objectif atteint' : `${goal - done} réponse${goal - done > 1 ? 's' : ''} pour l'objectif`}</strong>
-        <span className={`streak ${progress.streakDays ? '' : 'streak--none'}`}>
-          <Flame size={14} />
-          {progress.streakDays
-            ? `${progress.streakDays} jour${progress.streakDays > 1 ? 's' : ''} d'affilée${progress.streakAtRisk ? ", révisez aujourd'hui pour continuer" : ''}`
-            : "Commencez une série aujourd'hui"}
-        </span>
-      </div>
-    </div>
-  );
-}
 
 /** Dernier livre ouvert dans la langue : reprise directe à la bonne page. */
 export function ResumeReading() {
