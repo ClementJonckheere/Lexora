@@ -363,10 +363,14 @@ const pastQuestions: Builder = (s, known) => {
  * Prétérit continu à taper : une action en cours interrompue ou à un moment précis (when / while / at that moment),
  * repérée en anglais ; une traduction avec « en train de » dicterait la forme, elle est écartée.
  */
-const EN_IN_PROGRESS = /\b(?:when|while|at that (?:moment|time)|at the time|at (?:\d{1,2}|midnight|noon)|all (?:day|night|morning|evening))\b/i;
+// Action en cours interrompue (when + sujet + verbe) ou simultanée (while) ; « all day », « at 11 » admettent le prétérit
+// simple (« I played tennis all day »).
+const EN_IN_PROGRESS = /\bwhile\b|\bwhen\s+(?:i|you|he|she|it|we|they|[A-Z][a-z]+)\s+(?!would|will|could|'d)[a-z]+/i;
+/** Verbes d'état ou de pensée : « I was wondering » vaut « I wondered ». */
+const STATE_ING = /^(?:wondering|expecting|hoping|thinking|wanting|meaning|feeling|knowing|believing|liking|loving)$/;
 const pastContinuous: Builder = (s, known) => {
   const m = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(was|were)\\s+([a-z]+ing)\\b`), s.en);
-  if (!m || !EN_IN_PROGRESS.test(s.en) || /\ben train de\b/i.test(s.fr) || /\bgoing to\b/.test(s.en)) return [];
+  if (!m || !EN_IN_PROGRESS.test(s.en) || /\ben train de\b/i.test(s.fr) || /\bgoing to\b/.test(s.en) || STATE_ING.test(m[3])) return [];
   const ing = m[3];
   const base = baseOfIng(ing, known);
   if (!base || !plausibleBase(base, known)) return [];

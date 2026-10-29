@@ -74,6 +74,9 @@ describe('questions du placement (A1, A2)', () => {
     expect(shown('past-questions', "You didn't answer the phone.", "Tu n'as pas répondu au téléphone.")).toBe("You [didn't answer {didn't answer|didn't answered|don't answer}] the phone.");
     expect(shown('past-continuous', 'She was talking when I came in.', 'Elle parlait quand je suis entré.')).toBe('She [was talking (talk)] when I came in.');
     expect(ex('past-continuous', 'She was talking when I came in.', 'Elle était en train de parler quand je suis entré.')).toBeNull();
+    // Sans action interrompue ni simultanée, le prétérit simple est juste aussi.
+    expect(ex('past-continuous', 'I was playing tennis all day.', "J'ai joué au tennis toute la journée.")).toBeNull();
+    expect(ex('past-continuous', 'I was wondering when you would show up.', 'Je me demandais quand tu viendrais.')).toBeNull();
   });
 
   it('noms, comparatifs, génitif', () => {
