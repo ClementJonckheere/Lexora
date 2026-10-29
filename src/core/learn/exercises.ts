@@ -52,6 +52,20 @@ for (const v of verbs) {
 }
 BASE_OF.set('was', 'be').set('were', 'be');
 
+/** Variantes admises d'une même forme (learnt / learned, dreamt / dreamed, got / gotten) : ramenées à la première. */
+const VARIANT_OF = new Map<string, string>();
+const PAST_FORMS = new Map<string, string[]>();
+for (const v of verbs) {
+  for (const list of [v.past, v.participle]) {
+    const forms = list.flatMap((f) => f.split('/'));
+    for (const f of forms) if (forms.length > 1 && !VARIANT_OF.has(f)) VARIANT_OF.set(f, forms[0]);
+  }
+  PAST_FORMS.set(
+    v.base,
+    v.past.flatMap((f) => f.split('/')),
+  );
+}
+
 /** Formes en -ed que les règles devinent mal, ou qui ne sont pas des verbes au passé (null). */
 // prettier-ignore
 const REGULAR_EXCEPTIONS: Record<string, string | null> = {
@@ -103,6 +117,12 @@ export function pastOf(base: string, known?: Known): string {
     if (/^[^aeiou]*[aeiou][b-df-hj-np-tv-z]$/.test(base)) return doubled;
   }
   return `${base}ed`;
+}
+
+/** Toutes les formes admises du prétérit (« learn » → learnt, learned). */
+export function pastForms(base: string, known?: Known): string[] {
+  if (base === 'be') return ['was', 'were'];
+  return PAST_FORMS.get(base) ?? [pastOf(base, known)];
 }
 
 /** Participe passé d'une base. */
@@ -196,11 +216,21 @@ export function normalizeAnswer(text: string, contracted: { d?: string; s?: stri
     .trim();
 }
 
-/** La réponse tapée est-elle juste ? (contractions acceptées dans les deux sens, et les autres réponses admises) */
+/** Variantes orthographiques ramenées à une seule (« had learned » = « had learnt »). */
+function canonical(answer: string): string {
+  return answer
+    .split(' ')
+    .map((w) => VARIANT_OF.get(w) ?? w)
+    .join(' ');
+}
+
+/** La réponse tapée est-elle juste ? (contractions et variantes acceptées, et les autres réponses admises) */
 export function isCorrect(ex: Exercise, typed: string): boolean {
-  const targets = [ex.answer, ...(ex.accept ?? [])].map((a) => normalizeAnswer(a));
+  const targets = [ex.answer, ...(ex.accept ?? [])].map((a) => canonical(normalizeAnswer(a)));
   return [undefined, 'had', 'would', 'has', 'is'].some((alt) =>
-    targets.includes(normalizeAnswer(typed, { d: alt === 'had' || alt === 'would' ? alt : undefined, s: alt === 'has' || alt === 'is' ? alt : undefined })),
+    targets.includes(
+      canonical(normalizeAnswer(typed, { d: alt === 'had' || alt === 'would' ? alt : undefined, s: alt === 'has' || alt === 'is' ? alt : undefined })),
+    ),
   );
 }
 
@@ -232,7 +262,7 @@ function shuffle2(a: string, b: string, seed: number): string[] {
 }
 
 const ADVERBS =
-  /^(?:first|never|always|just|also|still|often|ever|only|even|already|sometimes|usually|soon|then|again|all|both|really|not|regularly|probably|certainly)$/;
+  /^(?:first|never|always|just|also|still|often|ever|only|even|already|sometimes|usually|soon|then|again|all|both|really|not|regularly|probably|certainly|last|once|finally|actually|suddenly|immediately|eventually|recently|hardly|barely|accidentally)$/;
 const NOT_VERBS =
   /^(?:i|you|he|she|it|we|they|me|him|her|us|them|the|a|an|this|that|there|here|rather|better|so|to|when|if|and|but|or|what|where|how|why|who|which|in|on|at|for|with|of|from|by|as|up|out|my|your|his|our|their)$/;
 
@@ -247,12 +277,18 @@ function plausibleBase(v: string, known?: Known): boolean {
 
 /** Traductions françaises au conditionnel (je ferais, il pourrait…) et au futur (j'arriverai, il viendra…). */
 const FR_CONDITIONAL = /\b[a-zàâçéèêëîïôûù]{2,}r(?:ais|ait|ions|iez|aient)\b/i;
-const FR_FUTURE = /\b[a-zàâçéèêëîïôûù]{2,}r(?:ai|as|a|ons|ez|ont)\b/i;
+const FR_FUTURE = /\b[a-zàâçéèêëîïôûù]{2,}r(?:ai|as|a|ons|ez|ont)\b|\b(?:vais|vas|va|allons|allez|vont)\s+(?:\S+\s+)?[a-zàâçéèêëîïôûù]+(?:er|ir|re|oir)\b/i;
 
 /* ---------------------------------------------- auxiliaire + participe --- */
 
+/** Repères du present perfect : avec eux, le prétérit ne convient pas (sauf « never », admis aussi au prétérit). */
+const PERFECT_MARKER = /\b(?:ever|never|yet|already|just|so\s+far|since|lately|recently|up\s+to\s+now|until\s+now|how\s+long)\b/i;
+/** Repères d'un moment passé terminé. */
+const PAST_MARKER =
+  /\b(?:yesterday|ago|last\s+(?:week|month|year|night|summer|winter|weekend|time)|in\s+(?:19|20)\d\d|when\s+(?:i|he|she|we|they)\s+w(?:as|ere))\b/i;
+
 /** Modal juste avant (should've, would never have, I'd have, I'll have) : conditionnel ou futur passé. */
-const MODAL_BEFORE = /(?:\b(?:would|could|should|might|must|may|will|can|to)(?:n't)?(?:\s+never|\s+not)?|'d|'ll)\s*$/i;
+const MODAL_BEFORE = /(?:\b(?:would|could|should|might|must|may|will|can|cannot|to)(?:n't)?(?:\s+never|\s+not)?|'d|'ll)\s*$/i;
 /** Auxiliaire du plus-que-parfait français (j'avais vu, elle était partie). */
 const FR_PLUPERFECT =
   /(?<![a-zà-ÿ])(?:av(?:ais|ait|ions|iez|aient)|ét(?:ais|ait|ions|iez|aient)|eu(?:s|t|mes|tes|rent)|fu(?:s|t|rent))\s+(?:(?:déjà|pas|jamais|bien|tout|plus|toujours|rien|été|beaucoup)\s+)*(?!(?:toi|moi|lui|ici|aussi|ainsi|si|parmi)\b)[a-zàâçéèêëîïôûù]*(?:é|ée|és|ées|i|ie|is|it|u|ue|us|ues|ert|erte|ort|orte|int|ainte|ait|aite)(?![a-zà-ÿ])/i;
@@ -274,7 +310,7 @@ const STATE_UNLESS_BY = new Set(
 );
 
 /** Forme verbale « auxiliaire + participe », à taper, verbe à la base en indice. */
-function auxParticiple(pointId: string, auxes: RegExp, options: { passive?: boolean; pastAccepted?: boolean } = {}): Builder {
+function auxParticiple(pointId: string, auxes: RegExp, options: { passive?: boolean; pastAccepted?: boolean; perfectUnmarked?: boolean } = {}): Builder {
   return (s, known) => {
     const m = single(pointId, s.en);
     if (!m) return [];
@@ -302,8 +338,13 @@ function auxParticiple(pointId: string, auxes: RegExp, options: { passive?: bool
     // Après after / before / as soon as, l'ordre des faits est clair : le prétérit est juste aussi (règle 5).
     // Seulement la conjonction suivie d'un sujet (« before he entered ») : « the day before », « as if », « if only »
     // gardent le plus-que-parfait.
-    const ordered = /\b(?:after|before|as soon as)\s+(?:i|you|he|she|it|we|they|[A-Z][a-z]+)\s+[a-z]+/.test(s.en) && !/\b(?:if|wish|though)\b/i.test(s.en);
-    const accept = options.pastAccepted && ordered ? (base === 'be' ? ['was', 'were'] : [pastOf(base, known)]) : undefined;
+    const ordered =
+      /\b(?:[Aa]fter|[Bb]efore|[Aa]s soon as)\s+(?:i|you|he|she|it|we|they|[A-Z][a-z]*|everybody|everyone|somebody|someone|nobody|(?:the|my|your|his|her|our|their)\s+[a-z]+)\s+(?!then\b)[a-z]+/.test(
+        s.en,
+      ) && !/\b(?:if|wish|though)\b/i.test(s.en);
+    // Present perfect sans aucun repère (ever, since, today…) : le prétérit est juste aussi (« I saw that »).
+    const unmarked = options.perfectUnmarked && !PERFECT_MARKER.test(s.en) && !/\b(?:for|today|this|before|times?|now)\b/i.test(s.en);
+    const accept = (options.pastAccepted && ordered) || unmarked ? pastForms(base, known) : undefined;
     return [{ before, after, answer, hint: base, ...(accept ? { accept } : {}) }];
   };
 }
@@ -382,6 +423,8 @@ function mainModal(links: string, modal: 'will' | 'would'): Builder {
     const next = /^\s+([a-z]+)/i.exec(s.en.slice(m.index + m[0].length))?.[1]?.toLowerCase() ?? '';
     if (v === 'have' && (/(?:ed|en|wn)$/.test(next) || (BASE_OF.has(next) && BASE_OF.get(next) !== next))) return [];
     if (NOT_VERBS.test(subject.toLowerCase()) && !/^(?:i|you|he|she|it|we|they|there)$/i.test(subject)) return [];
+    // « I speak if I want » → « Je parle si je veux » : traduit au présent, le présent serait juste aussi.
+    if (modal === 'will' && !FR_FUTURE.test(s.fr)) return [];
     const answer = `${modal} ${v}`;
     const other = modal === 'will' ? presentOf(v, subject) : v === 'be' ? (isThird(subject) || /^i$/i.test(subject) ? 'was' : 'were') : pastOf(v, known);
     const before = s.en.slice(0, at) + ' ';
@@ -428,6 +471,7 @@ const whenQuestion: Builder = (s, known) => {
   if (direct) {
     const [, lead, subject, verb] = direct;
     if (!/^(?:i|you|he|she|it|we|they|[A-Z][a-z]+)$/.test(subject) || !plausibleBase(verb, known)) return [];
+    if (!FR_FUTURE.test(s.fr)) return [];
     const answer = `will ${subject} ${verb}`;
     return [
       { before: lead, after: s.en.slice(direct[0].length), answer, choices: shuffle2(answer, `${subject} ${presentOf(verb, subject)}`, s.id), form: 'will' },
@@ -454,8 +498,14 @@ const whenQuestion: Builder = (s, known) => {
 
 /* ------------------------------------------------ prétérit, used to --- */
 
-const PAST_MOMENT =
-  /\b(?:yesterday|ago|last\s+(?:week|month|year|night|summer|winter|weekend|monday|tuesday|wednesday|thursday|friday|saturday|sunday)|in\s+(?:19|20)\d\d|when\s+(?:i|he|she|we|they)\s+w(?:as|ere))\b/i;
+/**
+ * Un seul moment, où used to est exclu : hier, il y a…, hier soir, lundi dernier. Pas « when I was a child » ni « last
+ * year », où une habitude passée est possible (« When I was a child, I used to believe in Father Christmas »).
+ */
+const SINGLE_MOMENT =
+  /\b(?:yesterday|ago|this\s+morning|the\s+other\s+day|last\s+(?:night|week|weekend|monday|tuesday|wednesday|thursday|friday|saturday|sunday))\b/i;
+/** Verbes d'état : used to leur convient même avec un moment daté. */
+const STATIVE = /^(?:be|believe|love|like|hate|live|know|have|want|need|own|think|prefer|belong|seem|understand|mean|remember)$/;
 
 /** Present perfect ou prétérit : choisir entre les deux formes du même verbe. */
 const perfectOrPast: Builder = (s, known) => {
@@ -467,11 +517,15 @@ const perfectOrPast: Builder = (s, known) => {
     const w = words(s.en.slice(pp.start, pp.end));
     if (w.length !== 2 || !/^(?:have|has)$/i.test(w[0])) return [];
     const base = baseOf(w[1], known);
-    if (!base || MODAL_BEFORE.test(s.en.slice(0, pp.start))) return [];
+    const before = s.en.slice(0, pp.start);
+    if (!base || MODAL_BEFORE.test(before)) return [];
+    // Un repère du present perfect, et aucun moment passé hors de « since … » : « the child who has won a prize
+    // yesterday » est fautif, et sans repère le prétérit serait juste aussi.
+    if (!PERFECT_MARKER.test(s.en) || PAST_MARKER.test(s.en.replace(/\bsince\b[^,.;!?]*/gi, ''))) return [];
     const answer = `${w[0].toLowerCase()} ${w[1].toLowerCase()}`;
-    return [
-      { before: s.en.slice(0, pp.start), after: s.en.slice(pp.end), answer, hint: base, choices: shuffle2(answer, pastOf(base, known), s.id), form: 'perfect' },
-    ];
+    // « Prices have been » : le distracteur s'accorde (were), sinon l'accord donnerait la réponse.
+    const past = base === 'be' ? (/^has$/i.test(w[0]) || /\bI\s*$/.test(before) ? 'was' : 'were') : pastOf(base, known);
+    return [{ before, after: s.en.slice(pp.end), answer, hint: base, choices: shuffle2(answer, past, s.id), form: 'perfect' }];
   }
   const past = single('past-simple-irregular', s.en) ?? single('past-simple-regular', s.en);
   if (!past) return [];
@@ -486,7 +540,7 @@ const perfectOrPast: Builder = (s, known) => {
   )
     return [];
   const base = baseOf(verb, known);
-  if (!base || !/(?:yesterday|ago|last|in\s+(?:19|20)\d\d|when)/i.test(s.en)) return [];
+  if (!base || !PAST_MARKER.test(s.en) || PERFECT_MARKER.test(s.en)) return [];
   const aux = THIRD_PERSON.test(subject) ? 'has' : 'have';
   const at = past.start + subject.length + 1;
   return [
@@ -544,12 +598,12 @@ const usedTo: Builder = (s, known) => {
     }
   }
   // Un seul événement daté, sans idée d'habitude : prétérit.
-  if (!out.length && PAST_MOMENT.test(s.en) && !/\b(?:used|every|often|always|usually|would)\b/i.test(s.en)) {
+  if (!out.length && SINGLE_MOMENT.test(s.en) && !/\b(?:used|every|often|always|usually|would)\b/i.test(s.en)) {
     const past = single('past-simple-irregular', s.en) ?? single('past-simple-regular', s.en);
     const w = past ? words(s.en.slice(past.start, past.end)) : [];
     if (past && w.length === 2 && !/^(?:was|were|had|did)$/i.test(w[1])) {
       const base = baseOf(w[1], known);
-      if (base && plausibleBase(base, known)) {
+      if (base && plausibleBase(base, known) && !STATIVE.test(base)) {
         const at = past.start + w[0].length + 1;
         const answer = w[1].toLowerCase();
         out.push({
@@ -581,7 +635,7 @@ const TIME_LINKS = 'when|as soon as|until|before|after';
 
 /** Fabrique de chaque leçon : les variantes possibles d'une phrase. */
 export const BUILDERS: Record<string, Builder> = {
-  'present-perfect': auxParticiple('present-perfect', /^(?:have|has|'ve|'s)$/i),
+  'present-perfect': auxParticiple('present-perfect', /^(?:have|has|'ve|'s)$/i, { perfectUnmarked: true }),
   'perfect-vs-past': perfectOrPast,
   'for-since': choiceWord('for-since', { for: 'since', since: 'for' }),
   'past-perfect': auxParticiple('past-perfect', /^(?:had|'d)$/i, { pastAccepted: true }),

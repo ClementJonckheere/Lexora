@@ -6,6 +6,7 @@ import {
   ingOf,
   isCorrect,
   normalizeAnswer,
+  pastForms,
   pastOf,
   participleOf,
   presentOf,
@@ -32,7 +33,7 @@ describe('verbes', () => {
 
   it('réponses : contractions acceptées dans les deux sens', () => {
     expect(normalizeAnswer("I've seen")).toBe('i have seen');
-    const e = ex('present-perfect', "I've lost my keys.")!;
+    const e = ex('present-perfect', "I've lost my keys today.")!;
     expect(e.answer).toBe('have lost');
     expect(isCorrect(e, 'have lost')).toBe(true);
     expect(isCorrect(e, "'ve lost")).toBe(true);
@@ -120,7 +121,10 @@ describe('cas relevés dans les banques générées', () => {
 
   it("« don't », adverbes, contexte passé : pas d'exercice de subordonnée", () => {
     // Seule la principale fait un exercice : « don » n'est pas un verbe.
-    expect(ex('first-conditional', "You will miss the train if you don't hurry.", 2)).toMatchObject({ answer: 'will miss', form: 'will' });
+    expect(ex('first-conditional', "You will miss the train if you don't hurry.", 2, 'Tu rateras le train si tu ne te dépêches pas.')).toMatchObject({
+      answer: 'will miss',
+      form: 'will',
+    });
     expect(ex('time-clauses', 'I remember the night when I first saw the Milky Way.')).toBeNull();
     expect(ex('time-clauses', 'Tom was there for me when I needed someone.')).toBeNull();
   });
@@ -145,13 +149,17 @@ describe('cas relevés dans les banques générées', () => {
 
 describe('équilibre des réponses : will, would, prétérit ne sont pas toujours faux (ou toujours justes)', () => {
   it('trou dans la principale : will + base contre le présent, would + base contre le prétérit', () => {
-    const a = ex('first-conditional', "If it rains, we'll stay home.", 1)!;
+    const a = ex('first-conditional', "If it rains, we'll stay home.", 1, 'S’il pleut, nous resterons à la maison.')!;
     expect(withBlank(a)).toBe('If it rains, we ___ home.');
     expect(a).toMatchObject({ answer: 'will stay', form: 'will', hint: 'stay' });
     expect(a.choices?.sort()).toEqual(['stay', 'will stay']);
     expect(isCorrect(a, 'will stay')).toBe(true);
-    expect(ex('first-conditional', 'If you ask him, Tom will help you.', 1)!.choices).toContain('helps');
-    expect(ex('first-conditional', 'The children will wake up if you make noise.', 1)!.choices).toContain('wake');
+    expect(ex('first-conditional', 'If you ask him, Tom will help you.', 1, 'Si tu lui demandes, Tom t’aidera.')!.choices).toContain('helps');
+    expect(ex('first-conditional', 'The children will wake up if you make noise.', 1, 'Les enfants vont se réveiller si tu fais du bruit.')!.choices).toContain(
+      'wake',
+    );
+    // Traduite au présent (« je parle si je veux »), la principale admet aussi le présent : pas d'exercice will.
+    expect(ex('first-conditional', 'I will speak if I want.', 1, 'Je parle si je veux.')?.form).not.toBe('will');
     const b = ex('second-conditional', 'If I had a dog, I would call it Rex.', 1, "Si j'avais un chien, je l'appellerais Rex.")!;
     expect(b).toMatchObject({ answer: 'would call', form: 'would' });
     expect(b.choices?.sort()).toEqual(['called', 'would call']);
@@ -172,11 +180,13 @@ describe('équilibre des réponses : will, would, prétérit ne sont pas toujour
     expect(ex('time-clauses', 'We close the windows when it rains.', 2)).toBeNull();
     expect(ex('time-clauses', 'Phone me when you get there.', 2)).toMatchObject({ answer: 'get', form: 'present' });
     expect(ex('time-clauses', 'When you see him, tell him to call me.', 2)).toMatchObject({ answer: 'see' });
-    expect(ex('time-clauses', "When I get my first salary, I'll buy a car.", 1)).toMatchObject({ answer: 'will buy', form: 'will' });
+    expect(
+      ex('time-clauses', "When I get my first salary, I'll buy a car.", 1, 'Quand je toucherai mon premier salaire, j’achèterai une voiture.'),
+    ).toMatchObject({ answer: 'will buy', form: 'will' });
   });
 
   it('les cas où will est juste après when : question, question indirecte', () => {
-    const q = ex('time-clauses', 'When will you arrive?', 1)!;
+    const q = ex('time-clauses', 'When will you arrive?', 1, 'Quand arriveras-tu ?')!;
     expect(q).toMatchObject({ before: 'When ', answer: 'will you arrive', after: '?', form: 'will' });
     expect(q.choices?.sort()).toEqual(['will you arrive', 'you arrive']);
     const i = ex('time-clauses', "I don't know when he'll arrive.", 1, 'Je ne sais pas quand il arrivera.')!;
@@ -194,7 +204,7 @@ describe('équilibre des réponses : will, would, prétérit ne sont pas toujour
     const b = ex('used-to', "I'm used to working at night.", 1)!;
     expect(b).toMatchObject({ before: "I'm ", answer: 'used to working', form: 'be-used-to' });
     expect(b.choices?.sort()).toEqual(['used to work', 'used to working']);
-    const c = ex('used-to', 'I went to Rome last year.', 1)!;
+    const c = ex('used-to', 'I went to Rome last week.', 1)!;
     expect(c).toMatchObject({ answer: 'went', form: 'past' });
     expect(c.choices?.sort()).toEqual(['used to go', 'went']);
     expect(ex('used-to', 'We used to live in the city.', 1)).toMatchObject({ answer: 'used to live' });
@@ -242,5 +252,44 @@ describe('équilibre des réponses : will, would, prétérit ne sont pas toujour
     expect([isCorrect(e, 'had lit'), isCorrect(e, "'d lit"), isCorrect(e, 'lit'), isCorrect(e, 'lighted')]).toEqual([true, true, true, false]);
     const f = ex('past-perfect', 'I had met him once before.', 1, "Je l'avais déjà rencontré une fois.")!;
     expect(f.accept).toBeUndefined(); // « before » adverbe : le plus-que-parfait reste nécessaire
+  });
+});
+
+describe('correcteur : réponses également justes', () => {
+  it('prétérit accepté après before / after + « I » (règle 5)', () => {
+    const e = ex('past-perfect', 'The summer had gone before I knew it.', 1, "L'été était passé avant que je m'en aperçoive.")!;
+    expect(e.accept).toEqual(['went']);
+    expect(isCorrect(e, 'went')).toBe(true);
+    expect(ex('past-perfect', 'Before I arrived, they had left.', 1, 'Avant que j’arrive, ils étaient partis.')!.accept).toEqual(['left']);
+  });
+
+  it('variantes orthographiques : learned / learnt, dreamed / dreamt', () => {
+    const e = ex('past-perfect', 'He had learnt English before he moved to London.', 1, 'Il avait appris l’anglais avant de déménager à Londres.')!;
+    expect(['had learnt', 'had learned', 'learnt', 'learned'].map((t) => isCorrect(e, t))).toEqual([true, true, true, true]);
+    expect(pastForms('dream')).toEqual(expect.arrayContaining(['dreamt', 'dreamed']));
+  });
+
+  it('present perfect sans repère : le prétérit est juste aussi', () => {
+    const e = ex('present-perfect', 'I have seen that.', 1)!;
+    expect(isCorrect(e, 'saw')).toBe(true);
+    const marked = ex('present-perfect', 'I have seen that since Monday.', 1)!;
+    expect(isCorrect(marked, 'saw')).toBe(false);
+  });
+
+  it('perfect-vs-past : repère du present perfect exigé, aucun moment passé hors de since, accord du distracteur', () => {
+    expect(ex('perfect-vs-past', 'Here is the child who has won a prize yesterday.', 1)).toBeNull();
+    expect(ex('perfect-vs-past', 'It cannot have rained yesterday.', 1)).toBeNull();
+    expect(ex('perfect-vs-past', 'I have decided to keep a diary this year.', 1)).toBeNull(); // « this year » : le prétérit va aussi
+    expect(ex('perfect-vs-past', 'It has rained since yesterday.', 1)).toMatchObject({ answer: 'has rained', form: 'perfect' });
+    expect(ex('perfect-vs-past', 'Prices have been rising since last year.', 1)!.choices?.sort()).toEqual(['have been', 'were']);
+  });
+
+  it('used to : prétérit seulement pour un moment unique, pas pour un état', () => {
+    expect(ex('used-to', 'When I was a child, I believed in Father Christmas.', 1)).toBeNull();
+    expect(ex('used-to', 'I believed him yesterday.', 1)).toBeNull();
+  });
+
+  it('time-clauses : un adverbe n’est pas le verbe', () => {
+    expect(ex('time-clauses', 'Do you remember when you last saw Tom?', 2)).toBeNull();
   });
 });
