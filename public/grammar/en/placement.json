@@ -1,0 +1,3032 @@
+{
+ "version": 1,
+ "generatedAt": "2026-10-29T15:29:31.177Z",
+ "source": "Tatoeba (CC BY 2.0 FR), banques des leçons",
+ "status": "généré automatiquement, à relire avant activation",
+ "covered": {
+  "present-perfect": {
+   "typed": 8,
+   "choice2": 0,
+   "choice3plus": 0
+  },
+  "perfect-vs-past": {
+   "typed": 8,
+   "choice2": 0,
+   "choice3plus": 0
+  },
+  "for-since": {
+   "typed": 0,
+   "choice2": 0,
+   "choice3plus": 8
+  },
+  "past-perfect": {
+   "typed": 8,
+   "choice2": 0,
+   "choice3plus": 0
+  },
+  "used-to": {
+   "typed": 4,
+   "choice2": 0,
+   "choice3plus": 4
+  },
+  "first-conditional": {
+   "typed": 8,
+   "choice2": 0,
+   "choice3plus": 0
+  },
+  "second-conditional": {
+   "typed": 8,
+   "choice2": 0,
+   "choice3plus": 0
+  },
+  "time-clauses": {
+   "typed": 7,
+   "choice2": 0,
+   "choice3plus": 1
+  },
+  "passive": {
+   "typed": 8,
+   "choice2": 0,
+   "choice3plus": 0
+  },
+  "say-tell": {
+   "typed": 0,
+   "choice2": 8,
+   "choice3plus": 0
+  },
+  "perfect-continuous": {
+   "typed": 8,
+   "choice2": 0,
+   "choice3plus": 0
+  },
+  "relatives-defining": {
+   "typed": 0,
+   "choice2": 0,
+   "choice3plus": 8
+  },
+  "quantifiers": {
+   "typed": 0,
+   "choice2": 0,
+   "choice3plus": 8
+  },
+  "gerund-infinitive-meaning": {
+   "typed": 0,
+   "choice2": 0,
+   "choice3plus": 8
+  },
+  "too-enough": {
+   "typed": 0,
+   "choice2": 2,
+   "choice3plus": 6
+  },
+  "question-tags": {
+   "typed": 0,
+   "choice2": 2,
+   "choice3plus": 6
+  },
+  "indirect-questions": {
+   "typed": 0,
+   "choice2": 8,
+   "choice3plus": 0
+  },
+  "deduction-present": {
+   "typed": 0,
+   "choice2": 0,
+   "choice3plus": 8
+  },
+  "wish": {
+   "typed": 8,
+   "choice2": 0,
+   "choice3plus": 0
+  },
+  "third-conditional": {
+   "typed": 8,
+   "choice2": 0,
+   "choice3plus": 0
+  },
+  "be-used-to": {
+   "typed": 0,
+   "choice2": 0,
+   "choice3plus": 8
+  }
+ },
+ "missing": [
+  {
+   "id": "be",
+   "level": "A1",
+   "title": "Le verbe to be au présent",
+   "tatoebaWithFrench": 82255
+  },
+  {
+   "id": "was-were",
+   "level": "A1",
+   "title": "Prétérit de be : was / were",
+   "tatoebaWithFrench": 24013
+  },
+  {
+   "id": "subject-object-pronouns",
+   "level": "A1",
+   "title": "Pronoms sujets et compléments",
+   "tatoebaWithFrench": 29258
+  },
+  {
+   "id": "possessive-adjectives",
+   "level": "A1",
+   "title": "Adjectifs et pronoms possessifs",
+   "tatoebaWithFrench": 46741
+  },
+  {
+   "id": "articles",
+   "level": "A1",
+   "title": "Articles a / an / the",
+   "tatoebaWithFrench": 127091
+  },
+  {
+   "id": "plural-forms",
+   "level": "A1",
+   "title": "Formes du pluriel",
+   "tatoebaWithFrench": 8827
+  },
+  {
+   "id": "this-that",
+   "level": "A1",
+   "title": "Démonstratifs this / that / these / those",
+   "tatoebaWithFrench": 22239
+  },
+  {
+   "id": "adjectives",
+   "level": "A1",
+   "title": "Adjectif : place et invariabilité",
+   "tatoebaWithFrench": 0
+  },
+  {
+   "id": "present-simple",
+   "level": "A1",
+   "title": "Présent simple",
+   "tatoebaWithFrench": 7082
+  },
+  {
+   "id": "do-questions",
+   "level": "A1",
+   "title": "Questions et négations avec do / does",
+   "tatoebaWithFrench": 23918
+  },
+  {
+   "id": "wh-questions",
+   "level": "A1",
+   "title": "Questions avec mot interrogatif",
+   "tatoebaWithFrench": 16695
+  },
+  {
+   "id": "there-is",
+   "level": "A1",
+   "title": "There is / there are",
+   "tatoebaWithFrench": 3226
+  },
+  {
+   "id": "have-got",
+   "level": "A1",
+   "title": "Have / have got (possession)",
+   "tatoebaWithFrench": 1131
+  },
+  {
+   "id": "can",
+   "level": "A1",
+   "title": "Can / can't (capacité, permission)",
+   "tatoebaWithFrench": 13371
+  },
+  {
+   "id": "imperative",
+   "level": "A1",
+   "title": "L'impératif",
+   "tatoebaWithFrench": 7094
+  },
+  {
+   "id": "prepositions-time-place",
+   "level": "A1",
+   "title": "Prépositions de temps et de lieu : in / on / at",
+   "tatoebaWithFrench": 1646
+  },
+  {
+   "id": "frequency-adverbs",
+   "level": "A1",
+   "title": "Adverbes de fréquence et leur place",
+   "tatoebaWithFrench": 8766
+  },
+  {
+   "id": "present-continuous",
+   "level": "A1",
+   "title": "Présent continu (be + -ing)",
+   "tatoebaWithFrench": 14869
+  },
+  {
+   "id": "simple-vs-continuous",
+   "level": "A2",
+   "title": "Présent simple ou continu",
+   "tatoebaWithFrench": 0
+  },
+  {
+   "id": "past-simple-regular",
+   "level": "A2",
+   "title": "Prétérit des verbes réguliers",
+   "tatoebaWithFrench": 20435
+  },
+  {
+   "id": "past-simple-irregular",
+   "level": "A2",
+   "title": "Prétérit des verbes irréguliers",
+   "tatoebaWithFrench": 25113
+  },
+  {
+   "id": "past-participle",
+   "level": "A2",
+   "title": "Participe passé (réguliers et irréguliers)",
+   "tatoebaWithFrench": 13144
+  },
+  {
+   "id": "past-questions",
+   "level": "A2",
+   "title": "Questions et négations au prétérit (did)",
+   "tatoebaWithFrench": 7136
+  },
+  {
+   "id": "past-continuous",
+   "level": "A2",
+   "title": "Prétérit continu (was / were + -ing)",
+   "tatoebaWithFrench": 3493
+  },
+  {
+   "id": "uncountables",
+   "level": "A2",
+   "title": "Noms indénombrables",
+   "tatoebaWithFrench": 2456
+  },
+  {
+   "id": "countables",
+   "level": "A2",
+   "title": "Some / any, much / many, a lot of",
+   "tatoebaWithFrench": 7263
+  },
+  {
+   "id": "comparatives",
+   "level": "A2",
+   "title": "Comparatifs et superlatifs",
+   "tatoebaWithFrench": 5809
+  },
+  {
+   "id": "possessive-s",
+   "level": "A2",
+   "title": "Le génitif 's et of",
+   "tatoebaWithFrench": 6108
+  },
+  {
+   "id": "going-to",
+   "level": "A2",
+   "title": "Futur avec be going to",
+   "tatoebaWithFrench": 2385
+  },
+  {
+   "id": "will",
+   "level": "A2",
+   "title": "Futur avec will (décision, prédiction)",
+   "tatoebaWithFrench": 15182
+  },
+  {
+   "id": "must-have-to",
+   "level": "A2",
+   "title": "Obligation : must / have to",
+   "tatoebaWithFrench": 5953
+  },
+  {
+   "id": "should",
+   "level": "A2",
+   "title": "Conseil : should",
+   "tatoebaWithFrench": 4142
+  },
+  {
+   "id": "adverbs-manner",
+   "level": "A2",
+   "title": "Adverbes de manière (-ly) et leur place",
+   "tatoebaWithFrench": 14745
+  },
+  {
+   "id": "verb-patterns",
+   "level": "A2",
+   "title": "Verbe + -ing ou verbe + to",
+   "tatoebaWithFrench": 11790
+  },
+  {
+   "id": "reported-statements",
+   "level": "B1",
+   "title": "Discours rapporté (affirmations)",
+   "tatoebaWithFrench": 925
+  },
+  {
+   "id": "subject-questions",
+   "level": "B1",
+   "title": "Questions sur le sujet (sans do)",
+   "tatoebaWithFrench": 943
+  },
+  {
+   "id": "purpose-to",
+   "level": "B1",
+   "title": "Le but : to + base verbale",
+   "tatoebaWithFrench": 942
+  },
+  {
+   "id": "preposition-ing",
+   "level": "B1",
+   "title": "Préposition + -ing",
+   "tatoebaWithFrench": 4341
+  },
+  {
+   "id": "make-let",
+   "level": "B1",
+   "title": "Make / let + base verbale",
+   "tatoebaWithFrench": 2101
+  },
+  {
+   "id": "phrasal-verbs",
+   "level": "B1",
+   "title": "Verbes à particule : place du complément",
+   "tatoebaWithFrench": 1209
+  },
+  {
+   "id": "mixed-conditionals",
+   "level": "B2",
+   "title": "Conditionnels mixtes",
+   "tatoebaWithFrench": 16
+  },
+  {
+   "id": "passive-modals",
+   "level": "B2",
+   "title": "Passif avec un modal",
+   "tatoebaWithFrench": 988
+  },
+  {
+   "id": "have-something-done",
+   "level": "B2",
+   "title": "Have something done",
+   "tatoebaWithFrench": 351
+  },
+  {
+   "id": "relatives-non-defining",
+   "level": "B2",
+   "title": "Relatives explicatives (virgules, which, whose)",
+   "tatoebaWithFrench": 257
+  },
+  {
+   "id": "deduction-past",
+   "level": "B2",
+   "title": "Déduction au passé : must have / might have / can't have",
+   "tatoebaWithFrench": 485
+  },
+  {
+   "id": "reported-questions",
+   "level": "B2",
+   "title": "Discours rapporté : questions et ordres",
+   "tatoebaWithFrench": 877
+  },
+  {
+   "id": "future-continuous",
+   "level": "B2",
+   "title": "Futur continu",
+   "tatoebaWithFrench": 250
+  },
+  {
+   "id": "future-perfect",
+   "level": "B2",
+   "title": "Futur antérieur",
+   "tatoebaWithFrench": 71
+  },
+  {
+   "id": "inversion",
+   "level": "C1",
+   "title": "Inversion après une négation (Never have I…)",
+   "tatoebaWithFrench": 87
+  },
+  {
+   "id": "cleft-sentences",
+   "level": "C1",
+   "title": "Phrases clivées (What I need is…, It was… that…)",
+   "tatoebaWithFrench": 721
+  },
+  {
+   "id": "participle-clauses",
+   "level": "C1",
+   "title": "Propositions participiales",
+   "tatoebaWithFrench": 552
+  },
+  {
+   "id": "subjunctive",
+   "level": "C1",
+   "title": "Subjonctif formel (suggest that he go)",
+   "tatoebaWithFrench": 36
+  },
+  {
+   "id": "emphatic-do",
+   "level": "C1",
+   "title": "Do d'insistance",
+   "tatoebaWithFrench": 569
+  }
+ ],
+ "items": [
+  {
+   "id": "placement:present-perfect:present-perfect:24489",
+   "targetId": "present-perfect",
+   "evidenceId": "tatoeba:24489",
+   "before": "I ",
+   "after": " one many times.",
+   "fr": "J'en ai vu un plusieurs fois.",
+   "answer": "have seen",
+   "source": "tatoeba:24489",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "see"
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:3420179",
+   "targetId": "present-perfect",
+   "evidenceId": "tatoeba:3420179",
+   "before": "Mary ",
+   "after": " on time.",
+   "fr": "Marie est arrivée à temps.",
+   "answer": "has arrived",
+   "source": "tatoeba:3420179",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "arrive"
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:1898120",
+   "targetId": "present-perfect",
+   "evidenceId": "tatoeba:1898120",
+   "before": "They ",
+   "after": " plenty of time.",
+   "fr": "Ils ont disposé de plein de temps.",
+   "answer": "have had",
+   "source": "tatoeba:1898120",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "have"
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:5254559",
+   "targetId": "present-perfect",
+   "evidenceId": "tatoeba:5254559",
+   "before": "I ",
+   "after": " research on this.",
+   "fr": "J'ai fait des recherches sur ceci.",
+   "answer": "have done",
+   "source": "tatoeba:5254559",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "do"
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:7467027",
+   "targetId": "present-perfect",
+   "evidenceId": "tatoeba:7467027",
+   "before": "I ",
+   "after": " the bell already.",
+   "fr": "J'ai déjà actionné la cloche.",
+   "answer": "have rung",
+   "source": "tatoeba:7467027",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "ring"
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:7813222",
+   "targetId": "present-perfect",
+   "evidenceId": "tatoeba:7813222",
+   "before": "You ",
+   "after": " all this time?",
+   "fr": "Vous le saviez depuis tout ce temps ?",
+   "answer": "have known",
+   "source": "tatoeba:7813222",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "know"
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:1334393",
+   "targetId": "present-perfect",
+   "evidenceId": "tatoeba:1334393",
+   "before": "I ",
+   "after": " her already.",
+   "fr": "Je lui ai déjà pardonné.",
+   "answer": "have forgiven",
+   "source": "tatoeba:1334393",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "forgive"
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:3820018",
+   "targetId": "present-perfect",
+   "evidenceId": "tatoeba:3820018",
+   "before": "A lot ",
+   "after": " since then.",
+   "fr": "Beaucoup de choses ont changé depuis.",
+   "answer": "has changed",
+   "source": "tatoeba:3820018",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "change"
+  },
+  {
+   "id": "placement:perfect-vs-past:perfect-vs-past:1742463",
+   "targetId": "perfect-vs-past",
+   "evidenceId": "tatoeba:1742463",
+   "before": "He ",
+   "after": " abroad last year.",
+   "fr": "Il est allé à l'étranger l'an dernier.",
+   "answer": "went",
+   "source": "tatoeba:1742463",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "go"
+  },
+  {
+   "id": "placement:perfect-vs-past:perfect-vs-past:291659",
+   "targetId": "perfect-vs-past",
+   "evidenceId": "tatoeba:291659",
+   "before": "He ",
+   "after": " home just now.",
+   "fr": "Il vient juste d'arriver.",
+   "answer": "has come",
+   "source": "tatoeba:291659",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "come"
+  },
+  {
+   "id": "placement:perfect-vs-past:perfect-vs-past:2239577",
+   "targetId": "perfect-vs-past",
+   "evidenceId": "tatoeba:2239577",
+   "before": "I ",
+   "after": " to her yesterday.",
+   "fr": "Je lui ai parlé hier.",
+   "answer": "spoke",
+   "source": "tatoeba:2239577",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "speak"
+  },
+  {
+   "id": "placement:perfect-vs-past:perfect-vs-past:6863430",
+   "targetId": "perfect-vs-past",
+   "evidenceId": "tatoeba:6863430",
+   "before": "None of us ",
+   "after": " yet.",
+   "fr": "Aucun d'entre nous n'a encore mangé.",
+   "answer": "have eaten",
+   "source": "tatoeba:6863430",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "eat"
+  },
+  {
+   "id": "placement:perfect-vs-past:perfect-vs-past:2612082",
+   "targetId": "perfect-vs-past",
+   "evidenceId": "tatoeba:2612082",
+   "before": "I ",
+   "after": " up late yesterday.",
+   "fr": "Je me suis levé tard hier.",
+   "answer": "woke",
+   "source": "tatoeba:2612082",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "wake"
+  },
+  {
+   "id": "placement:perfect-vs-past:perfect-vs-past:1334393",
+   "targetId": "perfect-vs-past",
+   "evidenceId": "tatoeba:1334393",
+   "before": "I ",
+   "after": " her already.",
+   "fr": "Je lui ai déjà pardonné.",
+   "answer": "have forgiven",
+   "source": "tatoeba:1334393",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "forgive"
+  },
+  {
+   "id": "placement:perfect-vs-past:perfect-vs-past:4823475",
+   "targetId": "perfect-vs-past",
+   "evidenceId": "tatoeba:4823475",
+   "before": "Yesterday it ",
+   "after": " hard.",
+   "fr": "Il a plu à verse hier.",
+   "answer": "rained",
+   "source": "tatoeba:4823475",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "rain"
+  },
+  {
+   "id": "placement:perfect-vs-past:perfect-vs-past:4496206",
+   "targetId": "perfect-vs-past",
+   "evidenceId": "tatoeba:4496206",
+   "before": "Nothing ",
+   "after": " burned yet.",
+   "fr": "Rien n'a encore été brûlé.",
+   "answer": "has been",
+   "source": "tatoeba:4496206",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "be"
+  },
+  {
+   "id": "placement:for-since:for-since:1601035",
+   "targetId": "for-since",
+   "evidenceId": "tatoeba:1601035",
+   "before": "We went there ",
+   "after": " a week.",
+   "fr": "Nous y allâmes pour une semaine.",
+   "answer": "for",
+   "source": "tatoeba:1601035",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "since",
+    "during",
+    "for"
+   ]
+  },
+  {
+   "id": "placement:for-since:for-since:5512946",
+   "targetId": "for-since",
+   "evidenceId": "tatoeba:5512946",
+   "before": "We've been here ",
+   "after": " 2013.",
+   "fr": "Nous sommes ici depuis 2013.",
+   "answer": "since",
+   "source": "tatoeba:5512946",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "during",
+    "for",
+    "since"
+   ]
+  },
+  {
+   "id": "placement:for-since:for-since:703309",
+   "targetId": "for-since",
+   "evidenceId": "tatoeba:703309",
+   "before": "40 dollars ",
+   "after": " seven days.",
+   "fr": "40 dollars pour sept jours.",
+   "answer": "for",
+   "source": "tatoeba:703309",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "since",
+    "during",
+    "for"
+   ]
+  },
+  {
+   "id": "placement:for-since:for-since:1153996",
+   "targetId": "for-since",
+   "evidenceId": "tatoeba:1153996",
+   "before": "He is there ",
+   "after": " a few days.",
+   "fr": "Il est là pour quelques jours.",
+   "answer": "for",
+   "source": "tatoeba:1153996",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "for",
+    "during",
+    "since"
+   ]
+  },
+  {
+   "id": "placement:for-since:for-since:11715540",
+   "targetId": "for-since",
+   "evidenceId": "tatoeba:11715540",
+   "before": "The boy slept ",
+   "after": " ten hours.",
+   "fr": "Le garçon a dormi pendant dix heures.",
+   "answer": "for",
+   "source": "tatoeba:11715540",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "since",
+    "for",
+    "during"
+   ]
+  },
+  {
+   "id": "placement:for-since:for-since:3060634",
+   "targetId": "for-since",
+   "evidenceId": "tatoeba:3060634",
+   "before": "I intend to stay ",
+   "after": " a week.",
+   "fr": "J'ai l'intention de rester une semaine.",
+   "answer": "for",
+   "source": "tatoeba:3060634",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "for",
+    "during",
+    "since"
+   ]
+  },
+  {
+   "id": "placement:for-since:for-since:3553359",
+   "targetId": "for-since",
+   "evidenceId": "tatoeba:3553359",
+   "before": "What has changed ",
+   "after": " then?",
+   "fr": "Qu'est-ce qui a changé depuis ?",
+   "answer": "since",
+   "source": "tatoeba:3553359",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "since",
+    "for",
+    "during"
+   ]
+  },
+  {
+   "id": "placement:for-since:for-since:10671512",
+   "targetId": "for-since",
+   "evidenceId": "tatoeba:10671512",
+   "before": "I've been driving ",
+   "after": " 1996.",
+   "fr": "Je conduis depuis 1996.",
+   "answer": "since",
+   "source": "tatoeba:10671512",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "during",
+    "for",
+    "since"
+   ]
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:2891734",
+   "targetId": "past-perfect",
+   "evidenceId": "tatoeba:2891734",
+   "before": "No one ",
+   "after": " anything.",
+   "fr": "Personne n'avait vu quoi que ce soit.",
+   "answer": "had seen",
+   "source": "tatoeba:2891734",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "see"
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:8289092",
+   "targetId": "past-perfect",
+   "evidenceId": "tatoeba:8289092",
+   "before": "I ",
+   "after": " to go abroad.",
+   "fr": "J'avais prévu de me rendre à l'étranger.",
+   "answer": "had planned",
+   "source": "tatoeba:8289092",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "plan"
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:282882",
+   "targetId": "past-perfect",
+   "evidenceId": "tatoeba:282882",
+   "before": "If only he ",
+   "after": " there.",
+   "fr": "Si seulement il avait été là.",
+   "answer": "had been",
+   "source": "tatoeba:282882",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "be"
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:294933",
+   "targetId": "past-perfect",
+   "evidenceId": "tatoeba:294933",
+   "before": "He ",
+   "after": " down on sweets.",
+   "fr": "Il avait limité les sucreries.",
+   "answer": "had cut",
+   "source": "tatoeba:294933",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "cut"
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:7521364",
+   "targetId": "past-perfect",
+   "evidenceId": "tatoeba:7521364",
+   "before": "I didn't know Tom ",
+   "after": ".",
+   "fr": "Je ne savais pas que Tom était décédé.",
+   "answer": "had died",
+   "source": "tatoeba:7521364",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "die"
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:8056989",
+   "targetId": "past-perfect",
+   "evidenceId": "tatoeba:8056989",
+   "before": "I thought you ",
+   "after": " my CV.",
+   "fr": "Je pensais que vous aviez lu mon CV.",
+   "answer": "had read",
+   "source": "tatoeba:8056989",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "read"
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:8957654",
+   "targetId": "past-perfect",
+   "evidenceId": "tatoeba:8957654",
+   "before": "She told me why she ",
+   "after": ".",
+   "fr": "Elle m'a dit pourquoi elle était partie.",
+   "answer": "had left",
+   "source": "tatoeba:8957654",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "leave"
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:13813063",
+   "targetId": "past-perfect",
+   "evidenceId": "tatoeba:13813063",
+   "before": "Tom ",
+   "after": " to look for it.",
+   "fr": "Tom avait été le chercher.",
+   "answer": "had gone",
+   "source": "tatoeba:13813063",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "go"
+  },
+  {
+   "id": "placement:used-to:used-to:12087236",
+   "targetId": "used-to",
+   "evidenceId": "tatoeba:12087236",
+   "before": "You ",
+   "after": " near us.",
+   "fr": "Tu vivais près de chez nous.",
+   "answer": "used to live",
+   "source": "tatoeba:12087236",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "use to live",
+    "were used to living",
+    "used to live"
+   ]
+  },
+  {
+   "id": "placement:used-to:used-to:3312910",
+   "targetId": "used-to",
+   "evidenceId": "tatoeba:3312910",
+   "before": "We ",
+   "after": " it this morning.",
+   "fr": "Nous l'avons trouvée ce matin.",
+   "answer": "found",
+   "source": "tatoeba:3312910",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "find"
+  },
+  {
+   "id": "placement:used-to:used-to:7255066",
+   "targetId": "used-to",
+   "evidenceId": "tatoeba:7255066",
+   "before": "I ",
+   "after": " like that.",
+   "fr": "C’est ainsi que je me sentais.",
+   "answer": "used to feel",
+   "source": "tatoeba:7255066",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to feel",
+    "use to feel",
+    "was used to feeling"
+   ]
+  },
+  {
+   "id": "placement:used-to:used-to:4264393",
+   "targetId": "used-to",
+   "evidenceId": "tatoeba:4264393",
+   "before": "Yesterday I ",
+   "after": " up early.",
+   "fr": "Hier, je me suis levé tôt.",
+   "answer": "got",
+   "source": "tatoeba:4264393",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "get"
+  },
+  {
+   "id": "placement:used-to:used-to:259009",
+   "targetId": "used-to",
+   "evidenceId": "tatoeba:259009",
+   "before": "I'm not what I ",
+   "after": ".",
+   "fr": "Je ne suis plus ce que j'étais.",
+   "answer": "used to be",
+   "source": "tatoeba:259009",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "was used to being",
+    "use to be",
+    "used to be"
+   ]
+  },
+  {
+   "id": "placement:used-to:used-to:493788",
+   "targetId": "used-to",
+   "evidenceId": "tatoeba:493788",
+   "before": "I ",
+   "after": " here yesterday.",
+   "fr": "Je suis arrivé ici hier.",
+   "answer": "arrived",
+   "source": "tatoeba:493788",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "arrive"
+  },
+  {
+   "id": "placement:used-to:used-to:5827888",
+   "targetId": "used-to",
+   "evidenceId": "tatoeba:5827888",
+   "before": "I ",
+   "after": " doing this.",
+   "fr": "Je détestais faire ça.",
+   "answer": "used to hate",
+   "source": "tatoeba:5827888",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to hate",
+    "use to hate",
+    "was used to hating"
+   ]
+  },
+  {
+   "id": "placement:used-to:used-to:571632",
+   "targetId": "used-to",
+   "evidenceId": "tatoeba:571632",
+   "before": "He ",
+   "after": " away yesterday.",
+   "fr": "Il s'est éteint hier.",
+   "answer": "passed",
+   "source": "tatoeba:571632",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "pass"
+  },
+  {
+   "id": "placement:first-conditional:first-conditional:531189",
+   "targetId": "first-conditional",
+   "evidenceId": "tatoeba:531189",
+   "before": "If he ",
+   "after": ", I'll go too.",
+   "fr": "S'il vient, j'y vais aussi.",
+   "answer": "comes",
+   "source": "tatoeba:531189",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "come"
+  },
+  {
+   "id": "placement:first-conditional:first-conditional:39498",
+   "targetId": "first-conditional",
+   "evidenceId": "tatoeba:39498",
+   "before": "I ",
+   "after": " you if possible.",
+   "fr": "Je t'aiderai si c'est possible.",
+   "answer": "will help",
+   "source": "tatoeba:39498",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "help"
+  },
+  {
+   "id": "placement:first-conditional:first-conditional:5506982",
+   "targetId": "first-conditional",
+   "evidenceId": "tatoeba:5506982",
+   "before": "We'll die if we ",
+   "after": " here.",
+   "fr": "Nous mourrons si nous restons ici.",
+   "answer": "stay",
+   "source": "tatoeba:5506982",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "stay"
+  },
+  {
+   "id": "placement:first-conditional:first-conditional:19637",
+   "targetId": "first-conditional",
+   "evidenceId": "tatoeba:19637",
+   "before": "If we hurry, we ",
+   "after": " it.",
+   "fr": "Si nous nous dépêchons, ce sera bon.",
+   "answer": "will make",
+   "source": "tatoeba:19637",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "make"
+  },
+  {
+   "id": "placement:first-conditional:first-conditional:10312068",
+   "targetId": "first-conditional",
+   "evidenceId": "tatoeba:10312068",
+   "before": "If I ",
+   "after": " rich, I'll buy it.",
+   "fr": "Si je deviens riche, je l’achèterai.",
+   "answer": "get",
+   "source": "tatoeba:10312068",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "get"
+  },
+  {
+   "id": "placement:first-conditional:first-conditional:2012711",
+   "targetId": "first-conditional",
+   "evidenceId": "tatoeba:2012711",
+   "before": "I ",
+   "after": " if I want to.",
+   "fr": "Je me plaindrai si je le veux.",
+   "answer": "will complain",
+   "source": "tatoeba:2012711",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "complain"
+  },
+  {
+   "id": "placement:first-conditional:first-conditional:1438061",
+   "targetId": "first-conditional",
+   "evidenceId": "tatoeba:1438061",
+   "before": "If it ",
+   "after": ", he won't come.",
+   "fr": "S'il pleut, il ne viendra pas.",
+   "answer": "rains",
+   "source": "tatoeba:1438061",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "rain"
+  },
+  {
+   "id": "placement:first-conditional:first-conditional:2543072",
+   "targetId": "first-conditional",
+   "evidenceId": "tatoeba:2543072",
+   "before": "I ",
+   "after": " if I can find a map.",
+   "fr": "Je vais voir si je peux trouver une carte.",
+   "answer": "will see",
+   "source": "tatoeba:2543072",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "see"
+  },
+  {
+   "id": "placement:second-conditional:second-conditional:2544483",
+   "targetId": "second-conditional",
+   "evidenceId": "tatoeba:2544483",
+   "before": "Would you mind if we ",
+   "after": "?",
+   "fr": "Verriez-vous un inconvénient à ce que nous partions ?",
+   "answer": "left",
+   "source": "tatoeba:2544483",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "leave"
+  },
+  {
+   "id": "placement:second-conditional:second-conditional:2544893",
+   "targetId": "second-conditional",
+   "evidenceId": "tatoeba:2544893",
+   "before": "I ",
+   "after": " it if I were you.",
+   "fr": "Je le prendrais si j'étais vous.",
+   "answer": "would take",
+   "source": "tatoeba:2544893",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "take"
+  },
+  {
+   "id": "placement:second-conditional:second-conditional:9368928",
+   "targetId": "second-conditional",
+   "evidenceId": "tatoeba:9368928",
+   "before": "If I ",
+   "after": " you I'd ask him.",
+   "fr": "Si j'étais toi, je lui demanderais.",
+   "answer": "were",
+   "source": "tatoeba:9368928",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "be"
+  },
+  {
+   "id": "placement:second-conditional:second-conditional:6354423",
+   "targetId": "second-conditional",
+   "evidenceId": "tatoeba:6354423",
+   "before": "I ",
+   "after": " that if I were you.",
+   "fr": "Je ferais ça si j'étais toi.",
+   "answer": "would do",
+   "source": "tatoeba:6354423",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "do"
+  },
+  {
+   "id": "placement:second-conditional:second-conditional:3882609",
+   "targetId": "second-conditional",
+   "evidenceId": "tatoeba:3882609",
+   "before": "Would you mind if I ",
+   "after": "?",
+   "fr": "Cela vous dérangerait si j'aidais ?",
+   "answer": "helped",
+   "source": "tatoeba:3882609",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "help"
+  },
+  {
+   "id": "placement:second-conditional:second-conditional:8040107",
+   "targetId": "second-conditional",
+   "evidenceId": "tatoeba:8040107",
+   "before": "If I were you, I ",
+   "after": " it.",
+   "fr": "Si j'étais toi, je l'acquerrais.",
+   "answer": "would buy",
+   "source": "tatoeba:8040107",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "buy"
+  },
+  {
+   "id": "placement:second-conditional:second-conditional:1841512",
+   "targetId": "second-conditional",
+   "evidenceId": "tatoeba:1841512",
+   "before": "Would you mind if I ",
+   "after": " you?",
+   "fr": "Verrais-tu un inconvénient à ce que je t'embrasse ?",
+   "answer": "kissed",
+   "source": "tatoeba:1841512",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "kiss"
+  },
+  {
+   "id": "placement:second-conditional:second-conditional:3825555",
+   "targetId": "second-conditional",
+   "evidenceId": "tatoeba:3825555",
+   "before": "I ",
+   "after": " longer if I could.",
+   "fr": "J'attendrais plus longtemps si je le pouvais.",
+   "answer": "would wait",
+   "source": "tatoeba:3825555",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "wait"
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:10793317",
+   "targetId": "time-clauses",
+   "evidenceId": "tatoeba:10793317",
+   "before": "We ",
+   "after": " until the end.",
+   "fr": "Nous resterons jusqu'à la fin.",
+   "answer": "will stay",
+   "source": "tatoeba:10793317",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "stay"
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:11559663",
+   "targetId": "time-clauses",
+   "evidenceId": "tatoeba:11559663",
+   "before": "Call me when you ",
+   "after": " back.",
+   "fr": "Appelle-moi dès que tu es rentré.",
+   "answer": "get",
+   "source": "tatoeba:11559663",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "get"
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:2883848",
+   "targetId": "time-clauses",
+   "evidenceId": "tatoeba:2883848",
+   "before": "He ",
+   "after": " busy until four.",
+   "fr": "Il sera occupé jusqu'à quatre heures.",
+   "answer": "will be",
+   "source": "tatoeba:2883848",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "be"
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:1224624",
+   "targetId": "time-clauses",
+   "evidenceId": "tatoeba:1224624",
+   "before": "I'll love you until I ",
+   "after": ".",
+   "fr": "Je t'aimerai jusqu'à ma mort.",
+   "answer": "die",
+   "source": "tatoeba:1224624",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "die"
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:5767577",
+   "targetId": "time-clauses",
+   "evidenceId": "tatoeba:5767577",
+   "before": "I ",
+   "after": " when I'm dead.",
+   "fr": "Je dormirai quand je serai mort.",
+   "answer": "will sleep",
+   "source": "tatoeba:5767577",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "sleep"
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:9509807",
+   "targetId": "time-clauses",
+   "evidenceId": "tatoeba:9509807",
+   "before": "Do you know when it ",
+   "after": "?",
+   "fr": "Sais-tu quand ça ferme ?",
+   "answer": "shuts",
+   "source": "tatoeba:9509807",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "shut"
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:7586794",
+   "targetId": "time-clauses",
+   "evidenceId": "tatoeba:7586794",
+   "before": "When ",
+   "after": " again?",
+   "fr": "Quand reviendras-tu ?",
+   "answer": "will you come",
+   "source": "tatoeba:7586794",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "will you come",
+    "you will come",
+    "you come"
+   ]
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:2288969",
+   "targetId": "time-clauses",
+   "evidenceId": "tatoeba:2288969",
+   "before": "Don't stop until I ",
+   "after": " you.",
+   "fr": "Ne vous arrêtez pas jusqu'à ce que je vous le dise !",
+   "answer": "tell",
+   "source": "tatoeba:2288969",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "tell"
+  },
+  {
+   "id": "placement:passive:passive:12223746",
+   "targetId": "passive",
+   "evidenceId": "tatoeba:12223746",
+   "before": "Our flight ",
+   "after": ".",
+   "fr": "Notre vol a été annulé.",
+   "answer": "was cancelled",
+   "source": "tatoeba:12223746",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "cancel"
+  },
+  {
+   "id": "placement:passive:passive:1749406",
+   "targetId": "passive",
+   "evidenceId": "tatoeba:1749406",
+   "before": "She ",
+   "after": " to tears.",
+   "fr": "On l'a fait pleurer.",
+   "answer": "was brought",
+   "source": "tatoeba:1749406",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "bring"
+  },
+  {
+   "id": "placement:passive:passive:249242",
+   "targetId": "passive",
+   "evidenceId": "tatoeba:249242",
+   "before": "They ",
+   "after": " to go out.",
+   "fr": "On les a vus sortir.",
+   "answer": "were seen",
+   "source": "tatoeba:249242",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "see"
+  },
+  {
+   "id": "placement:passive:passive:5100568",
+   "targetId": "passive",
+   "evidenceId": "tatoeba:5100568",
+   "before": "Our dog ",
+   "after": " Johnny.",
+   "fr": "Notre chien s'appelle Johnny.",
+   "answer": "is called",
+   "source": "tatoeba:5100568",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "call"
+  },
+  {
+   "id": "placement:passive:passive:9258121",
+   "targetId": "passive",
+   "evidenceId": "tatoeba:9258121",
+   "before": "Tom ",
+   "after": " President.",
+   "fr": "Tom est élu Président.",
+   "answer": "is elected",
+   "source": "tatoeba:9258121",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "elect"
+  },
+  {
+   "id": "placement:passive:passive:293882",
+   "targetId": "passive",
+   "evidenceId": "tatoeba:293882",
+   "before": "He ",
+   "after": " for lying.",
+   "fr": "Il a été puni pour avoir menti.",
+   "answer": "was punished",
+   "source": "tatoeba:293882",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "punish"
+  },
+  {
+   "id": "placement:passive:passive:33391",
+   "targetId": "passive",
+   "evidenceId": "tatoeba:33391",
+   "before": "The hotel ",
+   "after": " down.",
+   "fr": "L'hôtel a été réduit en cendres.",
+   "answer": "was burned",
+   "source": "tatoeba:33391",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "burn"
+  },
+  {
+   "id": "placement:passive:passive:4816773",
+   "targetId": "passive",
+   "evidenceId": "tatoeba:4816773",
+   "before": "No DNA evidence ",
+   "after": ".",
+   "fr": "Aucune preuve ADN n'a été trouvée.",
+   "answer": "was found",
+   "source": "tatoeba:4816773",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "find"
+  },
+  {
+   "id": "placement:say-tell:say-tell:12161333",
+   "targetId": "say-tell",
+   "evidenceId": "tatoeba:12161333",
+   "before": "Tom ",
+   "after": " me not to enter.",
+   "fr": "Tom m'a dit de ne pas entrer.",
+   "answer": "told",
+   "source": "tatoeba:12161333",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "said",
+    "told"
+   ]
+  },
+  {
+   "id": "placement:say-tell:say-tell:1635590",
+   "targetId": "say-tell",
+   "evidenceId": "tatoeba:1635590",
+   "before": "Nobody ",
+   "after": " me anything.",
+   "fr": "Personne ne me dit quoi que ce soit.",
+   "answer": "tells",
+   "source": "tatoeba:1635590",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "says",
+    "tells"
+   ]
+  },
+  {
+   "id": "placement:say-tell:say-tell:3200108",
+   "targetId": "say-tell",
+   "evidenceId": "tatoeba:3200108",
+   "before": "Let's go ",
+   "after": " the others.",
+   "fr": "Allons le dire aux autres.",
+   "answer": "tell",
+   "source": "tatoeba:3200108",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "say",
+    "tell"
+   ]
+  },
+  {
+   "id": "placement:say-tell:say-tell:3456918",
+   "targetId": "say-tell",
+   "evidenceId": "tatoeba:3456918",
+   "before": "That's what they all ",
+   "after": ".",
+   "fr": "C'est ce qu'ils disent tous.",
+   "answer": "say",
+   "source": "tatoeba:3456918",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "tell",
+    "say"
+   ]
+  },
+  {
+   "id": "placement:say-tell:say-tell:42466",
+   "targetId": "say-tell",
+   "evidenceId": "tatoeba:42466",
+   "before": "That goes without ",
+   "after": ".",
+   "fr": "Cela va sans dire.",
+   "answer": "saying",
+   "source": "tatoeba:42466",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "telling",
+    "saying"
+   ]
+  },
+  {
+   "id": "placement:say-tell:say-tell:4616223",
+   "targetId": "say-tell",
+   "evidenceId": "tatoeba:4616223",
+   "before": "What he ",
+   "after": " is not true.",
+   "fr": "Ce qu'il dit n'est pas vrai.",
+   "answer": "says",
+   "source": "tatoeba:4616223",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "tells",
+    "says"
+   ]
+  },
+  {
+   "id": "placement:say-tell:say-tell:2876126",
+   "targetId": "say-tell",
+   "evidenceId": "tatoeba:2876126",
+   "before": "Tom ",
+   "after": " he would be here.",
+   "fr": "Tom a dit qu'il serait ici.",
+   "answer": "said",
+   "source": "tatoeba:2876126",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "told",
+    "said"
+   ]
+  },
+  {
+   "id": "placement:say-tell:say-tell:3201197",
+   "targetId": "say-tell",
+   "evidenceId": "tatoeba:3201197",
+   "before": "Maybe Tom is ",
+   "after": " the truth.",
+   "fr": "Peut-être Tom dit-il la vérité.",
+   "answer": "telling",
+   "source": "tatoeba:3201197",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "saying",
+    "telling"
+   ]
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:2359332",
+   "targetId": "perfect-continuous",
+   "evidenceId": "tatoeba:2359332",
+   "before": "I ",
+   "after": " all day.",
+   "fr": "J'ai marché toute la journée.",
+   "answer": "have been walking",
+   "source": "tatoeba:2359332",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "walk"
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:2314",
+   "targetId": "perfect-continuous",
+   "evidenceId": "tatoeba:2314",
+   "before": "I ",
+   "after": " for hours.",
+   "fr": "J'attends depuis des heures.",
+   "answer": "have been waiting",
+   "source": "tatoeba:2314",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "wait"
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:5996373",
+   "targetId": "perfect-continuous",
+   "evidenceId": "tatoeba:5996373",
+   "before": "I ",
+   "after": " it for years.",
+   "fr": "Je fais ça depuis des années.",
+   "answer": "have been doing",
+   "source": "tatoeba:5996373",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "do"
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:5643128",
+   "targetId": "perfect-continuous",
+   "evidenceId": "tatoeba:5643128",
+   "before": "Tom ",
+   "after": " all day.",
+   "fr": "Tom a planté des clous toute la journée.",
+   "answer": "has been hammering",
+   "source": "tatoeba:5643128",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "hammer"
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:8982065",
+   "targetId": "perfect-continuous",
+   "evidenceId": "tatoeba:8982065",
+   "before": "It ",
+   "after": " a lot lately.",
+   "fr": "Il a beaucoup plu ces derniers temps.",
+   "answer": "has been raining",
+   "source": "tatoeba:8982065",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "rain"
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:6004050",
+   "targetId": "perfect-continuous",
+   "evidenceId": "tatoeba:6004050",
+   "before": "He ",
+   "after": " since noon.",
+   "fr": "Il dort depuis midi.",
+   "answer": "has been sleeping",
+   "source": "tatoeba:6004050",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "sleep"
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:4083543",
+   "targetId": "perfect-continuous",
+   "evidenceId": "tatoeba:4083543",
+   "before": "Tom ",
+   "after": " TV all day.",
+   "fr": "Tom a regardé la télé toute la journée.",
+   "answer": "has been watching",
+   "source": "tatoeba:4083543",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "watch"
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:6849319",
+   "targetId": "perfect-continuous",
+   "evidenceId": "tatoeba:6849319",
+   "before": "I ",
+   "after": " that for months.",
+   "fr": "Ça fait des mois que je dis ça.",
+   "answer": "have been saying",
+   "source": "tatoeba:6849319",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "say"
+  },
+  {
+   "id": "placement:relatives-defining:relatives-defining:366925",
+   "targetId": "relatives-defining",
+   "evidenceId": "tatoeba:366925",
+   "before": "I hate people ",
+   "after": " say that.",
+   "fr": "Je déteste les gens qui disent ça.",
+   "answer": "who",
+   "source": "tatoeba:366925",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "which",
+    "what",
+    "who"
+   ]
+  },
+  {
+   "id": "placement:relatives-defining:relatives-defining:11301719",
+   "targetId": "relatives-defining",
+   "evidenceId": "tatoeba:11301719",
+   "before": "This is the letter ",
+   "after": " I wrote.",
+   "fr": "C'est la lettre que j'ai écrite.",
+   "answer": "which",
+   "source": "tatoeba:11301719",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "what",
+    "which",
+    "who"
+   ]
+  },
+  {
+   "id": "placement:relatives-defining:relatives-defining:1371227",
+   "targetId": "relatives-defining",
+   "evidenceId": "tatoeba:1371227",
+   "before": "Anyone ",
+   "after": " says so is a liar.",
+   "fr": "Quiconque le dit est un menteur.",
+   "answer": "who",
+   "source": "tatoeba:1371227",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "what",
+    "who",
+    "which"
+   ]
+  },
+  {
+   "id": "placement:relatives-defining:relatives-defining:11557290",
+   "targetId": "relatives-defining",
+   "evidenceId": "tatoeba:11557290",
+   "before": "The tale is a text ",
+   "after": " educates.",
+   "fr": "Le conte est un texte qui éduque.",
+   "answer": "which",
+   "source": "tatoeba:11557290",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "who",
+    "which",
+    "what"
+   ]
+  },
+  {
+   "id": "placement:relatives-defining:relatives-defining:322639",
+   "targetId": "relatives-defining",
+   "evidenceId": "tatoeba:322639",
+   "before": "Happy is a man ",
+   "after": " is contented.",
+   "fr": "Heureux l'homme satisfait.",
+   "answer": "who",
+   "source": "tatoeba:322639",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "which",
+    "what",
+    "who"
+   ]
+  },
+  {
+   "id": "placement:relatives-defining:relatives-defining:269688",
+   "targetId": "relatives-defining",
+   "evidenceId": "tatoeba:269688",
+   "before": "Kobe is the city ",
+   "after": " I like best.",
+   "fr": "Kobé est la ville que je préfère.",
+   "answer": "which",
+   "source": "tatoeba:269688",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "who",
+    "which",
+    "what"
+   ]
+  },
+  {
+   "id": "placement:relatives-defining:relatives-defining:7584609",
+   "targetId": "relatives-defining",
+   "evidenceId": "tatoeba:7584609",
+   "before": "I found the person ",
+   "after": " did that.",
+   "fr": "J'ai trouvé une personne qui l'a fait.",
+   "answer": "who",
+   "source": "tatoeba:7584609",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "who",
+    "which",
+    "what"
+   ]
+  },
+  {
+   "id": "placement:relatives-defining:relatives-defining:269690",
+   "targetId": "relatives-defining",
+   "evidenceId": "tatoeba:269690",
+   "before": "Kobe is the city ",
+   "after": " I was born in.",
+   "fr": "Kobe est la ville où je suis né.",
+   "answer": "which",
+   "source": "tatoeba:269690",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "what",
+    "who",
+    "which"
+   ]
+  },
+  {
+   "id": "placement:quantifiers:quantifiers:3151364",
+   "targetId": "quantifiers",
+   "evidenceId": "tatoeba:3151364",
+   "before": "Just give me ",
+   "after": " hours.",
+   "fr": "Donne-moi juste quelques heures.",
+   "answer": "a few",
+   "source": "tatoeba:3151364",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 4,
+   "options": [
+    "a few",
+    "a little",
+    "few",
+    "little"
+   ]
+  },
+  {
+   "id": "placement:quantifiers:quantifiers:3737270",
+   "targetId": "quantifiers",
+   "evidenceId": "tatoeba:3737270",
+   "before": "I have very ",
+   "after": " money.",
+   "fr": "J'ai très peu d'argent.",
+   "answer": "little",
+   "source": "tatoeba:3737270",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 4,
+   "options": [
+    "few",
+    "little",
+    "a few",
+    "a little"
+   ]
+  },
+  {
+   "id": "placement:quantifiers:quantifiers:453820",
+   "targetId": "quantifiers",
+   "evidenceId": "tatoeba:453820",
+   "before": "",
+   "after": " people have two cars.",
+   "fr": "Peu de personnes ont deux voitures.",
+   "answer": "few",
+   "source": "tatoeba:453820",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 4,
+   "options": [
+    "a few",
+    "a little",
+    "few",
+    "little"
+   ]
+  },
+  {
+   "id": "placement:quantifiers:quantifiers:2054010",
+   "targetId": "quantifiers",
+   "evidenceId": "tatoeba:2054010",
+   "before": "",
+   "after": " snow was falling.",
+   "fr": "Une légère neige tombait.",
+   "answer": "a little",
+   "source": "tatoeba:2054010",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 4,
+   "options": [
+    "few",
+    "little",
+    "a few",
+    "a little"
+   ]
+  },
+  {
+   "id": "placement:quantifiers:quantifiers:493766",
+   "targetId": "quantifiers",
+   "evidenceId": "tatoeba:493766",
+   "before": "He is a man of ",
+   "after": " words.",
+   "fr": "Il est homme de peu de mots.",
+   "answer": "few",
+   "source": "tatoeba:493766",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 4,
+   "options": [
+    "few",
+    "little",
+    "a few",
+    "a little"
+   ]
+  },
+  {
+   "id": "placement:quantifiers:quantifiers:2372806",
+   "targetId": "quantifiers",
+   "evidenceId": "tatoeba:2372806",
+   "before": "I just need ",
+   "after": " time.",
+   "fr": "Il ne me faut qu'un peu de temps.",
+   "answer": "a little",
+   "source": "tatoeba:2372806",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 4,
+   "options": [
+    "few",
+    "little",
+    "a few",
+    "a little"
+   ]
+  },
+  {
+   "id": "placement:quantifiers:quantifiers:13140690",
+   "targetId": "quantifiers",
+   "evidenceId": "tatoeba:13140690",
+   "before": "He only had ",
+   "after": " seconds.",
+   "fr": "Il n’avait que quelques secondes.",
+   "answer": "a few",
+   "source": "tatoeba:13140690",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 4,
+   "options": [
+    "few",
+    "little",
+    "a few",
+    "a little"
+   ]
+  },
+  {
+   "id": "placement:quantifiers:quantifiers:2377265",
+   "targetId": "quantifiers",
+   "evidenceId": "tatoeba:2377265",
+   "before": "I learned ",
+   "after": " French.",
+   "fr": "J'ai appris un peu de français.",
+   "answer": "a little",
+   "source": "tatoeba:2377265",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 4,
+   "options": [
+    "a little",
+    "few",
+    "little",
+    "a few"
+   ]
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:11720965",
+   "targetId": "gerund-infinitive-meaning",
+   "evidenceId": "tatoeba:11720965",
+   "before": "Hey, you! Stop ",
+   "after": "!",
+   "fr": "Hé toi ! Arrête donc de crier !",
+   "answer": "screaming",
+   "source": "tatoeba:11720965",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "to scream",
+    "scream",
+    "screaming"
+   ]
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:2282440",
+   "targetId": "gerund-infinitive-meaning",
+   "evidenceId": "tatoeba:2282440",
+   "before": "We tried ",
+   "after": " him up.",
+   "fr": "Nous essayâmes de le remonter.",
+   "answer": "to cheer",
+   "source": "tatoeba:2282440",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "to cheer",
+    "cheer",
+    "cheering"
+   ]
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:6354942",
+   "targetId": "gerund-infinitive-meaning",
+   "evidenceId": "tatoeba:6354942",
+   "before": "Try ",
+   "after": " that once more.",
+   "fr": "Essaie de faire ça encore une fois.",
+   "answer": "doing",
+   "source": "tatoeba:6354942",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "to do",
+    "doing",
+    "do"
+   ]
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:2289003",
+   "targetId": "gerund-infinitive-meaning",
+   "evidenceId": "tatoeba:2289003",
+   "before": "Don't try ",
+   "after": " too much.",
+   "fr": "N'essayez pas d'en faire trop !",
+   "answer": "to do",
+   "source": "tatoeba:2289003",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "to do",
+    "doing",
+    "do"
+   ]
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:6736566",
+   "targetId": "gerund-infinitive-meaning",
+   "evidenceId": "tatoeba:6736566",
+   "before": "She doesn't stop ",
+   "after": ".",
+   "fr": "Elle ne cesse de parler.",
+   "answer": "talking",
+   "source": "tatoeba:6736566",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "to talk",
+    "talking",
+    "talk"
+   ]
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:3562551",
+   "targetId": "gerund-infinitive-meaning",
+   "evidenceId": "tatoeba:3562551",
+   "before": "I'll try ",
+   "after": " it later.",
+   "fr": "Je tenterai de la réparer plus tard.",
+   "answer": "to fix",
+   "source": "tatoeba:3562551",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "to fix",
+    "fixing",
+    "fix"
+   ]
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:831731",
+   "targetId": "gerund-infinitive-meaning",
+   "evidenceId": "tatoeba:831731",
+   "before": "Stop ",
+   "after": " on the door!",
+   "fr": "Arrête de frapper sur la porte !",
+   "answer": "banging",
+   "source": "tatoeba:831731",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "bang",
+    "banging",
+    "to bang"
+   ]
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:4197715",
+   "targetId": "gerund-infinitive-meaning",
+   "evidenceId": "tatoeba:4197715",
+   "before": "What did I forget ",
+   "after": "?",
+   "fr": "Qu'ai-je oublié de dire ?",
+   "answer": "to say",
+   "source": "tatoeba:4197715",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "saying",
+    "say",
+    "to say"
+   ]
+  },
+  {
+   "id": "placement:too-enough:too-enough:1423350",
+   "targetId": "too-enough",
+   "evidenceId": "tatoeba:1423350",
+   "before": "You're ",
+   "after": " a tattletale.",
+   "fr": "Quelle commère tu fais.",
+   "answer": "such",
+   "source": "tatoeba:1423350",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "so",
+    "such"
+   ]
+  },
+  {
+   "id": "placement:too-enough:too-enough:2396223",
+   "targetId": "too-enough",
+   "evidenceId": "tatoeba:2396223",
+   "before": "Is it really ",
+   "after": " terrible?",
+   "fr": "Est-ce vraiment si terrible ?",
+   "answer": "so",
+   "source": "tatoeba:2396223",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "such",
+    "so"
+   ]
+  },
+  {
+   "id": "placement:too-enough:too-enough:3622881",
+   "targetId": "too-enough",
+   "evidenceId": "tatoeba:3622881",
+   "before": "We're ",
+   "after": " to study.",
+   "fr": "Nous sommes trop fatiguées pour étudier.",
+   "answer": "too tired",
+   "source": "tatoeba:3622881",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "too tired",
+    "tired enough",
+    "too much tired"
+   ]
+  },
+  {
+   "id": "placement:too-enough:too-enough:7492825",
+   "targetId": "too-enough",
+   "evidenceId": "tatoeba:7492825",
+   "before": "This bag isn't ",
+   "after": ".",
+   "fr": "Ce sac n'est pas assez gros.",
+   "answer": "big enough",
+   "source": "tatoeba:7492825",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "too big",
+    "enough big",
+    "big enough"
+   ]
+  },
+  {
+   "id": "placement:too-enough:too-enough:6767930",
+   "targetId": "too-enough",
+   "evidenceId": "tatoeba:6767930",
+   "before": "So, you're not ",
+   "after": "?",
+   "fr": "Alors, tu ne t'es pas trop ennuyé ?",
+   "answer": "too bored",
+   "source": "tatoeba:6767930",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "too much bored",
+    "bored enough",
+    "too bored"
+   ]
+  },
+  {
+   "id": "placement:too-enough:too-enough:2315011",
+   "targetId": "too-enough",
+   "evidenceId": "tatoeba:2315011",
+   "before": "I didn't sleep ",
+   "after": ".",
+   "fr": "Je n'ai pas assez dormi.",
+   "answer": "long enough",
+   "source": "tatoeba:2315011",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "too long",
+    "enough long",
+    "long enough"
+   ]
+  },
+  {
+   "id": "placement:too-enough:too-enough:1879880",
+   "targetId": "too-enough",
+   "evidenceId": "tatoeba:1879880",
+   "before": "I hope we're not ",
+   "after": ".",
+   "fr": "J'espère que nous ne sommes pas trop en retard.",
+   "answer": "too late",
+   "source": "tatoeba:1879880",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "too much late",
+    "late enough",
+    "too late"
+   ]
+  },
+  {
+   "id": "placement:too-enough:too-enough:3157848",
+   "targetId": "too-enough",
+   "evidenceId": "tatoeba:3157848",
+   "before": "Tom is ",
+   "after": " to drink.",
+   "fr": "Tom est suffisamment âgé pour boire.",
+   "answer": "old enough",
+   "source": "tatoeba:3157848",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "too old",
+    "old enough",
+    "enough old"
+   ]
+  },
+  {
+   "id": "placement:question-tags:question-tags:1950751",
+   "targetId": "question-tags",
+   "evidenceId": "tatoeba:1950751",
+   "before": "We can't be sure, ",
+   "after": "?",
+   "fr": "Nous ne pouvons en être certains, si ?",
+   "answer": "can we",
+   "source": "tatoeba:1950751",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "can't we",
+    "isn't it",
+    "can we"
+   ]
+  },
+  {
+   "id": "placement:question-tags:question-tags:20103",
+   "targetId": "question-tags",
+   "evidenceId": "tatoeba:20103",
+   "before": "You like rain, ",
+   "after": "?",
+   "fr": "Tu aimes la pluie, n'est-ce pas ?",
+   "answer": "don't you",
+   "source": "tatoeba:20103",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "isn't it",
+    "don't you"
+   ]
+  },
+  {
+   "id": "placement:question-tags:question-tags:1951510",
+   "targetId": "question-tags",
+   "evidenceId": "tatoeba:1951510",
+   "before": "You can't do it, ",
+   "after": "?",
+   "fr": "Tu ne peux pas le faire, si ?",
+   "answer": "can you",
+   "source": "tatoeba:1951510",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "can you",
+    "isn't it",
+    "can't you"
+   ]
+  },
+  {
+   "id": "placement:question-tags:question-tags:2545254",
+   "targetId": "question-tags",
+   "evidenceId": "tatoeba:2545254",
+   "before": "It's difficult, ",
+   "after": "?",
+   "fr": "C'est difficile, n'est-ce pas ?",
+   "answer": "isn't it",
+   "source": "tatoeba:2545254",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "is it",
+    "isn't it",
+    "doesn't it"
+   ]
+  },
+  {
+   "id": "placement:question-tags:question-tags:2276527",
+   "targetId": "question-tags",
+   "evidenceId": "tatoeba:2276527",
+   "before": "It doesn't work, ",
+   "after": "?",
+   "fr": "Cela ne marche pas, n'est-ce pas ?",
+   "answer": "does it",
+   "source": "tatoeba:2276527",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "doesn't it",
+    "isn't it",
+    "does it"
+   ]
+  },
+  {
+   "id": "placement:question-tags:question-tags:313891",
+   "targetId": "question-tags",
+   "evidenceId": "tatoeba:313891",
+   "before": "She's at work, ",
+   "after": "?",
+   "fr": "Elle est au travail, n'est-ce pas ?",
+   "answer": "isn't she",
+   "source": "tatoeba:313891",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "is she",
+    "isn't it",
+    "isn't she"
+   ]
+  },
+  {
+   "id": "placement:question-tags:question-tags:2288137",
+   "targetId": "question-tags",
+   "evidenceId": "tatoeba:2288137",
+   "before": "You didn't sing, ",
+   "after": "?",
+   "fr": "Tu n'as pas chanté, pas vrai ?",
+   "answer": "did you",
+   "source": "tatoeba:2288137",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "didn't you",
+    "isn't it",
+    "did you"
+   ]
+  },
+  {
+   "id": "placement:question-tags:question-tags:3166131",
+   "targetId": "question-tags",
+   "evidenceId": "tatoeba:3166131",
+   "before": "Tom is the one, ",
+   "after": "?",
+   "fr": "Tom est le bon, n'est-ce pas ?",
+   "answer": "isn't he",
+   "source": "tatoeba:3166131",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "isn't it",
+    "isn't he"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:10906843",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:10906843",
+   "before": "How ",
+   "after": "?",
+   "fr": "Comment s'est passée l'opération ?",
+   "answer": "did the operation go",
+   "source": "tatoeba:10906843",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "the operation went",
+    "did the operation go"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:1670795",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:1670795",
+   "before": "I know who ",
+   "after": " with.",
+   "fr": "Je sais avec qui tu étais.",
+   "answer": "you were",
+   "source": "tatoeba:1670795",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "were you",
+    "you were"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:11155355",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:11155355",
+   "before": "When ",
+   "after": "?",
+   "fr": "Quand est-ce que le film commence ?",
+   "answer": "does the film start",
+   "source": "tatoeba:11155355",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "the film starts",
+    "does the film start"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:2545530",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:2545530",
+   "before": "I wonder what ",
+   "after": ".",
+   "fr": "Je me demande ce que Tom voulait.",
+   "answer": "Tom wanted",
+   "source": "tatoeba:2545530",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "did Tom want",
+    "Tom wanted"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:13693792",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:13693792",
+   "before": "What ",
+   "after": " you with?",
+   "fr": "Avec quoi t'a-t-il frappé ?",
+   "answer": "did he hit",
+   "source": "tatoeba:13693792",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "he hit",
+    "did he hit"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:2645094",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:2645094",
+   "before": "Do you know what ",
+   "after": "?",
+   "fr": "Sais-tu ce que Tom a fait ?",
+   "answer": "Tom did",
+   "source": "tatoeba:2645094",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "did Tom do",
+    "Tom did"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:16259",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:16259",
+   "before": "What ",
+   "after": " to do?",
+   "fr": "Qu'as-tu l'intention de faire ?",
+   "answer": "do you intend",
+   "source": "tatoeba:16259",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "you intend",
+    "do you intend"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:3628522",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:3628522",
+   "before": "I know what ",
+   "after": ".",
+   "fr": "Je sais quel est votre nom.",
+   "answer": "your name is",
+   "source": "tatoeba:3628522",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "is your name",
+    "your name is"
+   ]
+  },
+  {
+   "id": "placement:deduction-present:deduction-present:11666621",
+   "targetId": "deduction-present",
+   "evidenceId": "tatoeba:11666621",
+   "before": "The rumour ",
+   "after": " be true.",
+   "fr": "La rumeur ne peut être vraie.",
+   "answer": "can't",
+   "source": "tatoeba:11666621",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "mustn't",
+    "can't",
+    "must"
+   ]
+  },
+  {
+   "id": "placement:deduction-present:deduction-present:300414",
+   "targetId": "deduction-present",
+   "evidenceId": "tatoeba:300414",
+   "before": "He ",
+   "after": " be an honest man.",
+   "fr": "Ce doit être un homme honnête.",
+   "answer": "must",
+   "source": "tatoeba:300414",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "can't",
+    "must",
+    "mustn't"
+   ]
+  },
+  {
+   "id": "placement:deduction-present:deduction-present:1343443",
+   "targetId": "deduction-present",
+   "evidenceId": "tatoeba:1343443",
+   "before": "That story ",
+   "after": " be true.",
+   "fr": "Cette histoire ne peut être vraie.",
+   "answer": "can't",
+   "source": "tatoeba:1343443",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "must",
+    "mustn't",
+    "can't"
+   ]
+  },
+  {
+   "id": "placement:deduction-present:deduction-present:413023",
+   "targetId": "deduction-present",
+   "evidenceId": "tatoeba:413023",
+   "before": "He ",
+   "after": " be the principal.",
+   "fr": "Il doit être le principal.",
+   "answer": "must",
+   "source": "tatoeba:413023",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "can't",
+    "mustn't",
+    "must"
+   ]
+  },
+  {
+   "id": "placement:deduction-present:deduction-present:287926",
+   "targetId": "deduction-present",
+   "evidenceId": "tatoeba:287926",
+   "before": "His story ",
+   "after": " be true.",
+   "fr": "Son histoire ne peut être vraie.",
+   "answer": "can't",
+   "source": "tatoeba:287926",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "can't",
+    "mustn't",
+    "must"
+   ]
+  },
+  {
+   "id": "placement:deduction-present:deduction-present:5058083",
+   "targetId": "deduction-present",
+   "evidenceId": "tatoeba:5058083",
+   "before": "There ",
+   "after": " be a solution.",
+   "fr": "Il doit y avoir une solution.",
+   "answer": "must",
+   "source": "tatoeba:5058083",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "mustn't",
+    "must",
+    "can't"
+   ]
+  },
+  {
+   "id": "placement:deduction-present:deduction-present:2903860",
+   "targetId": "deduction-present",
+   "evidenceId": "tatoeba:2903860",
+   "before": "Such thing ",
+   "after": " be true.",
+   "fr": "Cela ne peut pas être vrai.",
+   "answer": "can't",
+   "source": "tatoeba:2903860",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "can't",
+    "mustn't",
+    "must"
+   ]
+  },
+  {
+   "id": "placement:deduction-present:deduction-present:3178610",
+   "targetId": "deduction-present",
+   "evidenceId": "tatoeba:3178610",
+   "before": "It ",
+   "after": " be here somewhere.",
+   "fr": "Il doit être quelque part, ici.",
+   "answer": "must",
+   "source": "tatoeba:3178610",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "mustn't",
+    "can't",
+    "must"
+   ]
+  },
+  {
+   "id": "placement:wish:wish:1056839",
+   "targetId": "wish",
+   "evidenceId": "tatoeba:1056839",
+   "before": "I wish I ",
+   "after": " her.",
+   "fr": "J'aurais voulu l'épouser.",
+   "answer": "had married",
+   "source": "tatoeba:1056839",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "marry"
+  },
+  {
+   "id": "placement:wish:wish:2545543",
+   "targetId": "wish",
+   "evidenceId": "tatoeba:2545543",
+   "before": "I wish it ",
+   "after": " that easy.",
+   "fr": "Si seulement c'était aussi simple.",
+   "answer": "were",
+   "source": "tatoeba:2545543",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "be"
+  },
+  {
+   "id": "placement:wish:wish:282882",
+   "targetId": "wish",
+   "evidenceId": "tatoeba:282882",
+   "before": "If only he ",
+   "after": " there.",
+   "fr": "Si seulement il avait été là.",
+   "answer": "had been",
+   "source": "tatoeba:282882",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "be"
+  },
+  {
+   "id": "placement:wish:wish:8434429",
+   "targetId": "wish",
+   "evidenceId": "tatoeba:8434429",
+   "before": "If only I ",
+   "after": " more money.",
+   "fr": "Si seulement j'avais plus d'argent !",
+   "answer": "had",
+   "source": "tatoeba:8434429",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "have"
+  },
+  {
+   "id": "placement:wish:wish:4264712",
+   "targetId": "wish",
+   "evidenceId": "tatoeba:4264712",
+   "before": "I wish I ",
+   "after": " a map.",
+   "fr": "J'aimerais avoir apporté une carte.",
+   "answer": "had brought",
+   "source": "tatoeba:4264712",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "bring"
+  },
+  {
+   "id": "placement:wish:wish:2544938",
+   "targetId": "wish",
+   "evidenceId": "tatoeba:2544938",
+   "before": "I wish I ",
+   "after": " what to say.",
+   "fr": "J'aimerais savoir quoi dire.",
+   "answer": "knew",
+   "source": "tatoeba:2544938",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "know"
+  },
+  {
+   "id": "placement:wish:wish:49511",
+   "targetId": "wish",
+   "evidenceId": "tatoeba:49511",
+   "before": "I wish I ",
+   "after": " the film.",
+   "fr": "J'aurais aimé voir le film.",
+   "answer": "had seen",
+   "source": "tatoeba:49511",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "see"
+  },
+  {
+   "id": "placement:wish:wish:30512",
+   "targetId": "wish",
+   "evidenceId": "tatoeba:30512",
+   "before": "I wish I ",
+   "after": " more money.",
+   "fr": "J'aimerais gagner davantage d'argent.",
+   "answer": "earned",
+   "source": "tatoeba:30512",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "earn"
+  },
+  {
+   "id": "placement:third-conditional:third-conditional:6871098",
+   "targetId": "third-conditional",
+   "evidenceId": "tatoeba:6871098",
+   "before": "Without you, I ",
+   "after": ".",
+   "fr": "Sans toi, je serais mort.",
+   "answer": "would have died",
+   "source": "tatoeba:6871098",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "die"
+  },
+  {
+   "id": "placement:third-conditional:third-conditional:6335927",
+   "targetId": "third-conditional",
+   "evidenceId": "tatoeba:6335927",
+   "before": "I ",
+   "after": " if I hadn't tripped.",
+   "fr": "J'aurais gagné si je n'avais pas trébuché.",
+   "answer": "would have won",
+   "source": "tatoeba:6335927",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "win"
+  },
+  {
+   "id": "placement:third-conditional:third-conditional:6678340",
+   "targetId": "third-conditional",
+   "evidenceId": "tatoeba:6678340",
+   "before": "If I ",
+   "after": ", I would've told you.",
+   "fr": "Si j'avais su, je te l'aurais dit.",
+   "answer": "had known",
+   "source": "tatoeba:6678340",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "know"
+  },
+  {
+   "id": "placement:third-conditional:third-conditional:12770981",
+   "targetId": "third-conditional",
+   "evidenceId": "tatoeba:12770981",
+   "before": "If I had known, I ",
+   "after": ".",
+   "fr": "Si j'avais su, j'aurais aidé.",
+   "answer": "would have helped",
+   "source": "tatoeba:12770981",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "help"
+  },
+  {
+   "id": "placement:third-conditional:third-conditional:2741019",
+   "targetId": "third-conditional",
+   "evidenceId": "tatoeba:2741019",
+   "before": "Without his help, you ",
+   "after": ".",
+   "fr": "Sans son aide, vous auriez échoué.",
+   "answer": "would have failed",
+   "source": "tatoeba:2741019",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "fail"
+  },
+  {
+   "id": "placement:third-conditional:third-conditional:3202420",
+   "targetId": "third-conditional",
+   "evidenceId": "tatoeba:3202420",
+   "before": "If you ",
+   "after": " me, I'd have told you.",
+   "fr": "Si tu m'avais demandé, je te l'aurais dit.",
+   "answer": "had asked",
+   "source": "tatoeba:3202420",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "ask"
+  },
+  {
+   "id": "placement:third-conditional:third-conditional:924415",
+   "targetId": "third-conditional",
+   "evidenceId": "tatoeba:924415",
+   "before": "Without your help, I ",
+   "after": ".",
+   "fr": "Sans ton aide, je me serais noyé.",
+   "answer": "would have drowned",
+   "source": "tatoeba:924415",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "drown"
+  },
+  {
+   "id": "placement:third-conditional:third-conditional:2640635",
+   "targetId": "third-conditional",
+   "evidenceId": "tatoeba:2640635",
+   "before": "Tom could've killed you if he ",
+   "after": " to.",
+   "fr": "Tom aurait pu te tuer s'il avait voulu.",
+   "answer": "had wanted",
+   "source": "tatoeba:2640635",
+   "status": "généré",
+   "mode": "typed",
+   "hint": "want"
+  },
+  {
+   "id": "placement:be-used-to:used-to:1429061",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:1429061",
+   "before": "I'm ",
+   "after": " alone.",
+   "fr": "Je suis habituée à manger seule.",
+   "answer": "used to eating",
+   "source": "tatoeba:1429061",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "use to eating",
+    "used to eating",
+    "used to eat"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:5938779",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:5938779",
+   "before": "I'm ",
+   "after": " late.",
+   "fr": "Je suis habituée à travailler tard.",
+   "answer": "used to working",
+   "source": "tatoeba:5938779",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to working",
+    "used to work",
+    "use to working"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:12246044",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:12246044",
+   "before": "Get ",
+   "after": " patient.",
+   "fr": "Habituez-vous à la patience.",
+   "answer": "used to being",
+   "source": "tatoeba:12246044",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "use to being",
+    "used to be",
+    "used to being"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:6110303",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:6110303",
+   "before": "I'm not ",
+   "after": " this.",
+   "fr": "Je ne suis pas habitué à faire ça.",
+   "answer": "used to doing",
+   "source": "tatoeba:6110303",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "use to doing",
+    "used to doing",
+    "used to do"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:1058983",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:1058983",
+   "before": "I'm ",
+   "after": " up late.",
+   "fr": "Je suis habitué à me coucher très tard.",
+   "answer": "used to staying",
+   "source": "tatoeba:1058983",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to stay",
+    "use to staying",
+    "used to staying"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:13860233",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:13860233",
+   "before": "They are ",
+   "after": " it.",
+   "fr": "Ils sont habitués à y jouer.",
+   "answer": "used to playing",
+   "source": "tatoeba:13860233",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "use to playing",
+    "used to playing",
+    "used to play"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:312562",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:312562",
+   "before": "She is ",
+   "after": " alone.",
+   "fr": "Elle est habituée à vivre seule.",
+   "answer": "used to living",
+   "source": "tatoeba:312562",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to living",
+    "use to living",
+    "used to live"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:6293821",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:6293821",
+   "before": "We're ",
+   "after": " shoes.",
+   "fr": "On a l'habitude de porter des chaussures.",
+   "answer": "used to wearing",
+   "source": "tatoeba:6293821",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to wear",
+    "use to wearing",
+    "used to wearing"
+   ]
+  }
+ ]
+}

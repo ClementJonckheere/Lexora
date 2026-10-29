@@ -801,6 +801,9 @@ const questionTags: Builder = (s) => {
   const pronoun = m[2].toLowerCase() === 'i' ? 'I' : m[2].toLowerCase();
   // Après un impératif ou une proposition (« Open it, will you? », « Let's go, shall we? ») : plusieurs tags possibles.
   if (/^(?:will|would|won't|wouldn't|shall)$/.test(aux) && /^(?:you|we)$/.test(pronoun)) return [];
+  // « Oh, have you? », « Really, is it? » : tag de réponse à une phrase précédente, pas question tag.
+  const main = s.en.slice(0, m.index).trim();
+  if (main.split(/\s+/).length < 2 || /^(?:oh|ah|really|well|so|yes|no)\b/i.test(main)) return [];
   const answer = `${aux} ${pronoun}`;
   const calque = s.id % 3 === 0 && !/^is(?:n't)? it$/.test(answer) && pronoun !== 'it' ? "isn't it" : null;
   const other = calque ?? flipTag(aux, pronoun);
@@ -872,7 +875,7 @@ const indirectQuestions: Builder = (s, known) => {
 
 /** Compléments de must be / can't be qui marquent une déduction (pas une obligation : « you must be careful »). */
 const DEDUCTION =
-  /^(?:tired|joking|kidding|crazy|mad|mistaken|wrong|right|true|serious|hungry|thirsty|rich|exhausted|lonely|sick|ill|worried|upset|angry|busy|new|asleep|dead|broken|here|there|home|somewhere|his|hers|yours|mine|theirs|ours|easy|hard|difficult|expensive|cheap|real|possible|lying|dreaming|freezing|starving|delighted|proud|nervous|lost|disappointed|happy|jealous|famous|old|very|so|really|a|an|the)$/i;
+  /^(?:tired|joking|kidding|crazy|mad|mistaken|wrong|right|true|serious|hungry|thirsty|rich|exhausted|lonely|sick|ill|worried|upset|angry|busy|new|asleep|dead|broken|somewhere|his|hers|yours|mine|theirs|ours|easy|hard|difficult|expensive|cheap|real|possible|lying|dreaming|freezing|starving|delighted|proud|nervous|lost|disappointed|happy|jealous|famous|old|very|so|really|a|an|the)$/i;
 const FR_MUST = /\b(?:doi[st]|doivent|devez|devons|sûrement|certainement|sans doute|forcément|probablement|dû)\b/i;
 const FR_CANT =
   /\b(?:ne\s+(?:peu[xt]|peuvent|pouvez|pouvons)|n'est pas possible|impossible|pas possible|ne\s+doi[st]\s+pas)\b|n['’](?:est|es)\s+(?:sûrement\s+)?pas|\bpas\s+(?:possible|vrai)\b/i;
@@ -887,6 +890,8 @@ const deduction: Builder = (s) => {
   // « I can't be there tomorrow », « You can't be busy all the time » : capacité ou interdiction, pas déduction.
   const subject = /([A-Za-z']+)\s*$/.exec(s.en.slice(0, m.index))?.[1]?.toLowerCase() ?? '';
   if (!must && /^(?:i|we|you)$/.test(subject) && !/^(?:serious|joking|kidding|right|wrong|mistaken)$/i.test(m[2])) return [];
+  // « I must be careful », « We must be strong » : obligation ; seuls « I must be dreaming / mistaken » sont des déductions.
+  if (must && /^(?:i|we)$/.test(subject) && !/^(?:[a-z]+ing|mistaken|wrong|crazy|mad)$/i.test(m[2])) return [];
   const answer = must ? 'must' : "can't";
   return [
     {
@@ -912,6 +917,13 @@ const wish: Builder = (s, known) => {
     (participle.endsWith('ed') || (BASE_OF.has(participle) && BASE_OF.get(participle) !== participle) || participle === 'been')
   ) {
     const base = baseOf(participle, known)!;
+    // « I wish I had known » traduit « Si je savais ! » : traduction au présent, exercice faux.
+    if (
+      !FR_PLUPERFECT.test(s.fr) &&
+      !FR_CONDITIONAL_PAST.test(s.fr) &&
+      !/\b(?:aurais|aurait|aurions|auriez|auraient)\s+(?:dû|voulu|aimé|souhaité|préféré)\b/i.test(s.fr)
+    )
+      return [];
     const answer = `had ${participle}`;
     const past = base === 'be' ? (isThird(subject) || /^i$/i.test(subject) ? 'was' : 'were') : pastOf(base, known);
     return [

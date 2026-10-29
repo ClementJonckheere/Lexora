@@ -338,6 +338,7 @@ describe('deuxième série de leçons (B1, B2)', () => {
     expect(ex('question-tags', "You like jazz, don't you?", 3)!.choices).toContain("isn't it");
     expect(ex('question-tags', "I'm late, aren't I?", 1)).toMatchObject({ answer: "aren't I", choices: expect.arrayContaining(['am I']) });
     expect(ex('question-tags', 'Open the door, will you?', 1)).toBeNull();
+    expect(ex('question-tags', 'Oh, have you?', 1)).toBeNull(); // tag de réponse
   });
 
   it('questions indirectes (ordre sujet + verbe) et directes (inversion)', () => {
@@ -358,18 +359,21 @@ describe('deuxième série de leçons (B1, B2)', () => {
     expect(ex('deduction-present', 'You must be tired.', 1, 'Tu dois être fatigué.')).toMatchObject({ answer: 'must', form: 'must' });
     expect(ex('deduction-present', "It can't be true.", 1, "Ce n'est pas possible.")).toMatchObject({ answer: "can't", form: 'cant' });
     expect(ex('deduction-present', 'You must be careful.', 1, 'Tu dois être prudent.')).toBeNull(); // obligation
+    expect(ex('deduction-present', 'I must be there.', 1, 'Je dois y être.')).toBeNull(); // obligation
+    expect(ex('deduction-present', 'I must be dreaming.', 1, 'Je dois rêver.')).toMatchObject({ answer: 'must' });
     expect(ex('deduction-present', "I can't be there tomorrow.", 1, 'Je ne peux pas être là demain.')).toBeNull(); // capacité
     expect(ex('deduction-present', "You can't be serious.", 1, "Tu n'es pas sérieux.")).toMatchObject({ answer: "can't" });
   });
 
   it('wish : prétérit (présent) ou had + participe (passé)', () => {
     expect(ex('wish', 'I wish I knew the answer.')).toMatchObject({ answer: 'knew', form: 'past', choices: expect.arrayContaining(['had known']) });
-    expect(ex('wish', 'If only I had listened to you!')).toMatchObject({
+    expect(ex('wish', 'If only I had listened to you!', 1, 'Si seulement je t’avais écouté !')).toMatchObject({
       answer: 'had listened',
       form: 'pastperfect',
       choices: expect.arrayContaining(['listened']),
     });
     expect(ex('wish', 'I wish I had a car.')).toMatchObject({ answer: 'had', form: 'past' });
+    expect(ex('wish', 'I wish I had known.', 1, 'Si je savais !')).toBeNull(); // traduction au présent : exercice faux
     expect(ex('wish', 'I wish you were here.')).toMatchObject({ answer: 'were', choices: expect.arrayContaining(['had been']) });
   });
 

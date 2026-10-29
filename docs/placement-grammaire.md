@@ -74,3 +74,16 @@ La propagation à 99 % a été ajoutée après qu'une première simulation a ré
 **40 questions ne permettent pas de conclure sur les 74 points à 85 % de confiance.** La simulation soutient l'emploi prioritaire de réponses tapées et des mini-tests ultérieurs ; elle ne valide pas un bilan complet A1–C1 en 40 questions. Le rapport conserve aussi l'erreur sur l'ensemble des points, la part incertaine, le score de Brier et l'erreur obtenue si l'on force malgré tout un classement binaire à p ≥ 0,5. Les incertains ne sont jamais comptés comme des réponses correctes.
 
 Ces chiffres évaluent un modèle abstrait sous des hypothèses explicites. Ils ne mesurent ni la qualité des futures questions, ni la validité réelle des liens `requires`, ni la précision sur les trois utilisateurs de Lexora. Une banque sourcée et relue, une calibration sur des réponses réelles et une validation des résultats restent nécessaires avant activation. Les corrections manuelles et les mini-tests devront pouvoir rattraper les erreurs.
+
+## Banque de questions (étape 1)
+
+`public/grammar/en/placement.json`, produit par `scripts/placement-bank.ts` (module `src/core/learn/placementBank.ts`) et régénéré par la CI après les banques des leçons. Chaque question porte son énoncé (phrase à trou, traduction), sa réponse, sa source (`tatoeba:<id>`, CC BY 2.0 FR) et un statut (`généré` tant qu'une personne ne l'a pas relue). `evidenceId` est l'identifiant de la phrase : le moteur ne la compte jamais deux fois.
+
+Règles, pour limiter le hasard (5 % en réponse tapée, 1 / n pour un choix) :
+
+- exercice avec un verbe en indice : **réponse tapée** ;
+- mots-outils : **choix élargi** par un distracteur sûrement faux, souvent le piège francophone (for / since / *during*, who / which / *what*, *too much old*, *mustn't* be, *use to*, le calque *isn't it*, l'ordre de l'affirmation dans *When will you…?*) ; a few / a little / few / little en 4 choix ;
+- phrases de 25 à 90 caractères ; aucune question qui admet une autre réponse (prétérit sans repère, variante proche) ; le 3e conditionnel n'utilise que l'irréel du passé, le present perfect continu exige une durée, be used to a ses propres questions (tirées de la leçon used to) ;
+- 8 questions au plus par point, natures de réponse alternées.
+
+État : **168 questions pour 21 points** (13 points sans aucun choix à 2 ; say / tell, questions indirectes et une partie de too / enough et des question tags restent à 2 choix). Les **53 autres points** sont listés dans le fichier (`missing`, avec leur nombre de phrases Tatoeba traduites) : générateurs à écrire pour ceux qui ont assez de phrases, questions rédigées et relues pour les autres. Les taux de chance du moteur restent des hypothèses : une réponse tapée avec indice n'a souvent que deux formes plausibles (rains / will rain), ce qui la rapproche d'un choix ; la calibration sur des réponses réelles le dira.

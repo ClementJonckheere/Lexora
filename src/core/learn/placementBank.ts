@@ -1,0 +1,157 @@
+import type { Exercise } from './exercises';
+import type { PlacementQuestion } from './placement';
+
+/**
+ * Banque du placement grammatical : des questions courtes tirées des banques d'exercices des leçons (phrases Tatoeba
+ * déjà filtrées et relues par la génération), converties pour limiter le hasard. Le moteur (placement.ts) compte
+ * 5 % de chance pour une réponse tapée et 1 / n pour un choix entre n propositions : une question à deux choix
+ * prouve beaucoup moins qu'une réponse tapée.
+ *
+ * - Exercice avec un verbe en indice : réponse tapée (le choix d'origine disparaît).
+ * - Mots-outils : choix élargi à 3 ou 4 propositions quand un distracteur est sûrement faux (souvent le piège
+ *   francophone : during pour « pendant », too much old, mustn't be pour « ne doit pas être »).
+ * - Sinon, choix à 2 propositions, signalé comme tel.
+ */
+
+export interface PlacementItem extends PlacementQuestion {
+  /** Énoncé : la phrase coupée autour du trou, avec sa traduction (indice qui lève l'ambiguïté). */
+  before: string;
+  after: string;
+  fr: string;
+  answer: string;
+  accept?: string[];
+  hint?: string;
+  /** Propositions affichées (choix), dans l'ordre d'affichage. */
+  options?: string[];
+  /** Provenance : phrase Tatoeba (CC BY 2.0 FR) ou question rédigée. */
+  source: string;
+  /** « généré » : sorti du générateur, contrôlé automatiquement ; « relu » : validé par une personne. */
+  status: 'généré' | 'relu';
+}
+
+/** Questions retenues par point (le moteur en pose au moins 2 et n'utilise jamais deux fois la même phrase). */
+export const ITEMS_PER_POINT = 8;
+/** Phrases courtes (rapides, une seule difficulté), mais pas trop : « We have read » n'a aucun contexte. */
+const MAX_LENGTH = 90;
+const MIN_LENGTH = 25;
+
+/**
+ * Condition propre à un point : la phrase doit le tester, lui, sans ambiguïté. Le 3e conditionnel n'utilise que ses
+ * phrases d'irréel du passé (pas celles du 2e qui servent de contraste dans la leçon) ; le present perfect continu exige
+ * une durée, sans quoi « j'ai travaillé » se dit aussi I worked.
+ */
+const POINT_FILTER: Record<string, (ex: Exercise) => boolean> = {
+  'third-conditional': (ex) => ex.form === 'past-unreal',
+  // Les phrases « be used to + -ing » de la leçon used to mesurent le point be-used-to (B2), pas used to.
+  'used-to': (ex) => ex.form !== 'be-used-to',
+  'be-used-to': (ex) => ex.form === 'be-used-to',
+  'perfect-continuous': (ex) => /\b(?:for|since|all\s+(?:day|night|morning|week)|how long|lately|recently)\b/i.test(ex.en),
+};
+
+/** Ordre fixé par la phrase : même ordre à chaque génération, réponse pas toujours à la même place. */
+function rotate<T>(list: T[], seed: number): T[] {
+  const k = seed % list.length;
+  return [...list.slice(k), ...list.slice(0, k)];
+}
+
+/** Troisième (ou quatrième) proposition sûrement fausse, par leçon ; null si aucune n'est sûre. */
+function widen(lessonId: string, ex: Exercise): string[] | null {
+  const choices = ex.choices ?? [];
+  switch (lessonId) {
+    case 'for-since':
+      return [...choices, 'during'];
+    case 'relatives-defining':
+      return [...choices, 'what'];
+    case 'quantifiers':
+      return ['a few', 'a little', 'few', 'little'];
+    case 'gerund-infinitive-meaning': {
+      const toForm = choices.find((c) => c.startsWith('to '));
+      return toForm ? [...choices, toForm.slice(3)] : null;
+    }
+    case 'too-enough': {
+      if (ex.form === 'too' || ex.form === 'enough') {
+        const adj = (ex.answer.startsWith('too ') ? ex.answer.slice(4) : ex.answer.replace(/ enough$/, '')).trim();
+        return [...choices, ex.form === 'too' ? `too much ${adj}` : `enough ${adj}`];
+      }
+      return null;
+    }
+    case 'question-tags': {
+      if (!choices.includes("isn't it")) return [...choices, "isn't it"];
+      const pronoun = ex.answer.split(' ').at(-1);
+      return pronoun === 'it' ? [...choices, ex.answer.startsWith('is') ? "doesn't it" : "isn't it"].filter((c, i, l) => l.indexOf(c) === i) : null;
+    }
+    case 'deduction-present':
+      return [...choices, "mustn't"];
+    case 'used-to':
+      // « I use to » : le piège du présent (used to n'existe qu'au passé).
+      return ex.answer.startsWith('used to ') ? [...choices, ex.answer.replace(/^used to /, 'use to ')] : null;
+    case 'time-clauses': {
+      // « When will you arrive? » : l'ordre de l'affirmation (you will arrive) est faux dans une question directe.
+      const q = /^will (\S+) (.+)$/.exec(ex.answer);
+      return q ? [...choices, `${q[1]} will ${q[2]}`] : null;
+    }
+    default:
+      return null;
+  }
+}
+
+/** Question de placement tirée d'un exercice, ou null si l'exercice ne convient pas. */
+export function placementItem(lessonId: string, ex: Exercise, targetId = lessonId): PlacementItem | null {
+  if (ex.en.length > MAX_LENGTH || ex.en.length < MIN_LENGTH || !ex.fr) return null;
+  // Une autre réponse admise (prétérit sans repère, variante proche) : la question ne prouve rien.
+  if (ex.accept?.length) return null;
+  if (POINT_FILTER[targetId] && !POINT_FILTER[targetId](ex)) return null;
+  const sentenceId = ex.id.split(':')[1];
+  const base = {
+    id: `placement:${targetId}:${ex.id}`,
+    targetId,
+    evidenceId: `tatoeba:${sentenceId}`,
+    before: ex.before,
+    after: ex.after,
+    fr: ex.fr,
+    answer: ex.answer,
+    source: `tatoeba:${sentenceId}`,
+    status: 'généré' as const,
+  };
+  // Verbe en indice : la forme se tape, sans propositions.
+  if (ex.hint) return { ...base, mode: 'typed', hint: ex.hint, ...(ex.accept ? { accept: ex.accept } : {}) };
+  if (!ex.choices) return null;
+  const options = widen(lessonId, ex) ?? ex.choices;
+  const unique = [...new Set(options)];
+  if (!unique.includes(ex.answer)) return null;
+  return { ...base, mode: 'choice', choices: unique.length, options: rotate(unique, Number(sentenceId)) };
+}
+
+/**
+ * Questions d'un point : jusqu'à 8, phrases courtes d'abord, natures de réponse alternées (will / présent…), réponses
+ * variées. Déterministe : la même banque donne les mêmes questions.
+ */
+export function placementItems(lessonId: string, bank: Exercise[], excluded: ReadonlySet<string> = new Set(), targetId = lessonId): PlacementItem[] {
+  const candidates = bank
+    .filter((ex) => !excluded.has(ex.id))
+    .map((ex) => ({ ex, item: placementItem(lessonId, ex, targetId) }))
+    .filter((c): c is { ex: Exercise; item: PlacementItem } => !!c.item)
+    .sort((x, y) => x.ex.en.length - y.ex.en.length || x.ex.id.localeCompare(y.ex.id));
+  const byForm = new Map<string, typeof candidates>();
+  for (const c of candidates) byForm.set(c.ex.form ?? '', [...(byForm.get(c.ex.form ?? '') ?? []), c]);
+  const queues = [...byForm.values()];
+  const answers = new Set<string>();
+  const out: PlacementItem[] = [];
+  // Tour à tour dans chaque nature ; une réponse déjà prise ne revient qu'en dernier recours.
+  for (let pass = 0; pass < 2 && out.length < ITEMS_PER_POINT; pass++) {
+    const pools = queues.map((q) => q.filter((c) => !out.includes(c.item)));
+    let added = true;
+    while (out.length < ITEMS_PER_POINT && added) {
+      added = false;
+      for (const pool of pools) {
+        const i = pool.findIndex((c) => pass === 1 || !answers.has(c.item.answer));
+        if (i < 0 || out.length >= ITEMS_PER_POINT) continue;
+        const [c] = pool.splice(i, 1);
+        out.push(c.item);
+        answers.add(c.item.answer);
+        added = true;
+      }
+    }
+  }
+  return out;
+}
