@@ -84,6 +84,7 @@ export const SYNC_TABLES: SyncTable[] = [
     columns: ['id', 'universe_id', 'note_id', 'duration_ms', 'created_at', ...SYNC],
     optional: true,
   },
+  { name: 'typed_answers', key: 'log_id', columns: ['log_id', 'universe_id', 'created_at', ...SYNC], optional: true },
 ];
 
 export type RemoteRow = Record<string, unknown> & { server_updated_at?: number };

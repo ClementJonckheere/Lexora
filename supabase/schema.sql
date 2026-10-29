@@ -240,12 +240,24 @@ create table if not exists public.note_entries (
   server_updated_at  bigint not null default 0
 );
 
+-- Révisions dont la réponse a été tapée (XP identique sur tous les appareils).
+create table if not exists public.typed_answers (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  log_id             uuid not null,
+  universe_id        uuid not null,
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0,
+  primary key (user_id, log_id)
+);
+
 -- ------------------------------------ index, déclencheurs, sécurité (RLS) ---
 do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);

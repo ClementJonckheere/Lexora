@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, CheckCircle2, Flag, Loader2, RefreshCw, RotateCcw, Volume2, XCircle } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
+import { FocusFooter, useFocusMeter } from '@/ui/features/progress/FocusFooter';
 import { isCorrect, type Exercise } from '@/core/learn/exercises';
 import { lessonProgress, MASTERY_TARGET, MASTERY_WINDOW, pickSession, SESSION_SIZE } from '@/core/learn/progress';
 import { dueLabel, lessonReview, REVIEW_PASS, REVIEW_SIZE } from '@/core/learn/review';
@@ -208,11 +209,13 @@ function ExerciseSession({
     if (!result) input.current?.focus();
   }, [index, result]);
 
+  const focus = useFocusMeter();
   const submit = (given: string) => {
     if (!ex || result || !given.trim()) return;
     const correct = ex.choices ? given === ex.answer : isCorrect(ex, given);
     setResult({ correct, given });
     setScore((s) => ({ ...s, right: s.right + (correct ? 1 : 0), done: s.done + 1 }));
+    focus.add({ kind: 'grammar', at: Date.now(), itemId: ex.id, correct, typed: !ex.choices });
     void answerGrammar({ lessonId, itemId: ex.id, correct, reported: false, createdAt: Date.now() }).catch((err) => toast('error', errorMessage(err)));
   };
 
@@ -364,6 +367,7 @@ function ExerciseSession({
           </div>
         )}
       </div>
+      <FocusFooter state={focus.state} />
     </div>
   );
 }

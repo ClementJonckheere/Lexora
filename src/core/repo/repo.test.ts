@@ -196,8 +196,10 @@ describe('révisions', () => {
     const before = n.cards.fr_en!;
     const now = Date.now();
     const out = review(scheduler, before, Rating.Again, now);
-    const logId = await recordReview(db, out.card, out.log, 4200);
+    const logId = await recordReview(db, out.card, out.log, 4200, now, null, en.universeId);
     expect(await countNewIntroduced(db, now - 1000, 'fr_en', en.universeId)).toBe(1);
+    const typedRows = () => db.select<{ n: number }>('SELECT COUNT(*) AS n FROM typed_answers WHERE log_id = ? AND deleted = 0', [logId]);
+    expect((await typedRows())[0].n).toBe(1);
 
     let [m] = await loadNotes(db);
     expect(m.cards.fr_en?.state).toBe(State.Learning);
@@ -206,6 +208,7 @@ describe('révisions', () => {
     [m] = await loadNotes(db);
     expect(m.cards.fr_en).toEqual(before);
     expect(await countNewIntroduced(db, now - 1000, 'fr_en', en.universeId)).toBe(0);
+    expect((await typedRows())[0].n).toBe(0);
   });
 
   it("l'entraînement libre ne modifie pas la planification", async () => {

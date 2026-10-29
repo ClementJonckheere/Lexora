@@ -260,6 +260,22 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_note_entries_universe ON note_entries(universe_id, deleted)',
   ],
+}, {
+  version: 9,
+  name: 'progression : réponses tapées en révision',
+  statements: [
+    // Une ligne par révision dont la réponse a été tapée (toutes fiches), synchronisée : l'XP d'une réponse tapée
+    // est la même sur tous les appareils (review_logs.typed_ms, propre à l'appareil, ne sert qu'à la vitesse).
+    `CREATE TABLE typed_answers (
+      log_id       TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_typed_answers_universe ON typed_answers(universe_id, deleted)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

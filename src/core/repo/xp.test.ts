@@ -28,6 +28,9 @@ async function setup() {
   await log('l1', 'c1', 2500);
   await log('l2', 'c1', null);
   await log('l3', 'c3', 2500);
+  await log('l4', 'c1', null);
+  // Réponse tapée sur un autre appareil (ou sur une fiche nouvelle) : seule la ligne synchronisée en garde la trace.
+  await db.execute(`INSERT INTO typed_answers (log_id, universe_id, created_at, updated_at) VALUES ('l4', 'en', ?, ?)`, [T, T]);
   await db.execute(`INSERT INTO practice_logs (id, note_id, mode, rating, created_at, updated_at) VALUES ('p1', 'n1', 'random', 3, ?, ?)`, [T, T]);
   return db;
 }
@@ -36,7 +39,7 @@ describe('événements d’XP', () => {
   it('révisions, entraînement et mots de l’univers seulement ; réponse tapée et exemple repérés', async () => {
     const events = await loadXpEvents(await setup(), 'en', []);
     const reviews = events.filter((e) => e.kind === 'review');
-    expect(reviews.map((e) => e.kind === 'review' && e.typed)).toEqual([true, false]);
+    expect(reviews.map((e) => e.kind === 'review' && e.typed).sort()).toEqual([false, true, true]);
     expect(reviews.every((e) => e.kind === 'review' && e.elapsedDays === 12)).toBe(true);
     expect(events.filter((e) => e.kind === 'practice')).toHaveLength(1);
     expect(events.filter((e) => e.kind === 'note').map((e) => e.kind === 'note' && e.withExample).sort()).toEqual([false, true]);

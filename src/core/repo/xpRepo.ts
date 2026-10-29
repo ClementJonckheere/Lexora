@@ -25,9 +25,13 @@ export async function loadXpEvents(db: Queryable, universeId: string, grammar: G
 
 export async function loadHistory(db: Queryable, universeId: string, grammar: GrammarAnswer[]): Promise<History> {
   const [reviews, practice, notes, chapter, entries] = await Promise.all([
-    db.select<{ card_id: string; note_id: string; rating: number; elapsed_days: number; reviewed_at: number; due: number; typed_ms: number | null }>(
-      `SELECT r.card_id, c.note_id, r.rating, r.elapsed_days, r.reviewed_at, r.due, r.typed_ms FROM review_logs r
+    // Réponse tapée : enregistrée dans typed_answers (synchronisée) ; avant elle, seul typed_ms (propre à l'appareil,
+    // réponses exactes sur des fiches en révision) en gardait la trace.
+    db.select<{ card_id: string; note_id: string; rating: number; elapsed_days: number; reviewed_at: number; due: number; typed: number }>(
+      `SELECT r.card_id, c.note_id, r.rating, r.elapsed_days, r.reviewed_at, r.due,
+              (r.typed_ms IS NOT NULL OR t.log_id IS NOT NULL) AS typed FROM review_logs r
          JOIN cards c ON c.id = r.card_id JOIN notes n ON n.id = c.note_id
+         LEFT JOIN typed_answers t ON t.log_id = r.id AND t.deleted = 0
        WHERE r.deleted = 0 AND n.universe_id = ?`,
       [universeId],
     ),
@@ -58,7 +62,7 @@ export async function loadHistory(db: Queryable, universeId: string, grammar: Gr
       cardId: r.card_id,
       rating: Number(r.rating),
       elapsedDays: Number(r.elapsed_days),
-      typed: r.typed_ms != null,
+      typed: Number(r.typed) === 1,
     });
   }
   for (const p of practice) events.push({ kind: 'practice', at: Number(p.created_at), noteId: p.note_id, rating: Number(p.rating) });

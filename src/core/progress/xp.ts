@@ -105,8 +105,13 @@ export interface XpSummary extends LevelInfo {
 
 const ACTIVE = new Set<XpEvent['kind']>(['review', 'practice', 'grammar']);
 
+/** Multiplicateur de concentration après `minutes` de séance sans pause. */
+export function focusMultiplier(minutes: number): number {
+  return FOCUS_STEPS.find((s) => minutes >= s.afterMin)?.multiplier ?? 1;
+}
+
 /** XP de base d'un événement (avant concentration et anti-abus). */
-function baseXp(e: XpEvent): number {
+export function baseXp(e: XpEvent): number {
   switch (e.kind) {
     case 'review':
       return (e.rating === 1 ? 1 : e.typed ? 4 : 2) * seniority(e.elapsedDays);
@@ -159,9 +164,9 @@ export function computeXp(events: readonly XpEvent[], now = Date.now()): XpSumma
       if (e.at - lastActive > FOCUS_GAP_MS) sessionStart = e.at;
       lastActive = e.at;
       const minutes = (e.at - sessionStart) / 60_000;
-      const step = FOCUS_STEPS.find((s) => minutes >= s.afterMin);
-      if (step) {
-        xp *= step.multiplier;
+      const multiplier = focusMultiplier(minutes);
+      if (multiplier > 1) {
+        xp *= multiplier;
         focused = true;
       }
       if (day === today) todayFocusMinutes = Math.max(todayFocusMinutes, minutes);
@@ -203,4 +208,33 @@ export function computeXp(events: readonly XpEvent[], now = Date.now()): XpSumma
       lessons: Math.round(bySource.lessons),
     },
   };
+}
+
+/**
+ * Compteur de concentration d'une séance en cours (pied de page de la révision) : mêmes règles que `computeXp`
+ * (pause de plus de 2 minutes, paliers, même fiche divisée par deux), appliquées au fil des réponses.
+ */
+export class FocusMeter {
+  private start = -Infinity;
+  private last = -Infinity;
+  private repeats = new Map<string, number>();
+  /** XP gagnée depuis le début de la séance. */
+  gained = 0;
+
+  add(e: XpEvent): number {
+    if (e.at - this.last > FOCUS_GAP_MS) this.start = e.at;
+    this.last = e.at;
+    const key = itemKey(e);
+    const n = key ? (this.repeats.get(key) ?? 0) : 0;
+    if (key) this.repeats.set(key, n + 1);
+    const xp = (baseXp(e) * focusMultiplier((e.at - this.start) / 60_000)) / 2 ** n;
+    this.gained += xp;
+    return xp;
+  }
+
+  /** Minutes de concentration en cours (0 après une pause de plus de 2 minutes) et multiplicateur atteint. */
+  state(now = Date.now()): { minutes: number; multiplier: number; gained: number } {
+    const minutes = now - this.last > FOCUS_GAP_MS ? 0 : (now - this.start) / 60_000;
+    return { minutes: Math.floor(minutes), multiplier: focusMultiplier(minutes), gained: Math.round(this.gained) };
+  }
 }

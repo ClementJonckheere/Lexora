@@ -1554,6 +1554,14 @@ p {
   min-width: 64px;
   text-align: right;
 }
+.focus-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 24px 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-3);
+}
 .session-stage {
   flex: 1;
   display: flex;

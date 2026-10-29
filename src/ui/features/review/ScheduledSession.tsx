@@ -22,6 +22,7 @@ import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { Flashcard, speakNote } from './Flashcard';
 import { SessionFrame, SessionSummary, type Tally } from './SessionFrame';
 import { useDueCounts } from './ReviewPage';
+import { FocusFooter, useFocusMeter } from '@/ui/features/progress/FocusFooter';
 
 const KIND_LABEL = { new: 'Nouveau', learning: 'En apprentissage', review: 'Révision' } as const;
 const GRADE_CLASS: Record<Grade, string> = { 1: 'again', 2: 'hard', 3: 'good', 4: 'easy' };
@@ -95,6 +96,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   }, [db, universeId]);
   const [typedNotice, setTypedNotice] = useState(() => !readPref<boolean>('review.typedNotice.seen', false));
   const progress = useDailyProgress();
+  const focus = useFocusMeter();
 
   const item = session.queue.current;
   const note = item ? notesById.get(item.noteId) : undefined;
@@ -159,8 +161,10 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
       const out = review(scheduler, card, grade, now);
       // Mesure de référence : réponses exactes sur des fiches en révision (un mot frais se tape plus vite).
       const typedTiming = verdict === 'exact' && card.state === State.Review ? { ms: answeredIn.current, chars: answerChars } : null;
-      const logId = await recordReview(db, out.card, out.log, now - shownAt.current, now, typedTiming);
+      const answerTyped = verdict !== null && verdict !== 'skipped';
+      const logId = await recordReview(db, out.card, out.log, now - shownAt.current, now, typedTiming, answerTyped ? (universeId ?? null) : null);
       session.cards.set(card.id, out.card);
+      focus.add({ kind: 'review', at: now, cardId: card.id, rating: grade, elapsedDays: out.log.elapsed_days, typed: answerTyped });
       undoStack.current.push({ before: card, after: out.card, noteId: item.noteId, logId, grade });
       tally.current[grade]++;
       session.queue.advance(out.card.due - now);
@@ -241,7 +245,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   const intervals = revealed ? previewIntervals(scheduler, card, Date.now()) : null;
 
   return (
-    <SessionFrame completed={session.queue.completed} total={session.queue.total} onQuit={quit}>
+    <SessionFrame completed={session.queue.completed} total={session.queue.total} onQuit={quit} footer={<FocusFooter state={focus.state} />}>
       <Flashcard
         note={note}
         direction={item.direction}
