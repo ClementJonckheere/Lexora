@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
-import { CheckCircle2, GraduationCap, Loader2 } from 'lucide-react';
+import { CheckCircle2, GraduationCap, Loader2, RotateCcw } from 'lucide-react';
 import { useApp } from '@/app/store';
 import { lessonProgress, MASTERY_TARGET, MASTERY_WINDOW, type LessonProgress } from '@/core/learn/progress';
-import { EmptyState } from '@/ui/components/ui';
+import { dueLabel, REVIEW_SIZE } from '@/core/learn/review';
+import { Button, EmptyState } from '@/ui/components/ui';
 import { useGrammarData, type GrammarPoint } from './grammarData';
+import { useLessonReviews } from './reviews';
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
 
@@ -31,6 +33,7 @@ export function LearnPage() {
   const answers = useApp((s) => s.grammarAnswers);
   const { navigate } = useApp.getState();
   const data = useGrammarData();
+  const reviews = useLessonReviews();
 
   const progressOf = useMemo(() => {
     const byLesson = new Map<string, typeof answers>();
@@ -64,20 +67,32 @@ export function LearnPage() {
   const lessons = data.points.filter((p) => available.has(p.id));
   const mastered = lessons.filter((p) => progressOf(p.id).state === 'mastered').length;
 
+  const dueLessons = lessons.filter((p) => reviews.due.includes(p.id));
+
   const card = (p: GrammarPoint) => {
     const prog = progressOf(p.id);
+    const review = reviews.of(p.id);
     return (
-      <button key={p.id} className={`lesson-card lesson-card--${prog.state}`} onClick={() => navigate({ name: 'lesson', id: p.id })}>
+      <button key={p.id} className={`lesson-card lesson-card--${prog.state} ${review.due ? 'lesson-card--due' : ''}`} onClick={() => navigate({ name: 'lesson', id: p.id })}>
         <span className="row row--between">
           <span className="chip">{p.level}</span>
-          {prog.state === 'mastered' && <CheckCircle2 size={16} color="var(--mastered)" />}
+          {review.due ? (
+            <span className="chip chip--due">
+              <RotateCcw size={12} /> À réviser
+            </span>
+          ) : (
+            prog.state === 'mastered' && <CheckCircle2 size={16} color="var(--mastered)" />
+          )}
         </span>
         <strong className="lesson-card-title">{p.title}</strong>
         <span className="muted small lesson-card-example" lang="en">
           {p.example}
         </span>
         <LessonBar progress={prog} />
-        <span className="small">{progressLabel(prog)}</span>
+        <span className="small">
+          {progressLabel(prog)}
+          {review.scheduled && !review.due && review.dueAt && <span className="muted"> · révision {dueLabel(review.dueAt)}</span>}
+        </span>
       </button>
     );
   };
@@ -89,7 +104,8 @@ export function LearnPage() {
           <h1 className="page-title">Apprendre</h1>
           <p className="page-subtitle">
             Grammaire anglaise : une explication courte avec plusieurs exemples, puis des exercices sur de vraies phrases, tirées au hasard. Une leçon est
-            acquise à {MASTERY_TARGET} bonnes réponses sur les {MASTERY_WINDOW} dernières.
+            acquise à {MASTERY_TARGET} bonnes réponses sur les {MASTERY_WINDOW} dernières, puis revient en révision à intervalles croissants (3 jours,
+            une semaine, deux semaines…).
           </p>
         </div>
       </div>
@@ -105,6 +121,36 @@ export function LearnPage() {
           <span className="lesson-bar-fill" style={{ width: `${lessons.length ? (mastered / lessons.length) * 100 : 0}%` }} />
         </div>
       </section>
+
+      {dueLessons.length > 0 && (
+        <section className="card card-pad learn-due">
+          <div className="row row--between">
+            <div>
+              <strong>
+                {dueLessons.length} leçon{dueLessons.length > 1 ? 's' : ''} à réviser
+              </strong>
+              <p className="muted small" style={{ margin: '4px 0 0' }}>
+                Une règle acquise s'oublie si on ne la revoit pas : {REVIEW_SIZE} exercices suffisent pour la garder.
+              </p>
+            </div>
+            <Button variant="primary" onClick={() => navigate({ name: 'lesson', id: dueLessons[0].id, review: true })}>
+              <RotateCcw size={15} /> Réviser « {dueLessons[0].title} »
+            </Button>
+          </div>
+          {dueLessons.length > 1 && (
+            <p className="small" style={{ margin: '10px 0 0' }}>
+              Ensuite : {dueLessons.slice(1).map((p, i) => (
+                <span key={p.id}>
+                  {i > 0 && ' · '}
+                  <button className="link small" onClick={() => navigate({ name: 'lesson', id: p.id, review: true })}>
+                    {p.title}
+                  </button>
+                </span>
+              ))}
+            </p>
+          )}
+        </section>
+      )}
 
       {LEVELS.filter((level) => lessons.some((p) => p.level === level)).map((level) => (
         <section key={level} className="learn-level">

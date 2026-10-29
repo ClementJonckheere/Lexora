@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, CheckCircle2, Flag, Loader2, RefreshCw, Volume2, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Flag, Loader2, RefreshCw, RotateCcw, Volume2, XCircle } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import { isCorrect, type Exercise } from '@/core/learn/exercises';
-import { lessonProgress, MASTERY_TARGET, MASTERY_WINDOW, pickSession } from '@/core/learn/progress';
+import { lessonProgress, MASTERY_TARGET, MASTERY_WINDOW, pickSession, SESSION_SIZE } from '@/core/learn/progress';
+import { dueLabel, lessonReview, REVIEW_PASS, REVIEW_SIZE } from '@/core/learn/review';
 import { Button, Kbd } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { speakText } from '@/ui/speech';
@@ -10,13 +11,13 @@ import { LessonBar, progressLabel } from './LearnPage';
 import { loadExercises, useGrammarData } from './grammarData';
 
 /** Une leçon : l'explication et ses exemples, puis des séances d'exercices tirées au hasard. */
-export function LessonPage({ id }: { id: string }) {
+export function LessonPage({ id, startReview = false }: { id: string; startReview?: boolean }) {
   const data = useGrammarData();
   const answers = useApp((s) => s.grammarAnswers);
   const universeId = useApp((s) => s.universe?.id);
   const { navigate } = useApp.getState();
   const [bank, setBank] = useState<Exercise[] | null>(null);
-  const [session, setSession] = useState<Exercise[] | null>(null);
+  const [session, setSession] = useState<{ items: Exercise[]; review: boolean } | null>(null);
 
   useEffect(() => {
     void loadExercises(id).then(setBank);
@@ -24,16 +25,43 @@ export function LessonPage({ id }: { id: string }) {
 
   const mine = useMemo(() => answers.filter((a) => a.lessonId === id), [answers, id]);
   const progress = lessonProgress(mine);
+  const review = lessonReview(mine);
   const point = data?.points.find((p) => p.id === id);
   const lesson = data?.lessons.find((l) => l.id === id);
   const traps = data?.traps.filter((t) => lesson?.traps.includes(t.id)) ?? [];
 
-  const start = () => bank && setSession(pickSession(bank, useApp.getState().grammarAnswers.filter((a) => a.lessonId === id)));
+  /** Séance d'entraînement (10 exercices) ou de révision (5). */
+  const start = (asReview = false) =>
+    bank &&
+    setSession({
+      items: pickSession(bank, useApp.getState().grammarAnswers.filter((a) => a.lessonId === id), Math.random, asReview ? REVIEW_SIZE : SESSION_SIZE),
+      review: asReview,
+    });
+
+  // Arrivée depuis « Réviser » (index Apprendre) : la révision démarre dès que la banque est chargée.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (startReview && bank?.length && review.due && !autoStarted.current) {
+      autoStarted.current = true;
+      start(true);
+    }
+  });
 
   if (data === undefined) return null;
   if (!point || !lesson) return <div className="page">Leçon introuvable.</div>;
 
-  if (session) return <ExerciseSession key={session.map((e) => e.id).join()} lessonId={id} title={point.title} items={session} onAgain={start} onClose={() => setSession(null)} />;
+  if (session)
+    return (
+      <ExerciseSession
+        key={session.items.map((e) => e.id).join()}
+        lessonId={id}
+        title={point.title}
+        items={session.items}
+        review={session.review}
+        onAgain={() => start(false)}
+        onClose={() => setSession(null)}
+      />
+    );
 
   return (
     <div className="page lesson-page">
@@ -63,14 +91,30 @@ export function LessonPage({ id }: { id: string }) {
             <span className="muted row">
               <Loader2 size={14} className="spin" /> Préparation des exercices…
             </span>
+          ) : bank.length && review.due ? (
+            <>
+              <Button variant="primary" onClick={() => start(true)} shortcut="Entrée">
+                <RotateCcw size={15} /> Réviser la leçon ({REVIEW_SIZE})
+              </Button>
+              <Button onClick={() => start(false)}>S'entraîner ({SESSION_SIZE})</Button>
+            </>
           ) : bank.length ? (
-            <Button variant="primary" onClick={start} shortcut="Entrée">
-              {progress.state === 'mastered' ? "S'entraîner encore" : progress.state === 'new' ? 'Commencer les exercices' : 'Continuer les exercices'} (10)
+            <Button variant="primary" onClick={() => start(false)} shortcut="Entrée">
+              {progress.state === 'mastered' ? "S'entraîner encore" : progress.state === 'new' ? 'Commencer les exercices' : 'Continuer les exercices'} ({SESSION_SIZE})
             </Button>
           ) : (
             <span className="muted small">Exercices en préparation : la banque de phrases de cette leçon arrive avec la prochaine mise à jour.</span>
           )}
           {bank && bank.length > 0 && <span className="muted small">{bank.length} phrases réelles, tirées au hasard à chaque séance</span>}
+        </div>
+        <div className="muted small">
+          {review.due
+            ? review.lapsed
+              ? 'À retravailler : la dernière révision a été manquée.'
+              : `À réviser : ${REVIEW_SIZE} exercices, ${REVIEW_PASS} justes pour la valider.`
+            : review.dueAt
+              ? `Prochaine révision ${dueLabel(review.dueAt)}.`
+              : `Une fois acquise, la leçon reviendra en révision 3 jours plus tard, puis à intervalles croissants.`}
         </div>
       </section>
 
@@ -120,7 +164,7 @@ export function LessonPage({ id }: { id: string }) {
           </ul>
         </section>
       )}
-      <StartOnEnter enabled={!!bank?.length} onStart={start} />
+      <StartOnEnter enabled={!!bank?.length} onStart={() => start(review.due)} />
     </div>
   );
 }
@@ -133,7 +177,21 @@ function StartOnEnter({ enabled, onStart }: { enabled: boolean; onStart: () => v
 type Result = { correct: boolean; given: string };
 
 /** Séance de 10 exercices : réponse, correction immédiate, bilan, « Nouvelles phrases ». */
-function ExerciseSession({ lessonId, title, items, onAgain, onClose }: { lessonId: string; title: string; items: Exercise[]; onAgain: () => void; onClose: () => void }) {
+function ExerciseSession({
+  lessonId,
+  title,
+  items,
+  review = false,
+  onAgain,
+  onClose,
+}: {
+  lessonId: string;
+  title: string;
+  items: Exercise[];
+  review?: boolean;
+  onAgain: () => void;
+  onClose: () => void;
+}) {
   const { answerGrammar, reportGrammar, toast } = useApp.getState();
   const answers = useApp((s) => s.grammarAnswers);
   const [index, setIndex] = useState(0);
@@ -144,6 +202,7 @@ function ExerciseSession({ lessonId, title, items, onAgain, onClose }: { lessonI
   const ex = items[index];
   const finished = index >= items.length;
   const progress = lessonProgress(answers.filter((a) => a.lessonId === lessonId));
+  const reviewState = lessonReview(answers.filter((a) => a.lessonId === lessonId));
 
   useEffect(() => {
     if (!result) input.current?.focus();
@@ -175,7 +234,7 @@ function ExerciseSession({ lessonId, title, items, onAgain, onClose }: { lessonI
 
   useHotkeys(
     {
-      enter: () => (finished ? onAgain() : result ? next() : ex?.choices ? undefined : submit(typed)),
+      enter: () => (finished ? (review ? onClose() : onAgain()) : result ? next() : ex?.choices ? undefined : submit(typed)),
       '1': () => ex?.choices && !result && submit(ex.choices[0]),
       '2': () => ex?.choices && !result && submit(ex.choices[1]),
       escape: onClose,
@@ -203,7 +262,13 @@ function ExerciseSession({ lessonId, title, items, onAgain, onClose }: { lessonI
               {score.right} / {score.done} justes
             </div>
             <p className="muted" style={{ marginTop: 6 }}>
-              {progress.state === 'mastered'
+              {review
+                ? reviewState.due
+                  ? `Révision incomplète (une phrase signalée ne compte pas) : elle reste à faire.`
+                  : reviewState.lapsed
+                    ? `Révision manquée : il fallait ${REVIEW_PASS} bonnes réponses sur ${REVIEW_SIZE}. La leçon revient demain ; relisez la règle d'ici là.`
+                    : `Révision réussie : prochaine révision ${reviewState.dueAt ? dueLabel(reviewState.dueAt) : ''}.`
+                : progress.state === 'mastered'
                 ? `Leçon acquise : au moins ${MASTERY_TARGET} bonnes réponses sur les ${MASTERY_WINDOW} dernières. Vous pouvez continuer à vous entraîner.`
                 : `Leçon : ${progress.correct} bonnes réponses sur les ${MASTERY_WINDOW} dernières (objectif ${MASTERY_TARGET}).`}
               {score.reported > 0 && ` ${score.reported} phrase${score.reported > 1 ? 's' : ''} signalée${score.reported > 1 ? 's' : ''}, non comptée${score.reported > 1 ? 's' : ''}.`}
@@ -212,10 +277,23 @@ function ExerciseSession({ lessonId, title, items, onAgain, onClose }: { lessonI
               <LessonBar progress={progress} large />
             </div>
             <div className="row" style={{ justifyContent: 'center' }}>
-              <Button variant="primary" onClick={onAgain} shortcut="Entrée">
-                <RefreshCw size={15} /> Nouvelles phrases
-              </Button>
-              <Button onClick={onClose}>Revoir la leçon</Button>
+              {review ? (
+                <>
+                  <Button variant="primary" onClick={onClose} shortcut="Entrée">
+                    Revoir la leçon
+                  </Button>
+                  <Button onClick={onAgain}>
+                    <RefreshCw size={15} /> S'entraîner ({SESSION_SIZE})
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="primary" onClick={onAgain} shortcut="Entrée">
+                    <RefreshCw size={15} /> Nouvelles phrases
+                  </Button>
+                  <Button onClick={onClose}>Revoir la leçon</Button>
+                </>
+              )}
             </div>
           </div>
         ) : (

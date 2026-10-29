@@ -46,7 +46,7 @@ export type Route =
   | { name: 'vocab-test' }
   | { name: 'grammar-annotate' }
   | { name: 'learn' }
-  | { name: 'lesson'; id: string }
+  | { name: 'lesson'; id: string; review?: boolean }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';

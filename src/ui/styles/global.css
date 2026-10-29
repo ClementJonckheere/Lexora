@@ -2985,6 +2985,9 @@ p {
 .lesson-card { display: flex; flex-direction: column; gap: 8px; text-align: left; padding: 14px 16px; border-radius: var(--radius); border: 1px solid var(--border, #e7e5e4); background: var(--surface); cursor: pointer; transition: border-color 0.15s, transform 0.15s; }
 .lesson-card:hover { border-color: var(--primary); transform: translateY(-1px); }
 .lesson-card--mastered { border-color: color-mix(in srgb, var(--mastered) 45%, transparent); }
+.lesson-card--due { border-color: color-mix(in srgb, var(--warning) 55%, transparent); }
+.chip--due { background: var(--warning-bg); border-color: color-mix(in srgb, var(--warning) 35%, transparent); color: var(--warning); }
+.learn-due { margin-bottom: 16px; border-color: color-mix(in srgb, var(--warning) 40%, transparent); }
 .lesson-card-title { font-size: 15px; }
 .lesson-card-example { font-style: italic; }
 .learn-later { margin-top: 8px; line-height: 1.7; }

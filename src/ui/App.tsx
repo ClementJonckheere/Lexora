@@ -173,7 +173,7 @@ function Page() {
     case 'learn':
       return <LearnPage />;
     case 'lesson':
-      return <LessonPage key={route.id} id={route.id} />;
+      return <LessonPage key={route.id} id={route.id} startReview={route.review} />;
     case 'stats':
       return <StatsPage />;
     case 'settings':
