@@ -279,6 +279,7 @@ describe('correcteur : réponses également justes', () => {
   it('perfect-vs-past : repère du present perfect exigé, aucun moment passé hors de since, accord du distracteur', () => {
     expect(ex('perfect-vs-past', 'Here is the child who has won a prize yesterday.', 1)).toBeNull();
     expect(ex('perfect-vs-past', 'It cannot have rained yesterday.', 1)).toBeNull();
+    expect(ex('perfect-vs-past', 'The alarm will probably already have gone off.', 1)).toBeNull();
     expect(ex('perfect-vs-past', 'I have decided to keep a diary this year.', 1)).toBeNull(); // « this year » : le prétérit va aussi
     expect(ex('perfect-vs-past', 'It has rained since yesterday.', 1)).toMatchObject({ answer: 'has rained', form: 'perfect' });
     expect(ex('perfect-vs-past', 'Prices have been rising since last year.', 1)!.choices?.sort()).toEqual(['have been', 'were']);

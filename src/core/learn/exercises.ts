@@ -287,8 +287,8 @@ const PERFECT_MARKER = /\b(?:ever|never|yet|already|just|so\s+far|since|lately|r
 const PAST_MARKER =
   /\b(?:yesterday|ago|last\s+(?:week|month|year|night|summer|winter|weekend|time)|in\s+(?:19|20)\d\d|when\s+(?:i|he|she|we|they)\s+w(?:as|ere))\b/i;
 
-/** Modal juste avant (should've, would never have, I'd have, I'll have) : conditionnel ou futur passé. */
-const MODAL_BEFORE = /(?:\b(?:would|could|should|might|must|may|will|can|cannot|to)(?:n't)?(?:\s+never|\s+not)?|'d|'ll)\s*$/i;
+/** Modal juste avant, adverbes compris (should've, would never have, will probably already have) : conditionnel ou futur passé. */
+const MODAL_BEFORE = /(?:\b(?:would|could|should|might|must|may|will|can|cannot|to)(?:n't)?|'d|'ll)(?:\s+(?:never|not|probably|already|surely|certainly|really|just|also|still|definitely|ever))*\s*$/i;
 /** Auxiliaire du plus-que-parfait français (j'avais vu, elle était partie). */
 const FR_PLUPERFECT =
   /(?<![a-zà-ÿ])(?:av(?:ais|ait|ions|iez|aient)|ét(?:ais|ait|ions|iez|aient)|eu(?:s|t|mes|tes|rent)|fu(?:s|t|rent))\s+(?:(?:déjà|pas|jamais|bien|tout|plus|toujours|rien|été|beaucoup)\s+)*(?!(?:toi|moi|lui|ici|aussi|ainsi|si|parmi)\b)[a-zàâçéèêëîïôûù]*(?:é|ée|és|ées|i|ie|is|it|u|ue|us|ues|ert|erte|ort|orte|int|ainte|ait|aite)(?![a-zà-ÿ])/i;
