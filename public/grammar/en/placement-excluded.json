@@ -1,0 +1,110 @@
+{
+ "version": 1,
+ "note": "Questions du placement écartées après relecture (2.23.0), avec la raison. Les filtres de placementBank.ts couvrent les mêmes défauts pour les générations suivantes ; cette liste garantit qu'aucune de ces phrases ne revient.",
+ "items": [
+  {
+   "id": "placement:perfect-vs-past:perfect-vs-past:291659",
+   "reason": "« just now » (= il y a un instant) se construit avec le prétérit : came. Le sens « vient juste de » demande « has just come »."
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:3420179",
+   "reason": "Aucun repère : « arrived » est aussi juste (et plus naturel)."
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:1898120",
+   "reason": "Aucun repère : « had » est juste, et « have » (présent) aussi, avec un autre sens."
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:5254559",
+   "reason": "Aucun repère : « did » est aussi juste."
+  },
+  {
+   "id": "placement:present-perfect:present-perfect:7813222",
+   "reason": "« You knew all this time? » est très courant."
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:2891734",
+   "reason": "Phrase isolée, sans repère passé : « saw » est aussi juste."
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:8289092",
+   "reason": "Sans repère : « planned » est aussi juste."
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:294933",
+   "reason": "Sans repère : « cut » est aussi juste."
+  },
+  {
+   "id": "placement:past-perfect:past-perfect:13813063",
+   "reason": "Sans repère : « went » est aussi juste."
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:2359332",
+   "reason": "« have walked » est aussi juste. Le piège francophone est le calque « I walk / I am walking since… »."
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:5643128",
+   "reason": "« has hammered » est aussi juste ; la traduction « a planté des clous » ne tranche pas."
+  },
+  {
+   "id": "placement:perfect-continuous:perfect-continuous:4083543",
+   "reason": "« has watched » est aussi juste ; la traduction « a regardé » ne tranche pas."
+  },
+  {
+   "id": "placement:past-simple-irregular:past-simple-irregular:4433752",
+   "reason": "« have won » est aussi juste (traduction « avons gagné »)."
+  },
+  {
+   "id": "placement:past-simple-irregular:past-simple-irregular:9177338",
+   "reason": "« I've forgotten » est aussi juste (et plus courant en anglais britannique)."
+  },
+  {
+   "id": "placement:passive:passive:9258121",
+   "reason": "« was elected » est la réponse naturelle ; « is elected » ne marche qu'en titre de presse."
+  },
+  {
+   "id": "placement:wish:wish:2545543",
+   "reason": "« was » doit être accepté à côté de « were »."
+  },
+  {
+   "id": "placement:first-conditional:first-conditional:2543072",
+   "reason": "if = « si » interrogatif (whether) : la phrase ne teste pas le conditionnel."
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:9509807",
+   "reason": "Question indirecte : « will shut » est aussi juste (déjà écartée des exercices)."
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:10793317",
+   "reason": "until + nom : ce n'est pas une proposition de temps."
+  },
+  {
+   "id": "placement:time-clauses:time-clauses:2883848",
+   "reason": "until + heure : ce n'est pas une proposition de temps."
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:2282440",
+   "reason": "try + -ing et try + to sont justes tous les deux ; le français « essayer de » ne tranche pas."
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:6354942",
+   "reason": "Réponse attendue « doing », mais « to do » est juste et c'est ce que suggère la traduction."
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:2289003",
+   "reason": "try + -ing et try + to sont défendables."
+  },
+  {
+   "id": "placement:gerund-infinitive-meaning:gerund-infinitive-meaning:3562551",
+   "reason": "try + -ing et try + to sont défendables."
+  },
+  {
+   "id": "placement:countables:countables:434646",
+   "reason": "« a lot » est juste (et plus naturel que « much »)."
+  },
+  {
+   "id": "placement:question-tags:question-tags:12391239",
+   "reason": "Phrase elliptique et familière : le tag positif après « Not bad » est déroutant pour un test."
+  }
+ ]
+}

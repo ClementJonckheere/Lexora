@@ -37,8 +37,13 @@ describe('questions du placement (A1, A2)', () => {
   it('présent simple et continu, à taper', () => {
     expect(shown('present-simple', 'She works in a bank.', 'Elle travaille dans une banque.')).toBe('She [works (work)] in a bank.');
     expect(ex('present-simple', 'She works tomorrow.', 'Elle travaille demain.')).toBeNull();
-    expect(shown('present-continuous', 'I am reading a book.', 'Je suis en train de lire un livre.')).toBe('I [am reading (read)] a book.');
-    expect(ex('present-continuous', 'I am reading a book.', 'Je lis un livre.')).toBeNull(); // « je lis » : I read conviendrait aussi
+    // Le contexte anglais tranche (now, Look!) ; une traduction avec « en train de » dicterait la forme.
+    expect(shown('present-continuous', 'I am reading a book now.', 'Je lis un livre.')).toBe('I [am reading (read)] a book now.');
+    expect(ex('present-continuous', 'I am reading a book now.', 'Je suis en train de lire un livre.')).toBeNull();
+    expect(ex('present-continuous', 'I am reading a book.', 'Je lis un livre.')).toBeNull(); // sans repère : I read conviendrait aussi
+    // Personnes autres que la 3e : choix base / -s, pour que « toujours -s » ne suffise pas.
+    expect(shown('present-simple', 'They live in a small flat.', 'Ils habitent un petit appartement.')).toBe('They [live {live|lives}] in a small flat.');
+    expect(ex('present-simple', 'Why do you live here?', 'Pourquoi habites-tu ici ?')).toBeNull();
   });
 
   it('questions : do / does selon le sujet, mot interrogatif donné par la traduction', () => {
@@ -58,13 +63,17 @@ describe('questions du placement (A1, A2)', () => {
   });
 
   it('prétérit : régulier, irrégulier, participe, négation ; la traduction au passé confirme', () => {
-    expect(shown('past-simple-regular', 'I lived in Germany for three years.', "J'ai vécu trois ans en Allemagne.")).toBe('I [lived (live)] in Germany for three years.');
-    expect(shown('past-simple-irregular', 'We went there for a week.', 'Nous y sommes allés une semaine.')).toBe('We [went (go)] there for a week.');
+    // Un repère passé est exigé : sans lui, le present perfect est juste aussi.
+    expect(shown('past-simple-regular', 'I lived in Germany in 2010.', "J'ai vécu en Allemagne en 2010.")).toBe('I [lived (live)] in Germany in 2010.');
+    expect(ex('past-simple-regular', 'I lived in Germany for three years.', "J'ai vécu trois ans en Allemagne.")).toBeNull();
+    expect(shown('past-simple-irregular', 'We went there last week.', 'Nous y sommes allés la semaine dernière.')).toBe('We [went (go)] there last week.');
+    expect(ex('past-simple-irregular', 'I forgot what it is called.', "J'ai oublié comment ça s'appelle.")).toBeNull();
     expect(ex('past-simple-irregular', 'I put it on the table.', "Je l'ai mis sur la table.")).toBeNull(); // put : rien à trouver
     expect(shown('past-participle', 'I have written three letters.', "J'ai écrit trois lettres.")).toBe('I have [written (write)] three letters.');
     expect(ex('past-participle', 'What has become of him?', 'Qu’est-il devenu ?')).toBeNull();
     expect(shown('past-questions', "You didn't answer the phone.", "Tu n'as pas répondu au téléphone.")).toBe("You [didn't answer {didn't answer|didn't answered|don't answer}] the phone.");
-    expect(shown('past-continuous', 'She was talking about you.', 'Elle était en train de parler de toi.')).toBe('She [was talking (talk)] about you.');
+    expect(shown('past-continuous', 'She was talking when I came in.', 'Elle parlait quand je suis entré.')).toBe('She [was talking (talk)] when I came in.');
+    expect(ex('past-continuous', 'She was talking when I came in.', 'Elle était en train de parler quand je suis entré.')).toBeNull();
   });
 
   it('noms, comparatifs, génitif', () => {
@@ -79,8 +88,12 @@ describe('questions du placement (A1, A2)', () => {
 
   it('futur, obligation, conseil, adverbes de manière, verbe + -ing ou to', () => {
     expect(shown('going-to', "I'm going to stop smoking.", 'Je vais arrêter de fumer.')).toBe("I'm [going to stop {go to stop|going stop|going to stop}] smoking.");
-    expect(shown('will', 'Tom will die if he does that.', 'Tom mourra s’il fait ça.')).toBe('Tom [will die {will die|will dying|will to die}] if he does that.');
-    expect(shown('must-have-to', 'She has to stop smoking.', 'Il lui faut arrêter de fumer.')).toBe('She [has to {has to|have to|must to}] stop smoking.');
+    // will contre le calque du présent (« Je t'aide »), et le présent d'habitude contre will.
+    expect(shown('will', "I'll help you with your bags.", "Je t'aide avec tes sacs.")).toBe('I [will help {help|will help}] you with your bags.');
+    expect(shown('will', 'I usually walk to work.', 'Je vais généralement au travail à pied.')).toBe('I usually [walk {walk|will walk}] to work.');
+    // mustn't (interdiction) contre don't have to (pas d'obligation) : la traduction tranche.
+    expect(shown('must-have-to', "You mustn't touch that.", 'Tu ne dois pas toucher à ça.')).toBe("You [mustn't {don't have to|mustn't}] touch that.");
+    expect(shown('must-have-to', "You don't have to come.", "Tu n'es pas obligé de venir.")).toBe("You [don't have to {don't have to|mustn't}] come.");
     expect(shown('should', 'You should stop smoking.', 'Tu devrais arrêter de fumer.')).toBe('You [should stop {should stop|should stopping|should to stop}] smoking.');
     expect(shown('adverbs-manner', 'The car has been acting strangely.', 'La voiture se comporte bizarrement.')).toBe('The car has been acting [strangely {strange|strangely}].');
     expect(ex('adverbs-manner', 'She looks lovely.', 'Elle est ravissante.')).toBeNull();
@@ -92,14 +105,14 @@ describe('questions du placement (A1, A2)', () => {
 describe('repères de la traduction', () => {
   it('« français », « jamais » ne sont pas des imparfaits ; « j’ai fait » est un passé', () => {
     expect(ex('do-questions', 'Do you speak French?', 'Parles-tu français ?')).not.toBeNull();
-    expect(ex('past-simple-irregular', 'I made a cake.', "J'ai fait un gâteau.")).not.toBeNull();
+    expect(ex('past-simple-irregular', 'I made a cake yesterday.', "J'ai fait un gâteau hier.")).not.toBeNull();
   });
 });
 
 describe('défauts relevés sur les banques générées', () => {
   it('base des formes en -ing : hugging → hug, cuddling → cuddle', () => {
-    expect(shown('present-continuous', 'I am hugging my plush toy.', 'Je suis en train de câliner ma peluche.')).toBe('I [am hugging (hug)] my plush toy.');
-    expect(shown('present-continuous', 'I am cuddling my toy.', 'Je suis en train de câliner mon jouet.')).toBe('I [am cuddling (cuddle)] my toy.');
+    expect(shown('present-continuous', 'Look! I am hugging my plush toy.', 'Regarde ! Je câline ma peluche.')).toBe('Look! I [am hugging (hug)] my plush toy.');
+    expect(shown('present-continuous', 'I am cuddling my toy right now.', 'Je câline mon jouet.')).toBe('I [am cuddling (cuddle)] my toy right now.');
   });
   it('comparatifs : pas de « more » devant un adjectif court, pas de better / worse (good ou well)', () => {
     expect(ex('comparatives', 'She is more thin than slender.', 'Elle est plus maigre qu’élancée.')).toBeNull();

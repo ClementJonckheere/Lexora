@@ -161,18 +161,32 @@ const demonstratives: Builder = (s) => {
   return [blank(s, at, m[1], cap(word, start), { choices: ['this', 'these'].map((c) => cap(c, start)), form: word })];
 };
 
-/** Présent simple à la 3e personne, à taper : he (work) → works. */
+/**
+ * Présent simple : à la 3e personne, la forme se tape (he (work) → works) ; avec I / you / we / they, choix entre la
+ * base et la forme en -s. Les deux natures alternent : « toujours -s » ne suffit pas.
+ */
 const presentSimple: Builder = (s, known) => {
   if (EN_NOT_PRESENT.test(s.en) || FR_PAST.test(s.fr) || FR_FUTURE_OR_COND.test(s.fr)) return [];
-  const hits = [...s.en.matchAll(SUBJECT_WORD)].filter((h) => /^(?:he|she|it)$/i.test(h[1]));
+  const hits = [...s.en.matchAll(SUBJECT_WORD)];
   if (hits.length !== 1) return [];
   const h = hits[0];
   const form = h[2];
-  if (!/[^s]s$|ies$|(?:sh|ch|x|o)es$/.test(form) || /^(?:is|has|does|was|always|also|just|thus|less|unless|yes)$/.test(form)) return [];
-  const base = baseOfPresent(form);
-  if (!plausibleBase(base, known) || presentOf(base, 'he') !== form) return [];
   const at = h.index + h[0].length - form.length;
-  return [blank(s, at, form, form, { hint: base, form: 'third-person' })];
+  if (/^(?:he|she|it)$/i.test(h[1])) {
+    if (!/[^s]s$|ies$|(?:sh|ch|x|o)es$/.test(form) || /^(?:is|has|does|was|always|also|just|thus|less|unless|yes)$/.test(form)) return [];
+    const base = baseOfPresent(form);
+    if (!plausibleBase(base, known) || presentOf(base, 'he') !== form) return [];
+    return [blank(s, at, form, form, { hint: base, form: 'third-person' })];
+  }
+  // Après un auxiliaire ou un modal (« Why don't you stick », « Could we talk »), la base ne dit rien de la personne.
+  const prev = s.en.slice(0, h.index).trim().split(/\s+/).at(-1)?.toLowerCase().replace(/[^a-z']/g, '') ?? '';
+  if (/^(?:do|does|did|don't|doesn't|didn't|can|could|would|will|should|may|might|must|shall|let|to|not|won't|can't|couldn't|wouldn't|shouldn't)$/.test(prev)) return [];
+  // I / you / we / they + base : pas un auxiliaire, ni une forme passée ou en -ing.
+  if (/^(?:am|are|was|were|be|have|had|do|did|can|could|will|would|should|must|may|might|shall|don't|never|always|often|usually|sometimes|also|just|really|still)$/.test(form)) return [];
+  if (!plausibleBase(form, known) || baseOf(form, known)) return [];
+  const third = presentOf(form, 'he');
+  if (third === form || (known && !known(third))) return [];
+  return [blank(s, at, form, form, { choices: [form, third], form: 'plain' })];
 };
 
 /** do / does en tête de question, selon le sujet. */
@@ -276,11 +290,14 @@ const frequencyAdverbs: Builder = (s, known) => {
   return [blank(s, at, span, span, { choices: [span, `${verb} ${adverb}`], form: 'before-verb' })];
 };
 
-/** Présent continu à taper : she (read) → is reading. */
-const FR_NOW = /\ben train de\b|\b(?:maintenant|en ce moment|actuellement)\b/i;
+/**
+ * Présent continu à taper : she (read) → is reading. C'est le contexte anglais qui tranche (now, right now, at the
+ * moment, Look!, Listen!) ; une traduction avec « en train de » dicterait la forme, elle est écartée.
+ */
+const EN_NOW = /\b(?:now|right now|at the moment|currently|at present)\b|^\s*(?:look|listen)\b/i;
 const presentContinuous: Builder = (s, known) => {
   const m = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(am|is|are)\\s+([a-z]+ing)\\b`), s.en);
-  if (!m || EN_NOT_PRESENT.test(s.en) || FR_FUTURE_OR_COND.test(s.fr) || !FR_NOW.test(s.fr) || /\bgoing to\b/.test(s.en)) return [];
+  if (!m || EN_NOT_PRESENT.test(s.en) || FR_FUTURE_OR_COND.test(s.fr) || !EN_NOW.test(s.en) || /\ben train de\b/i.test(s.fr) || /\bgoing to\b/.test(s.en)) return [];
   const ing = m[3];
   // hugging → hug, cuddling → cuddle : la base vérifiée par la liste de mots.
   const guessed = baseOfIng(ing, known);
@@ -292,10 +309,15 @@ const presentContinuous: Builder = (s, known) => {
 
 /* ------------------------------------------------------------------- A2 --- */
 
-/** Prétérit après un pronom sujet, à taper (verbe en indice) ; la traduction au passé confirme. */
+/**
+ * Prétérit après un pronom sujet, à taper (verbe en indice). Un repère passé dans la phrase anglaise est exigé :
+ * sans lui (« I forgot what it's called », « Does that mean we won? »), le present perfect est juste aussi.
+ */
+const EN_PAST_MARKER =
+  /\b(?:yesterday|ago|last\s+(?:week|month|year|night|summer|winter|weekend|time|monday|tuesday|wednesday|thursday|friday|saturday|sunday)|in\s+(?:19|20)\d\d|when\s+(?:i|he|she|we|they|you)\s+w(?:as|ere)|this morning|the other day|the day before|that (?:day|night|morning|evening)|then|once|later|after that)\b/i;
 function pastSimple(kind: 'regular' | 'irregular'): Builder {
   return (s, known) => {
-    if (!FR_PAST.test(s.fr) || /\b(?:have|has|had|'ve|'d|been|will|would|if|wish|since)\b/i.test(s.en)) return [];
+    if (!FR_PAST.test(s.fr) || !EN_PAST_MARKER.test(s.en) || /\b(?:have|has|had|'ve|'d|been|will|would|if|wish|since)\b/i.test(s.en)) return [];
     const hits = [...s.en.matchAll(SUBJECT_WORD)].filter((h) => {
       const w = h[2];
       const base = baseOf(w, known);
@@ -337,10 +359,14 @@ const pastQuestions: Builder = (s, known) => {
   return [blank(s, m.index, span, span, { choices: [span, `${neg} ${past}`, `${neg === 'did not' ? 'do not' : "don't"} ${verb}`], form: 'negative' })];
 };
 
-/** Prétérit continu à taper (« en train de » dans la traduction : le prétérit simple ne conviendrait pas). */
+/**
+ * Prétérit continu à taper : une action en cours interrompue ou à un moment précis (when / while / at that moment),
+ * repérée en anglais ; une traduction avec « en train de » dicterait la forme, elle est écartée.
+ */
+const EN_IN_PROGRESS = /\b(?:when|while|at that (?:moment|time)|at the time|at (?:\d{1,2}|midnight|noon)|all (?:day|night|morning|evening))\b/i;
 const pastContinuous: Builder = (s, known) => {
   const m = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(was|were)\\s+([a-z]+ing)\\b`), s.en);
-  if (!m || !/\ben train de\b/i.test(s.fr) || /\bgoing to\b/.test(s.en)) return [];
+  if (!m || !EN_IN_PROGRESS.test(s.en) || /\ben train de\b/i.test(s.fr) || /\bgoing to\b/.test(s.en)) return [];
   const ing = m[3];
   const base = baseOfIng(ing, known);
   if (!base || !plausibleBase(base, known)) return [];
@@ -421,7 +447,38 @@ const goingTo: Builder = (s, known) => {
   return [blank(s, at, span, span, { choices: [span, `go to ${m[2]}`, `going ${m[2]}`], form: 'going-to' })];
 };
 
-/** Modal + base verbale, contre « modal + to » et « modal + -ing » (will, should). */
+/**
+ * Will contre le présent : le piège francophone est le calque du présent pour une promesse, une décision ou une
+ * prédiction (« Je t'aide » → *I help you*, au lieu de *I'll help you*) ; à l'inverse, une habitude se dit au présent
+ * (« I usually walk », pas *will walk*). Les deux natures alternent.
+ */
+const HABIT = /\b(?:usually|always|often|sometimes|never|every\s+(?:day|morning|week|year|night|summer))\b/i;
+const willOrPresent: Builder = (s, known) => {
+  if (/\b(?:if|when|as soon as|until|before|after|unless)\b/i.test(s.en) || s.en.trim().endsWith('?')) return [];
+  const en = s.en.replace(/’/g, "'");
+  const will = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})(?:\\s+will|'ll)\\s+([a-z]+)\\b`), en);
+  if (will) {
+    const [subject, verb] = [will[1], will[2]];
+    // Traduction au présent : le calque *I help you* est la vraie erreur.
+    if (!plausibleBase(verb, known) || /^(?:be|have|not|never|always|probably|soon)$/.test(verb) || FR_FUTURE_OR_COND.test(s.fr) || FR_PAST.test(s.fr)) return [];
+    // Le trou couvre « will help » (ou « 'll help ») juste après le sujet.
+    const afterSubject = will.index + will[0].indexOf(subject) + subject.length;
+    const end = will.index + will[0].length;
+    const answer = `will ${verb}`;
+    return [{ before: `${s.en.slice(0, afterSubject)} `, after: s.en.slice(end), answer, choices: [answer, presentOf(verb, subject)], form: 'will' }];
+  }
+  const habit = HABIT.test(s.en) && !EN_NOT_PRESENT.test(s.en.replace(HABIT, '')) && !FR_FUTURE_OR_COND.test(s.fr) && !FR_PAST.test(s.fr);
+  if (!habit) return [];
+  const hits = [...s.en.matchAll(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(?:(?:usually|always|often|sometimes|never)\\s+)?([a-z]+)\\b`, 'g'))];
+  if (hits.length !== 1) return [];
+  const [subject, form] = [hits[0][1], hits[0][2]];
+  const base = /^(?:he|she|it)$/i.test(subject) ? baseOfPresent(form) : form;
+  if (!plausibleBase(base, known) || presentOf(base, subject) !== form || /^(?:be|have|do)$/.test(base)) return [];
+  const at = hits[0].index! + hits[0][0].length - form.length;
+  return [blank(s, at, form, form, { choices: [form, `will ${base}`], form: 'present' })];
+};
+
+/** Modal + base verbale, contre « modal + to » et « modal + -ing » (should). */
 function modalBase(modal: 'will' | 'should'): Builder {
   return (s, known) => {
     const m = only(new RegExp(`\\b(${modal})\\s+([a-z]+)\\b`), s.en);
@@ -433,15 +490,26 @@ function modalBase(modal: 'will' | 'should'): Builder {
   };
 }
 
-/** Obligation : has to / have to selon le sujet, contre « must to ». */
+/**
+ * Obligation : mustn't (interdiction) contre don't have to (absence d'obligation), le contresens francophone
+ * classique (« tu ne dois pas » / « tu n'es pas obligé »). La traduction tranche.
+ */
+const FR_FORBIDDEN = /(?<![a-zà-ÿ])(?:ne\s+(?:dois|doit|devez|devons|doivent)\s+pas|n'(?:as|a|avez|avons|ont)\s+pas\s+le\s+droit|interdit|il\s+ne\s+faut\s+pas|ne\s+faut\s+pas)(?![a-zà-ÿ])/i;
+const FR_NOT_NEEDED = /(?<![a-zà-ÿ])(?:pas\s+(?:besoin|obligée?s?|nécessaire|la\s+peine)|n'(?:ai|as|a|avons|avez|ont)\s+pas\s+à|inutile\s+de|rien\s+ne\s+(?:t'|vous\s+|l')?oblige)(?![a-zà-ÿ])/i;
 const mustHaveTo: Builder = (s, known) => {
-  const m = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(have|has)\\s+to\\s+([a-z]+)\\b`), s.en);
-  if (!m || FR_PAST.test(s.fr) || !plausibleBase(m[3], known)) return [];
+  const en = s.en.replace(/’/g, "'");
+  const mustnt = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(mustn't|must not)\\s+([a-z]+)\\b`), en);
+  const dont = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(don't|doesn't|do not|does not)\\s+have\\s+to\\s+([a-z]+)\\b`), en);
+  if (!!mustnt === !!dont) return [];
+  const m = (mustnt ?? dont)!;
+  if (!plausibleBase(m[3], known) || FR_PAST.test(s.fr)) return [];
   const third = /^(?:he|she|it)$/i.test(m[1]);
-  if ((m[2] === 'has') !== third) return [];
-  const span = `${m[2]} to`;
-  const at = m.index + m[0].length - m[3].length - span.length - 1;
-  return [blank(s, at, span, span, { choices: ['has to', 'have to', 'must to'], form: m[2] })];
+  const dontForm = third ? "doesn't have to" : "don't have to";
+  const spanStart = m.index + m[0].indexOf(m[2]);
+  const span = mustnt ? m[2] : `${m[2]} have to`;
+  if (mustnt ? !FR_FORBIDDEN.test(s.fr) || FR_NOT_NEEDED.test(s.fr) : !FR_NOT_NEEDED.test(s.fr) || FR_FORBIDDEN.test(s.fr)) return [];
+  const answer = mustnt ? "mustn't" : dontForm;
+  return [{ before: s.en.slice(0, spanStart), after: s.en.slice(spanStart + span.length), answer, choices: [answer, mustnt ? dontForm : "mustn't"], form: mustnt ? 'mustnt' : 'dont-have-to' }];
 };
 
 /** Adverbe de manière en fin de proposition, contre l'adjectif : drive carefully / careful. */
@@ -515,7 +583,7 @@ export const PLACEMENT_BUILDERS: Record<string, Builder> = {
   comparatives,
   'possessive-s': possessiveS,
   'going-to': goingTo,
-  will: modalBase('will'),
+  will: willOrPresent,
   'must-have-to': mustHaveTo,
   should: modalBase('should'),
   'adverbs-manner': adverbsManner,

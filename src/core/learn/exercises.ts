@@ -715,7 +715,8 @@ const quantifiers: Builder = (s) => {
   ];
 };
 
-const GI_VERBS = 'stop|stops|stopped|remember|remembers|remembered|forget|forgets|forgot|try|tries|tried|regret|regrets|regretted';
+// try est écarté : try + -ing et try + to sont souvent justes tous les deux, et « essayer de » ne tranche pas.
+const GI_VERBS = 'stop|stops|stopped|remember|remembers|remembered|forget|forgets|forgot|regret|regrets|regretted';
 
 /** Stop / remember / forget / try / regret + -ing ou + to : le sens change, la traduction tranche. */
 const gerundInfinitive: Builder = (s, known) => {
@@ -1015,10 +1016,10 @@ const thirdConditional: Builder = (s, known) => {
 
 /* ------------------------------------------------------------ leçons --- */
 
-const firstConditional: Builder = (s, known) => [
-  ...clauseVerb('first-conditional', 'if|unless', 'present')(s, known),
-  ...mainModal('if|unless', 'will')(s, known),
-];
+/** « I'll see if I can… », « Do you know if… » : if = si interrogatif (whether), pas un conditionnel. */
+const IF_WHETHER = /\b(?:see|know|knows|wonder|ask|asked|check|decide|sure|find out|tell me)\s+if\b/i;
+const firstConditional: Builder = (s, known) =>
+  IF_WHETHER.test(s.en) ? [] : [...clauseVerb('first-conditional', 'if|unless', 'present')(s, known), ...mainModal('if|unless', 'will')(s, known)];
 
 /** Le 2e conditionnel exige une traduction au conditionnel : « je l'achèterai » serait un 1er conditionnel. */
 const secondConditional: Builder = (s, known) =>

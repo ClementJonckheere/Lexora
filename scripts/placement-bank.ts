@@ -13,6 +13,9 @@ const lessons = JSON.parse(readFileSync(`${DIR}/lessons.json`, 'utf8')).lessons 
 const counts = JSON.parse(readFileSync(`${DIR}/tatoeba-counts.json`, 'utf8')).counts as Record<string, { withFrench: number }>;
 const excludedFile = `${DIR}/exercises/excluded.json`;
 const excluded = new Set<string>(existsSync(excludedFile) ? JSON.parse(readFileSync(excludedFile, 'utf8')).items : []);
+// Questions du placement écartées à la relecture (identifiant de question, pas d'exercice).
+const reviewFile = `${DIR}/placement-excluded.json`;
+const rejected = new Set<string>(existsSync(reviewFile) ? (JSON.parse(readFileSync(reviewFile, 'utf8')).items as { id: string }[]).map((i) => i.id) : []);
 
 const items: PlacementItem[] = [];
 const covered: Record<string, { typed: number; choice2: number; choice3plus: number }> = {};
@@ -27,7 +30,7 @@ for (const { target: id, lesson, file } of sources) {
   if (covered[id]) continue;
   if (!existsSync(file)) continue;
   const bank = JSON.parse(readFileSync(file, 'utf8')).items as Exercise[];
-  const chosen = placementItems(lesson, bank, excluded, id);
+  const chosen = placementItems(lesson, bank.filter((ex) => !rejected.has(`placement:${id}:${ex.id}`)), excluded, id);
   if (chosen.length < 2) continue; // le moteur pose au moins deux questions par point
   items.push(...chosen);
   covered[id] = {
