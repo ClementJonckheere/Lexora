@@ -1,0 +1,37 @@
+# Phrases Tatoeba écartées des exercices de grammaire (scripts/grammar-tatoeba.ts).
+# Une expression régulière (JavaScript ; \b ne connaît pas les lettres accentuées) par ligne, sans tenir compte de la casse, cherchée dans la phrase anglaise ET dans sa
+# traduction française. Les lignes vides et celles qui commencent par # sont ignorées.
+
+# Violences sexuelles, suicide, sexualité
+\brap(?:e|ed|es|ing|ist|ists)\b
+\bviol(?:é|ée|és|ées|er|ent|eur|eurs)?(?![a-zà-ÿ])
+\bsuicid
+\bkill(?:s|ed|ing)?\s+(?:himself|herself|myself|yourself|themselves|ourselves)\b
+\bmasturb
+\bporn
+\bsex(?:e|es|ual|uel|uelle|uels|y)?\b
+\borgasm
+\borgasme
+\bincest
+\bpedophil|\bpédophil
+\bprostitu
+
+# Affirmations politiques ou religieuses contestées
+\balg[eé]ri
+\bkabyl
+\bberb[eè]r
+\bamazigh
+\bseparatis|\bséparatis
+\bislam
+\bmuslim|\bmusulman
+\ballah\b
+\bjews?\b|\bjuifs?\b|\bjuives?\b|\bjewish\b
+\bnazi
+\bhitler
+\bterroris
+\bisra[eë]l
+\bpalestin
+\babortion|\bavortement
+
+# Personnages des séries de phrases de faits divers (meurtres, violences)
+\b(?:sami|layla|fadil|dania|salima|rami|ziri|yanni|skura|rima|mennad|baya)\b

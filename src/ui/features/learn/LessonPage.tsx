@@ -269,7 +269,11 @@ function ExerciseSession({ lessonId, title, items, onAgain, onClose }: { lessonI
               <div className="stack stack--sm" style={{ alignItems: 'center' }}>
                 <div className={`verdict ${result.correct ? 'verdict--ok' : 'verdict--ko'}`}>
                   {result.correct ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
-                  {result.correct ? 'Juste' : `Réponse : ${ex.answer}${result.given ? ` (vous : ${result.given})` : ''}`}
+                  {result.correct
+                    ? ex.choices || isCorrect({ ...ex, accept: undefined }, result.given)
+                      ? 'Juste'
+                      : `Juste. Ici « ${result.given.trim()} » convient aussi ; forme attendue : ${ex.answer}`
+                    : `Réponse : ${ex.answer}${result.given ? ` (vous : ${result.given})` : ''}`}
                 </div>
                 <Button variant="primary" onClick={next} shortcut="Entrée">
                   {index + 1 < items.length ? 'Suivant' : 'Voir le bilan'}

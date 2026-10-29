@@ -253,5 +253,26 @@ $$;
 -- Suspension d'une note (exclue des révisions) et plafond de nouveaux mots par univers.
 alter table public.notes add column if not exists suspended smallint not null default 0;
 alter table public.universes add column if not exists new_per_day integer;
+
+-- ------------------------------------- phrases de grammaire signalées (v2.16) ---
+-- Exercices signalés « ne correspond pas à la leçon », comptés tous utilisateurs confondus. La fonction ne renvoie
+-- que l'identifiant de l'exercice (leçon + phrase Tatoeba, public) et le nombre de personnes qui l'ont signalé :
+-- aucune donnée personnelle. La CI de génération des exercices l'appelle avec la clé publique pour écarter ces
+-- phrases des banques.
+create or replace function public.grammar_reported_items()
+returns table (item_id text, reporters bigint)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select g.item_id, count(distinct g.user_id) as reporters
+  from public.grammar_answers g
+  where g.reported = 1 and g.deleted = 0
+  group by g.item_id
+$$;
+revoke all on function public.grammar_reported_items() from public;
+grant execute on function public.grammar_reported_items() to anon, authenticated;
+
 -- Recharge le cache de l'API pour qu'elle voie immédiatement les nouvelles colonnes.
 notify pgrst, 'reload schema';

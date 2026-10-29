@@ -1058,7 +1058,7 @@
    "point": "first-conditional",
    "level": "B1",
    "title": "Pas de will après if",
-   "wrong": "If it will rain, we stay home.",
+   "wrong": "If it will rain, we'll stay home.",
    "right": "If it rains, we'll stay home."
   },
   {

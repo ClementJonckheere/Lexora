@@ -40,7 +40,25 @@ describe('séance', () => {
   });
   it('tirages différents : « Nouvelles phrases »', () => {
     let seed = 1;
-    const rng = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const rng = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
     expect(pickSession(items, [], rng).map((x) => x.id)).not.toEqual(pickSession(items, [], rng).map((x) => x.id));
+  });
+
+  it('équilibre des natures de réponse : « jamais will » ne donne pas plus de la moitié', () => {
+    const mixed = [
+      ...Array.from({ length: 30 }, (_, i) => ({ id: `p${i}`, form: 'present' })),
+      ...Array.from({ length: 10 }, (_, i) => ({ id: `w${i}`, form: 'will' })),
+    ];
+    for (let seed = 1; seed <= 20; seed++) {
+      let x = seed;
+      const rng = () => (x = (x * 16807) % 2147483647) / 2147483647;
+      const session = pickSession(mixed, [], rng);
+      expect(session).toHaveLength(10);
+      expect(session.filter((it) => it.form === 'will')).toHaveLength(5);
+    }
+    // Une nature trop petite laisse sa place : la séance reste complète.
+    const few = [...mixed.slice(0, 30), mixed[30], mixed[31]];
+    expect(pickSession(few, []).filter((it) => it.form === 'will')).toHaveLength(2);
+    expect(pickSession(few, [])).toHaveLength(10);
   });
 });

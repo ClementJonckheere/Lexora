@@ -2,13 +2,14 @@ name: Grammaire (phrases Tatoeba)
 
 # Compte, pour chaque point de grammaire anglaise, les phrases Tatoeba candidates (avec traduction française)
 # et la banque d'exercices de chaque leçon (public/grammar/en/exercises), puis les enregistre dans la branche.
-# Alerte si un point en a moins de 30.
+# Alerte si un point en a moins de 30. Écarte les phrases signalées par les utilisateurs (lues dans Supabase) :
+# relancer ce workflow à la main (Actions → Run workflow) pour les retirer sans attendre une modification du code.
 
 on:
   workflow_dispatch:
   push:
     paths:
-      ['scripts/grammar-tatoeba.ts', 'src/core/learn/patterns.ts', 'src/core/learn/exercises.ts', 'public/grammar/en/points.json', 'public/grammar/en/lessons.json', '.github/workflows/grammar.yml']
+      ['scripts/grammar-tatoeba.ts', 'scripts/grammar-blocklist.txt', 'src/core/learn/patterns.ts', 'src/core/learn/exercises.ts', 'public/grammar/en/points.json', 'public/grammar/en/lessons.json', '.github/workflows/grammar.yml']
 
 permissions:
   contents: write
@@ -44,6 +45,21 @@ jobs:
             echo "liens filtrés : $(wc -l < eng-fra_links.tsv)"
           fi
           wc -l eng_sentences.tsv
+      - name: Phrases signalées par les utilisateurs
+        # Comptes anonymes renvoyés par la fonction grammar_reported_items (supabase/schema.sql), avec la clé publique.
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_KEY" ]; then echo "::warning::Pas d'accès Supabase : signalements non lus."; exit 0; fi
+          if curl -fsS -X POST "$SUPABASE_URL/rest/v1/rpc/grammar_reported_items" \
+              -H "apikey: $SUPABASE_KEY" -H "Authorization: Bearer $SUPABASE_KEY" -H "Content-Type: application/json" -d '{}' \
+              -o tatoeba/reported.json; then
+            echo "signalements : $(node -e 'console.log(JSON.parse(require("fs").readFileSync("tatoeba/reported.json","utf8")).length)')"
+          else
+            rm -f tatoeba/reported.json
+            echo "::warning::Fonction grammar_reported_items absente ou inaccessible : relancer supabase/schema.sql."
+          fi
       - run: npx vite-node scripts/grammar-tatoeba.ts tatoeba
       - name: Enregistrer les comptes
         run: |
