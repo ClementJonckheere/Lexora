@@ -4,7 +4,8 @@
 //
 // Exécuté par la CI (.github/workflows/grammar.yml), qui télécharge les exports Tatoeba (CC BY 2.0 FR) :
 //   eng_sentences.tsv, fra_sentences.tsv (id, langue, texte) et eng-fra_links.tsv (id anglais, id français).
-// Produit aussi la banque d'exercices de chaque leçon rédigée (public/grammar/en/exercises/<leçon>.json).
+// Produit aussi la banque d'exercices de chaque leçon rédigée (public/grammar/en/exercises/<leçon>.json), et celle des
+// questions de placement des points sans leçon (public/grammar/en/placement/<point>.json).
 // Écarte les phrases de la liste de mots bloqués (scripts/grammar-blocklist.txt) et celles que les utilisateurs ont
 // signalées (<dossier des exports>/reported.json, lu par la CI dans Supabase), gardées d'une génération à l'autre dans
 // public/grammar/en/exercises/excluded.json.
@@ -13,6 +14,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { PATTERN_IDS, matchSentence } from '../src/core/learn/patterns';
 import { buildExercise, type Exercise } from '../src/core/learn/exercises';
+import { PLACEMENT_BUILDERS, buildPlacementExercise } from '../src/core/learn/placementBuilders';
 import { mkdirSync } from 'node:fs';
 
 const MIN_CANDIDATES = 30;
@@ -108,11 +110,11 @@ mkdirSync('public/grammar/en/exercises', { recursive: true });
 const translated = english.filter((s) => frenchText.has(frenchOf.get(s.id) ?? -1));
 const kept = translated.filter((s) => !blocked(s.text) && !blocked(frenchText.get(frenchOf.get(s.id)!)!));
 console.log(`${translated.length - kept.length} phrases traduites écartées par la liste de mots bloqués`);
-const bankSizes: Record<string, number> = {};
-for (const { id } of lessons) {
+/** Banque équilibrée d'un générateur : tour à tour dans chaque nature de réponse, une même réponse plafonnée. */
+function makeBank(label: string, build: (s: { id: number; en: string; fr: string }) => Exercise | null, size: number): Exercise[] {
   const all: Exercise[] = [];
   for (const s of kept) {
-    const ex = buildExercise(id, { id: s.id, en: s.text, fr: frenchText.get(frenchOf.get(s.id)!)! }, known);
+    const ex = build({ id: s.id, en: s.text, fr: frenchText.get(frenchOf.get(s.id)!)! });
     if (ex && !excluded.has(ex.id)) all.push(ex);
   }
   for (let i = all.length - 1; i > 0; i--) {
@@ -124,11 +126,11 @@ for (const { id } of lessons) {
   for (const ex of all) byForm.set(ex.form ?? '', [...(byForm.get(ex.form ?? '') ?? []), ex]);
   const queues = [...byForm.values()];
   const perAnswer = new Map<string, number>();
-  const cap = Math.max(5, Math.floor(BANK_SIZE * MAX_SAME_ANSWER));
+  const cap = Math.max(5, Math.floor(size * MAX_SAME_ANSWER));
   const items: Exercise[] = [];
-  while (items.length < BANK_SIZE && queues.some((q) => q.length))
+  while (items.length < size && queues.some((q) => q.length))
     for (const q of queues) {
-      if (items.length >= BANK_SIZE) break;
+      if (items.length >= size) break;
       // Prochain exercice de cette nature dont la réponse n'a pas atteint son plafond.
       while (q.length) {
         const ex = q.shift()!;
@@ -139,10 +141,9 @@ for (const { id } of lessons) {
         break;
       }
     }
-  bankSizes[id] = items.length;
   const forms = [...byForm.keys()].filter(Boolean);
   const share = forms.map((f) => `${f} ${items.filter((ex) => ex.form === f).length}`).join(', ');
-  console.log(`leçon ${id.padEnd(22)} ${String(all.length).padStart(6)} exercices possibles, ${items.length} gardés${share ? ` (${share})` : ''}`);
+  console.log(`${label.padEnd(32)} ${String(all.length).padStart(6)} exercices possibles, ${items.length} gardés${share ? ` (${share})` : ''}`);
   // Échantillon dans le journal, pour la relecture : 6 exercices par nature de réponse.
   for (const f of forms.length ? forms : ['']) {
     const sample = items.filter((ex) => (ex.form ?? '') === f).slice(0, 6);
@@ -151,10 +152,33 @@ for (const { id } of lessons) {
         `  [${f || '-'}] ${ex.before}⟦${ex.answer}${ex.hint ? ` (${ex.hint})` : ''}${ex.choices ? ` {${ex.choices.join(' | ')}}` : ''}${ex.accept ? ` +${ex.accept.join('/')}` : ''}⟧${ex.after}  ‖ ${ex.fr}`,
       );
   }
+  return items;
+}
+
+const bankSizes: Record<string, number> = {};
+for (const { id } of lessons) {
+  const items = makeBank(`leçon ${id}`, (s) => buildExercise(id, s, known), BANK_SIZE);
+  bankSizes[id] = items.length;
   if (items.length < MIN_CANDIDATES) console.log(`::warning::Leçon ${id} : seulement ${items.length} exercices`);
   writeFileSync(
     `public/grammar/en/exercises/${id}.json`,
     `${JSON.stringify({ version: 1, lesson: id, generatedAt: new Date().toISOString(), source: 'Tatoeba (CC BY 2.0 FR)', items })}\n`,
+  );
+}
+
+/* ------------------------------------- questions du placement (sans leçon) --- */
+
+// Points A1 et A2 sans leçon : une petite banque par point, dont scripts/placement-bank.ts tire ses questions.
+const PLACEMENT_BANK_SIZE = 60;
+mkdirSync('public/grammar/en/placement', { recursive: true });
+const placementSizes: Record<string, number> = {};
+for (const id of Object.keys(PLACEMENT_BUILDERS)) {
+  const items = makeBank(`placement ${id}`, (s) => buildPlacementExercise(id, s, known), PLACEMENT_BANK_SIZE);
+  placementSizes[id] = items.length;
+  if (items.length < 8) console.log(`::warning::Placement ${id} : seulement ${items.length} questions possibles`);
+  writeFileSync(
+    `public/grammar/en/placement/${id}.json`,
+    `${JSON.stringify({ version: 1, point: id, generatedAt: new Date().toISOString(), source: 'Tatoeba (CC BY 2.0 FR)', items })}\n`,
   );
 }
 writeFileSync(
@@ -162,3 +186,4 @@ writeFileSync(
   `${JSON.stringify({ version: 1, note: 'Exercices signalés par les utilisateurs, exclus des banques.', items: [...excluded].sort() }, null, 1)}\n`,
 );
 writeFileSync('public/grammar/en/exercises/index.json', `${JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), sizes: bankSizes })}\n`);
+writeFileSync('public/grammar/en/placement/index.json', `${JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), sizes: placementSizes })}\n`);

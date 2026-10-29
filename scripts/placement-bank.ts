@@ -1,7 +1,8 @@
 // Banque du placement grammatical (public/grammar/en/placement.json), tirée des banques d'exercices des leçons.
 // Exécuté par la CI après la génération des banques (.github/workflows/grammar.yml), ou à la main :
 //   npx vite-node scripts/placement-bank.ts
-// Les points sans leçon (ni banque) sont listés dans le fichier : ils attendent des questions générées ou rédigées.
+// Points sans leçon : questions des banques du placement (public/grammar/en/placement, générées par la CI). Les points
+// restants sont listés dans le fichier : ils attendent des questions rédigées.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { placementItems, type PlacementItem } from '../src/core/learn/placementBank';
 import type { Exercise } from '../src/core/learn/exercises';
@@ -16,9 +17,14 @@ const excluded = new Set<string>(existsSync(excludedFile) ? JSON.parse(readFileS
 const items: PlacementItem[] = [];
 const covered: Record<string, { typed: number; choice2: number; choice3plus: number }> = {};
 /** Points du parcours servis par la banque d'une leçon : la leçon elle-même, et be-used-to (phrases de la leçon used to). */
-const sources = [...lessons.map(({ id }) => ({ target: id, lesson: id })), { target: 'be-used-to', lesson: 'used-to' }];
-for (const { target: id, lesson } of sources) {
-  const file = `${DIR}/exercises/${lesson}.json`;
+const sources = [
+  ...lessons.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/exercises/${id}.json` })),
+  { target: 'be-used-to', lesson: 'used-to', file: `${DIR}/exercises/used-to.json` },
+  // Points sans leçon (A1, A2) : banques produites par les générateurs du placement (placementBuilders.ts).
+  ...points.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/placement/${id}.json` })),
+];
+for (const { target: id, lesson, file } of sources) {
+  if (covered[id]) continue;
   if (!existsSync(file)) continue;
   const bank = JSON.parse(readFileSync(file, 'utf8')).items as Exercise[];
   const chosen = placementItems(lesson, bank, excluded, id);
