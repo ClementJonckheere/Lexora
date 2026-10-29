@@ -123,3 +123,9 @@ describe('défauts relevés sur les banques générées', () => {
     expect(shown('comparatives', 'Iron is more useful than gold.', "Le fer est plus utile que l'or.")).toBe('Iron is [more useful (useful)] than gold.');
   });
 });
+
+describe('traduction qui dicte la forme', () => {
+  it('« en train d’ » élidé est reconnu comme « en train de »', () => {
+    expect(ex('past-continuous', 'I met him while he was studying.', "Je l'ai rencontré en train d'étudier.")).toBeNull();
+  });
+});

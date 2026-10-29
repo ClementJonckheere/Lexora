@@ -105,6 +105,10 @@
   {
    "id": "placement:question-tags:question-tags:12391239",
    "reason": "Phrase elliptique et familière : le tag positif après « Not bad » est déroutant pour un test."
+  },
+  {
+   "id": "placement:past-continuous:past-continuous:2797557",
+   "reason": "Traduction « en train d'étudier » : elle dicte la forme continue (le filtre ne reconnaissait pas « en train d' » élidé)."
   }
  ]
 }

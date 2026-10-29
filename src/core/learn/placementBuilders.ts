@@ -297,7 +297,7 @@ const frequencyAdverbs: Builder = (s, known) => {
 const EN_NOW = /\b(?:now|right now|at the moment|currently|at present)\b|^\s*(?:look|listen)\b/i;
 const presentContinuous: Builder = (s, known) => {
   const m = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(am|is|are)\\s+([a-z]+ing)\\b`), s.en);
-  if (!m || EN_NOT_PRESENT.test(s.en) || FR_FUTURE_OR_COND.test(s.fr) || !EN_NOW.test(s.en) || /\ben train de\b/i.test(s.fr) || /\bgoing to\b/.test(s.en)) return [];
+  if (!m || EN_NOT_PRESENT.test(s.en) || FR_FUTURE_OR_COND.test(s.fr) || !EN_NOW.test(s.en) || /\ben train d(?:e\b|')/i.test(s.fr) || /\bgoing to\b/.test(s.en)) return [];
   const ing = m[3];
   // hugging → hug, cuddling → cuddle : la base vérifiée par la liste de mots.
   const guessed = baseOfIng(ing, known);
@@ -370,7 +370,7 @@ const EN_IN_PROGRESS = /\bwhile\b|\bwhen\s+(?:i|you|he|she|it|we|they|[A-Z][a-z]
 const STATE_ING = /^(?:wondering|expecting|hoping|thinking|wanting|meaning|feeling|knowing|believing|liking|loving)$/;
 const pastContinuous: Builder = (s, known) => {
   const m = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(was|were)\\s+([a-z]+ing)\\b`), s.en);
-  if (!m || !EN_IN_PROGRESS.test(s.en) || /\ben train de\b/i.test(s.fr) || /\bgoing to\b/.test(s.en) || STATE_ING.test(m[3])) return [];
+  if (!m || !EN_IN_PROGRESS.test(s.en) || /\ben train d(?:e\b|')/i.test(s.fr) || /\bgoing to\b/.test(s.en) || STATE_ING.test(m[3])) return [];
   const ing = m[3];
   const base = baseOfIng(ing, known);
   if (!base || !plausibleBase(base, known)) return [];

@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-10-29T22:40:47.023Z",
+ "generatedAt": "2026-10-29T22:50:19.435Z",
  "source": "Tatoeba (CC BY 2.0 FR) : banques des leçons et du placement ; questions rédigées (placement-written.json)",
  "status": "généré automatiquement, à relire avant activation",
  "covered": {
@@ -6055,20 +6055,6 @@
    "hint": "talk"
   },
   {
-   "id": "placement:past-continuous:past-continuous:2797557",
-   "targetId": "past-continuous",
-   "evidenceId": "tatoeba:2797557",
-   "before": "I met him while he ",
-   "after": ".",
-   "fr": "Je l'ai rencontré en train d'étudier.",
-   "answer": "was studying",
-   "source": "tatoeba:2797557",
-   "status": "généré",
-   "form": "continuous",
-   "mode": "typed",
-   "hint": "study"
-  },
-  {
    "id": "placement:past-continuous:past-continuous:253955",
    "targetId": "past-continuous",
    "evidenceId": "tatoeba:253955",
@@ -6151,6 +6137,20 @@
    "form": "continuous",
    "mode": "typed",
    "hint": "take"
+  },
+  {
+   "id": "placement:past-continuous:past-continuous:251606",
+   "targetId": "past-continuous",
+   "evidenceId": "tatoeba:251606",
+   "before": "When my father came home, I ",
+   "after": ".",
+   "fr": "Quand mon père est rentré, j'étais en train d'étudier.",
+   "answer": "was studying",
+   "source": "tatoeba:251606",
+   "status": "généré",
+   "form": "continuous",
+   "mode": "typed",
+   "hint": "study"
   },
   {
    "id": "placement:uncountables:uncountables:1933593",

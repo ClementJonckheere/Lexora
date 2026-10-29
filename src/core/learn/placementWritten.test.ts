@@ -14,7 +14,7 @@ describe('questions rédigées du placement', () => {
       expect(q.fr.trim(), q.id).not.toBe('');
       expect(q.form, q.id).toBeTruthy();
       // La traduction ne dicte pas la forme continue : c'est le contexte anglais qui tranche.
-      expect(q.fr, q.id).not.toMatch(/en train de/);
+      expect(q.fr, q.id).not.toMatch(/en train d(?:e\b|')/);
       expect(`${q.before}${q.after}${q.fr}`, q.id).not.toMatch(/—/);
       if (q.hint) expect(q.options, q.id).toBeUndefined();
       else {
