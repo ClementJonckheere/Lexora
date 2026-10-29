@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, ChevronLeft, ChevronRight, List, Loader2, Maximize2, Minimize2, X } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, GraduationCap, List, Loader2, Maximize2, Minimize2, X } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import { chapterDisplay, progressAt, splitChapterTitle, type ParsedBook } from '@/core/reading/gutenberg';
 import { isFullscreen, setFullscreen } from '@/core/platform/fullscreen';
@@ -10,6 +10,9 @@ import { readPref, writePref } from '@/ui/prefs';
 import { sourceNote } from '@/core/reading/selection';
 import { buildKnownIndex, findKnown, segments } from '@/core/reading/known';
 import { SelectionBubble, useReaderSelection, useSelectionTranslation } from './SelectionBubble';
+import { ChapterWords, CHAPTER_WORDS } from './ChapterWords';
+import { analyzeText, wordBase } from '@/core/reading/coverage';
+import { useKnowledge } from '@/ui/hooks/useKnowledge';
 
 type Paper = 'ivory' | 'white' | 'night';
 type FontFamily = 'sans' | 'serif';
@@ -116,6 +119,7 @@ function Reader({
   const [font, setFontState] = useState<FontFamily>(() => readPref<FontFamily>('reader.font', 'sans'));
   const [full, setFull] = useState(false);
   const [tocOpen, setTocOpen] = useState(false);
+  const [wordsOpen, setWordsOpen] = useState(false);
   const [size, setSize] = useState({ w: 0, h: 0 });
   /** Bloc en haut de la page de gauche (position de lecture). */
   const [topBlock, setTopBlock] = useState(start.block);
@@ -143,6 +147,23 @@ function Reader({
     [highlight, chapters, chapter, knownIndex],
   );
   const knownInChapter = useMemo(() => new Set(known?.flatMap((r) => r.map((x) => x.noteId)) ?? []).size, [known]);
+  // Couverture du chapitre et mots à connaître (après le test de vocabulaire).
+  const { knowledge, ranks } = useKnowledge();
+  const analysis = useMemo(
+    () => (knowledge && ranks ? analyzeText(chapters[chapter].blocks.map((b) => b.text).join('\n'), ranks, knowledge, language) : null),
+    [knowledge, ranks, chapters, chapter, language],
+  );
+  const toLearn = analysis ? Math.min(CHAPTER_WORDS, analysis.unknown.length) : 0;
+  // Recalage du test : les mots prédits connus du chapitre ouvert sont « rencontrés » (dénominateur des clics).
+  useEffect(() => {
+    if (!analysis?.predictedKnown.length) return;
+    void useApp
+      .getState()
+      .observe(analysis.predictedKnown.map((w) => ({ source: 'exposure' as const, word: w.word, rank: w.rank, known: true })))
+      .catch(() => undefined);
+    // Une fois par chapitre : les marques ajoutées ensuite ne doivent pas relancer l'enregistrement.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chapter, !!analysis]);
   const [sel, clearSel] = useReaderSelection(flowRef, stageRef, chapters[chapter].blocks, language);
   const autoTranslate = useApp((s) => s.settings.autoTranslate);
   const deeplKey = useApp((s) => s.settings.deeplKey);
@@ -163,6 +184,33 @@ function Reader({
       });
     clearSel();
   };
+
+  /** Mot sélectionné marqué « connu » : il ne compte plus parmi les mots à apprendre. */
+  const markSelectionKnown = () => {
+    if (!sel || sel.error || !sel.expression || sel.known) return;
+    const word = sel.expression.trim().toLowerCase();
+    const { markWords, toast, observe } = useApp.getState();
+    // Sélectionné mais connu : le clic ne compte pas comme un mot inconnu.
+    if (ranks) {
+      const { base, rank } = wordBase(ranks, word, language);
+      void observe([{ source: 'select', word: base, rank, known: true }]).catch(() => undefined);
+    }
+    void markWords([word], true).then(() => toast('success', `« ${word} » compté comme connu`, { label: 'Annuler', run: () => void markWords([word], null) }));
+    clearSel();
+  };
+
+  // Un mot seul sélectionné (absent de vos fiches) : signe qu'il est inconnu, pour le recalage du test.
+  const selectedWord = sel && !sel.error && !sel.known && /^[\p{L}\p{M}'’-]+$/u.test(sel.expression.trim()) ? sel.expression.trim().toLowerCase() : null;
+  const lastSelected = useRef<string | null>(null);
+  const testDone = !!knowledge;
+  useEffect(() => {
+    if (!selectedWord || !ranks || !testDone || lastSelected.current === selectedWord) return;
+    lastSelected.current = selectedWord;
+    const { base, rank } = wordBase(ranks, selectedWord, language);
+    const { wordMarks, observe } = useApp.getState();
+    if (wordMarks.get(base) === true || wordMarks.get(selectedWord) === true) return;
+    void observe([{ source: 'select', word: base, rank, known: false }]).catch(() => undefined);
+  }, [selectedWord, ranks, testDone, language]);
 
   const twoPages = size.w >= TWO_PAGES_MIN;
   const flowW = Math.max(0, size.w - 2 * PAD_X);
@@ -311,13 +359,14 @@ function Reader({
       '=': bigger,
       '-': smaller,
       t: () => setTocOpen(true),
+      m: () => analysis && setWordsOpen(true),
       f: () => void toggleFullscreen(),
       enter: addSelection,
       a: addSelection,
       p: () => sel?.expression && !sel.error && speakText(sel.expression, universeId),
       escape: () => (sel ? clearSel() : full ? void toggleFullscreen() : onClose()),
     },
-    { enabled: !overlay && !tocOpen },
+    { enabled: !overlay && !tocOpen && !wordsOpen },
   );
 
   // Molette : une page par cran (avec un court délai pour les pavés tactiles).
@@ -354,6 +403,11 @@ function Reader({
           <button className="reader-pill" onClick={bigger} disabled={fontIndex === FONT_SIZES.length - 1} title="Agrandir le texte (+)">
             A+
           </button>
+          {analysis && toLearn > 0 && (
+            <button className="reader-pill" onClick={() => setWordsOpen(true)} title="Mots à connaître pour ce chapitre (M)">
+              <GraduationCap size={15} /> Mots du chapitre<span className="reader-pill-count">{toLearn}</span>
+            </button>
+          )}
           {chapters.length > 1 && (
             <button className="reader-icon" onClick={() => setTocOpen(true)} title="Chapitres (T)">
               <List size={18} />
@@ -420,7 +474,9 @@ function Reader({
               ))}
             </div>
           </div>
-          {sel && !overlay && <SelectionBubble sel={sel} universeId={universeId} translation={selTranslation} onAdd={addSelection} />}
+          {sel && !overlay && (
+            <SelectionBubble sel={sel} universeId={universeId} translation={selTranslation} onAdd={addSelection} onKnown={knowledge ? markSelectionKnown : undefined} />
+          )}
           <button className="reader-edge reader-edge--prev" onClick={prev} disabled={atStart} aria-label="Page précédente" />
           <button className="reader-edge reader-edge--next" onClick={next} disabled={atEnd} aria-label="Page suivante" />
         </div>
@@ -438,6 +494,7 @@ function Reader({
             {chapterNo && `Chapitre ${chapterNo} · `}
             {progress} % du livre
             {highlight && knownInChapter > 0 && ` · ${knownInChapter} de vos mots dans ce chapitre`}
+            {analysis && ` · environ ${Math.round(analysis.coverage * 100)} % de mots connus`}
           </small>
         </div>
         <button className="reader-pill reader-pill--lg" onClick={next} disabled={atEnd}>
@@ -473,6 +530,16 @@ function Reader({
         </div>
       </div>
 
+      {wordsOpen && analysis && (
+        <ChapterWords
+          words={analysis.unknown}
+          coverage={analysis.coverage}
+          blocks={chapters[chapter].blocks}
+          language={language}
+          source={sourceNote(title, author, chapters[chapter].title)}
+          onClose={() => setWordsOpen(false)}
+        />
+      )}
       {tocOpen && (
         <Modal title="Chapitres" onClose={() => setTocOpen(false)}>
           <div className="modal-body toc">

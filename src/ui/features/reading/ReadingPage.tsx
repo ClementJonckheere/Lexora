@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, Check, Compass, Loader2, Search, Trash2 } from 'lucide-react';
 import { attempt, errorMessage, useApp } from '@/app/store';
+import { BAND_EDGES, COMFORT_MAX, COMFORT_MIN, coverageFromProfile, coverageLabel, supportsCoverage } from '@/core/reading/coverage';
+import { calibrationReport } from '@/core/reading/calibration';
+import { useKnowledge } from '@/ui/hooks/useKnowledge';
 import { LevelQueue, loadBundledCatalog, matchesSearch, pageAfter, searchCatalog, type BundledBook, type BundledCatalog } from '@/core/reading/catalog';
 import type { CatalogBook } from '@/core/reading/gutendex';
 import { LEVEL_LABEL, LEVELS, withinLevel, type Level } from '@/core/reading/level';
@@ -159,6 +162,16 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
       alive = false;
     };
   }, [language]);
+  const profiles = useMemo(() => {
+    const m = new Map<string, number[]>();
+    for (const b of bundle?.books ?? []) if (b.profile) m.set(b.key, b.profile);
+    return m;
+  }, [bundle]);
+  const [forMe, setForMeState] = useState(() => readPref<boolean>(`reading.forMe.${language}`, true));
+  const setForMe = (v: boolean) => {
+    setForMeState(v);
+    writePref(`reading.forMe.${language}`, v);
+  };
   const bundleLevels = useMemo(() => {
     const m = new Map<string, CachedLevel>();
     for (const b of bundle?.books ?? []) if (b.level) m.set(b.key, { level: b.level, vocabRank: b.vocabRank, sentenceLength: b.sentenceLength });
@@ -275,13 +288,47 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
 
   const ownedKeys = new Set(owned.map((b) => b.key));
 
+  // Couverture de vocabulaire (livres du catalogue fourni, après le test).
+  const { knowledge } = useKnowledge();
+  const coverageOf = (b: CatalogBook): number | null => {
+    const profile = profiles.get(b.key);
+    return knowledge && profile ? coverageFromProfile(profile, knowledge.bands) : null;
+  };
+  const recommendable = !!knowledge && profiles.size > 0;
+  const forMeActive = forMe && recommendable;
+  let shown = visible;
+  let nearest = false;
+  if (forMeActive) {
+    const scored = visible.map((b) => ({ b, c: coverageOf(b) })).filter((x): x is { b: CatalogBook; c: number } => x.c !== null);
+    const inZone = scored.filter((x) => x.c >= COMFORT_MIN && x.c <= COMFORT_MAX).sort((a, b) => b.c - a.c);
+    if (inZone.length) shown = inZone.map((x) => x.b);
+    else {
+      // Aucun livre dans la zone : les plus proches.
+      nearest = true;
+      const mid = (COMFORT_MIN + COMFORT_MAX) / 2;
+      shown = scored
+        .sort((a, b) => Math.abs(a.c - mid) - Math.abs(b.c - mid))
+        .slice(0, MIN_VISIBLE)
+        .map((x) => x.b);
+    }
+  }
+
   return (
     <div className="stack">
+      <VocabCard />
       <div className="toolbar" style={{ alignItems: 'center' }}>
         <div className="search-box" style={{ flex: '1 1 280px' }}>
           <Search size={16} />
           <input className="input" placeholder="Titre ou auteur…" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Rechercher un livre" />
         </div>
+        {recommendable && (
+          <label
+            className="switch-inline"
+            title="Livres dont vous connaissez 95 à 98 % des mots : lecture confortable, sans dictionnaire, avec assez de mots nouveaux pour progresser"
+          >
+            <input type="checkbox" checked={forMe} onChange={(e) => setForMe(e.target.checked)} /> Recommandés pour vous
+          </label>
+        )}
         <span className="muted small">Niveau maximum</span>
         <Segmented<MaxLevel>
           value={maxLevel}
@@ -329,9 +376,18 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
         </div>
       )}
 
+      {forMeActive && (
+        <p className="muted small" style={{ margin: 0 }}>
+          {nearest
+            ? `Aucun livre de cette liste entre ${Math.round(COMFORT_MIN * 100)} et ${Math.round(COMFORT_MAX * 100)} % de mots connus : voici les plus proches.`
+            : `${shown.length} livre${shown.length > 1 ? 's' : ''} dont vous connaissez ${Math.round(COMFORT_MIN * 100)} à ${Math.round(COMFORT_MAX * 100)} % des mots : lecture confortable, sans dictionnaire.`}
+        </p>
+      )}
+
       <div className="book-grid">
-        {visible.map((b) => {
+        {shown.map((b) => {
           const l = levelOf(b);
+          const cov = coverageOf(b);
           return (
             <div key={b.key} className={`book-card ${!l && maxLevel !== 'all' ? 'book-card--pending' : ''}`}>
               <button className="book-card-main" onClick={() => onOpen(b)}>
@@ -341,6 +397,7 @@ function Discover({ language, onOpen }: { language: string; onOpen: (b: CatalogB
               </button>
               <div className="book-meta">
                 <LevelBadge level={l?.level} pending={!l && !failed.has(b.key)} />
+                {cov !== null && <CoverageBadge coverage={cov} />}
                 {b.children && <span className="chip">Jeunesse</span>}
                 {ownedKeys.has(b.key) && (
                   <span className="chip chip--primary" title="Dans mes livres">
@@ -447,5 +504,98 @@ function BookDetail({ book, onClose }: { book: CatalogBook; onClose: () => void 
         </div>
       </div>
     </Modal>
+  );
+}
+
+/* --------------------------------------------------- Vocabulaire et couverture --- */
+
+function CoverageBadge({ coverage }: { coverage: number }) {
+  const { label, tone } = coverageLabel(coverage);
+  const pct = Math.floor(coverage * 1000) / 10;
+  return (
+    <span className={`chip coverage-badge coverage-badge--${tone}`} title={`Vous connaissez environ ${pct.toLocaleString('fr-FR')} % des mots de ce livre : ${label}`}>
+      {Math.round(coverage * 100)} % connus
+    </span>
+  );
+}
+
+/** Résultat du test de vocabulaire, ou invitation à le faire. */
+function VocabCard() {
+  const test = useApp((s) => s.vocabTest);
+  const observations = useApp((s) => s.vocabObservations);
+  const { refined } = useKnowledge();
+  const language = useApp((s) => s.universe?.language ?? 'en');
+  const { navigate } = useApp.getState();
+  if (!supportsCoverage(language)) return null;
+  const start = () => navigate({ name: 'vocab-test' });
+  if (!test) {
+    return (
+      <div className="card card-pad vocab-card">
+        <div className="stack stack--sm" style={{ flex: '1 1 320px' }}>
+          <strong>Quels livres pouvez-vous lire sans dictionnaire ?</strong>
+          <span className="muted small">
+            Un test de 3 à 4 minutes estime votre vocabulaire. Chaque livre indique ensuite la part de ses mots que vous connaissez, et Lexora recommande ceux
+            entre 95 et 98 % : assez faciles pour lire sans s'arrêter, avec assez de mots nouveaux pour progresser.
+          </span>
+        </div>
+        <Button variant="primary" onClick={start}>
+          Faire le test
+        </Button>
+      </div>
+    );
+  }
+  const signals = (refined?.decisions ?? 0) + (refined?.clicks ?? 0);
+  const report = calibrationReport(test.bands, test.answers, observations);
+  const pct = (p: number | null) => (p === null ? '-' : `${Math.round(p * 100)} %`);
+  return (
+    <div className="card card-pad vocab-card">
+      <span className="small">
+        <strong>Votre vocabulaire : environ {(refined?.vocabSize ?? test.vocabSize).toLocaleString('fr-FR')} mots</strong>
+        <span className="muted">
+          {' '}
+          · test du {new Date(test.takenAt).toLocaleDateString('fr-FR')} ({test.vocabSize.toLocaleString('fr-FR')} mots)
+          {signals > 0 ? `, recalé sur ${signals} ${signals > 1 ? 'signaux' : 'signal'} de lecture` : ', recalé ensuite par vos lectures'}
+        </span>
+      </span>
+      <Button size="sm" onClick={start}>
+        Refaire le test
+      </Button>
+      {signals > 0 && (
+        <details className="vocab-calibration">
+          <summary className="small">Précision du test face à vos lectures</summary>
+          <table className="small">
+            <thead>
+              <tr>
+                <th>Mots (rang)</th>
+                <th title="Part de mots connus prédite par le test">Prédit</th>
+                <th title="Décisions « Je connais » / « Ajouter » dans Mots du chapitre">Décisions</th>
+                <th title="Part « Je connais » parmi ces décisions">Connus</th>
+                <th title="Mots rencontrés dans les chapitres ouverts, et part sélectionnée comme inconnue">Rencontrés · cliqués</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.rows
+                .filter((r) => r.decisions || r.exposures)
+                .map((r) => (
+                  <tr key={r.band}>
+                    <td>{r.band === 0 ? `1 à ${BAND_EDGES[0]}` : `${BAND_EDGES[r.band - 1] + 1} à ${BAND_EDGES[r.band]}`}</td>
+                    <td>{pct(r.predicted)}</td>
+                    <td>{r.decisions || '-'}</td>
+                    <td>{pct(r.observedKnown)}</td>
+                    <td>
+                      {r.exposures} · {pct(r.clickRate)}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+          {report.brier !== null && (
+            <p className="muted small" style={{ margin: '6px 0 0' }}>
+              Score de Brier des décisions : {report.brier.toLocaleString('fr-FR', { maximumFractionDigits: 3 })} (0 = parfait, 0,25 = pas mieux que le hasard).
+            </p>
+          )}
+        </details>
+      )}
+    </div>
   );
 }

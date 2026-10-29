@@ -1,7 +1,7 @@
 import { useEffect, useState, type RefObject } from 'react';
 import { translate } from '@/core/translate/translate';
 import { sharedDeepl } from '@/core/translate/shared';
-import { BookmarkPlus, Loader2, PenLine, Volume2 } from 'lucide-react';
+import { BookmarkPlus, Check, Loader2, PenLine, Volume2 } from 'lucide-react';
 import { useApp } from '@/app/store';
 import { expressionKey } from '@/core/domain/text';
 import type { Note } from '@/core/domain/types';
@@ -132,12 +132,16 @@ export function SelectionBubble({
   universeId,
   translation,
   onAdd,
+  onKnown,
 }: {
   sel: ReaderSelection;
   universeId: string;
   translation: SelectionTranslation;
   onAdd: () => void;
+  /** « Je connais » (un seul mot, absent de vos fiches) : ne compte plus parmi les mots à apprendre. */
+  onKnown?: () => void;
 }) {
+  const singleWord = !sel.error && !sel.known && /^[\p{L}\p{M}'’-]+$/u.test(sel.expression.trim());
   return (
     <div
       className={`reader-bubble ${sel.below ? 'reader-bubble--below' : ''}`}
@@ -165,6 +169,11 @@ export function SelectionBubble({
             {sel.known ? 'Ajouter cet exemple' : `Ajouter « ${sel.expression.length > 28 ? `${sel.expression.slice(0, 27)}…` : sel.expression} »`}
             <Kbd>Entrée</Kbd>
           </button>
+          {onKnown && singleWord && (
+            <button className="reader-bubble-btn" onClick={onKnown} title="Je connais ce mot : il ne sera plus proposé parmi les mots à apprendre">
+              <Check size={15} /> Je connais
+            </button>
+          )}
           {speechSupported() && (
             <button className="reader-bubble-btn" onClick={() => void speakText(sel.expression, universeId)} title="Écouter (P)" aria-label="Écouter">
               <Volume2 size={15} />

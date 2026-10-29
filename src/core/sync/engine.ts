@@ -23,7 +23,12 @@ export interface Remote {
 export interface SyncResult {
   pulled: number;
   pushed: number;
+  /** Tables facultatives absentes du serveur (schéma Supabase à mettre à jour). */
+  skipped: string[];
 }
+
+/** Table ou colonne absente côté serveur. */
+export class MissingSchemaError extends Error {}
 
 const PAGE = 500;
 /** Recouvrement du curseur : couvre les transactions validées dans le désordre côté serveur. */
@@ -129,10 +134,21 @@ async function pushTable(db: Database, remote: Remote, table: SyncTable): Promis
 export async function syncOnce(db: Database, remote: Remote): Promise<SyncResult> {
   let pulled = 0;
   let pushed = 0;
-  for (const t of SYNC_TABLES) pulled += await pullTable(db, remote, t);
-  for (const t of SYNC_TABLES) pushed += await pushTable(db, remote, t);
+  const skipped = new Set<string>();
+  const tolerant = async (t: SyncTable, run: () => Promise<number>) => {
+    if (skipped.has(t.name)) return 0;
+    try {
+      return await run();
+    } catch (err) {
+      if (!t.optional || !(err instanceof MissingSchemaError)) throw err;
+      skipped.add(t.name);
+      return 0;
+    }
+  };
+  for (const t of SYNC_TABLES) pulled += await tolerant(t, () => pullTable(db, remote, t));
+  for (const t of SYNC_TABLES) pushed += await tolerant(t, () => pushTable(db, remote, t));
   await setSyncState(db, 'last_sync', String(Date.now()));
-  return { pulled, pushed };
+  return { pulled, pushed, skipped: [...skipped] };
 }
 
 export async function pendingChanges(db: Queryable): Promise<number> {

@@ -9,6 +9,7 @@ import { decodeText, parseGutenberg } from '../src/core/reading/gutenberg';
 import { catalogUrl, parseCatalogPage, type CatalogBook, type GutendexPage } from '../src/core/reading/gutendex';
 import { classifyWords, estimateLevel, formsFactor, ranksFromList, REFERENCE_MEDIAN_RANK, sampleForLevel, type Level } from '../src/core/reading/level';
 import { languageInfo } from '../src/core/domain/languages';
+import { buildVocabBank, caseStats, supportsCoverage, textProfile, type CaseStats } from '../src/core/reading/coverage';
 
 /** Nombre de livres par langue (les plus téléchargés). */
 const TARGET: Record<string, number> = { en: 200, fr: 120, de: 120, es: 120, it: 100, pt: 100, nl: 100 };
@@ -16,6 +17,13 @@ const DEFAULT_TARGET = 60;
 const LANGS = ['en', 'es', 'pt', 'de', 'it', 'ru', 'zh', 'ja', 'ko', 'ar', 'nl', 'fr'];
 const SAMPLE_BYTES = 160_000;
 const OUT = 'public/reading/catalog';
+const VOCAB_OUT = 'public/reading/vocab';
+
+/** Tirage reproductible (banque du test identique d'une exécution à l'autre, à livres égaux). */
+function seeded(seed: number) {
+  let s = seed;
+  return () => ((s = (s * 1664525 + 1013904223) % 4294967296) / 4294967296);
+}
 
 /** Ouvrages de référence (dictionnaires, grammaires…) : pas des lectures. */
 const REFERENCE = /dictionar|dictionnaire|diccionario|dizionario|wörterbuch|woordenboek|dicionário|glossar|grammar|grammaire|gramática|grammatica|grammatik|vocabular|lexicon|phrase-?book|manual of|handbook|encyclop|index of|catalogue of/i;
@@ -58,7 +66,11 @@ async function pool<T, R>(items: T[], size: number, fn: (item: T) => Promise<R>)
 
 async function buildLanguage(language: string) {
   const freq = `public/reading/freq/${language}.txt`;
-  const ranks = existsSync(freq) ? ranksFromList(readFileSync(freq, 'utf8')) : null;
+  const freqText = existsSync(freq) ? readFileSync(freq, 'utf8') : null;
+  const ranks = freqText ? ranksFromList(freqText) : null;
+  const coverage = supportsCoverage(language);
+  // Écriture des mots dans les livres de la langue : écarte les noms propres de la banque du test.
+  const stats = new Map<string, CaseStats>();
   const target = TARGET[language] ?? DEFAULT_TARGET;
   const books: CatalogBook[] = [];
   let url: string | null = catalogUrl(language);
@@ -76,7 +88,7 @@ async function buildLanguage(language: string) {
   books.splice(target);
 
   // 1. Mesures brutes (sans facteur de langue) sur un extrait de chaque livre.
-  type Measured = CatalogBook & { level: Level | null; vocabRank: number; sentenceLength: number; sample: number };
+  type Measured = CatalogBook & { level: Level | null; vocabRank: number; sentenceLength: number; sample: number; profile?: number[] };
   const measured = await pool(books, 4, async (b): Promise<Measured | null> => {
     const none = { ...b, level: null, vocabRank: 0, sentenceLength: 0, sample: 0 };
     if (!ranks) return none;
@@ -84,7 +96,10 @@ async function buildLanguage(language: string) {
       const parsed = parseGutenberg(await sample(b));
       const text = parsed.chapters.flatMap((c) => c.blocks.map((x) => x.text)).join('\n\n');
       const est = estimateLevel(sampleForLevel(text), ranks, language, 1);
-      return est ? { ...b, level: est.level, vocabRank: est.vocabRank, sentenceLength: est.sentenceLength, sample: est.sample } : none;
+      // Profil de fréquence (couverture de vocabulaire de chaque lecteur, calculée dans l'application).
+      const profile = coverage ? (textProfile(text, ranks, language) ?? undefined) : undefined;
+      if (coverage) caseStats(text, stats);
+      return est ? { ...b, level: est.level, vocabRank: est.vocabRank, sentenceLength: est.sentenceLength, sample: est.sample, profile } : { ...none, profile };
     } catch (err) {
       console.warn(`  ${b.key} ${b.title} : ${err instanceof Error ? err.message : err}`);
       // Texte absent : livre illisible, écarté ; autre erreur : gardé, niveau estimé plus tard dans l'application.
@@ -115,6 +130,17 @@ async function buildLanguage(language: string) {
     JSON.stringify({ version: 2, language, generatedAt: new Date().toISOString(), total, formsFactor: factor, books: withLevels }),
   );
   console.log(`${language} : facteur ${factor} · ${withLevels.length} livres (${estimated} niveaux estimés) sur ${total}`);
+
+  if (coverage && freqText && stats.size) {
+    const list = freqText.split('\n').map((w) => w.trim()).filter(Boolean);
+    const others = LANGS.filter((l) => l !== language && existsSync(`public/reading/freq/${l}.txt`)).map((l) =>
+      ranksFromList(readFileSync(`public/reading/freq/${l}.txt`, 'utf8')),
+    );
+    const bank = buildVocabBank(list, stats, language, seeded(42), undefined, others);
+    mkdirSync(VOCAB_OUT, { recursive: true });
+    writeFileSync(`${VOCAB_OUT}/${language}.json`, JSON.stringify({ version: 1, language, generatedAt: new Date().toISOString(), bands: bank.bands }));
+    console.log(`${language} : banque du test, ${bank.bands.map((b) => b.length).join('/')} mots par tranche`);
+  }
 }
 
 const wanted = process.argv.slice(2).filter((a) => /^[a-z]{2}$/.test(a));

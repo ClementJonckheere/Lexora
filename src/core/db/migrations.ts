@@ -172,6 +172,77 @@ MIGRATIONS.push(MIGRATION_V2, {
       computed_at      INTEGER NOT NULL
     )`,
   ],
+}, {
+  version: 5,
+  name: 'temps de saisie des réponses tapées',
+  statements: [
+    // Propres à l'appareil (vitesse de frappe, clavier) : jamais synchronisés.
+    'ALTER TABLE review_logs ADD COLUMN typed_ms INTEGER',
+    'ALTER TABLE review_logs ADD COLUMN typed_chars INTEGER',
+  ],
+}, {
+  version: 6,
+  name: 'mots connus et test de vocabulaire',
+  statements: [
+    // Mot marqué « connu » (ou « inconnu ») par l'utilisateur, par univers ; clé « univers|mot ».
+    `CREATE TABLE word_marks (
+      mark_key     TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      word         TEXT    NOT NULL,
+      known        INTEGER NOT NULL DEFAULT 1,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_word_marks_universe ON word_marks(universe_id, deleted)',
+    // Dernier test de vocabulaire de chaque univers : part de mots connus par tranche de fréquence.
+    // Les réponses brutes (mot, réponse, temps) permettent de recalculer le résultat sans refaire le test.
+    `CREATE TABLE vocab_tests (
+      universe_id  TEXT PRIMARY KEY,
+      bands        TEXT    NOT NULL DEFAULT '[]',
+      vocab_size   INTEGER NOT NULL DEFAULT 0,
+      false_alarm  REAL    NOT NULL DEFAULT 0,
+      answers      TEXT    NOT NULL DEFAULT '[]',
+      taken_at     INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    // Observations en lisant (recalage du test) : décision dans « Mots du chapitre », mot sélectionné,
+    // mot rencontré dans un chapitre ouvert. Clé « univers|source|mot » : un mot compte une fois par source.
+    `CREATE TABLE vocab_observations (
+      obs_key      TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      source       TEXT    NOT NULL CHECK (source IN ('chapter', 'select', 'exposure')),
+      word         TEXT    NOT NULL,
+      rank         INTEGER,
+      known        INTEGER NOT NULL,
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_vocab_observations_universe ON vocab_observations(universe_id, deleted)',
+  ],
+}, {
+  version: 7,
+  name: 'onglet Apprendre : réponses aux exercices de grammaire',
+  statements: [
+    // Une ligne par réponse : progression d'une leçon (20 dernières réponses) et phrases signalées.
+    `CREATE TABLE grammar_answers (
+      id           TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      lesson_id    TEXT    NOT NULL,
+      item_id      TEXT    NOT NULL,
+      correct      INTEGER NOT NULL,
+      reported     INTEGER NOT NULL DEFAULT 0,
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_grammar_answers_lesson ON grammar_answers(universe_id, lesson_id, created_at)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

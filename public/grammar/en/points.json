@@ -1,0 +1,1197 @@
+{
+ "version": 2,
+ "language": "en",
+ "status": "brouillon à valider",
+ "fields": {
+  "requires": "prérequis strict : on ne peut pas maîtriser le point sans eux (utilisé pour déduire dans le test de placement)",
+  "after": "ordre conseillé du parcours seulement (jamais utilisé pour déduire)",
+  "detect": "précision mesurée du repérage dans les livres (null : pas encore mesurée ; surlignage à partir de 0,9)",
+  "falsePositive": "faux positif typique du repérage"
+ },
+ "points": [
+  {
+   "id": "be",
+   "level": "A1",
+   "title": "Le verbe to be au présent",
+   "requires": [],
+   "after": [],
+   "example": "She is tired. They aren't here.",
+   "detect": null
+  },
+  {
+   "id": "was-were",
+   "level": "A1",
+   "title": "Prétérit de be : was / were",
+   "requires": [
+    "be"
+   ],
+   "after": [],
+   "example": "I was at home. Were you tired?",
+   "detect": null
+  },
+  {
+   "id": "subject-object-pronouns",
+   "level": "A1",
+   "title": "Pronoms sujets et compléments",
+   "requires": [],
+   "after": [],
+   "example": "She likes him. They called us.",
+   "detect": null
+  },
+  {
+   "id": "possessive-adjectives",
+   "level": "A1",
+   "title": "Adjectifs et pronoms possessifs",
+   "requires": [],
+   "after": [],
+   "example": "my, your, his, her, its, their ; mine, yours",
+   "detect": null
+  },
+  {
+   "id": "articles",
+   "level": "A1",
+   "title": "Articles a / an / the",
+   "requires": [],
+   "after": [],
+   "example": "a book, an apple, the sun",
+   "detect": null
+  },
+  {
+   "id": "plural-forms",
+   "level": "A1",
+   "title": "Formes du pluriel",
+   "requires": [],
+   "after": [],
+   "example": "boxes, cities, children, men",
+   "detect": null
+  },
+  {
+   "id": "this-that",
+   "level": "A1",
+   "title": "Démonstratifs this / that / these / those",
+   "requires": [],
+   "after": [
+    "plural-forms"
+   ],
+   "example": "These shoes are new.",
+   "detect": null
+  },
+  {
+   "id": "adjectives",
+   "level": "A1",
+   "title": "Adjectif : place et invariabilité",
+   "requires": [],
+   "after": [],
+   "example": "a red car, different ideas",
+   "detect": null
+  },
+  {
+   "id": "present-simple",
+   "level": "A1",
+   "title": "Présent simple",
+   "requires": [],
+   "after": [
+    "be",
+    "subject-object-pronouns"
+   ],
+   "example": "He works in London.",
+   "detect": null,
+   "falsePositive": "formes identiques au prétérit ou à l'infinitif (put, cut)"
+  },
+  {
+   "id": "do-questions",
+   "level": "A1",
+   "title": "Questions et négations avec do / does",
+   "requires": [
+    "present-simple"
+   ],
+   "after": [],
+   "example": "Does she speak French? I don't know.",
+   "detect": null
+  },
+  {
+   "id": "wh-questions",
+   "level": "A1",
+   "title": "Questions avec mot interrogatif",
+   "requires": [
+    "do-questions"
+   ],
+   "after": [],
+   "example": "Where do you live? What did she say?",
+   "detect": null
+  },
+  {
+   "id": "there-is",
+   "level": "A1",
+   "title": "There is / there are",
+   "requires": [
+    "be"
+   ],
+   "after": [
+    "plural-forms"
+   ],
+   "example": "There are two cafés near here.",
+   "detect": null
+  },
+  {
+   "id": "have-got",
+   "level": "A1",
+   "title": "Have / have got (possession)",
+   "requires": [],
+   "after": [
+    "present-simple"
+   ],
+   "example": "I've got a brother. Do you have a car?",
+   "detect": null,
+   "falsePositive": "have got = present perfect de get"
+  },
+  {
+   "id": "can",
+   "level": "A1",
+   "title": "Can / can't (capacité, permission)",
+   "requires": [],
+   "after": [
+    "subject-object-pronouns"
+   ],
+   "example": "Can you swim? I can't come.",
+   "detect": null,
+   "falsePositive": "can = boîte de conserve"
+  },
+  {
+   "id": "imperative",
+   "level": "A1",
+   "title": "L'impératif",
+   "requires": [],
+   "after": [],
+   "example": "Sit down. Don't worry.",
+   "detect": null
+  },
+  {
+   "id": "prepositions-time-place",
+   "level": "A1",
+   "title": "Prépositions de temps et de lieu : in / on / at",
+   "requires": [],
+   "after": [],
+   "example": "at 6 pm, on Monday, in July",
+   "detect": null,
+   "falsePositive": "chaque in / on / at : surligner n'apprend rien"
+  },
+  {
+   "id": "frequency-adverbs",
+   "level": "A1",
+   "title": "Adverbes de fréquence et leur place",
+   "requires": [
+    "present-simple"
+   ],
+   "after": [],
+   "example": "I always get up early. She is never late.",
+   "detect": null
+  },
+  {
+   "id": "present-continuous",
+   "level": "A1",
+   "title": "Présent continu (be + -ing)",
+   "requires": [
+    "be"
+   ],
+   "after": [],
+   "example": "She's reading right now.",
+   "detect": null,
+   "falsePositive": "be + adjectif en -ing (it is interesting)"
+  },
+  {
+   "id": "simple-vs-continuous",
+   "level": "A2",
+   "title": "Présent simple ou continu",
+   "requires": [
+    "present-simple",
+    "present-continuous"
+   ],
+   "after": [],
+   "example": "I usually walk, but today I'm driving.",
+   "detect": null
+  },
+  {
+   "id": "past-simple-regular",
+   "level": "A2",
+   "title": "Prétérit des verbes réguliers",
+   "requires": [
+    "present-simple"
+   ],
+   "after": [],
+   "example": "We watched a film yesterday.",
+   "detect": null,
+   "falsePositive": "-ed participe ou adjectif (he was tired)"
+  },
+  {
+   "id": "past-simple-irregular",
+   "level": "A2",
+   "title": "Prétérit des verbes irréguliers",
+   "requires": [
+    "past-simple-regular"
+   ],
+   "after": [],
+   "example": "She went home and wrote a letter.",
+   "detect": null
+  },
+  {
+   "id": "past-participle",
+   "level": "A2",
+   "title": "Participe passé (réguliers et irréguliers)",
+   "requires": [],
+   "after": [
+    "past-simple-irregular"
+   ],
+   "example": "She has gone home. The letter was written in 1850.",
+   "detect": null
+  },
+  {
+   "id": "past-questions",
+   "level": "A2",
+   "title": "Questions et négations au prétérit (did)",
+   "requires": [
+    "past-simple-irregular",
+    "do-questions"
+   ],
+   "after": [],
+   "example": "Did you see it? I didn't go.",
+   "detect": null
+  },
+  {
+   "id": "past-continuous",
+   "level": "A2",
+   "title": "Prétérit continu (was / were + -ing)",
+   "requires": [
+    "was-were",
+    "present-continuous"
+   ],
+   "after": [
+    "past-simple-irregular"
+   ],
+   "example": "I was cooking when he called.",
+   "detect": null,
+   "falsePositive": "was + adjectif en -ing (it was interesting)"
+  },
+  {
+   "id": "uncountables",
+   "level": "A2",
+   "title": "Noms indénombrables",
+   "requires": [],
+   "after": [
+    "plural-forms"
+   ],
+   "example": "some advice, much information, furniture",
+   "detect": null
+  },
+  {
+   "id": "countables",
+   "level": "A2",
+   "title": "Some / any, much / many, a lot of",
+   "requires": [
+    "plural-forms"
+   ],
+   "after": [
+    "uncountables"
+   ],
+   "example": "How much money? How many people?",
+   "detect": null
+  },
+  {
+   "id": "comparatives",
+   "level": "A2",
+   "title": "Comparatifs et superlatifs",
+   "requires": [],
+   "after": [
+    "adjectives"
+   ],
+   "example": "She is taller than me. It's the best day of my life.",
+   "detect": null
+  },
+  {
+   "id": "possessive-s",
+   "level": "A2",
+   "title": "Le génitif 's et of",
+   "requires": [],
+   "after": [
+    "possessive-adjectives"
+   ],
+   "example": "my sister's room, the end of the film",
+   "detect": null,
+   "falsePositive": "'s = is ou has (she's gone)"
+  },
+  {
+   "id": "going-to",
+   "level": "A2",
+   "title": "Futur avec be going to",
+   "requires": [
+    "present-continuous"
+   ],
+   "after": [],
+   "example": "It's going to rain.",
+   "detect": null,
+   "falsePositive": "going to + lieu (I'm going to Paris)"
+  },
+  {
+   "id": "will",
+   "level": "A2",
+   "title": "Futur avec will (décision, prédiction)",
+   "requires": [],
+   "after": [
+    "present-simple"
+   ],
+   "example": "I'll call you later.",
+   "detect": null
+  },
+  {
+   "id": "must-have-to",
+   "level": "A2",
+   "title": "Obligation : must / have to",
+   "requires": [],
+   "after": [
+    "can"
+   ],
+   "example": "You must stop. I have to work.",
+   "detect": null
+  },
+  {
+   "id": "should",
+   "level": "A2",
+   "title": "Conseil : should",
+   "requires": [],
+   "after": [
+    "can"
+   ],
+   "example": "You should rest.",
+   "detect": null
+  },
+  {
+   "id": "adverbs-manner",
+   "level": "A2",
+   "title": "Adverbes de manière (-ly) et leur place",
+   "requires": [],
+   "after": [
+    "adjectives",
+    "comparatives"
+   ],
+   "example": "She drives carefully. I speak English well.",
+   "detect": null
+  },
+  {
+   "id": "verb-patterns",
+   "level": "A2",
+   "title": "Verbe + -ing ou verbe + to",
+   "requires": [],
+   "after": [
+    "present-simple"
+   ],
+   "example": "I enjoy cooking. I want you to come.",
+   "detect": null
+  },
+  {
+   "id": "present-perfect",
+   "level": "B1",
+   "title": "Present perfect (expérience, résultat)",
+   "requires": [
+    "past-participle"
+   ],
+   "after": [
+    "past-simple-irregular"
+   ],
+   "example": "Have you ever been to Rome? I've lost my keys.",
+   "detect": null
+  },
+  {
+   "id": "perfect-vs-past",
+   "level": "B1",
+   "title": "Present perfect ou prétérit",
+   "requires": [
+    "present-perfect",
+    "past-simple-irregular"
+   ],
+   "after": [
+    "past-questions"
+   ],
+   "example": "I saw him yesterday. I've seen him today.",
+   "detect": null
+  },
+  {
+   "id": "for-since",
+   "level": "B1",
+   "title": "For / since (durée jusqu'à maintenant)",
+   "requires": [
+    "present-perfect"
+   ],
+   "after": [],
+   "example": "I've lived here since 2019 / for five years.",
+   "detect": null,
+   "falsePositive": "since = parce que"
+  },
+  {
+   "id": "perfect-continuous",
+   "level": "B1",
+   "title": "Present perfect continu",
+   "requires": [
+    "present-perfect",
+    "present-continuous"
+   ],
+   "after": [
+    "for-since"
+   ],
+   "example": "She's been waiting for an hour.",
+   "detect": null
+  },
+  {
+   "id": "past-perfect",
+   "level": "B1",
+   "title": "Plus-que-parfait (had + participe)",
+   "requires": [
+    "past-participle"
+   ],
+   "after": [
+    "present-perfect",
+    "past-continuous"
+   ],
+   "example": "When I arrived, the film had started.",
+   "detect": null
+  },
+  {
+   "id": "used-to",
+   "level": "B1",
+   "title": "Used to (habitudes passées)",
+   "requires": [],
+   "after": [
+    "past-simple-irregular"
+   ],
+   "example": "I used to smoke.",
+   "detect": null,
+   "falsePositive": "be used to (passif de use : it was used to open)"
+  },
+  {
+   "id": "first-conditional",
+   "level": "B1",
+   "title": "Conditionnel réel (if + présent, will)",
+   "requires": [
+    "will"
+   ],
+   "after": [],
+   "example": "If it rains, we'll stay home.",
+   "detect": null
+  },
+  {
+   "id": "time-clauses",
+   "level": "B1",
+   "title": "When / as soon as / until + présent",
+   "requires": [],
+   "after": [
+    "first-conditional"
+   ],
+   "example": "Call me when you arrive.",
+   "detect": null
+  },
+  {
+   "id": "second-conditional",
+   "level": "B1",
+   "title": "Conditionnel irréel (if + prétérit, would)",
+   "requires": [
+    "first-conditional",
+    "past-simple-irregular"
+   ],
+   "after": [],
+   "example": "If I had time, I would travel.",
+   "detect": null
+  },
+  {
+   "id": "passive",
+   "level": "B1",
+   "title": "Passif au présent et au prétérit",
+   "requires": [
+    "be",
+    "was-were",
+    "past-participle"
+   ],
+   "after": [],
+   "example": "The bridge was built in 1890.",
+   "detect": null,
+   "falsePositive": "be + adjectif en -ed (she was tired)"
+  },
+  {
+   "id": "relatives-defining",
+   "level": "B1",
+   "title": "Relatives déterminatives (who / which / that, relatif omis)",
+   "requires": [
+    "subject-object-pronouns"
+   ],
+   "after": [],
+   "example": "The man who called was French.",
+   "detect": null
+  },
+  {
+   "id": "deduction-present",
+   "level": "B1",
+   "title": "Déduction au présent : must / might / can't",
+   "requires": [
+    "must-have-to"
+   ],
+   "after": [],
+   "example": "She must be tired. It can't be true.",
+   "detect": null
+  },
+  {
+   "id": "reported-statements",
+   "level": "B1",
+   "title": "Discours rapporté (affirmations)",
+   "requires": [
+    "past-perfect",
+    "will"
+   ],
+   "after": [],
+   "example": "He said that he was tired.",
+   "detect": null
+  },
+  {
+   "id": "quantifiers",
+   "level": "B1",
+   "title": "Few / little / a few / a little, every / each",
+   "requires": [
+    "countables"
+   ],
+   "after": [],
+   "example": "I have a few friends but little time.",
+   "detect": null
+  },
+  {
+   "id": "say-tell",
+   "level": "B1",
+   "title": "Say ou tell",
+   "requires": [],
+   "after": [
+    "reported-statements"
+   ],
+   "example": "She told me the truth. He said hello.",
+   "detect": null
+  },
+  {
+   "id": "gerund-infinitive-meaning",
+   "level": "B1",
+   "title": "Stop / remember / try + -ing ou + to (changement de sens)",
+   "requires": [
+    "verb-patterns"
+   ],
+   "after": [],
+   "example": "I stopped smoking. I stopped to smoke.",
+   "detect": null
+  },
+  {
+   "id": "subject-questions",
+   "level": "B1",
+   "title": "Questions sur le sujet (sans do)",
+   "requires": [
+    "wh-questions"
+   ],
+   "after": [],
+   "example": "Who called you? What happened?",
+   "detect": null
+  },
+  {
+   "id": "purpose-to",
+   "level": "B1",
+   "title": "Le but : to + base verbale",
+   "requires": [],
+   "after": [],
+   "example": "I came to learn English.",
+   "detect": null
+  },
+  {
+   "id": "preposition-ing",
+   "level": "B1",
+   "title": "Préposition + -ing",
+   "requires": [],
+   "after": [],
+   "example": "before leaving, I look forward to seeing you",
+   "detect": null
+  },
+  {
+   "id": "indirect-questions",
+   "level": "B1",
+   "title": "Questions indirectes",
+   "requires": [
+    "wh-questions"
+   ],
+   "after": [],
+   "example": "Can you tell me where the station is?",
+   "detect": null
+  },
+  {
+   "id": "too-enough",
+   "level": "B1",
+   "title": "Too / enough / so / such",
+   "requires": [],
+   "after": [
+    "adjectives"
+   ],
+   "example": "too expensive, old enough, so kind, such a nice day",
+   "detect": null
+  },
+  {
+   "id": "make-let",
+   "level": "B1",
+   "title": "Make / let + base verbale",
+   "requires": [],
+   "after": [],
+   "example": "She made me wait. Let me go.",
+   "detect": null
+  },
+  {
+   "id": "phrasal-verbs",
+   "level": "B1",
+   "title": "Verbes à particule : place du complément",
+   "requires": [
+    "subject-object-pronouns"
+   ],
+   "after": [],
+   "example": "Pick it up. Turn the light off.",
+   "detect": null
+  },
+  {
+   "id": "question-tags",
+   "level": "B1",
+   "title": "Question tags, so do I / neither do I",
+   "requires": [
+    "do-questions",
+    "be"
+   ],
+   "after": [],
+   "example": "It's cold, isn't it? So do I.",
+   "detect": null
+  },
+  {
+   "id": "third-conditional",
+   "level": "B2",
+   "title": "Conditionnel passé (if + had + participe)",
+   "requires": [
+    "second-conditional",
+    "past-perfect"
+   ],
+   "after": [],
+   "example": "If I had known, I would have come.",
+   "detect": null
+  },
+  {
+   "id": "mixed-conditionals",
+   "level": "B2",
+   "title": "Conditionnels mixtes",
+   "requires": [
+    "third-conditional"
+   ],
+   "after": [],
+   "example": "If I had studied, I would be a doctor now.",
+   "detect": null
+  },
+  {
+   "id": "wish",
+   "level": "B2",
+   "title": "Wish / if only (regrets, souhaits)",
+   "requires": [
+    "second-conditional",
+    "past-perfect"
+   ],
+   "after": [],
+   "example": "I wish I knew. If only I had listened.",
+   "detect": null
+  },
+  {
+   "id": "passive-modals",
+   "level": "B2",
+   "title": "Passif avec un modal",
+   "requires": [
+    "passive"
+   ],
+   "after": [],
+   "example": "It must be done. It can't be fixed.",
+   "detect": null
+  },
+  {
+   "id": "have-something-done",
+   "level": "B2",
+   "title": "Have something done",
+   "requires": [
+    "past-participle"
+   ],
+   "after": [
+    "passive"
+   ],
+   "example": "I had my hair cut.",
+   "detect": null
+  },
+  {
+   "id": "relatives-non-defining",
+   "level": "B2",
+   "title": "Relatives explicatives (virgules, which, whose)",
+   "requires": [
+    "relatives-defining"
+   ],
+   "after": [],
+   "example": "My brother, who lives in Paris, is a chef.",
+   "detect": null
+  },
+  {
+   "id": "deduction-past",
+   "level": "B2",
+   "title": "Déduction au passé : must have / might have / can't have",
+   "requires": [
+    "deduction-present",
+    "past-participle"
+   ],
+   "after": [
+    "present-perfect"
+   ],
+   "example": "He must have missed the train.",
+   "detect": null
+  },
+  {
+   "id": "reported-questions",
+   "level": "B2",
+   "title": "Discours rapporté : questions et ordres",
+   "requires": [
+    "reported-statements",
+    "indirect-questions"
+   ],
+   "after": [],
+   "example": "She asked where I lived. He told me to wait.",
+   "detect": null
+  },
+  {
+   "id": "future-continuous",
+   "level": "B2",
+   "title": "Futur continu",
+   "requires": [
+    "will",
+    "present-continuous"
+   ],
+   "after": [],
+   "example": "This time tomorrow I'll be flying.",
+   "detect": null
+  },
+  {
+   "id": "future-perfect",
+   "level": "B2",
+   "title": "Futur antérieur",
+   "requires": [
+    "will",
+    "past-participle"
+   ],
+   "after": [],
+   "example": "I'll have finished by six.",
+   "detect": null
+  },
+  {
+   "id": "be-used-to",
+   "level": "B2",
+   "title": "Be / get used to + -ing",
+   "requires": [
+    "preposition-ing"
+   ],
+   "after": [
+    "used-to"
+   ],
+   "example": "I'm used to getting up early.",
+   "detect": null
+  },
+  {
+   "id": "inversion",
+   "level": "C1",
+   "title": "Inversion après une négation (Never have I…)",
+   "requires": [
+    "do-questions"
+   ],
+   "after": [
+    "present-perfect"
+   ],
+   "example": "Rarely do we see such talent.",
+   "detect": null
+  },
+  {
+   "id": "cleft-sentences",
+   "level": "C1",
+   "title": "Phrases clivées (What I need is…, It was… that…)",
+   "requires": [],
+   "after": [
+    "relatives-defining"
+   ],
+   "example": "What I need is a holiday.",
+   "detect": null
+  },
+  {
+   "id": "participle-clauses",
+   "level": "C1",
+   "title": "Propositions participiales",
+   "requires": [
+    "past-participle"
+   ],
+   "after": [
+    "past-perfect",
+    "passive"
+   ],
+   "example": "Having finished, she left. Built in 1890, the house…",
+   "detect": null
+  },
+  {
+   "id": "subjunctive",
+   "level": "C1",
+   "title": "Subjonctif formel (suggest that he go)",
+   "requires": [],
+   "after": [
+    "reported-questions"
+   ],
+   "example": "I suggest that he be told.",
+   "detect": null
+  },
+  {
+   "id": "emphatic-do",
+   "level": "C1",
+   "title": "Do d'insistance",
+   "requires": [
+    "do-questions"
+   ],
+   "after": [
+    "deduction-past"
+   ],
+   "example": "I do like it. She did call.",
+   "detect": null
+  }
+ ],
+ "traps": [
+  {
+   "id": "be-age",
+   "point": "be",
+   "level": "A1",
+   "title": "L'âge avec be",
+   "wrong": "I have 25 years.",
+   "right": "I'm 25."
+  },
+  {
+   "id": "be-states",
+   "point": "be",
+   "level": "A1",
+   "title": "Faim, froid, raison… avec be",
+   "wrong": "I have cold. You have right.",
+   "right": "I'm cold. You're right."
+  },
+  {
+   "id": "its-his-her",
+   "point": "possessive-adjectives",
+   "level": "A1",
+   "title": "Le possessif s'accorde avec le possesseur",
+   "wrong": "The company changed his logo.",
+   "right": "The company changed its logo."
+  },
+  {
+   "id": "third-person-s",
+   "point": "present-simple",
+   "level": "A1",
+   "title": "Le -s de la 3e personne",
+   "wrong": "He work in London.",
+   "right": "He works in London."
+  },
+  {
+   "id": "people-plural",
+   "point": "plural-forms",
+   "level": "A1",
+   "title": "People est un pluriel",
+   "wrong": "The people is angry.",
+   "right": "The people are angry."
+  },
+  {
+   "id": "no-inversion-questions",
+   "point": "do-questions",
+   "level": "A1",
+   "title": "Pas d'inversion du verbe",
+   "wrong": "Speak you English?",
+   "right": "Do you speak English?"
+  },
+  {
+   "id": "wh-no-do",
+   "point": "wh-questions",
+   "level": "A1",
+   "title": "Do après le mot interrogatif",
+   "wrong": "Where you live?",
+   "right": "Where do you live?"
+  },
+  {
+   "id": "adjective-order",
+   "point": "adjectives",
+   "level": "A1",
+   "title": "L'adjectif avant le nom, invariable",
+   "wrong": "a car red, differents ideas",
+   "right": "a red car, different ideas"
+  },
+  {
+   "id": "can-forms",
+   "point": "can",
+   "level": "A1",
+   "title": "Can n'a ni do, ni to, ni futur",
+   "wrong": "Do you can? I will can.",
+   "right": "Can you? I will be able to."
+  },
+  {
+   "id": "frequency-adverb-position",
+   "point": "frequency-adverbs",
+   "level": "A1",
+   "title": "L'adverbe de fréquence avant le verbe",
+   "wrong": "I go always to work by bus.",
+   "right": "I always go to work by bus."
+  },
+  {
+   "id": "uncountable-plural",
+   "point": "uncountables",
+   "level": "A2",
+   "title": "Pas de pluriel pour advice, information…",
+   "wrong": "some advices, informations",
+   "right": "some advice, information"
+  },
+  {
+   "id": "adverb-object-order",
+   "point": "adverbs-manner",
+   "level": "A2",
+   "title": "Rien entre le verbe et son complément",
+   "wrong": "I speak very well English.",
+   "right": "I speak English very well."
+  },
+  {
+   "id": "did-base",
+   "point": "past-questions",
+   "level": "A2",
+   "title": "Did + base verbale",
+   "wrong": "Did you went there?",
+   "right": "Did you go there?"
+  },
+  {
+   "id": "state-verbs-continuous",
+   "point": "simple-vs-continuous",
+   "level": "A2",
+   "title": "Verbes d'état sans -ing",
+   "wrong": "I am knowing the answer.",
+   "right": "I know the answer."
+  },
+  {
+   "id": "must-to",
+   "point": "must-have-to",
+   "level": "A2",
+   "title": "Must sans to",
+   "wrong": "I must to go.",
+   "right": "I must go."
+  },
+  {
+   "id": "mustnt-dont-have-to",
+   "point": "must-have-to",
+   "level": "A2",
+   "title": "Mustn't (interdit) ≠ don't have to (pas obligé)",
+   "wrong": "You mustn't come if you're busy.",
+   "right": "You don't have to come if you're busy."
+  },
+  {
+   "id": "more-bigger",
+   "point": "comparatives",
+   "level": "A2",
+   "title": "Pas de more avec -er ; than",
+   "wrong": "more bigger that",
+   "right": "bigger than"
+  },
+  {
+   "id": "best-in",
+   "point": "comparatives",
+   "level": "A2",
+   "title": "The best in, pas of",
+   "wrong": "the best restaurant of the world",
+   "right": "the best restaurant in the world"
+  },
+  {
+   "id": "want-that",
+   "point": "verb-patterns",
+   "level": "A2",
+   "title": "Want + personne + to",
+   "wrong": "I want that you come.",
+   "right": "I want you to come."
+  },
+  {
+   "id": "suggest-to",
+   "point": "verb-patterns",
+   "level": "B1",
+   "title": "Suggest sans to",
+   "wrong": "I suggest you to go.",
+   "right": "I suggest (that) you go. I suggest going."
+  },
+  {
+   "id": "zero-article-generic",
+   "point": "articles",
+   "level": "B1",
+   "title": "Pas de the pour une généralité",
+   "wrong": "The life is short. I love the music.",
+   "right": "Life is short. I love music."
+  },
+  {
+   "id": "passe-compose-calque",
+   "point": "perfect-vs-past",
+   "level": "B1",
+   "title": "Moment passé précis : prétérit",
+   "wrong": "I have seen him yesterday.",
+   "right": "I saw him yesterday."
+  },
+  {
+   "id": "depuis-present",
+   "point": "for-since",
+   "level": "B1",
+   "title": "« Depuis » : present perfect",
+   "wrong": "I live here since 2019.",
+   "right": "I've lived here since 2019."
+  },
+  {
+   "id": "since-duration",
+   "point": "for-since",
+   "level": "B1",
+   "title": "Une durée : for",
+   "wrong": "since three years",
+   "right": "for three years"
+  },
+  {
+   "id": "if-will",
+   "point": "first-conditional",
+   "level": "B1",
+   "title": "Pas de will après if",
+   "wrong": "If it will rain, we'll stay home.",
+   "right": "If it rains, we'll stay home."
+  },
+  {
+   "id": "when-will",
+   "point": "time-clauses",
+   "level": "B1",
+   "title": "Pas de will après when",
+   "wrong": "When I will arrive, I'll call you.",
+   "right": "When I arrive, I'll call you."
+  },
+  {
+   "id": "if-would",
+   "point": "second-conditional",
+   "level": "B1",
+   "title": "Pas de would après if",
+   "wrong": "If I would have time…",
+   "right": "If I had time…"
+  },
+  {
+   "id": "every-plural",
+   "point": "quantifiers",
+   "level": "B1",
+   "title": "Every + singulier",
+   "wrong": "every days",
+   "right": "every day"
+  },
+  {
+   "id": "say-me",
+   "point": "say-tell",
+   "level": "B1",
+   "title": "Tell + personne",
+   "wrong": "She said me the truth.",
+   "right": "She told me the truth."
+  },
+  {
+   "id": "explain-me",
+   "point": "say-tell",
+   "level": "B1",
+   "title": "Explain to + personne",
+   "wrong": "Explain me the rule.",
+   "right": "Explain the rule to me."
+  },
+  {
+   "id": "subject-question-did",
+   "point": "subject-questions",
+   "level": "B1",
+   "title": "Question sur le sujet sans did",
+   "wrong": "Who did call you?",
+   "right": "Who called you?"
+  },
+  {
+   "id": "for-purpose",
+   "point": "purpose-to",
+   "level": "B1",
+   "title": "Le but : to, pas for",
+   "wrong": "I came for learn English.",
+   "right": "I came to learn English."
+  },
+  {
+   "id": "preposition-to-infinitive",
+   "point": "preposition-ing",
+   "level": "B1",
+   "title": "Après une préposition : -ing",
+   "wrong": "before to leave ; I look forward to see you",
+   "right": "before leaving ; I look forward to seeing you"
+  },
+  {
+   "id": "indirect-question-order",
+   "point": "indirect-questions",
+   "level": "B1",
+   "title": "Pas d'inversion dans une question indirecte",
+   "wrong": "Can you tell me where is the station?",
+   "right": "Can you tell me where the station is?"
+  },
+  {
+   "id": "too-much-adj",
+   "point": "too-enough",
+   "level": "B1",
+   "title": "Too + adjectif, sans much",
+   "wrong": "too much expensive",
+   "right": "too expensive"
+  },
+  {
+   "id": "make-to",
+   "point": "make-let",
+   "level": "B1",
+   "title": "Make / let sans to",
+   "wrong": "She made me to wait.",
+   "right": "She made me wait."
+  },
+  {
+   "id": "phrasal-pronoun",
+   "point": "phrasal-verbs",
+   "level": "B1",
+   "title": "Pronom entre le verbe et la particule",
+   "wrong": "Pick up it.",
+   "right": "Pick it up."
+  },
+  {
+   "id": "question-tag-isnt-it",
+   "point": "question-tags",
+   "level": "B1",
+   "title": "Le tag reprend l'auxiliaire",
+   "wrong": "You like it, isn't it?",
+   "right": "You like it, don't you?"
+  },
+  {
+   "id": "be-used-to-ing",
+   "point": "be-used-to",
+   "level": "B2",
+   "title": "Be used to + -ing",
+   "wrong": "I'm used to get up early.",
+   "right": "I'm used to getting up early."
+  },
+  {
+   "id": "reported-question-inversion",
+   "point": "reported-questions",
+   "level": "B2",
+   "title": "Pas d'inversion dans une question rapportée",
+   "wrong": "She asked where did I live.",
+   "right": "She asked where I lived."
+  }
+ ],
+ "collections": [
+  {
+   "id": "make-do",
+   "title": "Make ou do (make a mistake, do homework…)",
+   "note": "Liste de collocations, pas une règle : collection de notes à importer, révisée par FSRS."
+  },
+  {
+   "id": "dependent-prepositions",
+   "title": "Verbes et adjectifs à préposition (depend on, listen to, wait for, good at…)",
+   "note": "Collection de notes à importer."
+  }
+ ]
+}

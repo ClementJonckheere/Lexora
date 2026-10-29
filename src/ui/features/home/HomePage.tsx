@@ -11,6 +11,7 @@ import { UniversesOverview } from '@/ui/features/universes/Universes';
 import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
 import { estimateMinutes } from '@/core/repo/progressRepo';
 import { GettingStarted, GoalRing, ResumeReading } from './Widgets';
+import { useLessonReviews } from '@/ui/features/learn/reviews';
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -29,6 +30,7 @@ export function HomePage() {
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate, openEditor, showNote } = useApp.getState();
   const due = useDueCounts();
+  const lessonsDue = useLessonReviews().due.length;
   const progress = useDailyProgress();
   const minutes = estimateMinutes(due.review + due.learning, due.new, progress.medianDurationMs);
 
@@ -98,6 +100,14 @@ export function HomePage() {
           <span>
             <strong>{notes.length}</strong> {notes.length > 1 ? 'expressions' : 'expression'} dans la bibliothèque
           </span>
+          {lessonsDue > 0 && (
+            <span>
+              <strong>{lessonsDue}</strong> {lessonsDue > 1 ? 'leçons de grammaire' : 'leçon de grammaire'} à réviser{' '}
+              <button className="link" onClick={() => navigate({ name: 'learn' })}>
+                (Apprendre)
+              </button>
+            </span>
+          )}
         </div>
         <div className="hero-actions">
           <Button variant="primary" size="lg" onClick={due.total > 0 ? startAll : () => navigate({ name: 'review' })} shortcut="Entrée">

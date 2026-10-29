@@ -2,7 +2,13 @@ import { create } from 'zustand';
 import type { Database } from '@/core/db/types';
 import { openDatabase } from '@/core/db/open';
 import { startOfStudyDay } from '@/core/domain/dates';
-import { DEFAULT_SETTINGS, primaryDirection, type Settings } from '@/core/domain/settings';
+import { DEFAULT_SETTINGS, primaryDirection, settingsUpgrade, type Settings } from '@/core/domain/settings';
+import type { FrequencyRanks } from '@/core/reading/level';
+import * as knowledgeRepo from '@/core/repo/knowledgeRepo';
+import type { VocabTestResult } from '@/core/repo/knowledgeRepo';
+import type { Observation } from '@/core/reading/calibration';
+import * as learnRepo from '@/core/repo/learnRepo';
+import type { GrammarAnswer } from '@/core/learn/progress';
 import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode, Universe } from '@/core/domain/types';
 import * as notesRepo from '@/core/repo/notesRepo';
 import * as collectionsRepo from '@/core/repo/collectionsRepo';
@@ -37,6 +43,10 @@ export type Route =
   | { name: 'stats' }
   | { name: 'reading' }
   | { name: 'reader'; bookKey: string }
+  | { name: 'vocab-test' }
+  | { name: 'grammar-annotate' }
+  | { name: 'learn' }
+  | { name: 'lesson'; id: string; review?: boolean }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';
@@ -111,6 +121,8 @@ interface AppState {
   collections: Collection[];
   forgetCounts: Map<string, number>;
   newIntroducedToday: number;
+  /** Liste de fréquence de la langue courante (ordre des nouveaux mots), null tant qu'elle n'est pas chargée. */
+  frequencyRanks: { language: string; ranks: FrequencyRanks } | null;
   /** Incrémenté à chaque modification des données. */
   revision: number;
   /** Livres de tous les univers (espace lecture). */
@@ -119,6 +131,14 @@ interface AppState {
   bookCovers: Map<string, string>;
   /** Niveaux estimés des livres du catalogue (cache local). */
   bookLevels: Map<string, CachedLevel>;
+  /** Dernier test de vocabulaire de l'univers courant. */
+  vocabTest: VocabTestResult | null;
+  /** Mots marqués « connu » / « inconnu » dans l'univers courant. */
+  wordMarks: Map<string, boolean>;
+  /** Observations en lisant (recalage du test de vocabulaire) dans l'univers courant. */
+  vocabObservations: Observation[];
+  /** Réponses aux exercices de grammaire (onglet Apprendre) dans l'univers courant. */
+  grammarAnswers: GrammarAnswer[];
 
   route: Route;
   /** Change à chaque navigation : force le remontage d'une page (ex. nouvelle session). */
@@ -186,6 +206,14 @@ interface AppState {
   /** Position de lecture : enregistrée sans recharger l'application. */
   saveBookProgress(key: string, chapter: number, block: number, progress: number): Promise<void>;
   setBookLevel(key: string, estimate: LevelEstimate): Promise<void>;
+  /** Marque des mots comme connus (true), inconnus (false) ou retire la marque (null). */
+  markWords(words: string[], known: boolean | null): Promise<void>;
+  saveVocabTest(result: VocabTestResult): Promise<void>;
+  /** Enregistre des signaux de lecture (décisions, sélections, mots rencontrés). */
+  observe(list: Observation[]): Promise<void>;
+  answerGrammar(answer: GrammarAnswer): Promise<void>;
+  /** Phrase signalée : retirée de la leçon, ses réponses ne comptent plus. */
+  reportGrammar(lessonId: string, itemId: string): Promise<void>;
 }
 
 let toastSeq = 1;
@@ -248,10 +276,15 @@ export const useApp = create<AppState>((set, get) => {
     collections: [],
     forgetCounts: new Map(),
     newIntroducedToday: 0,
+    frequencyRanks: null,
     revision: 0,
     books: [],
     bookCovers: new Map(),
     bookLevels: new Map(),
+    vocabTest: null,
+    wordMarks: new Map(),
+    vocabObservations: [],
+    grammarAnswers: [],
 
     route: { name: 'home' },
     routeKey: 0,
@@ -269,7 +302,9 @@ export const useApp = create<AppState>((set, get) => {
     async init() {
       try {
         const database = await openDatabase();
-        const settings = await loadSettings(database);
+        let settings = await loadSettings(database);
+        const upgrade = settingsUpgrade(settings);
+        if (upgrade) settings = await saveSettings(database, upgrade);
         const lastSync = Number((await getSyncState(database, 'last_sync')) ?? 0) || null;
         set((s) => ({ db: database, settings, scheduler: createScheduler(settings), sync: { ...s.sync, lastSync } }));
         set({ status: 'ready' });
@@ -305,6 +340,20 @@ export const useApp = create<AppState>((set, get) => {
         ? await countNewIntroduced(d, startOfStudyDay(Date.now(), settings.dayStartHour), primaryDirection(settings), current.id)
         : 0;
       const changedUniverse = current?.id !== get().universe?.id;
+      const knowledge = current
+        ? {
+            test: await knowledgeRepo.loadVocabTest(d, current.id),
+            marks: await knowledgeRepo.loadMarks(d, current.id),
+            observations: await knowledgeRepo.loadObservations(d, current.id),
+            grammar: await learnRepo.loadGrammarAnswers(d, current.id),
+          }
+        : null;
+      if (current && get().frequencyRanks?.language !== current.language) {
+        const language = current.language;
+        void loadRanks(language).then((ranks) => {
+          if (ranks && get().universe?.language === language) set({ frequencyRanks: { language, ranks } });
+        });
+      }
       set((s) => ({
         universes,
         universe: current,
@@ -317,6 +366,10 @@ export const useApp = create<AppState>((set, get) => {
         books,
         bookCovers,
         bookLevels,
+        vocabTest: knowledge?.test ?? null,
+        wordMarks: knowledge?.marks ?? new Map(),
+        vocabObservations: knowledge?.observations ?? [],
+        grammarAnswers: knowledge?.grammar ?? [],
         revision: s.revision + 1,
         ...(changedUniverse ? { libraryFilters: DEFAULT_FILTERS, selectedNoteId: null } : {}),
       }));
@@ -543,6 +596,60 @@ export const useApp = create<AppState>((set, get) => {
       await booksRepo.saveProgress(db(), key, chapter, block, progress);
       const now = Date.now();
       set((s) => ({ books: s.books.map((b) => (b.key === key ? { ...b, chapter, block, progress, lastReadAt: now, updatedAt: now } : b)) }));
+      scheduleSync();
+    },
+    async markWords(words, known) {
+      const u = get().universe;
+      if (!u || !words.length) return;
+      await knowledgeRepo.setMarks(db(), u.id, words, known);
+      set((s) => {
+        const marks = new Map(s.wordMarks);
+        for (const w of words) {
+          const word = w.trim().toLowerCase();
+          if (known === null) marks.delete(word);
+          else marks.set(word, known);
+        }
+        return { wordMarks: marks };
+      });
+      scheduleSync();
+    },
+    async saveVocabTest(result) {
+      const u = get().universe;
+      if (!u) return;
+      await knowledgeRepo.saveVocabTest(db(), u.id, result);
+      set({ vocabTest: result });
+      scheduleSync();
+    },
+    async observe(list) {
+      const u = get().universe;
+      if (!u || !list.length) return;
+      const changed = await knowledgeRepo.recordObservations(db(), u.id, list);
+      if (!changed.length) return;
+      set((s) => {
+        const key = (o: Observation) => `${o.source}|${o.word}`;
+        const replaced = new Set(changed.map(key));
+        return { vocabObservations: [...s.vocabObservations.filter((o) => !replaced.has(key(o))), ...changed] };
+      });
+      scheduleSync();
+    },
+    async answerGrammar(answer) {
+      const u = get().universe;
+      if (!u) return;
+      await learnRepo.recordGrammarAnswer(db(), u.id, answer);
+      set((s) => ({ grammarAnswers: [...s.grammarAnswers, answer] }));
+      scheduleSync();
+    },
+    async reportGrammar(lessonId, itemId) {
+      const u = get().universe;
+      if (!u) return;
+      const now = Date.now();
+      await learnRepo.reportGrammarItem(db(), u.id, lessonId, itemId, now);
+      set((s) => ({
+        grammarAnswers: [
+          ...s.grammarAnswers.map((a) => (a.itemId === itemId ? { ...a, reported: true } : a)),
+          { lessonId, itemId, correct: false, reported: true, createdAt: now },
+        ],
+      }));
       scheduleSync();
     },
     async setBookLevel(key, estimate) {

@@ -27,6 +27,9 @@ function setStatus(patch: Partial<ReturnType<typeof useApp.getState>['sync']>) {
   useApp.setState((s) => ({ sync: { ...s.sync, ...patch } }));
 }
 
+/** Avertissement « schéma à mettre à jour » : une fois par lancement. */
+let schemaWarned = false;
+
 export function runSync(opts: { manual?: boolean } = {}): Promise<void> {
   const s = useApp.getState();
   const user = s.auth.user;
@@ -44,7 +47,16 @@ export function runSync(opts: { manual?: boolean } = {}): Promise<void> {
   running = (async () => {
     setStatus({ state: 'syncing', error: null });
     try {
-      const { pulled } = await syncOnce(db, new SupabaseRemote(supabase(), user.id));
+      const { pulled, skipped } = await syncOnce(db, new SupabaseRemote(supabase(), user.id));
+      if (skipped.length && !schemaWarned) {
+        schemaWarned = true;
+        useApp
+          .getState()
+          .toast(
+            'info',
+            "Base Supabase à mettre à jour : relancez supabase/schema.sql dans l'éditeur SQL de Supabase pour synchroniser vos mots connus et votre test de vocabulaire. Le reste est synchronisé.",
+          );
+      }
       setStatus({ state: 'idle', lastSync: Date.now(), error: null });
       if (pulled > 0) {
         const settings = await loadSettings(db);

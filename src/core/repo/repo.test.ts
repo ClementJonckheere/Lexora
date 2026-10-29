@@ -13,7 +13,7 @@ import { buildQueue } from '../srs/queue';
 import { addTag, createNote, deleteNotes, findDuplicates, loadNotes, moveNotes, restoreNotes, setSuspended, updateNote, type NoteTarget } from './notesRepo';
 import { addToCollection, createCollection, deleteCollection, loadCollections } from './collectionsRepo';
 import { createUniverse, deleteUniverse, loadUniverses } from './universesRepo';
-import { countNewIntroduced, loadForgetCounts, recordPractice, recordReview, undoReview } from './reviewRepo';
+import { countNewIntroduced, loadForgetCounts, recordPractice, recordReview, typedBaseline, undoReview } from './reviewRepo';
 import { loadSettings, saveSettings } from './settingsRepo';
 import { computeStats } from './statsRepo';
 import { exportBackup, exportCsv, exportNotesJson, importNotes, parseCsvNotes, parseJsonNotes, restoreBackup } from './transfer';
@@ -314,5 +314,28 @@ describe('import / export', () => {
 
   it('refuse un fichier qui n’est pas une sauvegarde', async () => {
     await expect(restoreBackup(db, { foo: 1 } as never)).rejects.toThrow(/sauvegarde/);
+  });
+});
+
+describe('temps de saisie', () => {
+  it("médiane du temps de réflexion des réponses tapées, par univers, à partir de 20 réponses", async () => {
+    const es = { universeId: await createUniverse(db, 'Espagnol', 'es'), language: 'es' };
+    await createNote(db, tackle, en);
+    await createNote(db, { expression: 'Rendirse', translation: 'Abandonner', examples: [] }, es);
+    const notes = await loadNotes(db);
+    const enCard = notes.find((n) => n.universeId === en.universeId)!.cards.fr_en!;
+    const esCard = notes.find((n) => n.universeId === es.universeId)!.cards.fr_en!;
+    const record = (card: typeof enCard, ms: number | null, chars = 10) => {
+      const out = review(scheduler, card, Rating.Good, Date.now());
+      return recordReview(db, out.card, out.log, 9000, Date.now(), ms === null ? null : { ms, chars });
+    };
+    for (let i = 0; i < 19; i++) await record(enCard, 3000 + i * 100);
+    expect(await typedBaseline(db, en.universeId, 150)).toBeNull();
+    await record(enCard, 6000);
+    await record(enCard, null); // réponse non tapée : ignorée
+    for (let i = 0; i < 25; i++) await record(esCard, 20_000);
+    // 20 réponses anglaises : 3000…4800 et 6000, moins 10 × 150 ms de frappe.
+    expect(await typedBaseline(db, en.universeId, 150)).toBe(4000 - 1500);
+    expect(await typedBaseline(db, es.universeId, 150)).toBe(20_000 - 1500);
   });
 });

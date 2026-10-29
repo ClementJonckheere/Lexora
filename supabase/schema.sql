@@ -166,12 +166,72 @@ create table if not exists public.books (
   primary key (user_id, book_key)
 );
 
+-- ---------------------------------------- mots connus et test de vocabulaire ---
+create table if not exists public.word_marks (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  mark_key           text not null,
+  universe_id        uuid not null,
+  word               text not null,
+  known              smallint not null default 1,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0,
+  primary key (user_id, mark_key)
+);
+
+create table if not exists public.vocab_tests (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  universe_id        uuid not null,
+  bands              jsonb not null default '[]'::jsonb,
+  vocab_size         integer not null default 0,
+  false_alarm        double precision not null default 0,
+  answers            jsonb not null default '[]'::jsonb,
+  taken_at           bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0,
+  primary key (user_id, universe_id)
+);
+-- Réponses brutes du test : [{ word, real, band, rank, yes, ms, corrected }] (analysables en SQL : jsonb_array_elements).
+alter table public.vocab_tests add column if not exists answers jsonb not null default '[]'::jsonb;
+
+-- Observations en lisant : recalage du test de vocabulaire.
+create table if not exists public.vocab_observations (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  obs_key            text not null,
+  universe_id        uuid not null,
+  source             text not null check (source in ('chapter', 'select', 'exposure')),
+  word               text not null,
+  rank               integer,
+  known              smallint not null,
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0,
+  primary key (user_id, obs_key)
+);
+
+-- ------------------------------------------- onglet Apprendre (grammaire) ---
+create table if not exists public.grammar_answers (
+  id                 uuid primary key,
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  universe_id        uuid not null,
+  lesson_id          text not null,
+  item_id            text not null,
+  correct            smallint not null,
+  reported           smallint not null default 0,
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0
+);
+
 -- ------------------------------------ index, déclencheurs, sécurité (RLS) ---
 do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);
@@ -193,5 +253,26 @@ $$;
 -- Suspension d'une note (exclue des révisions) et plafond de nouveaux mots par univers.
 alter table public.notes add column if not exists suspended smallint not null default 0;
 alter table public.universes add column if not exists new_per_day integer;
+
+-- ------------------------------------- phrases de grammaire signalées (v2.16) ---
+-- Exercices signalés « ne correspond pas à la leçon », comptés tous utilisateurs confondus. La fonction ne renvoie
+-- que l'identifiant de l'exercice (leçon + phrase Tatoeba, public) et le nombre de personnes qui l'ont signalé :
+-- aucune donnée personnelle. La CI de génération des exercices l'appelle avec la clé publique pour écarter ces
+-- phrases des banques.
+create or replace function public.grammar_reported_items()
+returns table (item_id text, reporters bigint)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select g.item_id, count(distinct g.user_id) as reporters
+  from public.grammar_answers g
+  where g.reported = 1 and g.deleted = 0
+  group by g.item_id
+$$;
+revoke all on function public.grammar_reported_items() from public;
+grant execute on function public.grammar_reported_items() to anon, authenticated;
+
 -- Recharge le cache de l'API pour qu'elle voie immédiatement les nouvelles colonnes.
 notify pgrst, 'reload schema';

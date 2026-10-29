@@ -29,6 +29,12 @@ export interface Settings {
   recordedVoice: boolean;
   /** Voix naturelle partagée (fonction « speak », Azure) plutôt que la voix de Windows. */
   naturalVoice: boolean;
+  /** Français → langue : une phrase d'exemple à trous au recto (quand la note en a une). */
+  clozeFront: boolean;
+  /** Ordre des nouveaux mots : les plus fréquents dans la langue d'abord, ou par date d'ajout. */
+  newOrder: 'frequency' | 'added';
+  /** Version des réglages par défaut appliqués (changements de défaut une seule fois, pour tous). */
+  settingsVersion: number;
 
   /* --- Réglages propres à l'appareil (jamais synchronisés) --- */
   /** Voix choisie par langue (code langue → identifiant de voix du système). */
@@ -51,6 +57,21 @@ export interface Settings {
 /** Réglages liés au matériel : stockés localement, non synchronisés entre appareils. */
 export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut', 'clipboardPrefill', 'closeToTray', 'reminderEnabled', 'reminderTime', 'deeplKey'] as const satisfies readonly (keyof Settings)[];
 
+/** Version actuelle des réglages par défaut (voir `settingsUpgrade`). */
+export const SETTINGS_VERSION = 2;
+
+/**
+ * Changements de réglage par défaut à appliquer une seule fois aux réglages déjà enregistrés
+ * (sinon une ancienne valeur enregistrée masquerait le nouveau défaut).
+ * - v2 : la réponse tapée devient la règle.
+ */
+export function settingsUpgrade(settings: Settings): Partial<Settings> | null {
+  if (settings.settingsVersion >= SETTINGS_VERSION) return null;
+  const patch: Partial<Settings> = { settingsVersion: SETTINGS_VERSION };
+  if (settings.settingsVersion < 2) patch.typeAnswer = true;
+  return patch;
+}
+
 export const DEFAULT_SETTINGS: Settings = {
   newPerDay: 10,
   desiredRetention: 0.9,
@@ -60,11 +81,14 @@ export const DEFAULT_SETTINGS: Settings = {
   enableFuzz: true,
   masteryThresholdDays: 21,
   autoSpeak: false,
-  typeAnswer: false,
+  typeAnswer: true,
   autoTranslate: true,
   dailyGoal: 20,
   recordedVoice: true,
   naturalVoice: true,
+  clozeFront: true,
+  newOrder: 'frequency',
+  settingsVersion: 0,
   ttsVoices: {},
   ttsRate: 0.95,
   globalShortcut: 'Alt+Shift+L',
@@ -101,6 +125,9 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.dailyGoal = Math.round(clamp(num(raw.dailyGoal, s.dailyGoal), 5, 500));
   s.recordedVoice = bool(raw.recordedVoice, s.recordedVoice);
   s.naturalVoice = bool(raw.naturalVoice, s.naturalVoice);
+  s.clozeFront = bool(raw.clozeFront, s.clozeFront);
+  s.newOrder = raw.newOrder === 'added' ? 'added' : 'frequency';
+  s.settingsVersion = Number.isInteger(raw.settingsVersion) ? (raw.settingsVersion as number) : 0;
   s.clipboardPrefill = bool(raw.clipboardPrefill, s.clipboardPrefill);
   s.closeToTray = bool(raw.closeToTray, s.closeToTray);
   s.reminderEnabled = bool(raw.reminderEnabled, s.reminderEnabled);
