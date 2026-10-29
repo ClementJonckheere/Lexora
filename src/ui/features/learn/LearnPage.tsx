@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { CheckCircle2, GraduationCap, Loader2, RotateCcw } from 'lucide-react';
 import { useApp } from '@/app/store';
 import { lessonProgress, MASTERY_TARGET, MASTERY_WINDOW, type LessonProgress } from '@/core/learn/progress';
@@ -6,6 +6,10 @@ import { dueLabel, REVIEW_SIZE } from '@/core/learn/review';
 import { Button, EmptyState } from '@/ui/components/ui';
 import { useGrammarData, type GrammarPoint } from './grammarData';
 import { useLessonReviews } from './reviews';
+import { placementSummary, pointState, STATE_LABEL, suggestedLesson } from '@/core/learn/placementResults';
+
+/** « Plus tard » : la proposition du test revient à la prochaine ouverture de l'application. */
+let placementLater = false;
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
 
@@ -34,6 +38,10 @@ export function LearnPage() {
   const { navigate } = useApp.getState();
   const data = useGrammarData();
   const reviews = useLessonReviews();
+  const universe = useApp((s) => s.universe);
+  const placementAll = useApp((s) => s.settings.placement);
+  const placement = universe ? placementAll[universe.id] : undefined;
+  const [later, setLater] = useState(placementLater);
 
   const progressOf = useMemo(() => {
     const byLesson = new Map<string, typeof answers>();
@@ -68,6 +76,10 @@ export function LearnPage() {
   const mastered = lessons.filter((p) => progressOf(p.id).state === 'mastered').length;
 
   const dueLessons = lessons.filter((p) => reviews.due.includes(p.id));
+  const done = placement?.status === 'done' ? placement : null;
+  const suggested = done ? suggestedLesson(done, lessons.map((p) => p.id), (id) => progressOf(id).state === 'mastered') : null;
+  const suggestedPoint = lessons.find((p) => p.id === suggested);
+  const skip = () => universe && void useApp.getState().updateSettings({ placement: { ...placementAll, [universe.id]: { status: 'skipped', at: Date.now() } } });
 
   const card = (p: GrammarPoint) => {
     const prog = progressOf(p.id);
@@ -80,8 +92,13 @@ export function LearnPage() {
             <span className="chip chip--due">
               <RotateCcw size={12} /> À réviser
             </span>
+          ) : prog.state === 'mastered' ? (
+            <CheckCircle2 size={16} color="var(--mastered)" />
           ) : (
-            prog.state === 'mastered' && <CheckCircle2 size={16} color="var(--mastered)" />
+            done &&
+            prog.state === 'new' &&
+            pointState(done, p.id) &&
+            pointState(done, p.id) !== 'learn' && <span className={`chip chip--placement-${pointState(done, p.id)}`}>{STATE_LABEL[pointState(done, p.id)!]} au test</span>
           )}
         </span>
         <strong className="lesson-card-title">{p.title}</strong>
@@ -121,6 +138,73 @@ export function LearnPage() {
           <span className="lesson-bar-fill" style={{ width: `${lessons.length ? (mastered / lessons.length) * 100 : 0}%` }} />
         </div>
       </section>
+
+      {!placement && !later && (
+        <section className="card card-pad placement-offer">
+          <div>
+            <strong>Où en êtes-vous en grammaire ?</strong>
+            <p className="muted small" style={{ margin: '4px 0 0' }}>
+              Un test de 40 questions au plus (10 à 15 minutes) situe votre niveau sur les {data.points.length} points du parcours, de A1 à C1, et vous dit
+              par quelle leçon commencer. Vous pourrez le refaire et corriger ses résultats.
+            </p>
+          </div>
+          <div className="row">
+            <Button variant="primary" onClick={() => navigate({ name: 'placement' })}>
+              Faire le test
+            </Button>
+            <Button onClick={skip}>Commencer au début</Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                placementLater = true;
+                setLater(true);
+              }}
+            >
+              Plus tard
+            </Button>
+          </div>
+        </section>
+      )}
+
+      {done && (
+        <section className="card card-pad placement-summary">
+          <div className="row row--between row--wrap">
+            <span>
+              <strong>Test de placement</strong>{' '}
+              <span className="muted small">
+                · {placementSummary(done).mastered} points acquis, {placementSummary(done).consolidate} à consolider, {placementSummary(done).learn} à apprendre
+              </span>
+            </span>
+            <span className="row">
+              <button className="link small" onClick={() => navigate({ name: 'placement' })}>
+                Voir les résultats
+              </button>
+              <button className="link small" onClick={() => navigate({ name: 'placement', retake: true })}>
+                Refaire le test
+              </button>
+            </span>
+          </div>
+          {suggestedPoint && (
+            <div className="row row--between" style={{ marginTop: 10 }}>
+              <span className="small">
+                Pour commencer : <strong>{suggestedPoint.title}</strong> <span className="muted">({suggestedPoint.level})</span>
+              </span>
+              <Button variant="primary" size="sm" onClick={() => navigate({ name: 'lesson', id: suggestedPoint.id })}>
+                Ouvrir la leçon
+              </Button>
+            </div>
+          )}
+        </section>
+      )}
+
+      {placement?.status === 'skipped' && (
+        <p className="muted small" style={{ margin: '0 0 16px' }}>
+          Envie de savoir où vous en êtes ?{' '}
+          <button className="link small" onClick={() => navigate({ name: 'placement' })}>
+            Faire le test de placement
+          </button>
+        </p>
+      )}
 
       {dueLessons.length > 0 && (
         <section className="card card-pad learn-due">

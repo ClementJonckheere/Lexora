@@ -49,6 +49,7 @@ export type Route =
   | { name: 'grammar-annotate' }
   | { name: 'learn' }
   | { name: 'lesson'; id: string; review?: boolean }
+  | { name: 'placement'; retake?: boolean }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';

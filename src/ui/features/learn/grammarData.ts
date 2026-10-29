@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Exercise } from '@/core/learn/exercises';
+import type { PlacementItem } from '@/core/learn/placementBank';
 
 /** Données de grammaire fournies avec l'application (public/grammar/en). */
 
@@ -8,6 +9,8 @@ export interface GrammarPoint {
   level: string;
   title: string;
   example: string;
+  /** Prérequis stricts (déduction du placement). */
+  requires: string[];
 }
 
 export interface Trap {
@@ -83,4 +86,9 @@ export function useGrammarData(): GrammarData | null | undefined {
     };
   }, []);
   return data;
+}
+
+/** Questions du test de placement (banque préparée par la CI, plus les questions rédigées). */
+export function loadPlacementItems(): Promise<PlacementItem[]> {
+  return json<{ items: PlacementItem[] }>('/grammar/en/placement.json').then((d) => d?.items ?? []);
 }

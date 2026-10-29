@@ -33,6 +33,8 @@ export interface Settings {
   clozeFront: boolean;
   /** Ordre des nouveaux mots : les plus fréquents dans la langue d'abord, ou par date d'ajout. */
   newOrder: 'frequency' | 'added';
+  /** Test de placement grammatical, par univers : passé (résultats par point, corrections) ou écarté. */
+  placement: Record<string, PlacementRecord>;
   /** Titre affiché à côté du rang, par univers (identifiant du titre, ou « none »). */
   displayedTitles: Record<string, string>;
   /** Version des réglages par défaut appliqués (changements de défaut une seule fois, pour tous). */
@@ -59,6 +61,42 @@ export interface Settings {
 }
 
 export type ThemeMode = 'system' | 'light' | 'dark';
+
+export type PlacementState = 'mastered' | 'consolidate' | 'learn';
+export type PlacementRecord =
+  | { status: 'skipped'; at: number }
+  | {
+      status: 'done';
+      at: number;
+      /** État estimé de chaque point, avec sa probabilité et la nature de la preuve (testé, déduit, incertain…). */
+      results: { id: string; state: PlacementState; probability: number; evidence: string }[];
+      /** Corrections de l'utilisateur (« je connais déjà », « à revoir »). */
+      overrides: Record<string, PlacementState>;
+    };
+
+const PLACEMENT_STATES = new Set<string>(['mastered', 'consolidate', 'learn']);
+function sanitizePlacement(raw: unknown): Record<string, PlacementRecord> {
+  if (!raw || typeof raw !== 'object') return {};
+  const out: Record<string, PlacementRecord> = {};
+  for (const [universe, r] of Object.entries(raw as Record<string, unknown>)) {
+    const rec = r as Partial<{ status: string; at: number; results: unknown; overrides: unknown }>;
+    if (!rec || typeof rec.at !== 'number') continue;
+    if (rec.status === 'skipped') out[universe] = { status: 'skipped', at: rec.at };
+    else if (rec.status === 'done' && Array.isArray(rec.results)) {
+      const results = rec.results.filter(
+        (x): x is { id: string; state: PlacementState; probability: number; evidence: string } =>
+          !!x && typeof x.id === 'string' && PLACEMENT_STATES.has(x.state) && typeof x.probability === 'number' && typeof x.evidence === 'string',
+      );
+      const overrides = Object.fromEntries(
+        Object.entries((rec.overrides && typeof rec.overrides === 'object' ? rec.overrides : {}) as Record<string, unknown>).filter(
+          (e): e is [string, PlacementState] => typeof e[1] === 'string' && PLACEMENT_STATES.has(e[1]),
+        ),
+      );
+      out[universe] = { status: 'done', at: rec.at, results, overrides };
+    }
+  }
+  return out;
+}
 
 /** Réglages liés au matériel : stockés localement, non synchronisés entre appareils. */
 export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut', 'clipboardPrefill', 'closeToTray', 'reminderEnabled', 'reminderTime', 'deeplKey', 'theme'] as const satisfies readonly (keyof Settings)[];
@@ -95,6 +133,7 @@ export const DEFAULT_SETTINGS: Settings = {
   clozeFront: true,
   newOrder: 'frequency',
   displayedTitles: {},
+  placement: {},
   settingsVersion: 0,
   ttsVoices: {},
   ttsRate: 0.95,
@@ -135,6 +174,7 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.naturalVoice = bool(raw.naturalVoice, s.naturalVoice);
   s.clozeFront = bool(raw.clozeFront, s.clozeFront);
   s.newOrder = raw.newOrder === 'added' ? 'added' : 'frequency';
+  s.placement = sanitizePlacement(raw.placement);
   s.displayedTitles =
     raw.displayedTitles && typeof raw.displayedTitles === 'object'
       ? Object.fromEntries(Object.entries(raw.displayedTitles as Record<string, unknown>).filter((e): e is [string, string] => typeof e[1] === 'string'))
