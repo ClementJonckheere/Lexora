@@ -55,6 +55,7 @@ BASE_OF.set('was', 'be').set('were', 'be');
 /** Variantes admises d'une même forme (learnt / learned, dreamt / dreamed, got / gotten) : ramenées à la première. */
 const VARIANT_OF = new Map<string, string>();
 const PAST_FORMS = new Map<string, string[]>();
+const PARTICIPLE_FORMS = new Set<string>();
 for (const v of verbs) {
   for (const list of [v.past, v.participle]) {
     const forms = list.flatMap((f) => f.split('/'));
@@ -64,6 +65,7 @@ for (const v of verbs) {
     v.base,
     v.past.flatMap((f) => f.split('/')),
   );
+  for (const f of v.participle.flatMap((x) => x.split('/'))) PARTICIPLE_FORMS.add(f);
 }
 
 /** Formes en -ed que les règles devinent mal, ou qui ne sont pas des verbes au passé (null). */
@@ -73,6 +75,14 @@ const REGULAR_EXCEPTIONS: Record<string, string | null> = {
   naked: null, wicked: null, sacred: null, beloved: null, crooked: null, rugged: null, hundred: null, kindred: null, red: null, bed: null, shed: null,
   need: null, feed: null, bleed: null, breed: null, speed: null, seed: null, weed: null, heed: null, deed: null, exceed: null, succeed: null, proceed: null, indeed: null,
 };
+
+/** Participe passé (régulier en -ed ou irrégulier : eaten, gone, been) ; « had a car » n'en est pas un. */
+export function isParticiple(word: string): boolean {
+  const w = word.toLowerCase();
+  if (w === 'been') return true;
+  if (BASE_OF.has(w)) return PARTICIPLE_FORMS.has(w);
+  return w.endsWith('ed') && baseOf(w) !== null;
+}
 
 /** Base verbale d'une forme passée ou d'un participe (« went » → « go », « stopped » → « stop »). `known` : liste de mots. */
 export function baseOf(form: string, known?: Known): string | null {
@@ -380,7 +390,7 @@ function clauseVerb(pointId: string, links: string, kind: 'present' | 'past'): B
     if (s.en[m.index + m[0].length] === "'" || ADVERBS.test(v) || v.endsWith('ly')) return [];
     if (kind === 'present' && /^(?:have|had|is|am|are|was|were)$/.test(v)) return [];
     // « if I had known » : conditionnel passé, pas un prétérit d'irréel.
-    if (kind === 'past' && v === 'had' && /^\s+(?:[a-z]+ed|been|known|seen|done|gone|taken|given|had)\b/i.test(s.en.slice(m.index + m[0].length))) return [];
+    if (kind === 'past' && v === 'had' && isParticiple(/^\s+(?:not\s+|never\s+)?([a-z]+)/i.exec(s.en.slice(m.index + m[0].length))?.[1] ?? '')) return [];
     if (!/^(?:i|you|he|she|it|we|they)$/i.test(subject)) return [];
     let base: string | null;
     let other: string;
@@ -874,6 +884,9 @@ const deduction: Builder = (s) => {
   const word = m[1];
   const must = word.toLowerCase() === 'must';
   if (must ? !FR_MUST.test(s.fr) : !FR_CANT.test(s.fr)) return [];
+  // « I can't be there tomorrow », « You can't be busy all the time » : capacité ou interdiction, pas déduction.
+  const subject = /([A-Za-z']+)\s*$/.exec(s.en.slice(0, m.index))?.[1]?.toLowerCase() ?? '';
+  if (!must && /^(?:i|we|you)$/.test(subject) && !/^(?:serious|joking|kidding|right|wrong|mistaken)$/i.test(m[2])) return [];
   const answer = must ? 'must' : "can't";
   return [
     {
@@ -955,7 +968,8 @@ const thirdConditional: Builder = (s, known) => {
       }
     }
     const main = /(\b(?:would)|'d)\s+have\s+([a-z]+)\b/i.exec(s.en);
-    if (main && once(/\bwould\b|'d\s+have\b/i, s.en)) {
+    // « We would have helped them » : sans condition exprimée, ce n'est pas un exercice de 3e conditionnel.
+    if (main && once(/\bwould\b|'d\s+have\b/i, s.en) && /\b(?:if|otherwise|without|but for)\b/i.test(s.en)) {
       const participle = main[2].toLowerCase();
       const base = baseOf(participle, known);
       if (base) {

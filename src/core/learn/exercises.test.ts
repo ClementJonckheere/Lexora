@@ -358,6 +358,8 @@ describe('deuxième série de leçons (B1, B2)', () => {
     expect(ex('deduction-present', 'You must be tired.', 1, 'Tu dois être fatigué.')).toMatchObject({ answer: 'must', form: 'must' });
     expect(ex('deduction-present', "It can't be true.", 1, "Ce n'est pas possible.")).toMatchObject({ answer: "can't", form: 'cant' });
     expect(ex('deduction-present', 'You must be careful.', 1, 'Tu dois être prudent.')).toBeNull(); // obligation
+    expect(ex('deduction-present', "I can't be there tomorrow.", 1, 'Je ne peux pas être là demain.')).toBeNull(); // capacité
+    expect(ex('deduction-present', "You can't be serious.", 1, "Tu n'es pas sérieux.")).toMatchObject({ answer: "can't" });
   });
 
   it('wish : prétérit (présent) ou had + participe (passé)', () => {
@@ -383,6 +385,10 @@ describe('deuxième série de leçons (B1, B2)', () => {
       choices: expect.arrayContaining(['would come']),
     });
     expect(ex('third-conditional', "If I'd known, I would have come.", 2, fr3)).toMatchObject({ before: 'If I ', answer: 'had known' });
+    expect(ex('third-conditional', 'We would have helped them.', 1, 'Nous les aurions aidés.')).toBeNull(); // pas de condition
+    expect(
+      ex('third-conditional', "If I had eaten more, I wouldn't be hungry now.", 2, "Si j'avais davantage mangé, je n'aurais pas faim maintenant.")?.answer,
+    ).not.toBe('had');
     const two = ex('third-conditional', 'If I knew his number, I would call him.', 2, "Si je connaissais son numéro, je l'appellerais.")!;
     expect(two).toMatchObject({ answer: 'knew', form: 'present-unreal', choices: expect.arrayContaining(['had known']) });
   });
