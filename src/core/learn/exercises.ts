@@ -378,7 +378,9 @@ function mainModal(links: string, modal: 'will' | 'would'): Builder {
     const subject = m[1];
     const v = m[3].toLowerCase();
     if (!plausibleBase(v, known)) return [];
-    if (v === 'have' && /^\s+[a-z]+(?:ed|en|wn)\b/i.test(s.en.slice(m.index + m[0].length))) return []; // will have finished
+    // « will have finished », « would have told » : futur antérieur, 3e conditionnel.
+    const next = /^\s+([a-z]+)/i.exec(s.en.slice(m.index + m[0].length))?.[1]?.toLowerCase() ?? '';
+    if (v === 'have' && (/(?:ed|en|wn)$/.test(next) || (BASE_OF.has(next) && BASE_OF.get(next) !== next))) return [];
     if (NOT_VERBS.test(subject.toLowerCase()) && !/^(?:i|you|he|she|it|we|they|there)$/i.test(subject)) return [];
     const answer = `${modal} ${v}`;
     const other = modal === 'will' ? presentOf(v, subject) : v === 'be' ? (isThird(subject) || /^i$/i.test(subject) ? 'was' : 'were') : pastOf(v, known);
@@ -411,6 +413,8 @@ function timeClause(links: string): Builder {
   return (s, known) => {
     const l = link.exec(s.en);
     if (!l || !futureOrImperative(s.en, l.index, known)) return [];
+    // « after a bath » : préposition, pas une subordonnée ; le motif exige un sujet et un verbe après le mot de liaison.
+    if (!matchSentence('time-clauses', s.en.replace(/’/g, "'")).length) return [];
     return [...sub(s, known), ...main(s, known)];
   };
 }

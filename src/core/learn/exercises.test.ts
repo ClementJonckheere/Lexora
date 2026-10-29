@@ -157,6 +157,11 @@ describe('équilibre des réponses : will, would, prétérit ne sont pas toujour
     expect(b.choices?.sort()).toEqual(['called', 'would call']);
   });
 
+  it('pas de 3e conditionnel ni de préposition dans la principale', () => {
+    expect(ex('second-conditional', 'If I had known it, I would have told you.', 1, "Si je l'avais su, je vous l'aurais dit.")?.answer).not.toBe('would have');
+    expect(ex('time-clauses', 'You will feel better after a bath.', 1)).toBeNull();
+  });
+
   it('2e conditionnel : la traduction doit être au conditionnel', () => {
     expect(ex('second-conditional', 'If I won, I would buy it.', 1, "Si je gagnais, je l'achèterai.")).toBeNull();
     expect(ex('second-conditional', 'If I won, I would buy it.', 1, "Si je gagnais, je l'achèterais.")).not.toBeNull();
