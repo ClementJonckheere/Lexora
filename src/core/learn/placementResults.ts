@@ -83,6 +83,8 @@ export function evidenceLabel(evidence: string): string {
       return 'testé';
     case 'requires':
       return 'déduit';
+    case 'level':
+      return 'déduit du niveau';
     case 'unassessed':
       return 'non testé';
     case 'conflict':
@@ -90,4 +92,29 @@ export function evidenceLabel(evidence: string): string {
     default:
       return 'incertain';
   }
+}
+
+/* ------------------------------------------------------------ périmètre --- */
+
+/**
+ * Réglages du test dans l'application, retenus d'après la simulation (docs/placement-simulation.json) : le niveau global
+ * (pente 2, conclusions sans question à 99 % de confiance, bornées par les niveaux confirmés) classe seul les points
+ * loin du niveau ; le modèle de règle superficielle (par défaut) empêche une forme unique de passer pour un acquis.
+ */
+export const PLACEMENT_APP_CONFIG = { globalLevel: 2 } as const;
+
+/**
+ * Points testés : les leçons existantes et leurs prérequis stricts (fermeture de `requires`). Ce sont les seuls dont le
+ * résultat sert dans Apprendre ; sur ce périmètre, le test tranche beaucoup plus de points en 40 questions.
+ */
+export function placementScope<T extends { id: string; requires?: readonly string[] }>(points: readonly T[], lessonIds: readonly string[]): T[] {
+  const byId = new Map(points.map((p) => [p.id, p]));
+  const keep = new Set<string>();
+  const visit = (id: string) => {
+    if (keep.has(id) || !byId.has(id)) return;
+    keep.add(id);
+    for (const r of byId.get(id)!.requires ?? []) visit(r);
+  };
+  for (const id of lessonIds) visit(id);
+  return points.filter((p) => keep.has(p.id));
 }

@@ -144,8 +144,8 @@ export function LearnPage() {
           <div>
             <strong>Où en êtes-vous en grammaire ?</strong>
             <p className="muted small" style={{ margin: '4px 0 0' }}>
-              Un test de 40 questions au plus (10 à 15 minutes) situe votre niveau sur les {data.points.length} points du parcours, de A1 à C1, et vous dit
-              par quelle leçon commencer. Vous pourrez le refaire et corriger ses résultats.
+              Un test de 40 questions au plus (10 à 15 minutes) situe votre niveau sur les leçons disponibles et ce qu'elles supposent de connaître, et
+              vous dit par quelle leçon commencer. Vous pourrez le refaire et corriger ses résultats.
             </p>
           </div>
           <div className="row">

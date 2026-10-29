@@ -5,7 +5,16 @@ import type { PlacementState } from '@/core/domain/settings';
 import { isCorrect } from '@/core/learn/exercises';
 import { DEFAULT_PLACEMENT_CONFIG, PlacementModel, type PlacementAnswer, type PlacementResponse } from '@/core/learn/placement';
 import type { PlacementItem } from '@/core/learn/placementBank';
-import { evidenceLabel, placementRecord, placementSummary, pointState, STATE_LABEL, type DoneRecord } from '@/core/learn/placementResults';
+import {
+  evidenceLabel,
+  PLACEMENT_APP_CONFIG,
+  placementRecord,
+  placementScope,
+  placementSummary,
+  pointState,
+  STATE_LABEL,
+  type DoneRecord,
+} from '@/core/learn/placementResults';
 import { Button, Kbd } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { loadPlacementItems, useGrammarData, type GrammarPoint } from './grammarData';
@@ -38,8 +47,11 @@ function PlacementTest({ onDone }: { onDone: () => void }) {
 
   const model = useMemo(() => {
     if (!data || !items?.length) return null;
-    const targets = data.points.map((p) => ({ id: p.id, kind: 'point' as const, requires: p.requires ?? [], level: p.level }));
-    return new PlacementModel(targets, items);
+    // Leçons existantes et leurs prérequis ; les autres points n'ont pas encore de leçon où servir le résultat.
+    const scope = placementScope(data.points, data.lessons.map((l) => l.id));
+    const ids = new Set(scope.map((p) => p.id));
+    const targets = scope.map((p) => ({ id: p.id, kind: 'point' as const, requires: (p.requires ?? []).filter((r) => ids.has(r)), level: p.level }));
+    return new PlacementModel(targets, items.filter((q) => ids.has(q.targetId)), PLACEMENT_APP_CONFIG);
   }, [data, items]);
   const byId = useMemo(() => new Map((items ?? []).map((q) => [q.id, q])), [items]);
   const decision = model && started ? model.next(answers) : null;
@@ -117,8 +129,8 @@ function PlacementTest({ onDone }: { onDone: () => void }) {
           <div className="card summary placement-intro">
             <div className="summary-title">Test de placement</div>
             <p className="muted">
-              {max} questions au plus, 10 à 15 minutes. Chaque question vise un point du parcours ; les suivantes s'adaptent à vos réponses, et ce que vous
-              savez permet d'en déduire d'autres. Répondez sans chercher : « Je ne sais pas » vaut mieux qu'une réponse au hasard. Aucune correction pendant le
+              {max} questions au plus, 10 à 15 minutes, sur les leçons disponibles et ce qu'elles supposent de connaître. Les questions s'adaptent à vos
+              réponses, et ce que vous savez permet d'en déduire d'autres. Répondez sans chercher : « Je ne sais pas » vaut mieux qu'une réponse au hasard. Aucune correction pendant le
               test, les résultats arrivent à la fin, et vous pourrez les corriger.
             </p>
             <div className="row" style={{ justifyContent: 'center' }}>
@@ -244,7 +256,7 @@ function PlacementResults({ record, onRetake }: { record: DoneRecord; onRetake: 
           <h1 className="page-title">Test de placement</h1>
           <p className="page-subtitle">
             {summary.mastered} acquis · {summary.consolidate} à consolider · {summary.learn} à apprendre. Un point « déduit » ne vient pas d'une question
-            posée : il découle d'un autre (connaître un point suppose ses prérequis). Corrigez librement un état qui ne vous ressemble pas.
+            posée : il découle d'un autre (connaître un point suppose ses prérequis) ou de votre niveau général. Corrigez librement un état qui ne vous ressemble pas.
           </p>
         </div>
         <div className="row">
@@ -255,10 +267,10 @@ function PlacementResults({ record, onRetake }: { record: DoneRecord; onRetake: 
         </div>
       </div>
       {data &&
-        LEVELS.map((level) => (
+        LEVELS.filter((level) => data.points.some((p) => p.level === level && results.has(p.id))).map((level) => (
           <section key={level} className="learn-level">
             <h2 className="section-title">{level}</h2>
-            <div className="placement-list">{data.points.filter((p) => p.level === level).map(row)}</div>
+            <div className="placement-list">{data.points.filter((p) => p.level === level && results.has(p.id)).map(row)}</div>
           </section>
         ))}
     </div>

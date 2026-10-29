@@ -1,4 +1,4 @@
-import { PlacementModel, type PlacementAnswer, type PlacementDecision, type PlacementTarget } from './placement';
+import { PlacementModel, type PlacementAnswer, type PlacementDecision, type PlacementQuestion, type PlacementTarget } from './placement';
 
 /** Simulations abstraites de connaissances ; ces identifiants ne sont pas des exercices a montrer a l'utilisateur. */
 export interface PlacementProfile {
@@ -13,6 +13,27 @@ export interface PlacementNoise {
   unknownShare: number;
 }
 
+/**
+ * Comportement face à un point inconnu : `random` répond au hasard (1 / propositions) ; `shortcut` applique une règle
+ * superficielle au lieu du hasard : la nature de réponse la plus fréquente du point (forme sans do, pronom au milieu,
+ * toujours to…), et, sans cette prise, écarte une proposition bizarre (hasard sur une proposition de moins).
+ */
+export type PlacementBehaviour = 'random' | 'shortcut';
+
+/** Nature de réponse dominante de chaque point (seulement s'il en a au moins deux) : la règle superficielle. */
+export function shortcutForms(questions: readonly (PlacementQuestion & { form?: string })[]): Map<string, string> {
+  const counts = new Map<string, Map<string, number>>();
+  for (const q of questions) {
+    if (!q.form) continue;
+    const c = counts.get(q.targetId) ?? new Map<string, number>();
+    c.set(q.form, (c.get(q.form) ?? 0) + 1);
+    counts.set(q.targetId, c);
+  }
+  const out = new Map<string, string>();
+  for (const [id, c] of counts) if (c.size >= 2) out.set(id, [...c].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0][0]);
+  return out;
+}
+
 export interface PlacementSimulationRow {
   profile: string;
   learners: number;
@@ -23,6 +44,8 @@ export interface PlacementSimulationRow {
   uncertainRate: number;
   /** Erreur si l'on forcé un choix sur TOUS les points, seuil p >= 0.5, meme sans preuve. */
   forcedErrorRate: number;
+  /** Part des points inconnus de l'apprenant classés « acquis » : le défaut que la règle superficielle révèle. */
+  falseMasteryRate: number;
   brier: number;
   stops: Record<NonNullable<PlacementDecision['reason']>, number>;
 }
@@ -71,7 +94,18 @@ export function simulatePlacement(
   learners: number,
   seed: number,
   noise: PlacementNoise = { slip: 0.1, typedChance: 0.05, unknownShare: 0.35 },
+  behaviour: PlacementBehaviour = 'random',
 ): PlacementSimulationRow[] {
+  const shortcuts = behaviour === 'shortcut' ? shortcutForms(model.questions) : new Map<string, string>();
+  /** Probabilité de réussir une question d'un point inconnu. */
+  const guess = (q: PlacementQuestion & { form?: string }) => {
+    if (behaviour === 'shortcut') {
+      const rule = shortcuts.get(q.targetId);
+      if (rule && q.form) return q.form === rule ? 1 - noise.slip : noise.slip / 2;
+      if (q.mode === 'choice') return 1 / Math.max(2, q.choices! - 1);
+    }
+    return q.mode === 'choice' ? 1 / q.choices! : noise.typedChance;
+  };
   if (!model.targets.length || !Number.isInteger(learners) || learners < 1 || !Number.isFinite(seed)) throw new Error('Simulation de placement invalide.');
   for (const n of Object.values(noise)) if (!Number.isFinite(n) || n < 0 || n > 1) throw new Error('Bruit de simulation invalide.');
   return profiles.map((profile, index) => {
@@ -80,6 +114,8 @@ export function simulatePlacement(
     let errors = 0;
     let forcedErrors = 0;
     let squaredError = 0;
+    let unknownPoints = 0;
+    let falseMastery = 0;
     const stops = { complete: 0, budget: 0, 'bank-exhausted': 0 };
     for (let learner = 0; learner < learners; learner++) {
       const rng = placementRng(seed + index * 1000003 + learner * 7919);
@@ -90,7 +126,7 @@ export function simulatePlacement(
         const decision = model.next(answers);
         if (!decision.question) { stops[decision.reason]++; break; }
         const q = decision.question;
-        const probability = truth[q.targetId] ? 1 - noise.slip : q.mode === 'choice' ? 1 / q.choices! : noise.typedChance;
+        const probability = truth[q.targetId] ? 1 - noise.slip : guess(q);
         const success = rng() < probability;
         const response = success ? 'correct' : rng() < noise.unknownShare ? 'unknown' : 'incorrect';
         answers = model.answer(answers, q.id, response);
@@ -100,6 +136,10 @@ export function simulatePlacement(
         const known = truth[e.id];
         squaredError += (e.probability - Number(known)) ** 2;
         if ((e.probability >= 0.5) !== known) forcedErrors++;
+        if (!known) {
+          unknownPoints++;
+          if (e.state === 'mastered') falseMastery++;
+        }
         if (e.state === 'consolidate') continue;
         classified++;
         if ((e.state === 'mastered') !== known) errors++;
@@ -110,7 +150,7 @@ export function simulatePlacement(
       profile: profile.name, learners, meanQuestions: questions / learners,
       classifiedRate: classified / total, classifiedErrorRate: classified ? errors / classified : 0,
       misclassifiedAllRate: errors / total, uncertainRate: 1 - classified / total,
-      forcedErrorRate: forcedErrors / total, brier: squaredError / total, stops,
+      forcedErrorRate: forcedErrors / total, falseMasteryRate: unknownPoints ? falseMastery / unknownPoints : 0, brier: squaredError / total, stops,
     };
   });
 }
