@@ -13,7 +13,7 @@ Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, 
 
 La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
 
-**État documenté : version 2.20.0.** Le parcours grammatical comporte 74 points de A1 à C1 et 40 pièges francophones ; 20 leçons B1–B2 disposent actuellement d'exercices. Le test de placement et le surlignage grammatical dans le lecteur ne sont pas encore disponibles dans l'interface (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
+**État documenté : version 2.21.0.** Le parcours grammatical comporte 74 points de A1 à C1 et 40 pièges francophones ; 20 leçons B1–B2 disposent actuellement d'exercices. Le test de placement et le surlignage grammatical dans le lecteur ne sont pas encore disponibles dans l'interface (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -123,7 +123,7 @@ Le même code SQL tourne dans les trois environnements. Dans l'application, c'es
 
 ## 5. Modèle de données
 
-Le schéma SQLite est en **version 9** (`PRAGMA user_version`), indépendamment de la version 2.20.0 de l'application. Les **14 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
+Le schéma SQLite est en **version 9** (`PRAGMA user_version`), indépendamment de la version 2.21.0 de l'application. Les **14 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
 
 | Table | Clé locale | Principales données |
 |---|---|---|
@@ -226,7 +226,7 @@ La rédaction et la relecture des **54 autres leçons** du parcours restent éga
 
 ### Option A : récupérer l'installateur
 
-La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.20.0_x64-setup.exe`.
+La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.21.0_x64-setup.exe`.
 
 Le workflow GitHub Actions `CI & installateur Windows` lance les tests puis construit l'installateur à chaque push sur `main` ou `claude/**`, à chaque tag `v*`, pour les PR vers `main`, et sur demande depuis l'onglet *Actions* → *Run workflow*. Pour essayer une construction non publiée : **Actions → exécution réussie de la branche voulue → artefact lexora-windows**.
 
