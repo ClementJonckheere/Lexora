@@ -52,10 +52,14 @@ export interface Settings {
   reminderTime: string;
   /** Clé d'API DeepL (facultative) : traduction plus fiable, avec le contexte de la phrase. */
   deeplKey: string;
+  /** Fond de l'interface : clair, sombre, ou celui de Windows. */
+  theme: ThemeMode;
 }
 
+export type ThemeMode = 'system' | 'light' | 'dark';
+
 /** Réglages liés au matériel : stockés localement, non synchronisés entre appareils. */
-export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut', 'clipboardPrefill', 'closeToTray', 'reminderEnabled', 'reminderTime', 'deeplKey'] as const satisfies readonly (keyof Settings)[];
+export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut', 'clipboardPrefill', 'closeToTray', 'reminderEnabled', 'reminderTime', 'deeplKey', 'theme'] as const satisfies readonly (keyof Settings)[];
 
 /** Version actuelle des réglages par défaut (voir `settingsUpgrade`). */
 export const SETTINGS_VERSION = 2;
@@ -97,6 +101,7 @@ export const DEFAULT_SETTINGS: Settings = {
   reminderEnabled: true,
   reminderTime: '19:00',
   deeplKey: '',
+  theme: 'system',
 };
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
@@ -133,6 +138,7 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.reminderEnabled = bool(raw.reminderEnabled, s.reminderEnabled);
   s.reminderTime = typeof raw.reminderTime === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(raw.reminderTime) ? raw.reminderTime : s.reminderTime;
   s.deeplKey = typeof raw.deeplKey === 'string' ? raw.deeplKey.trim() : s.deeplKey;
+  s.theme = raw.theme === 'light' || raw.theme === 'dark' ? raw.theme : 'system';
   return s;
 }
 

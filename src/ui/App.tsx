@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-import { BarChart3, BookOpen, Brain, GraduationCap, Home, Layers, Library, Plus, Search, Settings as SettingsIcon } from 'lucide-react';
+import { resolveTheme, useTheme } from './theme';
+import { BarChart3, BookOpen, Brain, GraduationCap, Home, Layers, Library, Moon, Plus, Search, Settings as SettingsIcon, Sun } from 'lucide-react';
 import { useApp, type Route } from '@/app/store';
 import { registerGlobalShortcut } from '@/core/platform/globalShortcut';
 import { readClipboardExpression } from '@/core/platform/desktop';
 import { startDesktopIntegration } from '@/app/desktop';
 import { UpdateBanner } from './features/account/UpdateBanner';
-import { Button, Kbd, Modal } from './components/ui';
+import { Button, Modal } from './components/ui';
 import { ConfirmHost } from './components/Confirm';
 import { Toasts } from './components/Toasts';
 import { useHotkeys } from './hooks/useHotkeys';
@@ -57,51 +58,64 @@ async function quickAddFromAnywhere() {
   s.openEditor(null, expression ? { expression } : undefined);
 }
 
-function Sidebar() {
+/** Fond clair ou sombre, en un clic (le réglage « système » se choisit dans les Paramètres). */
+function ThemeToggle() {
+  const mode = useApp((s) => s.settings.theme);
+  const dark = resolveTheme(mode) === 'dark';
+  return (
+    <button
+      type="button"
+      className="topbar-icon"
+      aria-label={dark ? 'Passer au fond clair' : 'Passer au fond sombre'}
+      title={dark ? 'Fond clair' : 'Fond sombre'}
+      onClick={() => void useApp.getState().updateSettings({ theme: dark ? 'light' : 'dark' })}
+    >
+      {dark ? <Sun size={16} /> : <Moon size={16} />}
+    </button>
+  );
+}
+
+/** Barre du haut : langue à gauche, navigation au centre, recherche, fond, compte et ajout à droite. */
+function TopBar() {
   const route = useApp((s) => s.route);
   const { navigate, openEditor, setSearchOpen } = useApp.getState();
   const due = useDueCounts();
   const current = route.name === 'collection' ? 'collections' : route.name === 'lesson' || route.name === 'grammar-annotate' ? 'learn' : route.name;
   return (
-    <nav className="sidebar" aria-label="Navigation principale">
-      <div className="brand">
-        <img src="/favicon.png" alt="" />
-        <span>Lexora</span>
+    <header className="topbar">
+      <div className="topbar-side">
+        <span className="wordmark">Lexora</span>
+        <UniverseSwitcher />
       </div>
-      <UniverseSwitcher />
-      <div className="nav">
+      <nav className="topnav" aria-label="Navigation principale">
         {NAV.map(({ route: r, label, icon: Icon, key }) => (
           <button
             key={r}
-            className={`nav-item ${current === r ? 'nav-item--active' : ''}`}
+            className={`topnav-item ${current === r ? 'topnav-item--active' : ''}`}
             aria-current={current === r ? 'page' : undefined}
+            aria-label={label}
             onClick={() => navigate({ name: r } as Route)}
             title={`${label} (Ctrl+${key})`}
           >
-            <Icon size={17} />
+            <Icon size={15} />
             <span className="label">{label}</span>
-            {r === 'review' && due.total > 0 ? <span className="nav-count">{due.total}</span> : <Kbd>Ctrl {key}</Kbd>}
+            {r === 'review' && due.total > 0 && <span className="nav-count">{due.total}</span>}
           </button>
         ))}
-      </div>
-      <div className="sidebar-spacer" />
-      <div className="sidebar-actions">
+      </nav>
+      <div className="topbar-side topbar-side--end">
         <UpdateBanner />
-        <SidebarAccount />
-        <button className="search-trigger" onClick={() => setSearchOpen(true)} title="Rechercher (Ctrl+K)">
-          <Search size={15} />
-          <span className="label">Rechercher</span>
-          <Kbd>Ctrl K</Kbd>
+        <button type="button" className="topbar-icon" onClick={() => setSearchOpen(true)} aria-label="Rechercher" title="Rechercher (Ctrl+K)">
+          <Search size={16} />
         </button>
-        <Button variant="primary" block onClick={() => openEditor()} title="Ajouter une expression (N)">
-          <Plus size={17} />
+        <ThemeToggle />
+        <SidebarAccount />
+        <Button variant="primary" size="sm" onClick={() => openEditor()} title="Ajouter une expression (N)">
+          <Plus size={15} />
           <span className="label">Ajouter</span>
-          <span className="label">
-            <Kbd>N</Kbd>
-          </span>
         </Button>
       </div>
-    </nav>
+    </header>
   );
 }
 
@@ -200,6 +214,9 @@ export function App() {
     void useApp.getState().init();
   }, []);
 
+  const theme = useApp((s) => s.settings.theme);
+  useTheme(theme);
+
   useEffect(() => {
     if (!appReady) return;
     registerGlobalShortcut(globalShortcut, () => void quickAddFromAnywhere()).catch((err) => toast('error', `Raccourci global « ${globalShortcut} » indisponible : ${err instanceof Error ? err.message : String(err)}`));
@@ -269,7 +286,7 @@ export function App() {
   return (
     <>
       <div className={`app ${focus ? 'app--focus' : ''}`}>
-        {!focus && <Sidebar />}
+        {!focus && <TopBar />}
         <main className="main">
           <Page />
         </main>

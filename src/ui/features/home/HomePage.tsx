@@ -84,43 +84,49 @@ export function HomePage() {
 
   return (
     <div className="page">
-      <section className="card hero">
-        <div className="hero-top">
-          <h1 className="hero-title">{greeting()}, prêt à réviser ?</h1>
+      <section className="hero hero--horizon">
+        <div className="hero-center">
           <GoalRing progress={progress} />
-        </div>
-        <div className="hero-facts">
-          <span>
-            <strong>{due.total}</strong> {due.total > 1 ? 'fiches à réviser' : 'fiche à réviser'} aujourd'hui
-            {due.total > 0 && <span className="muted">, environ {minutes} min</span>}
-          </span>
-          <span>
-            <strong>{recentCount}</strong> {recentCount > 1 ? 'nouveaux mots enregistrés' : 'nouveau mot enregistré'} ces 7 derniers jours
-          </span>
-          <span>
-            <strong>{notes.length}</strong> {notes.length > 1 ? 'expressions' : 'expression'} dans la bibliothèque
-          </span>
-          {lessonsDue > 0 && (
-            <span>
-              <strong>{lessonsDue}</strong> {lessonsDue > 1 ? 'leçons de grammaire' : 'leçon de grammaire'} à réviser{' '}
-              <button className="link" onClick={() => navigate({ name: 'learn' })}>
-                (Apprendre)
-              </button>
-            </span>
-          )}
-        </div>
-        <div className="hero-actions">
-          <Button variant="primary" size="lg" onClick={due.total > 0 ? startAll : () => navigate({ name: 'review' })} shortcut="Entrée">
-            {due.total > 0 ? 'Commencer les révisions' : "S'entraîner librement"} <ArrowRight size={17} />
-          </Button>
-          <Button size="lg" onClick={() => openEditor()} shortcut="N">
-            <Plus size={17} /> Ajouter du vocabulaire
-          </Button>
-          {due.total > 5 && (
-            <Button variant="ghost" size="lg" onClick={start5} shortcut="Espace">
-              <Zap size={16} /> 5 mots
+          <span className="hero-greeting">{greeting()}</span>
+          <h1 className="hero-headline">
+            {due.total > 0 ? `${plural(due.total, 'fiche', 'fiches')}, environ ${minutes} min.` : "Rien à réviser pour l'instant."}
+          </h1>
+          <div className="hero-actions">
+            <Button variant="primary" size="lg" onClick={due.total > 0 ? startAll : () => navigate({ name: 'review' })} shortcut="Entrée">
+              {due.total > 0 ? 'Commencer la séance' : "S'entraîner librement"} <ArrowRight size={17} />
             </Button>
-          )}
+            <Button size="lg" onClick={() => openEditor()} shortcut="N">
+              <Plus size={17} /> Ajouter du vocabulaire
+            </Button>
+            {due.total > 5 && (
+              <Button variant="ghost" size="lg" onClick={start5} shortcut="Espace">
+                <Zap size={16} /> 5 mots
+              </Button>
+            )}
+          </div>
+        </div>
+        <div className="horizon" aria-hidden="true" />
+        <div className="hero-facts">
+          <div>
+            <span className="hero-fact-label">Cette semaine</span>
+            <span>{plural(recentCount, 'nouveau mot', 'nouveaux mots')}</span>
+          </div>
+          <div>
+            <span className="hero-fact-label">Bibliothèque</span>
+            <span>{plural(notes.length, 'expression', 'expressions')}</span>
+          </div>
+          <div>
+            <span className="hero-fact-label">Grammaire</span>
+            <span>
+              {lessonsDue > 0 ? (
+                <button className="link" onClick={() => navigate({ name: 'learn' })}>
+                  {plural(lessonsDue, 'leçon à réviser', 'leçons à réviser')}
+                </button>
+              ) : (
+                'Aucune leçon à réviser'
+              )}
+            </span>
+          </div>
         </div>
         <UniversesOverview />
       </section>
