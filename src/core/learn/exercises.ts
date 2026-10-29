@@ -288,7 +288,8 @@ const PAST_MARKER =
   /\b(?:yesterday|ago|last\s+(?:week|month|year|night|summer|winter|weekend|time)|in\s+(?:19|20)\d\d|when\s+(?:i|he|she|we|they)\s+w(?:as|ere))\b/i;
 
 /** Modal juste avant, adverbes compris (should've, would never have, will probably already have) : conditionnel ou futur passé. */
-const MODAL_BEFORE = /(?:\b(?:would|could|should|might|must|may|will|can|cannot|to)(?:n't)?|'d|'ll)(?:\s+(?:never|not|probably|already|surely|certainly|really|just|also|still|definitely|ever))*\s*$/i;
+const MODAL_BEFORE =
+  /(?:\b(?:would|could|should|might|must|may|will|can|cannot|to)(?:n't)?|'d|'ll)(?:\s+(?:never|not|probably|already|surely|certainly|really|just|also|still|definitely|ever))*\s*$/i;
 /** Auxiliaire du plus-que-parfait français (j'avais vu, elle était partie). */
 const FR_PLUPERFECT =
   /(?<![a-zà-ÿ])(?:av(?:ais|ait|ions|iez|aient)|ét(?:ais|ait|ions|iez|aient)|eu(?:s|t|mes|tes|rent)|fu(?:s|t|rent))\s+(?:(?:déjà|pas|jamais|bien|tout|plus|toujours|rien|été|beaucoup)\s+)*(?!(?:toi|moi|lui|ici|aussi|ainsi|si|parmi)\b)[a-zàâçéèêëîïôûù]*(?:é|ée|és|ées|i|ie|is|it|u|ue|us|ues|ert|erte|ort|orte|int|ainte|ait|aite)(?![a-zà-ÿ])/i;
@@ -620,6 +621,367 @@ const usedTo: Builder = (s, known) => {
   return out;
 };
 
+/* ------------------------------------------------ deuxième série (B1, B2) --- */
+
+const SUBJECT_NP = '(?:(?:the|my|your|his|her|our|their|this|that)\\s+[a-z]+|i|you|he|she|it|we|they|[A-Z][a-z]+)';
+
+/** Une seule occurrence du motif dans la phrase (sinon le trou serait ambigu). */
+function once(re: RegExp, en: string): boolean {
+  return (en.match(new RegExp(re.source, re.flags.includes('g') ? re.flags : `${re.flags}g`)) ?? []).length === 1;
+}
+
+/** Present perfect continu : « have been waiting », à taper, verbe à la base en indice. */
+const perfectContinuous: Builder = (s, known) => {
+  const re = /(\b(?:have|has)|'ve|'s)\s+been\s+([a-z]+ing)\b/i;
+  const m = re.exec(s.en);
+  if (!m || !once(/\bbeen\s+[a-z]+ing\b/i, s.en)) return [];
+  const ing = m[2].toLowerCase();
+  if (NOT_ING.test(ing)) return [];
+  const base = baseOfIng(ing, known);
+  if (!base || !plausibleBase(base, known)) return [];
+  let before = s.en.slice(0, m.index);
+  if (MODAL_BEFORE.test(before)) return []; // must have been sleeping : déduction, autre leçon
+  if (m[1].startsWith("'")) before += ' ';
+  const aux = normalizeAnswer(m[1], { s: 'has' });
+  // Avec live, work, study, teach, stay, le present perfect simple dit presque la même chose.
+  const accept = /^(?:live|work|study|teach|stay)$/.test(base) ? [`${aux} ${participleOf(base, known)}`] : undefined;
+  return [{ before, after: s.en.slice(m.index + m[0].length), answer: `${aux} been ${ing}`, hint: base, ...(accept ? { accept } : {}) }];
+};
+
+/** Antécédents qui admettent who comme which (animaux, groupes) : pas d'exercice. */
+const EITHER_ANTECEDENT =
+  /^(?:dogs?|cats?|animals?|horses?|birds?|pets?|compan(?:y|ies)|teams?|groups?|famil(?:y|ies)|government|countr(?:y|ies)|clubs?|bands?|crowds?|class|army|police|bab(?:y|ies)|ones?|staff|committee|audience)$/i;
+
+/** Relative déterminative : who (personne) ou which (chose). */
+const relatives: Builder = (s) => {
+  if (!once(/\b(?:who|which)\b/i, s.en) || /\b(?:whom|whose)\b/i.test(s.en)) return [];
+  const m =
+    /\b(?:the|a|an|any|every|some|this|that|these|those)\s+([a-z]+)\s+(who|which)\s+[a-z]+/i.exec(s.en) ??
+    /\b(everyone|everybody|anyone|anybody|someone|somebody|nobody|those|people)\s+(who)\s+[a-z]+/i.exec(s.en);
+  if (!m || EITHER_ANTECEDENT.test(m[1])) return [];
+  const word = m[2];
+  const at = m.index + m[0].indexOf(` ${word} `) + 1;
+  const answer = word.toLowerCase();
+  const other = answer === 'who' ? 'which' : 'who';
+  return [{ before: s.en.slice(0, at), after: s.en.slice(at + word.length), answer, choices: shuffle2(answer, other, s.id), form: answer }];
+};
+
+const UNCOUNTABLE = new Set(
+  (
+    'time money water milk sugar bread help english french spanish german italian japanese chinese patience rice food information advice ' +
+    'coffee tea wine beer luck progress work homework furniture snow rain news knowledge experience space room salt butter cheese meat fruit ' +
+    'hope interest attention energy courage sleep noise traffic music fun damage pain trouble confidence soup oil gas petrol paper juice ' +
+    'cream practice support respect evidence research equipment luggage baggage weather air light heat sense doubt chance'
+  ).split(' '),
+);
+const PLURAL_IRREGULAR = /^(?:people|children|men|women|feet|teeth|mice)$/;
+
+/** Few / little, a few / a little : dénombrable (pluriel) ou indénombrable. */
+const quantifiers: Builder = (s) => {
+  if (!once(/\b(?:few|little)\b/i, s.en)) return [];
+  const m = /\b(a\s+few|a\s+little|few|little)\s+([a-z]+)\b/i.exec(s.en);
+  if (!m) return [];
+  const q = m[1].toLowerCase().replace(/\s+/, ' ');
+  const next = m[2].toLowerCase();
+  const countable = q.endsWith('few');
+  if (countable && !(PLURAL_IRREGULAR.test(next) || (/[^s]s$/.test(next) && next.length > 3))) return [];
+  if (!countable && !UNCOUNTABLE.has(next)) return []; // « a little tired », « a little girl »
+  // « the little time » : adjectif, pas quantité.
+  if (q === 'little' && /\b(?:the|a|an|my|your|his|her|our|their|this|that|poor|nice|sweet|cute)\s*$/i.test(s.en.slice(0, m.index))) return [];
+  const pairs: Record<string, string> = { 'a few': 'a little', 'a little': 'a few', few: 'little', little: 'few' };
+  return [
+    {
+      before: s.en.slice(0, m.index),
+      after: s.en.slice(m.index + m[1].length),
+      answer: q,
+      choices: shuffle2(q, pairs[q], s.id),
+      form: countable ? 'countable' : 'uncountable',
+    },
+  ];
+};
+
+const GI_VERBS = 'stop|stops|stopped|remember|remembers|remembered|forget|forgets|forgot|try|tries|tried|regret|regrets|regretted';
+
+/** Stop / remember / forget / try / regret + -ing ou + to : le sens change, la traduction tranche. */
+const gerundInfinitive: Builder = (s, known) => {
+  const re = new RegExp(`\\b(?:${GI_VERBS})\\s+(to\\s+([a-z]+)|([a-z]+ing))\\b`, 'i');
+  const m = re.exec(s.en);
+  if (!m || !once(new RegExp(`\\b(?:${GI_VERBS})\\b`, 'i'), s.en)) return [];
+  const at = m.index + m[0].length - m[1].length;
+  let answer: string;
+  let other: string;
+  if (m[2]) {
+    const base = m[2].toLowerCase();
+    if (!plausibleBase(base, known)) return [];
+    answer = `to ${base}`;
+    other = ingOf(base);
+  } else {
+    const ing = m[3].toLowerCase();
+    const base = NOT_ING.test(ing) ? null : baseOfIng(ing, known);
+    if (!base || !plausibleBase(base, known)) return [];
+    answer = ing;
+    other = `to ${base}`;
+  }
+  return [{ before: s.en.slice(0, at), after: s.en.slice(m.index + m[0].length), answer, choices: shuffle2(answer, other, s.id), form: m[2] ? 'to' : 'ing' }];
+};
+
+const ADJECTIVES =
+  /^(?:old|young|big|small|large|little|good|bad|fast|slow|tall|short|strong|weak|rich|poor|warm|cold|hot|cool|long|high|low|easy|hard|early|late|well|smart|brave|quick|close|safe|cheap|loud|clear|deep|wide|thick|thin|heavy|light|dark|bright|fat|sweet|nice|kind|sure|ready|serious|good|tired|scared|excited|interested|bored|worried|surprised|busy|happy|sad|angry|mad|ill|sick|clever|lucky|crazy|lazy|dirty|noisy|healthy|hungry|thirsty|sleepy|pretty|ugly|funny|easy|heavy|expensive|beautiful|difficult|important|dangerous|careful|wonderful|delicious|comfortable|interesting|intelligent|different|patient|polite|honest|stupid|small|fine|great|rude|cruel|naive|mature|wise|famous|popular|full|empty|free|wrong|right|true|real|strange|tough|calm)$/i;
+const isAdjective = (w: string) =>
+  ADJECTIVES.test(w) || (/(?:ful|ous|ble|ive|ent|ant|ic|al|less|ish|ly)$/i.test(w) && w.length > 4 && !/^(?:only|family|really|early|holy|ugly)$/i.test(w));
+
+/** Too + adjectif ou adjectif + enough ; so + adjectif ou such (a) + nom. La traduction (trop / assez) tranche. */
+const tooEnough: Builder = (s) => {
+  const out: Candidate[] = [];
+  if (once(/\b(?:too|enough)\b/i, s.en)) {
+    const too = /\btoo\s+([a-z]+)\b/i.exec(s.en);
+    const enough = /\b([a-z]+)\s+enough\b/i.exec(s.en);
+    if (too && isAdjective(too[1]) && !/^(?:much|many)$/i.test(too[1])) {
+      const adj = too[1];
+      const answer = `too ${adj}`;
+      out.push({
+        before: s.en.slice(0, too.index),
+        after: s.en.slice(too.index + too[0].length),
+        answer,
+        choices: shuffle2(answer, `${adj} enough`, s.id),
+        form: 'too',
+      });
+    } else if (enough && isAdjective(enough[1])) {
+      const adj = enough[1];
+      const answer = `${adj} enough`;
+      out.push({
+        before: s.en.slice(0, enough.index),
+        after: s.en.slice(enough.index + enough[0].length),
+        answer,
+        choices: shuffle2(answer, `too ${adj}`, s.id),
+        form: 'enough',
+      });
+    }
+  }
+  if (once(/\b(?:so|such)\b/i, s.en)) {
+    const such = /\bsuch\s+(an?\s+)?([a-z]+)/i.exec(s.en);
+    const so = /\bso\s+([a-z]+)\b/i.exec(s.en);
+    if (such && (such[1] || isAdjective(such[2]))) {
+      out.push({ before: s.en.slice(0, such.index), after: s.en.slice(such.index + 4), answer: 'such', choices: shuffle2('such', 'so', s.id), form: 'such' });
+    } else if (so && isAdjective(so[1]) && !/^(?:far|long|much|many|well|early|late)$/i.test(so[1])) {
+      out.push({ before: s.en.slice(0, so.index), after: s.en.slice(so.index + 2), answer: 'so', choices: shuffle2('so', 'such', s.id), form: 'so' });
+    }
+  }
+  return out;
+};
+
+const TAG =
+  /,\s*((?:is|are|was|were|do|does|did|have|has|had|can|could|should|must|might|am)(?:n't)?|won't|can't|shan't|will|would|wouldn't|shall)\s+(i|you|he|she|it|we|they|there)\s*\?\s*$/i;
+
+/** Tag inversé : négatif ↔ positif (isn't it ↔ is it). */
+function flipTag(aux: string, pronoun: string): string {
+  const a = aux.toLowerCase();
+  const special: Record<string, string> = { "won't": 'will', will: "won't", "can't": 'can', can: "can't", "shan't": 'shall', shall: "shan't" };
+  if (a === "aren't" && pronoun === 'I') return 'am I';
+  if (a === 'am') return "aren't I";
+  const flipped = special[a] ?? (a.endsWith("n't") ? a.slice(0, -3) : `${a}n't`);
+  return `${flipped} ${pronoun}`;
+}
+
+/** Question tags : le bon auxiliaire, à la polarité inverse ; distracteur : la polarité, ou le calque « isn't it » (n'est-ce pas). */
+const questionTags: Builder = (s) => {
+  const m = TAG.exec(s.en);
+  if (!m) return [];
+  const aux = m[1].toLowerCase();
+  const pronoun = m[2].toLowerCase() === 'i' ? 'I' : m[2].toLowerCase();
+  // Après un impératif ou une proposition (« Open it, will you? », « Let's go, shall we? ») : plusieurs tags possibles.
+  if (/^(?:will|would|won't|wouldn't|shall)$/.test(aux) && /^(?:you|we)$/.test(pronoun)) return [];
+  const answer = `${aux} ${pronoun}`;
+  const calque = s.id % 3 === 0 && !/^is(?:n't)? it$/.test(answer) && pronoun !== 'it' ? "isn't it" : null;
+  const other = calque ?? flipTag(aux, pronoun);
+  const at = m.index + m[0].indexOf(m[1]);
+  return [
+    {
+      before: s.en.slice(0, at),
+      after: s.en.slice(at + m[1].length + 1 + m[2].length),
+      answer,
+      choices: shuffle2(answer, other, s.id),
+      form: aux.endsWith("n't") ? 'negative' : 'positive',
+    },
+  ];
+};
+
+const WH = '(?:where|what time|what|when|why|how much|how many|how long|how old|how far|how|who|whether|which)';
+const SUBJECT_INDIRECT = '(?:(?:the|my|your|his|her|our|their|this|that)\\s+[a-z]+|i|you|he|she|it|we|they|this|that|[A-Za-z][a-z]+)';
+/** Sujet plausible : pronom, groupe nominal déterminé, ou nom propre (majuscule réelle, l'expression ignorant la casse). */
+const realSubject = (subj: string) =>
+  /^(?:i|you|he|she|it|we|they|this|that)$/i.test(subj) || /^(?:the|my|your|his|her|our|their|this|that)\s/i.test(subj) || /^[A-Z][a-z]+$/.test(subj);
+const BE_OR_MODAL = /^(?:is|are|was|were|am|can|could|will|would|should|has|have|had|must|might)$/i;
+
+/**
+ * Questions indirectes (« where he lives », ordre sujet + verbe) contre questions directes (« where does he live? »,
+ * avec inversion) : la ponctuation et l'introduction (Do you know…, Tell me…) disent laquelle.
+ */
+const indirectQuestions: Builder = (s, known) => {
+  const indirect = new RegExp(
+    `\\b(?:know|tell me|tell us|wonder|wondering|wondered|ask|asked|explain|understand|remember|idea|sure|find out|show me|guess)\\s+(${WH})\\s+(${SUBJECT_INDIRECT})\\s+([a-z]+)\\b`,
+    'i',
+  ).exec(s.en);
+  if (indirect && realSubject(indirect[2]) && !/^(?:who|which|what)$/i.test(indirect[2])) {
+    const [, , subject, verb] = indirect;
+    const v = verb.toLowerCase();
+    const subj = subject;
+    let other: string | null = null;
+    if (BE_OR_MODAL.test(v)) other = `${v} ${subj}`;
+    else if (!/ing$/.test(v) && !NOT_VERBS.test(v) && !ADVERBS.test(v)) {
+      const past = baseOf(v, known);
+      if (past && (BASE_OF.has(v) || v.endsWith('ed')) && BASE_OF.get(v) !== v) other = `did ${subj} ${past}`;
+      else if (isThird(subj.split(' ').at(-1)!) && v.endsWith('s')) other = `does ${subj} ${baseOfPresent(v)}`;
+      else if (!isThird(subj.split(' ').at(-1)!) && plausibleBase(v, known)) other = `do ${subj} ${v}`;
+    }
+    if (!other) return [];
+    const at = indirect.index + indirect[0].length - verb.length - 1 - subject.length;
+    const answer = `${subj} ${v}`;
+    return [
+      { before: s.en.slice(0, at), after: s.en.slice(indirect.index + indirect[0].length), answer, choices: shuffle2(answer, other, s.id), form: 'indirect' },
+    ];
+  }
+  const direct = new RegExp(
+    `^(\\s*(?:Where|What|When|Why|How|Which)(?:\\s+(?:time|much|many|long|old|often|far))?\\s+)(do|does|did|is|are|was|were|can|could|will|would|should|have|has)\\s+(${SUBJECT_NP})\\b(\\s+([a-z]+))?`,
+  ).exec(s.en);
+  if (!direct || !/\?\s*$/.test(s.en)) return [];
+  const [, lead, auxRaw, subj, , verb] = direct;
+  if (!realSubject(subj)) return [];
+  const aux = auxRaw.toLowerCase();
+  if (/^(?:do|does|did)$/.test(aux)) {
+    const v = verb?.toLowerCase();
+    if (!v || !plausibleBase(v, known)) return [];
+    const answer = `${aux} ${subj} ${v}`;
+    const statement = aux === 'did' ? pastOf(v, known) : aux === 'does' ? presentOf(v, subj.split(' ').at(-1)!) : v;
+    return [{ before: lead, after: s.en.slice(direct[0].length), answer, choices: shuffle2(answer, `${subj} ${statement}`, s.id), form: 'direct' }];
+  }
+  const answer = `${aux} ${subj}`;
+  const end = lead.length + auxRaw.length + 1 + subj.length;
+  return [{ before: lead, after: s.en.slice(end), answer, choices: shuffle2(answer, `${subj} ${aux}`, s.id), form: 'direct' }];
+};
+
+/** Compléments de must be / can't be qui marquent une déduction (pas une obligation : « you must be careful »). */
+const DEDUCTION =
+  /^(?:tired|joking|kidding|crazy|mad|mistaken|wrong|right|true|serious|hungry|thirsty|rich|exhausted|lonely|sick|ill|worried|upset|angry|busy|new|asleep|dead|broken|here|there|home|somewhere|his|hers|yours|mine|theirs|ours|easy|hard|difficult|expensive|cheap|real|possible|lying|dreaming|freezing|starving|delighted|proud|nervous|lost|disappointed|happy|jealous|famous|old|very|so|really|a|an|the)$/i;
+const FR_MUST = /\b(?:doi[st]|doivent|devez|devons|sûrement|certainement|sans doute|forcément|probablement|dû)\b/i;
+const FR_CANT =
+  /\b(?:ne\s+(?:peu[xt]|peuvent|pouvez|pouvons)|n'est pas possible|impossible|pas possible|ne\s+doi[st]\s+pas)\b|n['’](?:est|es)\s+(?:sûrement\s+)?pas|\bpas\s+(?:possible|vrai)\b/i;
+
+/** Déduction : must be (certainement) ou can't be (impossible), la traduction tranche. */
+const deduction: Builder = (s) => {
+  const m = /\b(must|can't|cannot)\s+be\s+([a-z]+)/i.exec(s.en);
+  if (!m || !once(/\b(?:must|can't|cannot)\b/i, s.en) || !DEDUCTION.test(m[2])) return [];
+  const word = m[1];
+  const must = word.toLowerCase() === 'must';
+  if (must ? !FR_MUST.test(s.fr) : !FR_CANT.test(s.fr)) return [];
+  const answer = must ? 'must' : "can't";
+  return [
+    {
+      before: s.en.slice(0, m.index),
+      after: s.en.slice(m.index + word.length),
+      answer,
+      choices: shuffle2(answer, must ? "can't" : 'must', s.id),
+      form: must ? 'must' : 'cant',
+    },
+  ];
+};
+
+/** Wish / if only : prétérit (souhait sur le présent) ou plus-que-parfait (regret sur le passé). */
+const wish: Builder = (s, known) => {
+  const m = /\b(?:wish|wishes|[Ii]f only)\s+(?:that\s+)?(I|i|you|he|she|it|we|they|[A-Z][a-z]+)\s+(had\s+([a-z]+)|([a-z]+))\b/.exec(s.en);
+  if (!m || !once(/\b(?:wish|wishes|if only)\b/i, s.en)) return [];
+  const at = m.index + m[0].length - m[2].length;
+  const subject = m[1];
+  const participle = m[3]?.toLowerCase();
+  if (
+    participle &&
+    baseOf(participle, known) &&
+    (participle.endsWith('ed') || (BASE_OF.has(participle) && BASE_OF.get(participle) !== participle) || participle === 'been')
+  ) {
+    const base = baseOf(participle, known)!;
+    const answer = `had ${participle}`;
+    const past = base === 'be' ? (isThird(subject) || /^i$/i.test(subject) ? 'was' : 'were') : pastOf(base, known);
+    return [
+      { before: s.en.slice(0, at), after: s.en.slice(m.index + m[0].length), answer, hint: base, choices: shuffle2(answer, past, s.id), form: 'pastperfect' },
+    ];
+  }
+  const v = (m[4] ?? 'had').toLowerCase();
+  if (participle) {
+    // « I wish I had a car » : had = possession, prétérit.
+    const answer = 'had';
+    return [{ before: s.en.slice(0, at), after: s.en.slice(at + 3), answer, hint: 'have', choices: shuffle2(answer, 'had had', s.id), form: 'past' }];
+  }
+  const base = v === 'were' || v === 'was' ? 'be' : baseOf(v, known);
+  if (!base || !(BASE_OF.has(v) || v.endsWith('ed')) || /^(?:would|could|didn|wasn|weren)$/.test(v)) return [];
+  return [
+    {
+      before: s.en.slice(0, at),
+      after: s.en.slice(at + v.length),
+      answer: v,
+      hint: base,
+      choices: shuffle2(v, `had ${participleOf(base, known)}`, s.id),
+      form: 'past',
+    },
+  ];
+};
+
+/** Traduction au conditionnel passé (j'aurais su, il serait venu). */
+const FR_CONDITIONAL_PAST =
+  /(?<![a-zà-ÿ])(?:aur|ser)(?:ais|ait|ions|iez|aient)\s+(?:(?:pas|jamais|déjà|bien|tout|été)\s+)*[a-zàâçéèêëîïôûù]+(?:é|ée|és|ées|i|ie|is|it|u|ue|us|t|te)(?![a-zà-ÿ])/i;
+
+/**
+ * 3e conditionnel (irréel du passé : if + had + participe, would have + participe), mêlé à des phrases du 2e
+ * conditionnel (irréel du présent) aux distracteurs inversés : « toujours la forme longue » ne suffit pas.
+ */
+const thirdConditional: Builder = (s, known) => {
+  if (FR_CONDITIONAL_PAST.test(s.fr)) {
+    const out: Candidate[] = [];
+    const sub = /\bif\s+(i|you|he|she|it|we|they|[A-Z][a-z]+)(\s+had|'d)\s+([a-z]+)\b/i.exec(s.en);
+    if (sub) {
+      const participle = sub[3].toLowerCase();
+      const base = baseOf(participle, known);
+      if (base && (participle.endsWith('ed') || BASE_OF.get(participle) !== participle || participle === 'been')) {
+        const at = sub.index + sub[0].search(/(?:had|'d)\s+[a-z]+$/i);
+        // « If I'd known » → « If I [had known] » : l'espace manquant avant la forme développée.
+        const before = sub[2] === "'d" ? `${s.en.slice(0, at)} ` : s.en.slice(0, at);
+        out.push({
+          before,
+          after: s.en.slice(sub.index + sub[0].length),
+          answer: `had ${participle}`,
+          hint: base,
+          choices: shuffle2(`had ${participle}`, pastForms(base, known)[0], s.id),
+          form: 'past-unreal',
+        });
+      }
+    }
+    const main = /(\b(?:would)|'d)\s+have\s+([a-z]+)\b/i.exec(s.en);
+    if (main && once(/\bwould\b|'d\s+have\b/i, s.en)) {
+      const participle = main[2].toLowerCase();
+      const base = baseOf(participle, known);
+      if (base) {
+        const before = s.en.slice(0, main.index).replace(/\s*$/, '') + ' ';
+        const answer = `would have ${participle}`;
+        out.push({
+          before,
+          after: s.en.slice(main.index + main[0].length),
+          answer,
+          hint: base,
+          choices: shuffle2(answer, `would ${base}`, s.id),
+          form: 'past-unreal',
+        });
+      }
+    }
+    return out;
+  }
+  // Irréel du présent : les phrases du 2e conditionnel, distracteur au passé (had known, would have come).
+  return secondConditional(s, known).flatMap((c) => {
+    if (!c || !c.hint) return [];
+    const base = c.hint;
+    const other = c.form === 'would' ? `would have ${participleOf(base, known)}` : `had ${participleOf(base, known)}`;
+    return [{ ...c, choices: shuffle2(c.answer, other, s.id), form: 'present-unreal' }];
+  });
+};
+
 /* ------------------------------------------------------------ leçons --- */
 
 const firstConditional: Builder = (s, known) => [
@@ -654,6 +1016,16 @@ export const BUILDERS: Record<string, Builder> = {
     saying: 'telling',
     telling: 'saying',
   }),
+  'perfect-continuous': perfectContinuous,
+  'relatives-defining': relatives,
+  quantifiers,
+  'gerund-infinitive-meaning': gerundInfinitive,
+  'too-enough': tooEnough,
+  'question-tags': questionTags,
+  'indirect-questions': indirectQuestions,
+  'deduction-present': deduction,
+  wish,
+  'third-conditional': thirdConditional,
 };
 
 /**

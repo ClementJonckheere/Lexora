@@ -1,7 +1,7 @@
 {
   "version": 1,
   "language": "en",
-  "status": "relu une première fois (corrections appliquées), à confirmer",
+  "status": "10 premières leçons relues ; 10 suivantes (present perfect continu → 3e conditionnel) rédigées, à relire",
   "lessons": [
     {
       "id": "present-perfect",
@@ -228,6 +228,223 @@
         { "en": "My grandfather told us a funny story.", "fr": "Mon grand-père nous a raconté une histoire drôle." }
       ],
       "traps": ["say-me", "explain-me"]
+    },
+    {
+      "id": "perfect-continuous",
+      "summary": "Have / has been + -ing : une action commencée dans le passé qui dure encore (ou vient de s'arrêter), vue dans sa durée. C'est souvent le « depuis » du français.",
+      "rules": [
+        "Forme : have / has been + verbe en -ing. I have been waiting. She has been working. Contraction : I've been, she's been.",
+        "Action qui dure jusqu'à maintenant, souvent avec for ou since : I've been waiting for an hour = j'attends depuis une heure. Le français met un présent, l'anglais jamais (pas I wait since an hour).",
+        "Action qui vient de s'arrêter et dont on voit la trace : You're out of breath. Have you been running?",
+        "Question sur la durée : How long have you been learning English? = Depuis combien de temps apprends-tu l'anglais ?",
+        "Pas de forme continue avec les verbes d'état (know, like, want, believe, have au sens de posséder) : I've known her for years, jamais I've been knowing her.",
+        "Avec live, work, study, teach, le present perfect simple dit presque la même chose : I've lived here for ten years / I've been living here for ten years."
+      ],
+      "examples": [
+        { "en": "I've been waiting for you for an hour.", "fr": "Je t'attends depuis une heure." },
+        { "en": "It has been raining since this morning.", "fr": "Il pleut depuis ce matin." },
+        { "en": "How long have you been learning English?", "fr": "Depuis combien de temps apprends-tu l'anglais ?" },
+        { "en": "She's been working here since 2020.", "fr": "Elle travaille ici depuis 2020." },
+        { "en": "You look tired. Have you been sleeping badly?", "fr": "Tu as l'air fatigué. Tu dors mal en ce moment ?" },
+        { "en": "We've been talking about you.", "fr": "Nous étions justement en train de parler de toi." },
+        { "en": "I've known him for years.", "fr": "Je le connais depuis des années (verbe d'état : pas de -ing)." }
+      ],
+      "traps": ["depuis-present"]
+    },
+    {
+      "id": "relatives-defining",
+      "summary": "Who pour une personne, which pour une chose ; that convient aux deux. La relative précise de qui ou de quoi l'on parle.",
+      "rules": [
+        "Who pour une personne : The man who called was French. The people who live here are nice.",
+        "Which pour une chose ou une idée : The book which I bought is boring. The car which broke down is mine.",
+        "That remplace who ou which dans une relative déterminative (sans virgule) : the man that called, the book that I bought. C'est même le plus courant à l'oral.",
+        "Quand le relatif est complément (et non sujet), on peut l'omettre : The book (which) I bought. The girl (who) you met. Jamais quand il est sujet : The man who called (pas the man called).",
+        "Pas de pronom en plus : The book which I bought it est faux (le « le » français disparaît).",
+        "Pour les animaux et les groupes (company, team, family), who et which sont possibles tous les deux."
+      ],
+      "examples": [
+        { "en": "The woman who lives next door is a doctor.", "fr": "La femme qui habite à côté est médecin." },
+        { "en": "I lost the watch which my father gave me.", "fr": "J'ai perdu la montre que mon père m'a offerte." },
+        { "en": "Do you know anyone who speaks Japanese?", "fr": "Tu connais quelqu'un qui parle japonais ?" },
+        { "en": "This is the house which Jack built.", "fr": "Voici la maison que Jack a construite." },
+        { "en": "The film (that) we saw last night was great.", "fr": "Le film que nous avons vu hier soir était génial (relatif omis)." },
+        { "en": "Everyone who came to the party had fun.", "fr": "Tous ceux qui sont venus à la fête se sont amusés." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "quantifiers",
+      "summary": "A few, few avec un nom pluriel (dénombrable) ; a little, little avec un nom indénombrable. Avec a, c'est « un peu, quelques » ; sans a, c'est « peu, pas assez ».",
+      "rules": [
+        "A few + pluriel : a few days, a few friends (quelques). A little + indénombrable : a little time, a little money (un peu de).",
+        "Few + pluriel, little + indénombrable, sans a : few people, little time = peu de, pas assez de (sens négatif).",
+        "Comparez : I have a few friends (j'en ai quelques-uns, ça va) / I have few friends (j'en ai peu, c'est triste).",
+        "Indénombrables courants qui piègent les francophones : advice, information, news, furniture, luggage, homework, bread, money : a little advice, pas a few advices.",
+        "A little devant un adjectif veut dire « un peu » : a little tired. Ce n'est pas une quantité.",
+        "Every + singulier (every day, every student), each + singulier aussi : jamais every days."
+      ],
+      "examples": [
+        { "en": "I'll be back in a few minutes.", "fr": "Je reviens dans quelques minutes." },
+        { "en": "Could I have a little more coffee?", "fr": "Pourrais-je avoir un peu plus de café ?" },
+        { "en": "Few people know the truth.", "fr": "Peu de gens connaissent la vérité." },
+        { "en": "We have little time left.", "fr": "Il nous reste peu de temps." },
+        { "en": "He gave me a little advice.", "fr": "Il m'a donné quelques conseils (advice est indénombrable)." },
+        { "en": "She calls her mother every day.", "fr": "Elle appelle sa mère tous les jours." }
+      ],
+      "traps": ["every-plural"]
+    },
+    {
+      "id": "gerund-infinitive-meaning",
+      "summary": "Après stop, remember, forget, try, regret, le verbe en -ing et to + base ne disent pas la même chose. La traduction française change aussi.",
+      "rules": [
+        "Stop + -ing = arrêter de : I stopped smoking (j'ai arrêté de fumer). Stop + to = s'arrêter pour : I stopped to smoke (je me suis arrêté pour fumer).",
+        "Remember / forget + to = ne pas oublier (ou oublier) de faire : Remember to call me. I forgot to lock the door. C'est une action à faire.",
+        "Remember / forget + -ing = se souvenir (ou oublier) d'avoir fait : I remember meeting him. I'll never forget seeing the sea. C'est un souvenir.",
+        "Try + to = essayer (faire un effort) : I tried to open the window. Try + -ing = essayer pour voir (un moyen) : Try opening the window.",
+        "Regret + -ing = regretter d'avoir fait : I regret saying that. Regret + to = avoir le regret de (annoncer) : We regret to inform you…",
+        "Astuce : -ing regarde en arrière (ce qui a eu lieu), to regarde en avant (ce qui reste à faire)."
+      ],
+      "examples": [
+        { "en": "He stopped smoking last year.", "fr": "Il a arrêté de fumer l'année dernière." },
+        { "en": "We stopped to buy some water.", "fr": "Nous nous sommes arrêtés pour acheter de l'eau." },
+        { "en": "Remember to lock the door.", "fr": "N'oublie pas de fermer la porte à clé." },
+        { "en": "I remember locking the door.", "fr": "Je me souviens d'avoir fermé la porte à clé." },
+        { "en": "I tried to sleep, but I couldn't.", "fr": "J'ai essayé de dormir, mais je n'ai pas pu." },
+        { "en": "If you can't sleep, try drinking warm milk.", "fr": "Si tu n'arrives pas à dormir, essaie de boire du lait chaud (pour voir)." },
+        { "en": "I regret telling him the truth.", "fr": "Je regrette de lui avoir dit la vérité." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "too-enough",
+      "summary": "Too = trop (avant l'adjectif), enough = assez (après l'adjectif). So + adjectif, such (a) + nom : « si », « tellement ».",
+      "rules": [
+        "Too + adjectif = trop : too old, too expensive. Jamais too much + adjectif (too much expensive est faux).",
+        "Adjectif + enough = assez : old enough, big enough. Enough se place après l'adjectif, mais avant le nom : enough money, enough time.",
+        "Suite avec to + base : He's too young to drive. She's old enough to drive.",
+        "So + adjectif ou adverbe : so kind, so fast. Such + (a / an) + (adjectif) + nom : such a nice day, such good friends.",
+        "So et such peuvent annoncer une conséquence avec that : It was so cold that we stayed at home. It was such a cold day that we stayed at home.",
+        "Trop de : too much + indénombrable (too much money), too many + pluriel (too many people)."
+      ],
+      "examples": [
+        { "en": "This coffee is too hot to drink.", "fr": "Ce café est trop chaud pour être bu." },
+        { "en": "Is the room big enough for everyone?", "fr": "La salle est-elle assez grande pour tout le monde ?" },
+        { "en": "You're not old enough to vote.", "fr": "Tu n'as pas l'âge de voter (pas assez vieux)." },
+        { "en": "She speaks too fast for me.", "fr": "Elle parle trop vite pour moi." },
+        { "en": "It's so nice to see you!", "fr": "Ça fait tellement plaisir de te voir !" },
+        { "en": "It was such a beautiful day.", "fr": "C'était une si belle journée." },
+        { "en": "I've never heard such a strange story.", "fr": "Je n'ai jamais entendu une histoire aussi étrange." }
+      ],
+      "traps": ["too-much-adj"]
+    },
+    {
+      "id": "question-tags",
+      "summary": "Le « n'est-ce pas ? » anglais : on reprend l'auxiliaire de la phrase, à la forme inverse (positif → négatif, négatif → positif), avec le pronom sujet.",
+      "rules": [
+        "Phrase positive, tag négatif : It's cold, isn't it? You're French, aren't you?",
+        "Phrase négative, tag positif : You aren't tired, are you? She can't swim, can she?",
+        "On reprend l'auxiliaire de la phrase (be, have, can, will…). Sans auxiliaire, on prend do / does / did : You like it, don't you? He left early, didn't he?",
+        "Le sujet du tag est un pronom : Tom is here, isn't he? (pas isn't Tom).",
+        "Le calque à éviter : isn't it n'est pas un « n'est-ce pas » universel. You like it, isn't it? est faux : don't you?",
+        "Cas particuliers : I'm right, aren't I? Let's go, shall we? Never / nobody rendent la phrase négative : He never calls, does he?"
+      ],
+      "examples": [
+        { "en": "It's a lovely day, isn't it?", "fr": "Il fait beau, n'est-ce pas ?" },
+        { "en": "You've met my sister, haven't you?", "fr": "Tu as déjà rencontré ma sœur, non ?" },
+        { "en": "She doesn't eat meat, does she?", "fr": "Elle ne mange pas de viande, si ?" },
+        { "en": "You like jazz, don't you?", "fr": "Tu aimes le jazz, n'est-ce pas ?" },
+        { "en": "They didn't call, did they?", "fr": "Ils n'ont pas appelé, si ?" },
+        { "en": "Tom can drive, can't he?", "fr": "Tom sait conduire, non ?" },
+        { "en": "I'm late, aren't I?", "fr": "Je suis en retard, c'est ça ?" }
+      ],
+      "traps": ["question-tag-isnt-it"]
+    },
+    {
+      "id": "indirect-questions",
+      "summary": "Dans une question indirecte (Do you know where…, Tell me what…, I wonder why…), l'ordre est celui de l'affirmation : sujet + verbe, sans inversion ni do.",
+      "rules": [
+        "Question directe : inversion, ou do / does / did. Where does he live? What time is it?",
+        "Question indirecte : sujet + verbe, comme une affirmation. Do you know where he lives? Can you tell me what time it is?",
+        "Plus de do / does / did dans la question indirecte : I wonder why he left (pas why did he leave).",
+        "Pour une question fermée (oui / non), on emploie if ou whether : I don't know if he's coming.",
+        "Le point d'interrogation dépend de la phrase principale : Do you know where he lives? (question) mais I don't know where he lives. (affirmation).",
+        "Le calque à éviter : Can you tell me where is the station? est faux : where the station is."
+      ],
+      "examples": [
+        { "en": "Where does she work?", "fr": "Où travaille-t-elle ?" },
+        { "en": "Do you know where she works?", "fr": "Sais-tu où elle travaille ?" },
+        { "en": "Can you tell me where the station is?", "fr": "Pouvez-vous me dire où est la gare ?" },
+        { "en": "I wonder why he left so early.", "fr": "Je me demande pourquoi il est parti si tôt." },
+        { "en": "What time does the film start?", "fr": "À quelle heure commence le film ?" },
+        { "en": "I don't know what time the film starts.", "fr": "Je ne sais pas à quelle heure commence le film." },
+        { "en": "Could you tell me if the shop is open?", "fr": "Pourriez-vous me dire si le magasin est ouvert ?" }
+      ],
+      "traps": ["indirect-question-order"]
+    },
+    {
+      "id": "deduction-present",
+      "summary": "Must be = « doit être, sûrement » (on est presque sûr que oui) ; can't be = « ne peut pas être » (on est presque sûr que non) ; might / may / could be = « peut-être ».",
+      "rules": [
+        "Must be : déduction positive, presque une certitude. You've been working all day: you must be tired. = Tu dois être fatigué.",
+        "Can't be : déduction négative. It can't be true! = Ce n'est pas possible. Le contraire de must be n'est pas mustn't be, mais can't be.",
+        "Might be, may be, could be : simple possibilité. He might be at home. = Il est peut-être chez lui.",
+        "Avec une action en cours : must be + -ing. You must be joking! = Tu plaisantes !",
+        "Attention : must exprime aussi l'obligation (You must be on time = tu dois être à l'heure). La situation dit s'il s'agit d'une déduction.",
+        "Mustn't be veut dire « il ne faut pas être », jamais « ce n'est sûrement pas »."
+      ],
+      "examples": [
+        { "en": "She's been travelling all night. She must be exhausted.", "fr": "Elle a voyagé toute la nuit. Elle doit être épuisée." },
+        { "en": "That can't be Tom. He's in Paris.", "fr": "Ça ne peut pas être Tom. Il est à Paris." },
+        { "en": "You must be joking!", "fr": "Tu plaisantes !" },
+        { "en": "It can't be true.", "fr": "Ce n'est pas possible." },
+        { "en": "He might be in the garden.", "fr": "Il est peut-être dans le jardin." },
+        { "en": "This must be the right address.", "fr": "Ça doit être la bonne adresse." },
+        { "en": "You can't be serious.", "fr": "Tu n'es pas sérieux." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "wish",
+      "summary": "Wish / if only + prétérit : on regrette quelque chose du présent. Wish / if only + had + participe : on regrette quelque chose du passé.",
+      "rules": [
+        "Regret sur le présent : wish + prétérit. I wish I knew = j'aimerais savoir (mais je ne sais pas). I wish I had a car = j'aimerais avoir une voiture.",
+        "Avec be, were pour toutes les personnes (was est courant à l'oral) : I wish I were taller.",
+        "Regret sur le passé : wish + had + participe. I wish I had listened = j'aurais dû écouter, si seulement j'avais écouté.",
+        "If only a le même sens, avec plus de force : If only I knew! If only I had known!",
+        "Pour se plaindre de quelqu'un ou souhaiter un changement : wish + would. I wish you would stop = j'aimerais que tu arrêtes.",
+        "Comparez avec le français : « j'aimerais savoir » → I wish I knew ; « j'aurais aimé savoir » → I wish I had known."
+      ],
+      "examples": [
+        { "en": "I wish I knew the answer.", "fr": "J'aimerais connaître la réponse." },
+        { "en": "I wish I had more free time.", "fr": "J'aimerais avoir plus de temps libre." },
+        { "en": "I wish I had studied harder.", "fr": "J'aurais dû travailler davantage." },
+        { "en": "If only I had listened to you!", "fr": "Si seulement je t'avais écouté !" },
+        { "en": "She wishes she lived in Paris.", "fr": "Elle aimerait vivre à Paris." },
+        { "en": "I wish you were here.", "fr": "J'aimerais que tu sois là." },
+        { "en": "I wish you would stop shouting.", "fr": "J'aimerais que tu arrêtes de crier." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "third-conditional",
+      "summary": "If + had + participe, would have + participe : une situation passée imaginaire, qui n'a pas eu lieu, et sa conséquence (le conditionnel passé français).",
+      "rules": [
+        "Après if : had + participe (plus-que-parfait). If I had known = si j'avais su.",
+        "Dans la conséquence : would have + participe (ou could have, might have). I would have come = je serais venu.",
+        "Contraction : If I'd known, I'd have come. Le premier 'd = had, le second = would.",
+        "Jamais would après if : If I would have known est faux.",
+        "Comparez avec le 2e conditionnel (présent imaginaire) : If I knew, I would tell you = si je savais, je te le dirais (maintenant). If I had known, I would have told you = si j'avais su, je te l'aurais dit (dans le passé).",
+        "Conditionnel mixte : passé imaginaire, conséquence présente. If I had studied, I would be a doctor now."
+      ],
+      "examples": [
+        { "en": "If I had known, I would have come.", "fr": "Si j'avais su, je serais venu." },
+        { "en": "If you had left earlier, you wouldn't have missed the train.", "fr": "Si tu étais parti plus tôt, tu n'aurais pas raté le train." },
+        { "en": "She would have passed if she had studied.", "fr": "Elle aurait réussi si elle avait travaillé." },
+        { "en": "If I'd seen him, I'd have told him.", "fr": "Si je l'avais vu, je le lui aurais dit." },
+        { "en": "If I knew his number, I would call him.", "fr": "Si je connaissais son numéro, je l'appellerais (2e conditionnel : maintenant)." },
+        { "en": "If it hadn't rained, we would have gone to the beach.", "fr": "S'il n'avait pas plu, nous serions allés à la plage." }
+      ],
+      "traps": ["if-would"]
     }
   ]
 }

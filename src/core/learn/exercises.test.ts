@@ -294,3 +294,96 @@ describe('correcteur : réponses également justes', () => {
     expect(ex('time-clauses', 'Do you remember when you last saw Tom?', 2)).toBeNull();
   });
 });
+
+describe('deuxième série de leçons (B1, B2)', () => {
+  it('present perfect continu : forme à taper, base en indice, contraction développée', () => {
+    expect(ex('perfect-continuous', "I've been waiting for an hour.")).toMatchObject({ before: 'I ', answer: 'have been waiting', hint: 'wait' });
+    expect(ex('perfect-continuous', 'She has been living here since 2020.')!.accept).toEqual(['has lived']);
+    expect(ex('perfect-continuous', 'He must have been sleeping.')).toBeNull();
+  });
+
+  it('relatives : who pour une personne, which pour une chose, pas les antécédents ambigus', () => {
+    expect(ex('relatives-defining', 'The man who called was French.')).toMatchObject({ answer: 'who', form: 'who' });
+    expect(ex('relatives-defining', 'The book which I bought is boring.')!.choices?.sort()).toEqual(['which', 'who']);
+    expect(ex('relatives-defining', 'The dog which bit me was big.')).toBeNull();
+  });
+
+  it('few / little : dénombrable ou indénombrable, pas « a little tired »', () => {
+    expect(ex('quantifiers', 'I have a few friends.')).toMatchObject({ answer: 'a few', form: 'countable', choices: expect.arrayContaining(['a little']) });
+    expect(ex('quantifiers', 'We have little time.')).toMatchObject({ answer: 'little', form: 'uncountable' });
+    expect(ex('quantifiers', 'I am a little tired.')).toBeNull();
+  });
+
+  it('stop / remember / try : -ing ou to + base', () => {
+    expect(ex('gerund-infinitive-meaning', 'He stopped smoking last year.')).toMatchObject({
+      answer: 'smoking',
+      form: 'ing',
+      choices: expect.arrayContaining(['to smoke']),
+    });
+    expect(ex('gerund-infinitive-meaning', 'Remember to lock the door.')).toMatchObject({ answer: 'to lock', choices: expect.arrayContaining(['locking']) });
+  });
+
+  it('too / enough, so / such', () => {
+    expect(ex('too-enough', 'This coffee is too hot.')).toMatchObject({ answer: 'too hot', choices: expect.arrayContaining(['hot enough']), form: 'too' });
+    expect(ex('too-enough', "You're not old enough to vote.")).toMatchObject({ answer: 'old enough', form: 'enough' });
+    expect(ex('too-enough', 'It was such a nice day.')).toMatchObject({ answer: 'such', form: 'such' });
+    expect(ex('too-enough', "I'm so tired.")).toMatchObject({ answer: 'so', form: 'so' });
+    expect(ex('too-enough', 'There are too many people.')).toBeNull();
+  });
+
+  it('question tags : polarité inverse, pronom I en majuscule, calque « isn’t it » comme distracteur', () => {
+    const a = ex('question-tags', "You like jazz, don't you?", 1)!;
+    expect(a).toMatchObject({ answer: "don't you", form: 'negative' });
+    expect(a.choices?.sort()).toEqual(['do you', "don't you"]);
+    expect(ex('question-tags', "You like jazz, don't you?", 3)!.choices).toContain("isn't it");
+    expect(ex('question-tags', "I'm late, aren't I?", 1)).toMatchObject({ answer: "aren't I", choices: expect.arrayContaining(['am I']) });
+    expect(ex('question-tags', 'Open the door, will you?', 1)).toBeNull();
+  });
+
+  it('questions indirectes (ordre sujet + verbe) et directes (inversion)', () => {
+    const i = ex('indirect-questions', 'Do you know where he lives?')!;
+    expect(i).toMatchObject({ answer: 'he lives', form: 'indirect' });
+    expect(i.choices).toContain('does he live');
+    expect(ex('indirect-questions', 'Can you tell me where the station is?')).toMatchObject({
+      answer: 'the station is',
+      choices: expect.arrayContaining(['is the station']),
+    });
+    expect(ex('indirect-questions', 'I wonder why he left.')!.choices).toContain('did he leave');
+    const d = ex('indirect-questions', 'Where does she work?')!;
+    expect(d).toMatchObject({ answer: 'does she work', form: 'direct', choices: expect.arrayContaining(['she works']) });
+    expect(ex('indirect-questions', "I don't know what has become of him.")).toBeNull();
+  });
+
+  it('déduction : must be / can’t be, la traduction doit être une déduction', () => {
+    expect(ex('deduction-present', 'You must be tired.', 1, 'Tu dois être fatigué.')).toMatchObject({ answer: 'must', form: 'must' });
+    expect(ex('deduction-present', "It can't be true.", 1, "Ce n'est pas possible.")).toMatchObject({ answer: "can't", form: 'cant' });
+    expect(ex('deduction-present', 'You must be careful.', 1, 'Tu dois être prudent.')).toBeNull(); // obligation
+  });
+
+  it('wish : prétérit (présent) ou had + participe (passé)', () => {
+    expect(ex('wish', 'I wish I knew the answer.')).toMatchObject({ answer: 'knew', form: 'past', choices: expect.arrayContaining(['had known']) });
+    expect(ex('wish', 'If only I had listened to you!')).toMatchObject({
+      answer: 'had listened',
+      form: 'pastperfect',
+      choices: expect.arrayContaining(['listened']),
+    });
+    expect(ex('wish', 'I wish I had a car.')).toMatchObject({ answer: 'had', form: 'past' });
+    expect(ex('wish', 'I wish you were here.')).toMatchObject({ answer: 'were', choices: expect.arrayContaining(['had been']) });
+  });
+
+  it('3e conditionnel, contre le 2e (distracteurs inversés)', () => {
+    const fr3 = "Si j'avais su, je serais venu.";
+    expect(ex('third-conditional', 'If I had known, I would have come.', 2, fr3)).toMatchObject({
+      answer: 'had known',
+      form: 'past-unreal',
+      choices: expect.arrayContaining(['knew']),
+    });
+    expect(ex('third-conditional', 'If I had known, I would have come.', 1, fr3)).toMatchObject({
+      answer: 'would have come',
+      choices: expect.arrayContaining(['would come']),
+    });
+    expect(ex('third-conditional', "If I'd known, I would have come.", 2, fr3)).toMatchObject({ before: 'If I ', answer: 'had known' });
+    const two = ex('third-conditional', 'If I knew his number, I would call him.', 2, "Si je connaissais son numéro, je l'appellerais.")!;
+    expect(two).toMatchObject({ answer: 'knew', form: 'present-unreal', choices: expect.arrayContaining(['had known']) });
+  });
+});
