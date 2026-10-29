@@ -1,7 +1,7 @@
 # Lexora : carnet de vocabulaire multilingue & mémorisation espacée
 
-Lexora **n'enseigne pas les langues**. Il ne propose aucun cours, aucune leçon ni aucun contenu que vous n'avez pas ajouté vous-même.
-Vous apprenez par vos propres moyens (lecture, vidéos, travail, conversations). Lexora sert à :
+Lexora est un **carnet de vocabulaire multilingue**, conçu pour enregistrer rapidement les expressions rencontrées en lisant, en regardant une vidéo, au travail ou dans une conversation, puis les mémoriser durablement. Les notes personnelles restent le cœur de l'application.
+Lexora sert à :
 
 1. **enregistrer** une expression en 5 secondes ;
 2. l'**organiser** automatiquement (catégorie détectée, doublons, tags, collections) ;
@@ -10,6 +10,10 @@ Vous apprenez par vos propres moyens (lecture, vidéos, travail, conversations).
 5. la **réviser au bon moment**, grâce à l'algorithme de répétition espacée **FSRS**.
 
 Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, allemand…) avec sa propre bibliothèque, ses collections, ses révisions et ses statistiques.
+
+La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
+
+**État documenté : version 2.18.0.** Le parcours grammatical comporte 74 points de A1 à C1 et 40 pièges francophones ; 20 leçons B1–B2 disposent actuellement d'exercices. Le test de placement et le surlignage grammatical dans le lecteur restent à développer (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -30,7 +34,7 @@ Tout le reste (planification, ordre, rythme, catégorie) est automatique.
 
 ## 2. Pages
 
-Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à réviser par langue), puis **Accueil · Bibliothèque · Réviser · Collections · Lecture · Statistiques · Paramètres**. En bas : le compte et l'état de synchronisation, **Rechercher (`Ctrl+K`)** et **+ Ajouter (`N`)**.
+Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à réviser par langue), puis **Accueil · Bibliothèque · Réviser · Collections · Lecture · Apprendre · Statistiques · Paramètres**. En bas : le compte et l'état de synchronisation, **Rechercher (`Ctrl+K`)** et **+ Ajouter (`N`)**.
 
 - **Connexion** (premier lancement) : « Continuer avec Google ». Le navigateur s'ouvre et l'application récupère la session. Elle reste ensuite connectée, y compris hors ligne.
 - **Choix de la première langue** : grille de langues (anglais, espagnol, portugais, allemand, italien, russe, chinois, japonais, coréen, arabe, néerlandais, ou toute autre langue par son code ISO).
@@ -56,8 +60,8 @@ Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à
   - *Niveau estimé, sans IA* : sur un extrait du texte, on mesure combien de mots courants (liste de fréquence de la langue) il faut connaître pour comprendre 90 % du texte, et la longueur des phrases ; le chinois et le japonais sont mesurés par caractères. Calibré sur des livres de référence en anglais (Alice ≈ B1, Treasure Island ≈ B2, Pride and Prejudice ≈ B2/C1, Moby-Dick ≈ C2) ; pour les autres langues, un facteur mesuré sur leurs livres les plus lus (listes de 50 000 formes, flexions plus nombreuses) donne au classique « moyen » le même niveau qu'en anglais. C'est une indication, pas une certification ; le niveau est recalculé sur le texte entier au téléchargement.
 - **Traduire et trouver un exemple** (formulaire d'ajout, `Ctrl+T`) : traduction française proposée par **[DeepL](https://www.deepl.com/fr/pro-api)** via une clé partagée gardée sur le serveur Supabase (fonction `translate`, voir [docs/SUPABASE.md](docs/SUPABASE.md) ; aucune clé à créer pour les utilisateurs), ou via une clé personnelle facultative (*Paramètres*). La phrase de l'exemple ou du livre lui est transmise comme contexte, ce qui donne le bon sens (« at last turned sulky » → « a fini par bouder ») ; sinon par [MyMemory](https://mymemory.translated.net) (gratuit, sans clé, environ 5 000 caractères par jour ; ses entrées de mémoire collaborative qui ne correspondent pas exactement au texte sont écartées au profit de sa traduction automatique) avec d'autres traductions possibles en un clic. « Traduire la phrase d'exemple » affiche le sens de la phrase entière, et phrases d'exemple réelles de [Tatoeba](https://tatoeba.org) (écrites et traduites par des bénévoles, avec leur traduction française ; « Autre exemple » pour en changer). Le [Wiktionnaire](https://en.wiktionary.org) ajoute la **nature du mot** (verbe, nom, adjectif…) et ses définitions. Seuls les champs vides sont remplis, tout reste modifiable et la saisie manuelle reste possible. Pas d'IA générative : rien n'est inventé.
 - **Statistiques** : chiffres réels uniquement (voir §6).
-- **Apprendre** (`Ctrl+6`, univers Anglais) : leçons de grammaire. Un index par niveau, chaque leçon avec sa barre de progression ; une leçon est **acquise à 18 bonnes réponses sur les 20 dernières** (un pourcentage sur moins de réponses serait trompeur). Une leçon acquise **revient en révision** à intervalles croissants (3 jours, 1 semaine, 16 jours, 5 semaines, 2 mois et demi, 5 mois) : 5 exercices, 4 justes pour la valider ; manquée, elle revient le lendemain et l'intervalle repart du début. Les leçons à réviser sont annoncées sur l'accueil et en tête d'*Apprendre* ; l'état se déduit des réponses déjà synchronisées (`src/core/learn/review.ts`), sans table supplémentaire. Chaque leçon : l'essentiel, la règle en quelques points, 6 à 8 exemples traduits (écoute), les pièges francophones, puis des **séances de 10 exercices sur de vraies phrases** Tatoeba avec leur traduction française (indice qui lève l'ambiguïté du trou), tirées au hasard dans une banque de 300 phrases par leçon ; **Nouvelles phrases** relance un tirage. Exercices : forme à taper (verbe donné entre parenthèses, contractions acceptées) ou choix entre deux formes (`1` / `2`) ; correction immédiate ; les variantes (learnt / learned) et les autres réponses justes sont acceptées : le prétérit après after / before + sujet, ou pour un present perfect sans aucun repère. Une règle unique (« jamais will », « toujours le prétérit ») ne suffit pas : chaque exercice porte la nature de sa bonne réponse (will ou présent, would ou prétérit, present perfect ou prétérit, used to, be used to ou prétérit), et banques et séances les alternent à parts égales. Le trou tombe aussi dans la principale (*If it rains, we ___ home* → *will stay*), et les cas où will est juste après when (question directe et indirecte) sont exercés. *Cette phrase ne correspond pas à la leçon* retire la phrase (sa réponse ne compte pas) ; les phrases signalées sont aussi exclues des banques à la génération suivante pour tout le monde (fonction Supabase `grammar_reported_items`, qui ne renvoie que des comptes). Les phrases Tatoeba aux thèmes sensibles (violences, suicide, sexualité, affirmations politiques contestées) ou grossières sont écartées par [`scripts/grammar-blocklist.txt`](scripts/grammar-blocklist.txt). Leçons : en B1, present perfect, present perfect ou prétérit, for / since, plus-que-parfait, used to, conditionnels réel et irréel, when + présent, passif, say / tell, present perfect continu, relatives (who / which), few / little, stop / remember / try + -ing ou to, too / enough et so / such, question tags, questions indirectes, déduction must / can't ; en B2, wish / if only, 3e conditionnel (mêlé au 2e) (contenu : [`public/grammar/en/lessons.json`](public/grammar/en/lessons.json) ; banques : `public/grammar/en/exercises/`, générées par le workflow « Grammaire » avec `src/core/learn/exercises.ts`). Réponses enregistrées dans `grammar_answers` (synchronisée).
-- **Grammaire anglaise (parcours et repérage)** : parcours de 74 points de A1 à C1 et 40 pièges francophones dans [`public/grammar/en/points.json`](public/grammar/en/points.json) (lisible dans [`docs/grammaire-anglais.md`](docs/grammaire-anglais.md), généré par `node scripts/grammar-doc.mjs`). Prérequis stricts (`requires`, seuls utilisés pour déduire) et ordre conseillé (`after`) séparés ; pièges à part (fiche propre, hors déduction). Chaque point a un motif de repérage (`src/core/learn/patterns.ts`, expressions régulières et listes de mots, dont 144 verbes irréguliers). Sa précision est **mesurée, pas déclarée** : *Apprendre → mesurer le repérage* (outil avancé) présente des passages trouvés dans vos livres (ou Alice et Pride and Prejudice), vous jugez « juste » ou « faux positif » ; à partir de 50 jugements, un point n'est surligné en lisant qu'au-dessus de 90 %. L'export se reporte dans le dépôt par `node scripts/grammar-precision.mjs export.json`. Le workflow « Grammaire (phrases Tatoeba) » compte pour chaque point les phrases Tatoeba candidates avec traduction française (`public/grammar/en/tatoeba-counts.json`) et alerte sous 30.
+- **Apprendre** (`Ctrl+6`, univers Anglais) : leçons de grammaire. Un index par niveau, chaque leçon avec sa barre de progression ; une leçon est **acquise à 18 bonnes réponses sur les 20 dernières** (un pourcentage sur moins de réponses serait trompeur). Une leçon acquise **revient en révision** à intervalles croissants (3 jours, 1 semaine, 16 jours, 5 semaines, 2 mois et demi, 5 mois) : 5 exercices, 4 justes pour la valider ; manquée, elle revient le lendemain et l'intervalle repart du début. Les leçons à réviser sont annoncées sur l'accueil et en tête d'*Apprendre* ; l'état se déduit des réponses déjà synchronisées (`src/core/learn/review.ts`), sans table supplémentaire. Chaque leçon : l'essentiel, la règle en quelques points, 6 à 8 exemples traduits (écoute), les pièges francophones, puis des **séances de 10 exercices sur de vraies phrases** Tatoeba avec leur traduction française (indice qui lève l'ambiguïté du trou), tirées au hasard dans une banque d'au plus 300 phrases par leçon (certaines banques sont plus petites ; tailles dans `public/grammar/en/exercises/index.json`) ; **Nouvelles phrases** relance un tirage. Exercices : forme à taper (verbe donné entre parenthèses, contractions acceptées) ou choix entre deux formes (`1` / `2`) ; correction immédiate ; les variantes (learnt / learned) et les autres réponses justes sont acceptées : le prétérit après after / before + sujet, ou pour un present perfect sans aucun repère. Une règle unique (« jamais will », « toujours le prétérit ») ne suffit pas : chaque exercice porte la nature de sa bonne réponse (will ou présent, would ou prétérit, present perfect ou prétérit, used to, be used to ou prétérit). Les séances alternent ces natures quand les effectifs le permettent ; la génération cherche aussi à équilibrer les banques. Le plafond de 60 % par forme dans les leçons à choix reste à garantir par des contrôles sur toutes les banques livrées (voir §8). Le trou tombe aussi dans la principale (*If it rains, we ___ home* → *will stay*), et les cas où will est juste après when (question directe et indirecte) sont exercés. *Cette phrase ne correspond pas à la leçon* retire la phrase (sa réponse ne compte pas) ; les phrases signalées sont aussi exclues des banques à la génération suivante pour tout le monde (fonction Supabase `grammar_reported_items`, qui ne renvoie que des comptes). Les phrases Tatoeba aux thèmes sensibles (violences, suicide, sexualité, affirmations politiques contestées) ou grossières sont écartées par [`scripts/grammar-blocklist.txt`](scripts/grammar-blocklist.txt). Leçons : en B1, present perfect, present perfect ou prétérit, for / since, plus-que-parfait, used to, conditionnels réel et irréel, when + présent, passif, say / tell, present perfect continu, relatives (who / which), few / little, stop / remember / try + -ing ou to, too / enough et so / such, question tags, questions indirectes, déduction must / can't ; en B2, wish / if only, 3e conditionnel (mêlé au 2e) (contenu : [`public/grammar/en/lessons.json`](public/grammar/en/lessons.json) ; banques : `public/grammar/en/exercises/`, générées par le workflow « Grammaire » avec `src/core/learn/exercises.ts`). Réponses enregistrées dans `grammar_answers` (synchronisée).
+- **Grammaire anglaise (parcours et repérage)** : parcours de 74 points de A1 à C1 et 40 pièges francophones dans [`public/grammar/en/points.json`](public/grammar/en/points.json) (lisible dans [`docs/grammaire-anglais.md`](docs/grammaire-anglais.md), généré par `node scripts/grammar-doc.mjs`). Prérequis stricts (`requires`, seuls utilisés pour déduire) et ordre conseillé (`after`) séparés ; pièges à part (fiche propre, hors déduction). Les motifs disponibles (`src/core/learn/patterns.ts`, expressions régulières et listes de mots, dont 144 verbes irréguliers) servent à trouver des phrases candidates ; certains points n'ont pas de motif exploitable. **L'outil de mesure existe** : *Apprendre → mesurer le repérage* (outil avancé) présente des passages trouvés dans vos livres (ou Alice et Pride and Prejudice), à juger « juste » ou « faux positif ». Il calcule la précision et une borne basse de Wilson, et exporte les jugements ; `node scripts/grammar-precision.mjs export.json` les reporte dans `points.json`. **En 2.18.0, aucune précision mesurée n'y est encore enregistrée et le surlignage grammatical n'est pas intégré au lecteur.** Le surlignage des notes de vocabulaire, lui, est disponible. Le futur repérage grammatical exigera au moins 50 passages relus par point et une précision mesurée strictement supérieure à 90 % (voir §8). Le workflow « Grammaire (phrases Tatoeba) » compte pour chaque point les phrases Tatoeba candidates avec traduction française (`public/grammar/en/tatoeba-counts.json`) et alerte sous 30.
 - **Paramètres** : compte et synchronisation, réglages de mémorisation, voix (une par langue), raccourci global, import/export, sauvegardes.
 
 ## 3. Parcours utilisateurs
@@ -101,6 +105,8 @@ src/
     srs/                FSRS (scheduler), file de révision, session, entraînement libre
     repo/               accès aux données : univers, notes, collections, révisions, stats, import/export
     sync/               moteur de synchronisation (hors ligne d'abord), client Supabase
+    reading/            catalogue, livres, couverture lexicale, test de vocabulaire et recalage
+    learn/              points de grammaire, motifs, exercices, annotation, progression et révision
     platform/           compte Google, fichiers, synthèse vocale, raccourci global
   app/                  état applicatif (store), planification de la synchro, import/export
   ui/                   composants React (components/) et pages (features/)
@@ -114,29 +120,32 @@ Le même code SQL tourne dans les trois environnements. Dans l'application, c'es
 
 ## 5. Modèle de données
 
-Schéma v2, identique en local (SQLite) et dans Supabase (PostgreSQL, avec en plus `user_id` et `server_updated_at`) :
+Le schéma SQLite est en **version 7** (`PRAGMA user_version`), indépendamment de la version 2.18.0 de l'application. Les **12 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
 
-```
-universes      id, name, language (code ISO : en, es, zh…), position, created_at
-notes          id, universe_id, expression, translation, pronunciation, expression_key (doublons),
-               comment, category, category_auto, is_favorite,
-               examples[], tags[], collection_ids[] (JSON), created_at
-collections    id, universe_id, name, description, created_at
-cards          id, note_id, direction ('fr_en' = français → langue | 'en_fr' = langue → français),
-               state, due, stability, difficulty, elapsed_days, scheduled_days,
-               learning_steps, reps, lapses, last_review                 (= carte FSRS)
-review_logs    id, card_id, rating 1-4, état FSRS AVANT la réponse, reviewed_at, duration_ms
-practice_logs  id, note_id, mode ('cloze'|'random'|'difficult'), rating, created_at
-settings       key, value (réglages partagés entre appareils)
-device_settings, sync_state      (local uniquement : voix, raccourci ; compte lié, curseurs)
+| Table | Clé locale | Principales données |
+|---|---|---|
+| `universes` | `id` | Nom, langue ISO, position, plafond `new_per_day`, création |
+| `notes` | `id` | Expression, traduction, prononciation, clé de doublon, commentaire, catégorie, favori, suspension, exemples, tags, collections, création |
+| `collections` | `id` | Univers, nom, description, création |
+| `cards` | `id` | Note, direction (`fr_en` / `en_fr`), état FSRS, échéance, stabilité, difficulté, intervalles, répétitions, oublis, dernière révision |
+| `review_logs` | `id` | Fiche, note 1–4, état FSRS avant la réponse, date de révision, durée |
+| `practice_logs` | `id` | Note, mode d'entraînement, résultat, date |
+| `books` | `book_key` | Univers, métadonnées du livre, niveau, chapitre, bloc, progression, dernière lecture |
+| `word_marks` | `mark_key` | Univers, mot, connu / inconnu |
+| `vocab_tests` | `universe_id` | Dernier test : tranches, taille estimée, fausses alarmes, réponses brutes, date |
+| `vocab_observations` | `obs_key` | Univers, source (`chapter`, `select`, `exposure`), mot, rang, connu / inconnu, date |
+| `grammar_answers` | `id` | Univers, leçon, exercice, réponse correcte ou non, signalement, date |
+| `settings` | `key` | Réglages partagés entre appareils |
 
-+ sur chaque table synchronisée : updated_at (ms), deleted (suppression douce), dirty (local : à envoyer)
-```
-
-- Identifiants **UUID** : des lignes créées hors ligne sur deux appareils ne peuvent pas entrer en collision.
+- Les lignes synchronisées portent `updated_at` (millisecondes), `deleted` (suppression douce) et `dirty` (local : à envoyer). **Exception : `settings` n'a pas de colonne `deleted`.** Supabase ajoute `user_id` et `server_updated_at` ; `dirty` reste local.
+- Les colonnes de listes sont stockées en JSON texte dans SQLite et en `jsonb` dans PostgreSQL.
+- Restent **locaux** : `device_settings`, `sync_state`, `book_texts` (texte et couverture téléchargés), `book_levels` (cache des niveaux), ainsi que `review_logs.typed_ms` et `typed_chars` (mesures de saisie propres à l'appareil).
+- Les univers, notes, collections, fiches et lignes d'historique utilisent des **UUID**. Les autres tables utilisent des clés métier stables (livre, mot, observation, réglage) ou l'identifiant de l'univers.
 - Chaque note crée **deux fiches**, une par direction : la maîtrise est suivie **séparément**.
 - Les **suppressions sont douces** (`deleted = 1`) pour se propager aux autres appareils.
 - Les **migrations** sont versionnées (`PRAGMA user_version`, `src/core/db/migrations.ts`). Chacune s'applique dans sa propre transaction. La v2 a converti la base v1 sans perte : notes, exemples, tags, collections, fiches et historique sont rangés dans un univers « Anglais ».
+
+Une évolution de schéma synchronisé demande quatre mises à jour : **nouvelle migration locale versionnée**, **`supabase/schema.sql` idempotent**, **`src/core/sync/tables.ts`** et **consigne « relancer schema.sql » dans ce README**. Les migrations déjà publiées restent inchangées. Toute modification du schéma Supabase doit être approuvée avant sa mise en œuvre.
 
 ### Synchronisation
 
@@ -151,7 +160,7 @@ La synchronisation se déclenche quelques secondes après chaque modification, t
 
 ## 6. Logique de mémorisation
 
-**FSRS** modélise chaque fiche par sa *stabilité* (nombre de jours au bout duquel la probabilité de rappel tombe à 90 %) et sa *difficulté*. Après chaque réponse, il calcule la prochaine date pour viser la **rétention souhaitée** (90 % par défaut, réglable).
+**FSRS** modélise chaque fiche par sa *stabilité* (nombre de jours au bout duquel la probabilité de rappel tombe à 90 %) et sa *difficulté*. Après chaque réponse, il calcule la prochaine date pour viser la **rétention souhaitée** (90 % par défaut, réglable). Le modèle utilise actuellement les paramètres par défaut de `ts-fsrs` ; l'optimisation à partir de l'historique de chaque utilisateur reste à développer (voir §8).
 
 - **Nouvelle expression** : étapes courtes (1 min, 10 min) dans la session, puis intervalles en jours.
 - **Oubliée** (`1`) : la fiche passe en réapprentissage, revient dans la session quelques cartes plus loin, sa stabilité chute et l'oubli est compté.
@@ -178,16 +187,41 @@ La synchronisation se déclenche quelques secondes après chaque modification, t
 
 Thème clair, fond blanc cassé, indigo comme couleur d'action, gris très clairs pour les surfaces. Typographie Inter, embarquée pour fonctionner hors ligne. Transitions de 120 à 160 ms. Les raccourcis sont rappelés à côté des boutons. Les couleurs de maîtrise (gris, ambre, vert) et de notation (rouge, ambre, vert, indigo) sont cohérentes partout. Une seule action principale par écran.
 
+## 8. État de validation et chantiers restants
+
+### À valider ou corriger sur l'existant
+
+- **Contenu grammatical** : les 10 premières leçons ont été relues ; les 10 suivantes, du present perfect continu au 3e conditionnel, restent à relire. Grille : règle juste, exemple net, traduction exacte, piège couvert par une règle et exercices cohérents.
+- **Qualité des banques** : les tests couvrent des cas du générateur, mais les contrôles systématiques sur toutes les banques livrées restent à ajouter en CI : aucune forme au-delà de 60 % des bonnes réponses dans une leçon à choix ; aucun repère passé incompatible avec un present perfect (hors emploi après `since`) ; futur français cohérent avec une réponse `will` ; trou sur le verbe dans les exercices verbaux ; distracteurs accordés et correctement orthographiés ; aucun mot de `scripts/grammar-blocklist.txt`.
+- **Signalements** : le chemin existe dans le code, mais le parcours complet reste à valider depuis Lexora Windows connecté : signaler une phrase, synchroniser, contrôler `grammar_answers` et `grammar_reported_items` dans Supabase, relancer le workflow Grammaire, puis contrôler l'exclusion de l'exercice. Un appel réussi à la fonction Supabase ne valide pas à lui seul ce parcours.
+- **Séparation des usages** : la cible est de garder Apprendre séparé de l'Accueil, de Réviser et de la Bibliothèque. En 2.18.0, un rappel des leçons à réviser apparaît encore sur l'Accueil ; cet écart reste à traiter dans un changement d'interface dédié.
+
+### Les six chantiers de développement
+
+Les éléments suivants sont **prévus, pas encore disponibles** :
+
+| Ordre proposé | Chantier | Périmètre et validation attendus |
+|---|---|---|
+| 1 | **Placement grammatical A1–C1** | Banque dédiée aux 74 points (les exercices actuels couvrent 20 leçons B1–B2). À la première visite d'Apprendre : Faire le test / Commencer au début / Plus tard ; test refaisable. Mise à jour bayésienne par point, avec inattention et chance ; déduction par `requires` uniquement, pièges testés à part sans propagation. Réponse tapée privilégiée, Je ne sais pas, au moins deux questions par point testé ; objectif de confiance de 85 %, plafond de 40 questions. Résultats acquis / à consolider / à apprendre, corrigeables, avec incertitude explicite ; mini-test de 2 ou 3 questions au début des leçons. Avant activation : simulation permanente de profils connus avec bruit, dont des profils qui ne respectent pas `after`, et rapport du taux de points mal classés et du nombre moyen de questions. |
+| 2 | **Repérage grammatical dans le lecteur** | Intégrer les motifs au lecteur après relecture d'au moins 50 passages par point et mesure d'une précision strictement supérieure à 90 %. Conserver les jugements et des cas annotés comme tests permanents ; une simulation du mécanisme ne remplace pas une mesure humaine de la justesse des passages. |
+| 3 | **Phrases choisies à la main** | Compléter les points peu fournis dans Tatoeba : conditionnel mixte (16 candidats avec traduction française), subjonctif (36), selon le comptage du 29 octobre 2026. Ces comptes sont des candidats à relire, pas des exercices validés. Conserver les sources et les traductions relues ; préserver la banque complémentaire lors des régénérations. |
+| 4 | **Verbes irréguliers et collections** | Module d'entraînement aux trois formes des verbes irréguliers. Collections make / do et verbes ou adjectifs à préposition, importables comme notes avec leurs deux fiches FSRS. Les données de verbes utilisées par les motifs existent déjà ; le module utilisateur et les collections prêtes à importer restent à construire. |
+| 5 | **FSRS personnel et analyse Qlik** | Optimiser les paramètres sur `review_logs` par utilisateur et univers, après quelques centaines de révisions ; comparer la calibration avant / après sur des révisions mises de côté. Préparer un export documenté et des vues SQL pour Qlik Cloud avec accès en lecture seule : prédit / observé, rétention par direction, temps de réponse, mots à problème, progression grammaticale et signalements. |
+| 6 | **Shadowing** | Écouter une phrase, la répéter au micro, réécouter et comparer. Première étape : enregistrement local avec `MediaRecorder`. Une évaluation de prononciation Azure via une fonction Supabase pourra venir ensuite ; elle n'est pas implémentée. |
+
+**Limite à mesurer pour le placement** : 40 questions avec au moins deux questions par point permettent de tester directement 20 points au maximum. Les autres points ne peuvent être déduits que si `requires` fournit des éléments suffisants ; les résultats incertains doivent rester signalés comme tels. La simulation doit évaluer cette limite avant toute mise en ligne.
+
+La rédaction et la relecture des **54 autres leçons** du parcours restent également à faire.
+
 ---
 
 ## Installation (Windows)
 
 ### Option A : récupérer l'installateur
 
-Le workflow GitHub Actions `CI & installateur Windows` construit automatiquement l'installateur à chaque push sur `main`, à chaque tag `v*` et sur demande depuis l'onglet *Actions* → *Run workflow* :
+La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.18.0_x64-setup.exe`.
 
-1. GitHub → **Actions** → dernière exécution réussie → artefact **lexora-windows** ;
-2. lancer `Lexora_2.1.0_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`.
+Le workflow GitHub Actions `CI & installateur Windows` lance les tests puis construit l'installateur à chaque push sur `main` ou `claude/**`, à chaque tag `v*`, pour les PR vers `main`, et sur demande depuis l'onglet *Actions* → *Run workflow*. Pour essayer une construction non publiée : **Actions → exécution réussie de la branche voulue → artefact lexora-windows**.
 
 ### Mises à jour automatiques
 
@@ -196,7 +230,16 @@ Dès la version 2.1.0, Lexora vérifie au démarrage (puis toutes les 6 h, ou *P
 - À chaque push, si la version (`package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`) n'a pas encore de *Release*, la CI publie la release `v<version>` avec les installateurs signés et `latest.json`.
 - Prérequis : deux secrets GitHub, **`TAURI_SIGNING_PRIVATE_KEY`** (contenu de la clé privée de signature) et **`TAURI_SIGNING_PRIVATE_KEY_PASSWORD`**. La clé publique correspondante est dans `tauri.conf.json`. Sans ces secrets, l'installateur est construit mais aucune release n'est publiée.
 - La clé privée ne doit jamais être commitée ; si elle est perdue, les versions déjà installées ne pourront plus se mettre à jour (il faudra réinstaller manuellement une version signée avec une nouvelle clé).
-- Pour publier une nouvelle version : augmenter le numéro dans les trois fichiers et pousser.
+
+Pour publier une nouvelle version :
+
+1. Terminer les changements et laisser les workflows **Catalogue de lecture** et **Grammaire (phrases Tatoeba)** produire leurs commits de données sur la branche à publier. Récupérer ces commits en local.
+2. Si le schéma a évolué, terminer les quatre mises à jour décrites au §5 et documenter l'exécution de `supabase/schema.sql`.
+3. Augmenter le même numéro dans `package.json`, `src-tauri/Cargo.toml` et `src-tauri/tauri.conf.json` ; garder les fichiers de verrouillage cohérents.
+4. Exécuter **`npm test`**, **`npm run typecheck`** et **`npm run build`** avant le push. Faire un petit commit en français avec la version dans le titre.
+5. Pousser, puis contrôler la CI, la release `v<version>`, les installateurs, leurs signatures et `latest.json`.
+
+**Le commit de version doit venir après les commits automatiques de données.** Une release existante n'est pas remplacée par le workflow : des données arrivées après sa construction ne seront incluses que dans une nouvelle version. Une correction de documentation seule ne demande pas de nouvelle version.
 
 ### Intégration Windows
 
@@ -215,7 +258,7 @@ Prérequis, une seule fois :
 ```powershell
 git clone https://github.com/ClementJonckheere/Lexora.git
 cd Lexora
-npm install
+npm ci
 npm run app:build
 ```
 
@@ -228,8 +271,13 @@ npm run app:dev     # application Tauri avec rechargement à chaud
 npm run dev         # aperçu dans le navigateur (http://localhost:1420), données dans IndexedDB
 npm test            # tests de la logique métier et de la synchronisation (Vitest)
 npm run typecheck   # vérification TypeScript
+npm run build       # vérification TypeScript et construction du frontend
 cargo test --manifest-path src-tauri/Cargo.toml   # tests de la couche native
 ```
+
+Le test d'intégration PostgreSQL / PostgREST est ignoré par défaut en local ; son lancement demande le serveur et les variables décrits dans [`src/core/sync/supabase.integration.test.ts`](src/core/sync/supabase.integration.test.ts). La CI dispose d'un job dédié. Un résultat local vert ne signifie pas que ce test a été exécuté.
+
+Avant chaque push : les trois commandes `npm test`, `npm run typecheck` et `npm run build` doivent réussir. Les changements restent petits, avec des messages de commit en français. Tout outil de mesure doit conserver sa validation chiffrée comme test permanent. Textes d'interface en français, apostrophes droites et aucun tiret cadratin. Demander un accord avant de modifier le schéma Supabase, ajouter une dépendance lourde ou supprimer une fonction ; l'application conserve son principe d'absence d'IA générative.
 
 ## Compte Google et synchronisation
 
@@ -243,13 +291,23 @@ Voir le guide pas à pas [docs/SUPABASE.md](docs/SUPABASE.md) :
 
 Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 
-**Mise à jour 2.2.0** : relancer `supabase/schema.sql` (nouvelle table `books` pour la position de lecture). **Mise à jour 2.1.0** : relancer `supabase/schema.sql` dans l'éditeur SQL de Supabase (colonnes `notes.suspended` et `universes.new_per_day`). Le script est idempotent. Sans cela, la synchronisation affiche « base Supabase à mettre à jour ».
+**Relancer `supabase/schema.sql` dans l'éditeur SQL de Supabase après les évolutions suivantes**, si cela n'a pas déjà été fait. Le script complet est idempotent ; une exécution de sa version actuelle applique toutes ces évolutions.
+
+| Version de l'application | Évolution Supabase |
+|---|---|
+| 2.1.0 | Colonnes `notes.suspended` et `universes.new_per_day` |
+| 2.2.0 | Table `books` pour la position de lecture |
+| 2.13 | Tables `word_marks`, `vocab_tests` (avec réponses brutes) et `vocab_observations` |
+| 2.15 | Table `grammar_answers` pour les réponses et signalements |
+| 2.16 | Fonction `grammar_reported_items` pour le retrait des exercices signalés |
+
+Si une table facultative récente manque, ses données restent locales et les autres tables continuent à se synchroniser ; l'application signale la mise à jour nécessaire. Sans la fonction `grammar_reported_items`, le workflow Grammaire peut se terminer avec un avertissement sans lire les signalements. La version 2.18.0 n'ajoute pas de migration au-delà de celles-ci.
 
 ## Données, sauvegarde et restauration
 
 - Base : `%APPDATA%\com.clementjonckheere.lexora\lexora.db` (chemin exact affiché dans *Paramètres*).
 - **Sauvegarde automatique** : une copie par jour au démarrage, les 10 dernières sont conservées (`…\backups\`).
-- **Sauvegarde complète** (*Paramètres → Sauvegarder*) : un fichier JSON avec tous les univers, les notes, les fiches FSRS, l'historique et les réglages. Il se **restaure** à l'identique, et la restauration se propage aux appareils synchronisés. Une copie de sécurité de la base est faite avant chaque restauration.
+- **Sauvegarde JSON** (*Paramètres → Sauvegarder*) : elle couvre actuellement les sept tables `universes`, `collections`, `notes`, `cards`, `review_logs`, `practice_logs` et `settings` (`src/core/repo/transfer.ts`). Les données de lecture, les marques de mots, les tests et observations de vocabulaire, les réponses de grammaire et les réglages locaux n'y sont pas inclus. La restauration remplace les données de ces sept tables et se propage aux appareils synchronisés ; une copie de sécurité de la base est faite avant chaque restauration. L'extension de l'export JSON aux autres données reste à faire.
 - **Export** CSV (UTF-8, `;`, s'ouvre directement dans Excel) et JSON de l'univers courant. **Import** CSV et JSON dans l'univers courant, doublons ignorés.
 
 ## Sources et licences des données
