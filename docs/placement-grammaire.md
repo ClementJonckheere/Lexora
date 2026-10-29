@@ -1,6 +1,6 @@
-# Placement grammatical : moteur expérimental et validation
+# Placement grammatical : moteur, banque et validation
 
-Le moteur est implémenté dans `src/core/learn/placement.ts`. Il n'est pas activé dans l'interface et ne modifie ni les données utilisateur, ni le schéma SQLite / Supabase, ni FSRS. La banque d'exercices dédiée A1–C1, l'enregistrement des résultats, leur correction manuelle et les mini-tests de leçon restent à construire.
+**État (2.24).** Le moteur (`src/core/learn/placement.ts`) est actif dans *Apprendre* depuis la 2.22 : test de 40 questions au plus sur les 20 leçons et leurs prérequis (35 points), niveau global et modèle de règle superficielle (2.23), résultats corrigeables enregistrés dans les réglages synchronisés (`placement`, par univers), mini-test de leçon pour les points que le test n'a pas tranchés. Les réponses brutes du test et des mini-tests sont conservées (vue Supabase `placement_answers`) pour l'analyse par question. Rien ne touche à FSRS ni à l'historique des leçons. La banque des 35 points est générée depuis Tatoeba puis filtrée (relecture de la 2.23 : 26 questions écartées et autant de filtres) ; les 126 questions rédigées couvrent les 39 autres points, hors du test actuel. Les sections ci-dessous retracent les étapes ; les chiffres de la 2.24 sont dans la dernière.
 
 ## Modèle et règles
 
@@ -117,3 +117,33 @@ Le niveau global aide surtout les profils réguliers aux extrêmes ; il ne fait 
 **Un point incertain n'est pas une impasse** : à l'ouverture de sa leçon, un mini-test de 3 questions (natures alternées, même mise à jour bayésienne et même seuil) tranche avant les exercices.
 
 Limites inchangées : profils binaires sans apprentissage, taux d'inattention et de hasard supposés, une seule règle superficielle par point ; la calibration sur des réponses réelles reste à faire.
+
+## Relecture de la banque générée, robustesse et analyse par question (2.24)
+
+**Le test posait d'autres questions que celles relues.** Les 21 points des questions rédigées sont hors du périmètre des 35 points : le test posait 280 questions générées depuis Tatoeba, jamais relues. Leur relecture en a écarté 26 (`public/grammar/en/placement-excluded.json`, avec la raison), surtout des réponses tapées à deux réponses justes : plus-que-parfait et present perfect sans repère (« No one ___ anything », « Mary ___ on time »), present perfect continu avec « all day », prétérit irrégulier où le present perfect est juste aussi, try + -ing / to, if = whether, until + nom, « just now », much adverbe. En réponse tapée, une telle question fait rater une fois sur deux quelqu'un qui connaît le point, quand le modèle suppose 10 % : le point peut sortir « à apprendre » et entraîner ses dépendants.
+
+**Filtres systématiques** (`placementBank.ts`, `placementBuilders.ts`, et les générateurs des leçons pour if = whether et try) : repère exigé pour le present perfect, d'antériorité pour le plus-que-parfait (sans wish ni if), for / since / how long pour le present perfect continu, repère passé pour le prétérit ; vraie proposition de temps et pas de question indirecte ; 2e conditionnel avec subordonnée au passé ; was admis à côté de were ; deux questions d'un point ne partagent ni une suite de trois mots ni un tour figé (if I were you, without…).
+
+**Points qui mesuraient autre chose.** must / have to devient *mustn't* contre *don't have to* (la traduction tranche) ; will se mesure contre le calque du présent (« Je t'aide » → *I help you*) et le présent d'habitude contre will ; le présent simple alterne la 3e personne (tapée) et les autres personnes (base ou -s), pour que « toujours -s » ne suffise pas ; présent et prétérit continus : repère anglais (now, Look!, when, while), traduction sans « en train de ».
+
+**Simulation hors des hypothèses du modèle** (`robustness` dans `docs/placement-simulation.json`, réglages de l'application, 60 apprenants par profil). Les apprenants appliquent, sur un point inconnu, une règle que le modèle ne connaît pas (toujours -s, proposition la plus longue, la plus courte comme approximation du calque) ou celle qu'il anticipe (nature dominante), avec une part de raccourci de 0,2 ou 0,8 (le modèle suppose 0,5) ; 15 % des questions peuvent être mal posées (ratées une fois sur deux par qui connaît le point). Résultat, pire profil : faux acquis de 1,2 à 2,7 % (4,5 % pour « toujours -s » à 0,8, sur l'ancienne banque du présent simple, toute à la 3e personne, que la CI régénère), faux « à apprendre » 1,4 % sans questions mal posées et 4 % avec. La simulation ne voit pas qu'une question précise est mauvaise : elle ne sait qu'en mesurer le coût moyen.
+
+**Analyse par question, sur de vraies réponses.** C'est elle qui aurait signalé les 26 questions : une question souvent ratée par des gens qui réussissent les autres questions du même point est suspecte. La vue `placement_answers` (une ligne par réponse : utilisateur, univers, date, test ou mini-test, question, réponse) s'y prête directement, par exemple dans Qlik ou en SQL :
+
+```sql
+-- Taux de réussite d'une question chez ceux qui réussissent les autres questions de son point.
+with a as (
+  select user_id, answered_at, question_id, split_part(question_id, ':', 2) as point, response = 'correct' as ok
+  from public.placement_answers
+),
+others as (
+  select x.question_id, x.ok,
+         avg((y.ok)::int) as autres_reussies
+  from a x join a y on y.user_id = x.user_id and y.answered_at = x.answered_at and y.point = x.point and y.question_id <> x.question_id
+  group by x.question_id, x.ok, x.user_id, x.answered_at
+)
+select question_id, count(*) as reponses, avg(ok::int) filter (where autres_reussies >= 0.75) as reussite_chez_les_bons
+from others group by question_id order by reussite_chez_les_bons nulls last;
+```
+
+**Mini-test.** Questions tapées d'abord, puis à 3 propositions, les choix binaires en dernier ; autant de questions (3 à 5) qu'il faut pour que tout réussir au hasard tombe à 1 chance sur 16 (4 sur 4 en choix binaires, alors que 3 sur 3 arrive au hasard une fois sur 8) ; a priori neutre (0,5 au plus) plutôt que la probabilité du test ; « acquis » refusé si le hasard aurait pu suffire.

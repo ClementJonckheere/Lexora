@@ -410,7 +410,7 @@ function LessonCheck({ id, onDone }: { id: string; onDone: (state: PlacementStat
   const { updateSettings, toast } = useApp.getState();
   const [items, setItems] = useState<PlacementItem[] | null>(null);
   const [started, setStarted] = useState(false);
-  const [responses, setResponses] = useState<{ response: PlacementResponse; mode: 'typed' | 'choice'; choices?: number }[]>([]);
+  const [responses, setResponses] = useState<{ q: string; response: PlacementResponse; mode: 'typed' | 'choice'; choices?: number }[]>([]);
   const [typed, setTyped] = useState('');
   const input = useRef<HTMLInputElement>(null);
 
@@ -426,12 +426,12 @@ function LessonCheck({ id, onDone }: { id: string; onDone: (state: PlacementStat
 
   const respond = (response: PlacementResponse) => {
     if (!item) return;
-    const next = [...responses, { response, mode: item.mode, choices: item.choices }];
+    const next = [...responses, { q: item.id, response, mode: item.mode, choices: item.choices }];
     setResponses(next);
     setTyped('');
     if (next.length < items.length) return;
     const prior = record.results.find((r) => r.id === id)?.probability ?? 0.5;
-    const check = checkResult(prior, next);
+    const check = { ...checkResult(prior, next), answers: next.map((r) => ({ q: r.q, r: r.response })) };
     void updateSettings({ placement: { ...placement, [universe!.id]: { ...record, checks: { ...record.checks, [id]: check } } } })
       .then(() => onDone(check.state))
       .catch((err) => toast('error', errorMessage(err)));

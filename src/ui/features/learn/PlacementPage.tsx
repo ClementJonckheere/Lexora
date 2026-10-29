@@ -64,7 +64,7 @@ function PlacementTest({ onDone }: { onDone: () => void }) {
   // Fin du test (confiance atteinte, 40 questions, ou plus de question utile) : enregistrement des résultats.
   useEffect(() => {
     if (!model || !started || !decision || decision.question) return;
-    const rec = placementRecord(model.estimate(answers));
+    const rec = placementRecord(model.estimate(answers), Date.now(), answers);
     void updateSettings({ placement: { ...placement, [universe.id]: rec } })
       .then(onDone)
       .catch((err) => toast('error', errorMessage(err)));

@@ -1,5 +1,5 @@
 import type { PlacementRecord, PlacementState } from '../domain/settings';
-import { DEFAULT_PLACEMENT_CONFIG, updatePlacementProbability, type PlacementEstimate, type PlacementResponse } from './placement';
+import { DEFAULT_PLACEMENT_CONFIG, updatePlacementProbability, type PlacementAnswer, type PlacementEstimate, type PlacementResponse } from './placement';
 import type { PlacementItem } from './placementBank';
 
 /**
@@ -12,10 +12,11 @@ export type DoneRecord = Extract<PlacementRecord, { status: 'done' }>;
 export const STATE_LABEL: Record<PlacementState, string> = { mastered: 'Acquis', consolidate: 'À consolider', learn: 'À apprendre' };
 
 /** Enregistrement d'un test terminé, à partir des estimations du moteur. */
-export function placementRecord(estimates: readonly PlacementEstimate[], now = Date.now()): DoneRecord {
+export function placementRecord(estimates: readonly PlacementEstimate[], now = Date.now(), answers: readonly PlacementAnswer[] = []): DoneRecord {
   return {
     status: 'done',
     at: now,
+    answers: answers.map((a) => ({ q: a.questionId, r: a.response })),
     results: estimates
       .filter((e) => e.kind === 'point')
       .map((e) => ({ id: e.id, state: e.state, probability: Math.round(e.probability * 1000) / 1000, evidence: e.evidence })),
@@ -30,22 +31,40 @@ export function pointState(record: DoneRecord, id: string): PlacementState | nul
 
 /* ------------------------------------------------------ mini-test de leçon --- */
 
-/** Questions d'un mini-test, et seuil de confiance (le même que le test de placement). */
+/**
+ * Mini-test : 3 questions au moins, 5 au plus, jusqu'à ce que réussir tout par hasard tombe à 1 chance sur 16 au
+ * plus. Trois choix binaires réussis au hasard une fois sur 8 suffiraient sinon à sauter la leçon : il en faut 4.
+ */
 export const CHECK_SIZE = 3;
+const CHECK_MAX = 5;
+const CHECK_LUCK = 1 / 16;
 const CONFIDENCE = DEFAULT_PLACEMENT_CONFIG.confidence;
+const luck = (q: PlacementItem) => (q.mode === 'typed' ? DEFAULT_PLACEMENT_CONFIG.typedChance : 1 / (q.choices ?? 2));
 
 /** Le test n'a pas tranché ce point (« à consolider »), et ni l'utilisateur ni un mini-test ne l'ont fait depuis. */
 export function needsCheck(record: DoneRecord, id: string): boolean {
   return !(id in record.overrides) && !record.checks?.[id] && record.results.find((r) => r.id === id)?.state === 'consolidate';
 }
 
-/** Questions du mini-test : jusqu'à 3, natures de réponse alternées (sujet / objet…), dans l'ordre de la banque. */
+/**
+ * Questions du mini-test : réponses tapées d'abord, puis 3 propositions ou plus, les choix binaires en dernier ; natures
+ * de réponse alternées (sujet / objet…). Autant de questions qu'il faut pour que le hasard ne suffise pas.
+ */
 export function checkItems(bank: readonly PlacementItem[], id: string, size = CHECK_SIZE): PlacementItem[] {
+  const strength = (q: PlacementItem) => (q.mode === 'typed' ? 0 : (q.choices ?? 2) >= 3 ? 1 : 2);
   const byForm = new Map<string, PlacementItem[]>();
-  for (const q of bank.filter((q) => q.targetId === id)) byForm.set(q.form ?? '', [...(byForm.get(q.form ?? '') ?? []), q]);
+  for (const q of bank.filter((q) => q.targetId === id).sort((a, b) => strength(a) - strength(b)))
+    byForm.set(q.form ?? '', [...(byForm.get(q.form ?? '') ?? []), q]);
   const queues = [...byForm.values()];
+  const ordered: PlacementItem[] = [];
+  while (queues.some((q) => q.length)) for (const q of queues) if (q.length) ordered.push(q.shift()!);
   const out: PlacementItem[] = [];
-  while (out.length < size && queues.some((q) => q.length)) for (const q of queues) if (q.length && out.length < size) out.push(q.shift()!);
+  let chance = 1;
+  for (const q of ordered) {
+    if (out.length >= CHECK_MAX || (out.length >= size && chance <= CHECK_LUCK)) break;
+    out.push(q);
+    chance *= luck(q);
+  }
   return out;
 }
 
@@ -59,9 +78,17 @@ export function checkResult(
   now = Date.now(),
 ): { at: number; probability: number; state: PlacementState } {
   const c = DEFAULT_PLACEMENT_CONFIG;
-  let p = Math.min(0.99, Math.max(0.01, prior));
-  for (const r of responses) p = updatePlacementProbability(p, r.response, c.slip, r.mode === 'typed' ? c.typedChance : 1 / (r.choices ?? 2));
-  return { at: now, probability: Math.round(p * 1000) / 1000, state: p >= CONFIDENCE ? 'mastered' : p <= 1 - CONFIDENCE ? 'learn' : 'consolidate' };
+  // Le test n'a pas tranché : on repart d'un a priori neutre plutôt que de sa probabilité (qui peut frôler le seuil).
+  let p = Math.min(0.5, Math.max(0.01, prior));
+  let lucky = 1;
+  for (const r of responses) {
+    const chance = r.mode === 'typed' ? c.typedChance : 1 / (r.choices ?? 2);
+    p = updatePlacementProbability(p, r.response, c.slip, chance);
+    if (r.response === 'correct') lucky *= chance;
+  }
+  // « Acquis » seulement si le hasard n'aurait pas suffi (banque trop petite pour 4 choix binaires, par exemple).
+  const state = p >= CONFIDENCE && lucky <= CHECK_LUCK ? 'mastered' : p <= 1 - CONFIDENCE ? 'learn' : 'consolidate';
+  return { at: now, probability: Math.round(p * 1000) / 1000, state };
 }
 
 /** Nombre de points dans chaque état. */

@@ -68,12 +68,19 @@ describe('mini-test de leçon', () => {
 
   it('questions aux natures de réponse alternées', () => {
     const bank = [q('1', 'x'), q('2', 'x'), q('3', 'x'), q('4', 'y'), q('5', 'z')];
-    expect(checkItems(bank, 'passive').map((i) => i.form)).toEqual(['x', 'y', 'z']);
+    expect(checkItems(bank, 'passive').map((i) => i.form)).toEqual(['x', 'y', 'z', 'x']);
   });
 
-  it('même mise à jour bayésienne et même seuil que le test : 3 choix justes sur 2 propositions → acquis, une erreur → incertain', () => {
+  it('le hasard ne suffit pas : 3 choix binaires justes → encore incertain, il en faut 4 ; tapé ou 3 propositions d’abord', () => {
     const choice = { mode: 'choice' as const, choices: 2 };
-    expect(checkResult(0.5, [1, 2, 3].map(() => ({ ...choice, response: 'correct' as const }))).state).toBe('mastered');
+    expect(checkResult(0.5, [1, 2, 3].map(() => ({ ...choice, response: 'correct' as const }))).state).toBe('consolidate');
+    expect(checkResult(0.5, [1, 2, 3, 4].map(() => ({ ...choice, response: 'correct' as const }))).state).toBe('mastered');
+    // Une probabilité du test proche du seuil ne raccourcit pas le mini-test : a priori neutre.
+    expect(checkResult(0.84, [1, 2, 3].map(() => ({ ...choice, response: 'correct' as const }))).state).toBe('consolidate');
+    const typed = (id: string): PlacementItem => ({ ...q(id, 't'), mode: 'typed', choices: undefined, options: undefined, hint: 'x' });
+    const binary = [q('b1', 'x'), q('b2', 'y'), q('b3', 'x'), q('b4', 'y'), q('b5', 'x')];
+    expect(checkItems(binary, 'passive')).toHaveLength(4);
+    expect(checkItems([...binary, typed('t1')], 'passive')[0].mode).toBe('typed');
     expect(checkResult(0.5, [{ ...choice, response: 'correct' }, { ...choice, response: 'incorrect' }, { ...choice, response: 'correct' }]).state).toBe('consolidate');
     expect(checkResult(0.5, [{ mode: 'typed', response: 'incorrect' }, { mode: 'typed', response: 'unknown' }]).state).toBe('learn');
   });

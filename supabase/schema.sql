@@ -300,5 +300,26 @@ $$;
 revoke all on function public.grammar_reported_items() from public;
 grant execute on function public.grammar_reported_items() to anon, authenticated;
 
+-- ------------------------------------- réponses du placement (v2.24) ---
+-- Une ligne par réponse au test de placement ou à un mini-test de leçon, tirée des réglages synchronisés (clé
+-- « placement ») : de quoi repérer les questions souvent ratées par des gens qui réussissent les autres questions du même
+-- point (analyse par question, par exemple dans Qlik). security_invoker : chacun ne lit que ses propres réponses.
+create or replace view public.placement_answers with (security_invoker = true) as
+select s.user_id, u.key as universe_id, (u.value->>'at')::bigint as answered_at, 'test'::text as source,
+       a->>'q' as question_id, a->>'r' as response
+from public.settings s
+cross join lateral jsonb_each(s.value::jsonb) u
+cross join lateral jsonb_array_elements(coalesce(u.value->'answers', '[]'::jsonb)) a
+where s.key = 'placement' and u.value->>'status' = 'done'
+union all
+select s.user_id, u.key, (c.value->>'at')::bigint, 'lesson-check', a->>'q', a->>'r'
+from public.settings s
+cross join lateral jsonb_each(s.value::jsonb) u
+cross join lateral jsonb_each(coalesce(u.value->'checks', '{}'::jsonb)) c
+cross join lateral jsonb_array_elements(coalesce(c.value->'answers', '[]'::jsonb)) a
+where s.key = 'placement' and u.value->>'status' = 'done';
+revoke all on public.placement_answers from anon;
+grant select on public.placement_answers to authenticated;
+
 -- Recharge le cache de l'API pour qu'elle voie immédiatement les nouvelles colonnes.
 notify pgrst, 'reload schema';

@@ -73,8 +73,21 @@ export type PlacementRecord =
       /** Corrections de l'utilisateur (« je connais déjà », « à revoir »). */
       overrides: Record<string, PlacementState>;
       /** Mini-tests passés au début d'une leçon, pour les points que le test n'a pas tranchés. */
-      checks?: Record<string, { at: number; probability: number; state: PlacementState }>;
+      checks?: Record<string, { at: number; probability: number; state: PlacementState; answers?: PlacementRawAnswer[] }>;
+      /** Réponses brutes du test (question, réponse) : analyse par question une fois de vraies réponses recueillies. */
+      answers?: PlacementRawAnswer[];
     };
+
+/** Réponse brute : identifiant de la question et réponse (correct, incorrect, unknown). */
+export interface PlacementRawAnswer {
+  q: string;
+  r: 'correct' | 'incorrect' | 'unknown';
+}
+const RESPONSES = new Set(['correct', 'incorrect', 'unknown']);
+const rawAnswers = (raw: unknown): PlacementRawAnswer[] | undefined =>
+  Array.isArray(raw)
+    ? raw.filter((a): a is PlacementRawAnswer => !!a && typeof (a as PlacementRawAnswer).q === 'string' && RESPONSES.has((a as PlacementRawAnswer).r))
+    : undefined;
 
 const PLACEMENT_STATES = new Set<string>(['mastered', 'consolidate', 'learn']);
 function sanitizePlacement(raw: unknown): Record<string, PlacementRecord> {
@@ -101,9 +114,13 @@ function sanitizePlacement(raw: unknown): Record<string, PlacementRecord> {
             const c = e[1] as { at?: unknown; probability?: unknown; state?: unknown } | null;
             return !!c && typeof c.at === 'number' && typeof c.probability === 'number' && typeof c.state === 'string' && PLACEMENT_STATES.has(c.state);
           },
-        ),
+        ).map(([id, c]) => {
+          const answers = rawAnswers((c as { answers?: unknown }).answers);
+          return [id, { at: c.at, probability: c.probability, state: c.state, ...(answers ? { answers } : {}) }];
+        }),
       );
-      out[universe] = { status: 'done', at: rec.at, results, overrides, ...(Object.keys(checks).length ? { checks } : {}) };
+      const answers = rawAnswers((rec as { answers?: unknown }).answers);
+      out[universe] = { status: 'done', at: rec.at, results, overrides, ...(Object.keys(checks).length ? { checks } : {}), ...(answers ? { answers } : {}) };
     }
   }
   return out;

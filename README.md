@@ -308,6 +308,7 @@ Sans ces valeurs, l'application fonctionne sans compte et sans synchronisation.
 | 2.15 | Table `grammar_answers` pour les réponses et signalements |
 | 2.16 | Fonction `grammar_reported_items` pour le retrait des exercices signalés |
 | 2.20 | Tables `note_entries` (durée de saisie, titre « Archiviste de l'instant ») et `typed_answers` (réponses tapées) |
+| 2.24 | Vue `placement_answers` (réponses du test de placement et des mini-tests, pour l'analyse par question) |
 
 Si une table facultative récente manque, ses données restent locales et les autres tables continuent à se synchroniser ; l'application signale la mise à jour nécessaire. Sans la fonction `grammar_reported_items`, le workflow Grammaire peut se terminer avec un avertissement sans lire les signalements. La version 2.20.0 ajoute les tables `note_entries` et `typed_answers`.
 

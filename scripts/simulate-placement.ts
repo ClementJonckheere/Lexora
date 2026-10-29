@@ -5,9 +5,9 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { PlacementModel, type PlacementTarget, type PlacementQuestion } from '../src/core/learn/placement';
-import { referencePlacementProfiles, simulatePlacement, type PlacementBehaviour } from '../src/core/learn/placementSimulation';
+import { referencePlacementProfiles, simulatePlacement, type PlacementBehaviour, type PlacementLearner } from '../src/core/learn/placementSimulation';
 import type { PlacementItem } from '../src/core/learn/placementBank';
-import { placementScope } from '../src/core/learn/placementResults';
+import { PLACEMENT_APP_CONFIG, placementScope } from '../src/core/learn/placementResults';
 
 const path = 'public/grammar/en/points.json';
 const data = JSON.parse(readFileSync(path, 'utf8')) as { points: { id: string; level: string; requires: string[]; after: string[] }[] };
@@ -30,6 +30,7 @@ const lessonIds = (JSON.parse(readFileSync('public/grammar/en/lessons.json', 'ut
 /** Leçons existantes et leurs prérequis (même périmètre que l'application). */
 const lessonScope = placementScope(targets, lessonIds);
 const bankLearners = 100;
+const robustLearners = 60;
 const bankConditions: { name: string; scope: 'all' | 'lessons'; globalLevel: number; behaviour: PlacementBehaviour }[] = [];
 for (const scope of ['all', 'lessons'] as const)
   for (const globalLevel of [0, 2])
@@ -40,7 +41,7 @@ const hashes = Object.fromEntries([path, bankPath, 'src/core/learn/placement.ts'
   p, createHash('sha256').update(readFileSync(p)).digest('hex'),
 ]));
 const report = {
-  version: 2,
+  version: 3,
   scope: 'Simulation abstraite du moteur, pas une mesure de validite des futurs exercices A1-C1.',
   seed, learnersPerProfile: learners, targets: targets.length, config: new PlacementModel(targets, []).config,
   truth: 'Les profils respectent requires mais peuvent ne pas respecter after. Ils sont binaires, sans apprentissage pendant le test.',
@@ -74,6 +75,25 @@ const report = {
       return { name, scope, globalLevel, behaviour, points: scoped.length, rows };
     }),
   },
+  // Réglages de l'application, apprenants hors des hypothèses du modèle : règles superficielles qu'il ne connaît pas,
+  // part de raccourci différente de la sienne (0,2 et 0,8 au lieu de 0,5), questions mal posées.
+  robustness: (() => {
+    const ids = new Set(lessonScope.map((t) => t.id));
+    const model = new PlacementModel(lessonScope, bank.filter((q) => ids.has(q.targetId)), PLACEMENT_APP_CONFIG);
+    const out = [];
+    for (const heuristic of ['dominant', 'suffix-s', 'longest', 'shortest'] as const)
+      for (const share of [0.2, 0.8])
+        for (const defective of [0, 0.15]) {
+          const learner: PlacementLearner = { heuristic, share, defective };
+          const rows = simulatePlacement(model, referencePlacementProfiles(lessonScope), robustLearners, seed, undefined, 'random', learner);
+          const worst = (k: 'falseMasteryRate' | 'falseLearnRate' | 'uncertainRate') => Math.max(...rows.map((r) => r[k]));
+          console.log(
+            `robustesse ${heuristic.padEnd(9)} part ${share} défectueuses ${defective} : faux acquis ≤ ${(100 * worst('falseMasteryRate')).toFixed(1)} %, faux « à apprendre » ≤ ${(100 * worst('falseLearnRate')).toFixed(1)} %, incertains ≤ ${(100 * worst('uncertainRate')).toFixed(1)} %`,
+          );
+          out.push({ heuristic, share, defective, rows });
+        }
+    return { learnersPerProfile: robustLearners, config: PLACEMENT_APP_CONFIG, points: lessonScope.length, conditions: out };
+  })(),
 };
 const outputIndex = process.argv.indexOf('--output');
 if (outputIndex >= 0) {
