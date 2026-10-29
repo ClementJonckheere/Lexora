@@ -243,6 +243,23 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_grammar_answers_lesson ON grammar_answers(universe_id, lesson_id, created_at)',
   ],
+}, {
+  version: 8,
+  name: 'progression : durée de saisie des mots ajoutés',
+  statements: [
+    // Une ligne par mot ajouté depuis le formulaire : temps entre l'ouverture et l'enregistrement (titre « Archiviste »).
+    `CREATE TABLE note_entries (
+      id           TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      note_id      TEXT    NOT NULL,
+      duration_ms  INTEGER NOT NULL,
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_note_entries_universe ON note_entries(universe_id, deleted)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

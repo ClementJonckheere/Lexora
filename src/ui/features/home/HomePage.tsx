@@ -13,7 +13,7 @@ import { estimateMinutes } from '@/core/repo/progressRepo';
 import { GettingStarted, ResumeReading } from './Widgets';
 import { useLessonReviews } from '@/ui/features/learn/reviews';
 import { RankBadge } from '@/ui/features/progress/ProgressPage';
-import { useXp } from '@/ui/features/progress/useXp';
+import { useProgress } from '@/ui/features/progress/useXp';
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -34,7 +34,8 @@ export function HomePage() {
   const due = useDueCounts();
   const lessonsDue = useLessonReviews().due.length;
   const progress = useDailyProgress();
-  const xp = useXp();
+  const rankProgress = useProgress();
+  const xp = rankProgress?.xp ?? null;
   const goal = settings.dailyGoal;
   const minutes = estimateMinutes(due.review + due.learning, due.new, progress.medianDurationMs);
 
@@ -90,7 +91,7 @@ export function HomePage() {
     <div className="page">
       <section className="hero hero--horizon">
         <div className="hero-center">
-          <RankBadge xp={xp} />
+          <RankBadge xp={xp} title={rankProgress?.title ?? null} />
           <span className="hero-greeting">{greeting()}</span>
           <h1 className="hero-headline">
             {due.total > 0 ? `${plural(due.total, 'fiche', 'fiches')}, environ ${minutes} min.` : "Rien à réviser pour l'instant."}

@@ -226,12 +226,26 @@ create table if not exists public.grammar_answers (
   server_updated_at  bigint not null default 0
 );
 
+-- ------------------------------------------------ progression (v2.20) ---
+-- Durée de saisie des mots ajoutés depuis le formulaire (titre « Archiviste de l'instant »).
+create table if not exists public.note_entries (
+  id                 uuid primary key,
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  universe_id        uuid not null,
+  note_id            uuid not null,
+  duration_ms        integer not null,
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0
+);
+
 -- ------------------------------------ index, déclencheurs, sécurité (RLS) ---
 do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);

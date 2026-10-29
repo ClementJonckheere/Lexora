@@ -3309,7 +3309,60 @@ p {
 .xp-scale-row--accent .mono {
   color: var(--gold);
 }
+.title-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.title-choice .select {
+  width: auto;
+}
+.titles-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+.titles-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.title-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text-3);
+}
+.title-card-name {
+  font-size: 15px;
+}
+.title-card-desc {
+  font-size: 12px;
+  line-height: 1.45;
+}
+.title-card-progress {
+  margin-top: 2px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+.title-card--earned {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-2);
+}
+.title-card--earned .title-card-name {
+  color: var(--text);
+}
 @media (max-width: 1100px) {
+  .titles-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .rank-row {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }

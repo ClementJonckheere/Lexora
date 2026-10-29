@@ -33,6 +33,8 @@ export interface Settings {
   clozeFront: boolean;
   /** Ordre des nouveaux mots : les plus fréquents dans la langue d'abord, ou par date d'ajout. */
   newOrder: 'frequency' | 'added';
+  /** Titre affiché à côté du rang, par univers (identifiant du titre, ou « none »). */
+  displayedTitles: Record<string, string>;
   /** Version des réglages par défaut appliqués (changements de défaut une seule fois, pour tous). */
   settingsVersion: number;
 
@@ -92,6 +94,7 @@ export const DEFAULT_SETTINGS: Settings = {
   naturalVoice: true,
   clozeFront: true,
   newOrder: 'frequency',
+  displayedTitles: {},
   settingsVersion: 0,
   ttsVoices: {},
   ttsRate: 0.95,
@@ -132,6 +135,10 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.naturalVoice = bool(raw.naturalVoice, s.naturalVoice);
   s.clozeFront = bool(raw.clozeFront, s.clozeFront);
   s.newOrder = raw.newOrder === 'added' ? 'added' : 'frequency';
+  s.displayedTitles =
+    raw.displayedTitles && typeof raw.displayedTitles === 'object'
+      ? Object.fromEntries(Object.entries(raw.displayedTitles as Record<string, unknown>).filter((e): e is [string, string] => typeof e[1] === 'string'))
+      : {};
   s.settingsVersion = Number.isInteger(raw.settingsVersion) ? (raw.settingsVersion as number) : 0;
   s.clipboardPrefill = bool(raw.clipboardPrefill, s.clipboardPrefill);
   s.closeToTray = bool(raw.closeToTray, s.closeToTray);

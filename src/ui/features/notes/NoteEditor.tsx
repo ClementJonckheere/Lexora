@@ -75,6 +75,8 @@ function NoteEditorDialog() {
       } as Draft;
 
   const [draft, setDraft] = useState<Draft>(initial);
+  // Durée de saisie d'un nouveau mot (progression) : de l'ouverture du formulaire à l'enregistrement.
+  const openedAt = useRef(Date.now());
   const [errors, setErrors] = useState<FieldErrors>({});
   const [saving, setSaving] = useState(false);
   const [dupAck, setDupAck] = useState(false);
@@ -133,7 +135,8 @@ function NoteEditorDialog() {
     const input: NoteInput = { ...draft, examples: draft.examples };
     setSaving(true);
     try {
-      await saveNote(input, existing?.id);
+      await saveNote(input, existing?.id, isEdit ? undefined : Date.now() - openedAt.current);
+      openedAt.current = Date.now();
       if (!isEdit && keepOpen) {
         toast('success', `« ${draft.expression.trim()} » ajouté`);
         setDraft({ ...EMPTY, tags: draft.tags, collectionIds: draft.collectionIds, category: draft.category });

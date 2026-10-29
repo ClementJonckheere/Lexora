@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createMemoryDatabase } from '../db/testing';
 import type { GrammarAnswer } from '../learn/progress';
-import { loadXpEvents } from './xpRepo';
+import { loadHistory, loadXpEvents, recordNoteEntry } from './xpRepo';
 
 const T = new Date(2026, 9, 29, 9, 0).getTime();
 
@@ -59,5 +59,15 @@ describe('événements d’XP', () => {
     answers.push({ lessonId: 'present-perfect', itemId: 'present-perfect:20', correct: true, reported: false, createdAt: T + 20 * 30_000 });
     const again = await loadXpEvents(await createMemoryDatabase(), 'en', answers);
     expect(again.filter((e) => e.kind === 'lesson-mastered')).toHaveLength(1);
+  });
+});
+
+describe('durée de saisie', () => {
+  it('enregistrée pour un nouveau mot, ignorée au-delà de 10 minutes', async () => {
+    const db = await createMemoryDatabase();
+    await recordNoteEntry(db, 'en', 'n1', 3200, T);
+    await recordNoteEntry(db, 'en', 'n2', 11 * 60_000, T);
+    await recordNoteEntry(db, 'es', 'n3', 2000, T);
+    expect((await loadHistory(db, 'en', [])).entries).toEqual([{ at: T, durationMs: 3200 }]);
   });
 });

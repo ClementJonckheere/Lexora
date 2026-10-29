@@ -1,7 +1,8 @@
 import { useApp } from '@/app/store';
+import { TITLE_CATEGORIES, type Title } from '@/core/progress/titles';
 import { FOCUS_STEPS, NOTE_XP_PER_DAY, RANKS, type XpSummary } from '@/core/progress/xp';
 import { Ornament } from './Ornament';
-import { useXp } from './useXp';
+import { useProgress } from './useXp';
 
 const nf = new Intl.NumberFormat('fr-FR');
 const fmt = (n: number) => nf.format(n);
@@ -17,13 +18,21 @@ export function XpBar({ xp, width }: { xp: XpSummary; width?: number }) {
 }
 
 /** Rang de l'accueil : ornement, rang, barre et XP restante ; ouvre la page Progression. */
-export function RankBadge({ xp }: { xp: XpSummary | null }) {
+export function RankBadge({ xp, title }: { xp: XpSummary | null; title: Title | null }) {
   const { navigate } = useApp.getState();
   if (!xp) return <div className="rank-badge rank-badge--empty" aria-hidden="true" />;
   return (
     <button className="rank-badge" onClick={() => navigate({ name: 'progress' })} aria-label={`Rang ${xp.rank.name}, niveau ${xp.level}, voir la progression`}>
       <Ornament rank={xp.rank} size={112} level={xp.level} />
-      <span className="rank-badge-name">{xp.rank.name}</span>
+      <span className="rank-badge-name">
+        {xp.rank.name}
+        {title && (
+          <>
+            {' · '}
+            <span className="gold">{title.name}</span>
+          </>
+        )}
+      </span>
       <XpBar xp={xp} width={220} />
       <span className="rank-badge-left">
         {fmt(xp.needed - xp.into)} XP avant le niveau {xp.level + 1}
@@ -50,10 +59,16 @@ const SCALE: { label: string; value: string; accent?: boolean }[] = [
 ];
 
 export function ProgressPage() {
-  const xp = useXp();
+  const progress = useProgress();
   const universe = useApp((s) => s.universe);
-  if (!xp) return <div className="page" />;
+  const chosen = useApp((s) => (universe ? s.settings.displayedTitles[universe.id] : undefined));
+  const displayedTitles = useApp((s) => s.settings.displayedTitles);
+  const { updateSettings } = useApp.getState();
+  if (!progress || !universe) return <div className="page" />;
+  const { xp, titles, title } = progress;
   const { rank, next } = xp;
+  const earned = titles.filter((t) => t.earned);
+  const choose = (id: string) => void updateSettings({ displayedTitles: { ...displayedTitles, [universe.id]: id } });
 
   return (
     <div className="page progress-page">
@@ -62,15 +77,30 @@ export function ProgressPage() {
       <section className="rank-current" aria-label="Rang actuel">
         <Ornament rank={rank} size={168} level={xp.level} />
         <div className="rank-current-body">
-          <span className="eyebrow">Niveau {xp.level}</span>
-          <h1 className="rank-current-title">{rank.name}</h1>
+          <span className="eyebrow">{title ? `Rang ${rank.name} · niveau ${xp.level}` : `Niveau ${xp.level}`}</span>
+          <h1 className="rank-current-title">{title?.name ?? rank.name}</h1>
           <div className="rank-current-bar">
             <XpBar xp={xp} />
             <span className="mono muted">
               {fmt(xp.into)} / {fmt(xp.needed)} XP{next ? ` · ${next.name} au niveau ${next.from}` : ''}
             </span>
           </div>
-          <span className="muted">{fmt(xp.total)} XP en tout</span>
+          <div className="row row--wrap" style={{ gap: 24 }}>
+            <span className="muted">{fmt(xp.total)} XP en tout</span>
+            {earned.length > 0 && (
+              <label className="title-choice">
+                Titre affiché
+                <select className="select" value={chosen === 'none' ? 'none' : (title?.id ?? 'none')} onChange={(e) => choose(e.target.value)}>
+                  {earned.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name}
+                    </option>
+                  ))}
+                  <option value="none">Aucun</option>
+                </select>
+              </label>
+            )}
+          </div>
         </div>
       </section>
 
@@ -97,6 +127,31 @@ export function ProgressPage() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section className="progress-section" aria-label="Titres">
+        <div className="row row--between">
+          <h2 className="progress-h2">Titres</h2>
+          <span className="muted small">
+            {earned.length} obtenu{earned.length > 1 ? 's' : ''} sur {titles.length} · un seul s'affiche, au choix
+          </span>
+        </div>
+        <div className="titles-grid">
+          {TITLE_CATEGORIES.map((cat) => (
+            <div key={cat} className="titles-col">
+              <span className="hero-fact-label">{cat}</span>
+              {titles
+                .filter((t) => t.category === cat)
+                .map((t) => (
+                  <div key={t.id} className={`title-card${t.earned ? ' title-card--earned' : ''}`}>
+                    <span className="title-card-name">{t.name}</span>
+                    <span className="title-card-desc">{t.description}</span>
+                    {t.progress && <span className="title-card-progress">{t.progress}</span>}
+                  </div>
+                ))}
+            </div>
+          ))}
         </div>
       </section>
 

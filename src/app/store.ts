@@ -8,6 +8,7 @@ import * as knowledgeRepo from '@/core/repo/knowledgeRepo';
 import type { VocabTestResult } from '@/core/repo/knowledgeRepo';
 import type { Observation } from '@/core/reading/calibration';
 import * as learnRepo from '@/core/repo/learnRepo';
+import * as xpRepo from '@/core/repo/xpRepo';
 import type { GrammarAnswer } from '@/core/learn/progress';
 import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode, Universe } from '@/core/domain/types';
 import * as notesRepo from '@/core/repo/notesRepo';
@@ -181,7 +182,8 @@ interface AppState {
   renameUniverse(id: string, name: string): Promise<void>;
   deleteUniverse(id: string): Promise<void>;
 
-  saveNote(input: NoteInput, id?: string | null): Promise<string>;
+  /** `entryMs` : durée de saisie d'un nouveau mot dans le formulaire (progression). */
+  saveNote(input: NoteInput, id?: string | null, entryMs?: number): Promise<string>;
   /** Suppression immédiate, annulable depuis la notification. */
   deleteNotes(ids: string[]): Promise<void>;
   restoreNotes(ids: string[]): Promise<void>;
@@ -484,7 +486,7 @@ export const useApp = create<AppState>((set, get) => {
 
     /* -------------------------------- Notes ------------------------------- */
 
-    async saveNote(input, id) {
+    async saveNote(input, id, entryMs) {
       const d = db();
       const u = universe();
       let noteId: string;
@@ -495,6 +497,7 @@ export const useApp = create<AppState>((set, get) => {
         noteId = id;
       } else {
         noteId = await notesRepo.createNote(d, input, { universeId: u.id, language: u.language });
+        if (entryMs !== undefined) await xpRepo.recordNoteEntry(d, u.id, noteId, entryMs).catch(() => undefined);
       }
       await afterWrite();
       return noteId;
