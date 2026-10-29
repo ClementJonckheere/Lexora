@@ -253,6 +253,9 @@ p {
   gap: 6px;
 }
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.32em;
@@ -1701,9 +1704,21 @@ p {
   --grade-color: var(--easy);
 }
 .reveal-btn {
-  width: 100%;
-  height: 52px;
-  font-size: 15px;
+  /* Discret : la carte reste le centre de l'attention. */
+  display: flex;
+  min-width: 260px;
+  height: 46px;
+  margin: 0 auto;
+  border-radius: 999px;
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 14.5px;
+}
+.reveal-btn:hover {
+  border-color: var(--border-strong);
+  background: transparent;
+  color: var(--text);
 }
 .session-hints {
   display: flex;
@@ -1947,7 +1962,7 @@ p {
   }
 }
 @media (max-width: 860px) {
-  .wordmark,
+  .wordmark-text,
   .topbar .universe-name,
   .topbar .btn .label {
     display: none;
@@ -1984,10 +1999,12 @@ p {
   align-items: center;
   justify-content: center;
   flex: none;
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
-  color: #fff;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  color: var(--text-2);
+  font-family: var(--mono);
+  font-weight: 400;
+  letter-spacing: 0.04em;
   line-height: 1;
 }
 .universe-switcher {

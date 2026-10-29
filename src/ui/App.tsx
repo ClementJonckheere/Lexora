@@ -77,6 +77,18 @@ function ThemeToggle() {
 }
 
 /** Barre du haut : langue à gauche, navigation au centre, recherche, fond, compte et ajout à droite. */
+/** Signe de Lexora : un L dont la jambe sert d'horizon, et un astre qui s'y lève. */
+function LogoMark() {
+  return (
+    <svg className="logo-mark" width="20" height="20" viewBox="232 300 580 400" aria-hidden="true">
+      <g fill="none" stroke="currentColor" strokeWidth="46" strokeLinecap="round">
+        <path d="M272 340 V660 H772" />
+        <path d="M422 660 A150 150 0 0 1 722 660" strokeLinecap="butt" />
+      </g>
+    </svg>
+  );
+}
+
 function TopBar() {
   const route = useApp((s) => s.route);
   const { navigate, openEditor, setSearchOpen } = useApp.getState();
@@ -85,7 +97,10 @@ function TopBar() {
   return (
     <header className="topbar">
       <div className="topbar-side">
-        <span className="wordmark">Lexora</span>
+        <span className="wordmark">
+          <LogoMark />
+          <span className="wordmark-text">Lexora</span>
+        </span>
         <UniverseSwitcher />
       </div>
       <nav className="topnav" aria-label="Navigation principale">

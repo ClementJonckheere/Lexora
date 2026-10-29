@@ -153,7 +153,7 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
       />
       <div className="session-actions">
         {!revealed ? (
-          <Button variant="primary" className="reveal-btn" onClick={reveal} shortcut="Espace">
+          <Button className="reveal-btn" onClick={reveal} shortcut="Espace">
             Afficher la réponse
           </Button>
         ) : (

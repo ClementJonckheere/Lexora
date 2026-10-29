@@ -318,7 +318,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
       </Flashcard>
       <div className="session-actions">
         {!revealed ? (
-          <Button variant="primary" className="reveal-btn" onClick={typing ? submitTyped : reveal} shortcut={typing ? 'Entrée' : 'Espace'}>
+          <Button className="reveal-btn" onClick={typing ? submitTyped : reveal} shortcut={typing ? 'Entrée' : 'Espace'}>
             {typing && typed.trim() ? 'Vérifier' : 'Afficher la réponse'}
           </Button>
         ) : (
