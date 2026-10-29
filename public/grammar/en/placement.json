@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-10-29T20:51:10.681Z",
+ "generatedAt": "2026-10-29T21:28:03.558Z",
  "source": "Tatoeba (CC BY 2.0 FR) : banques des leçons et du placement ; questions rédigées (placement-written.json)",
  "status": "généré automatiquement, à relire avant activation",
  "covered": {
@@ -271,28 +271,28 @@
   },
   "adjectives": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 2,
+   "choice3plus": 4
   },
   "simple-vs-continuous": {
-   "typed": 6,
+   "typed": 8,
    "choice2": 0,
    "choice3plus": 0
   },
   "reported-statements": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 6,
+   "choice3plus": 0
   },
   "subject-questions": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 8,
+   "choice3plus": 0
   },
   "purpose-to": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 3,
+   "choice3plus": 3
   },
   "preposition-ing": {
    "typed": 6,
@@ -301,18 +301,18 @@
   },
   "make-let": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 8,
+   "choice3plus": 0
   },
   "phrasal-verbs": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 8,
+   "choice3plus": 0
   },
   "mixed-conditionals": {
    "typed": 4,
-   "choice2": 0,
-   "choice3plus": 2
+   "choice2": 2,
+   "choice3plus": 0
   },
   "passive-modals": {
    "typed": 6,
@@ -321,8 +321,8 @@
   },
   "have-something-done": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 6,
+   "choice3plus": 0
   },
   "relatives-non-defining": {
    "typed": 0,
@@ -351,18 +351,18 @@
   },
   "inversion": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 5,
+   "choice3plus": 1
   },
   "cleft-sentences": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 2,
+   "choice3plus": 4
   },
   "participle-clauses": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 5,
+   "choice3plus": 1
   },
   "subjunctive": {
    "typed": 0,
@@ -371,8 +371,8 @@
   },
   "emphatic-do": {
    "typed": 0,
-   "choice2": 0,
-   "choice3plus": 6
+   "choice2": 6,
+   "choice3plus": 0
   }
  },
  "missing": [],
@@ -491,6 +491,7 @@
    "answer": "went",
    "source": "tatoeba:1742463",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "go"
   },
@@ -504,6 +505,7 @@
    "answer": "has come",
    "source": "tatoeba:291659",
    "status": "généré",
+   "form": "perfect",
    "mode": "typed",
    "hint": "come"
   },
@@ -517,6 +519,7 @@
    "answer": "spoke",
    "source": "tatoeba:2239577",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "speak"
   },
@@ -530,6 +533,7 @@
    "answer": "have eaten",
    "source": "tatoeba:6863430",
    "status": "généré",
+   "form": "perfect",
    "mode": "typed",
    "hint": "eat"
   },
@@ -543,6 +547,7 @@
    "answer": "woke",
    "source": "tatoeba:2612082",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "wake"
   },
@@ -556,6 +561,7 @@
    "answer": "have forgiven",
    "source": "tatoeba:1334393",
    "status": "généré",
+   "form": "perfect",
    "mode": "typed",
    "hint": "forgive"
   },
@@ -569,6 +575,7 @@
    "answer": "rained",
    "source": "tatoeba:4823475",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "rain"
   },
@@ -582,6 +589,7 @@
    "answer": "has been",
    "source": "tatoeba:4496206",
    "status": "généré",
+   "form": "perfect",
    "mode": "typed",
    "hint": "be"
   },
@@ -843,6 +851,7 @@
    "answer": "used to live",
    "source": "tatoeba:12087236",
    "status": "généré",
+   "form": "used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -861,6 +870,7 @@
    "answer": "found",
    "source": "tatoeba:3312910",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "find"
   },
@@ -874,6 +884,7 @@
    "answer": "used to feel",
    "source": "tatoeba:7255066",
    "status": "généré",
+   "form": "used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -892,6 +903,7 @@
    "answer": "got",
    "source": "tatoeba:4264393",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "get"
   },
@@ -905,6 +917,7 @@
    "answer": "used to be",
    "source": "tatoeba:259009",
    "status": "généré",
+   "form": "used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -923,6 +936,7 @@
    "answer": "arrived",
    "source": "tatoeba:493788",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "arrive"
   },
@@ -936,6 +950,7 @@
    "answer": "used to hate",
    "source": "tatoeba:5827888",
    "status": "généré",
+   "form": "used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -954,6 +969,7 @@
    "answer": "passed",
    "source": "tatoeba:571632",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "pass"
   },
@@ -967,6 +983,7 @@
    "answer": "comes",
    "source": "tatoeba:531189",
    "status": "généré",
+   "form": "present",
    "mode": "typed",
    "hint": "come"
   },
@@ -980,6 +997,7 @@
    "answer": "will help",
    "source": "tatoeba:39498",
    "status": "généré",
+   "form": "will",
    "mode": "typed",
    "hint": "help"
   },
@@ -993,6 +1011,7 @@
    "answer": "stay",
    "source": "tatoeba:5506982",
    "status": "généré",
+   "form": "present",
    "mode": "typed",
    "hint": "stay"
   },
@@ -1006,6 +1025,7 @@
    "answer": "will make",
    "source": "tatoeba:19637",
    "status": "généré",
+   "form": "will",
    "mode": "typed",
    "hint": "make"
   },
@@ -1019,6 +1039,7 @@
    "answer": "get",
    "source": "tatoeba:10312068",
    "status": "généré",
+   "form": "present",
    "mode": "typed",
    "hint": "get"
   },
@@ -1032,6 +1053,7 @@
    "answer": "will complain",
    "source": "tatoeba:2012711",
    "status": "généré",
+   "form": "will",
    "mode": "typed",
    "hint": "complain"
   },
@@ -1045,6 +1067,7 @@
    "answer": "rains",
    "source": "tatoeba:1438061",
    "status": "généré",
+   "form": "present",
    "mode": "typed",
    "hint": "rain"
   },
@@ -1058,6 +1081,7 @@
    "answer": "will see",
    "source": "tatoeba:2543072",
    "status": "généré",
+   "form": "will",
    "mode": "typed",
    "hint": "see"
   },
@@ -1071,6 +1095,7 @@
    "answer": "left",
    "source": "tatoeba:2544483",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "leave"
   },
@@ -1084,6 +1109,7 @@
    "answer": "would take",
    "source": "tatoeba:2544893",
    "status": "généré",
+   "form": "would",
    "mode": "typed",
    "hint": "take"
   },
@@ -1097,6 +1123,7 @@
    "answer": "were",
    "source": "tatoeba:9368928",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "be"
   },
@@ -1110,6 +1137,7 @@
    "answer": "would do",
    "source": "tatoeba:6354423",
    "status": "généré",
+   "form": "would",
    "mode": "typed",
    "hint": "do"
   },
@@ -1123,6 +1151,7 @@
    "answer": "helped",
    "source": "tatoeba:3882609",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "help"
   },
@@ -1136,6 +1165,7 @@
    "answer": "would buy",
    "source": "tatoeba:8040107",
    "status": "généré",
+   "form": "would",
    "mode": "typed",
    "hint": "buy"
   },
@@ -1149,6 +1179,7 @@
    "answer": "kissed",
    "source": "tatoeba:1841512",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "kiss"
   },
@@ -1162,6 +1193,7 @@
    "answer": "would wait",
    "source": "tatoeba:3825555",
    "status": "généré",
+   "form": "would",
    "mode": "typed",
    "hint": "wait"
   },
@@ -1175,6 +1207,7 @@
    "answer": "will stay",
    "source": "tatoeba:10793317",
    "status": "généré",
+   "form": "will",
    "mode": "typed",
    "hint": "stay"
   },
@@ -1188,6 +1221,7 @@
    "answer": "get",
    "source": "tatoeba:11559663",
    "status": "généré",
+   "form": "present",
    "mode": "typed",
    "hint": "get"
   },
@@ -1201,6 +1235,7 @@
    "answer": "will be",
    "source": "tatoeba:2883848",
    "status": "généré",
+   "form": "will",
    "mode": "typed",
    "hint": "be"
   },
@@ -1214,6 +1249,7 @@
    "answer": "die",
    "source": "tatoeba:1224624",
    "status": "généré",
+   "form": "present",
    "mode": "typed",
    "hint": "die"
   },
@@ -1227,6 +1263,7 @@
    "answer": "will sleep",
    "source": "tatoeba:5767577",
    "status": "généré",
+   "form": "will",
    "mode": "typed",
    "hint": "sleep"
   },
@@ -1240,6 +1277,7 @@
    "answer": "shuts",
    "source": "tatoeba:9509807",
    "status": "généré",
+   "form": "present",
    "mode": "typed",
    "hint": "shut"
   },
@@ -1253,6 +1291,7 @@
    "answer": "will you come",
    "source": "tatoeba:7586794",
    "status": "généré",
+   "form": "will",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1271,6 +1310,7 @@
    "answer": "tell",
    "source": "tatoeba:2288969",
    "status": "généré",
+   "form": "present",
    "mode": "typed",
    "hint": "tell"
   },
@@ -1628,6 +1668,7 @@
    "answer": "who",
    "source": "tatoeba:366925",
    "status": "généré",
+   "form": "who",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1646,6 +1687,7 @@
    "answer": "which",
    "source": "tatoeba:11301719",
    "status": "généré",
+   "form": "which",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1664,6 +1706,7 @@
    "answer": "who",
    "source": "tatoeba:1371227",
    "status": "généré",
+   "form": "who",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1682,6 +1725,7 @@
    "answer": "which",
    "source": "tatoeba:11557290",
    "status": "généré",
+   "form": "which",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1700,6 +1744,7 @@
    "answer": "who",
    "source": "tatoeba:322639",
    "status": "généré",
+   "form": "who",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1718,6 +1763,7 @@
    "answer": "which",
    "source": "tatoeba:269688",
    "status": "généré",
+   "form": "which",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1736,6 +1782,7 @@
    "answer": "who",
    "source": "tatoeba:7584609",
    "status": "généré",
+   "form": "who",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1754,6 +1801,7 @@
    "answer": "which",
    "source": "tatoeba:269690",
    "status": "généré",
+   "form": "which",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1772,6 +1820,7 @@
    "answer": "a few",
    "source": "tatoeba:3151364",
    "status": "généré",
+   "form": "countable",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -1791,6 +1840,7 @@
    "answer": "little",
    "source": "tatoeba:3737270",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -1810,6 +1860,7 @@
    "answer": "few",
    "source": "tatoeba:453820",
    "status": "généré",
+   "form": "countable",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -1829,6 +1880,7 @@
    "answer": "a little",
    "source": "tatoeba:2054010",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -1848,6 +1900,7 @@
    "answer": "few",
    "source": "tatoeba:493766",
    "status": "généré",
+   "form": "countable",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -1867,6 +1920,7 @@
    "answer": "a little",
    "source": "tatoeba:2372806",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -1886,6 +1940,7 @@
    "answer": "a few",
    "source": "tatoeba:13140690",
    "status": "généré",
+   "form": "countable",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -1905,6 +1960,7 @@
    "answer": "a little",
    "source": "tatoeba:2377265",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -1924,6 +1980,7 @@
    "answer": "screaming",
    "source": "tatoeba:11720965",
    "status": "généré",
+   "form": "ing",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1942,6 +1999,7 @@
    "answer": "to cheer",
    "source": "tatoeba:2282440",
    "status": "généré",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1960,6 +2018,7 @@
    "answer": "doing",
    "source": "tatoeba:6354942",
    "status": "généré",
+   "form": "ing",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1978,6 +2037,7 @@
    "answer": "to do",
    "source": "tatoeba:2289003",
    "status": "généré",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -1996,6 +2056,7 @@
    "answer": "talking",
    "source": "tatoeba:6736566",
    "status": "généré",
+   "form": "ing",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2014,6 +2075,7 @@
    "answer": "to fix",
    "source": "tatoeba:3562551",
    "status": "généré",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2032,6 +2094,7 @@
    "answer": "banging",
    "source": "tatoeba:831731",
    "status": "généré",
+   "form": "ing",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2050,6 +2113,7 @@
    "answer": "to say",
    "source": "tatoeba:4197715",
    "status": "généré",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2068,6 +2132,7 @@
    "answer": "such",
    "source": "tatoeba:1423350",
    "status": "généré",
+   "form": "such",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2085,6 +2150,7 @@
    "answer": "so",
    "source": "tatoeba:2396223",
    "status": "généré",
+   "form": "so",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2102,6 +2168,7 @@
    "answer": "too tired",
    "source": "tatoeba:3622881",
    "status": "généré",
+   "form": "too",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2120,6 +2187,7 @@
    "answer": "big enough",
    "source": "tatoeba:7492825",
    "status": "généré",
+   "form": "enough",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2138,6 +2206,7 @@
    "answer": "too bored",
    "source": "tatoeba:6767930",
    "status": "généré",
+   "form": "too",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2156,6 +2225,7 @@
    "answer": "long enough",
    "source": "tatoeba:2315011",
    "status": "généré",
+   "form": "enough",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2174,6 +2244,7 @@
    "answer": "too late",
    "source": "tatoeba:1879880",
    "status": "généré",
+   "form": "too",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2192,6 +2263,7 @@
    "answer": "old enough",
    "source": "tatoeba:3157848",
    "status": "généré",
+   "form": "enough",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2210,6 +2282,7 @@
    "answer": "is it",
    "source": "tatoeba:12391239",
    "status": "généré",
+   "form": "positive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2228,6 +2301,7 @@
    "answer": "don't you",
    "source": "tatoeba:20103",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2245,6 +2319,7 @@
    "answer": "can you",
    "source": "tatoeba:1951510",
    "status": "généré",
+   "form": "positive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2263,6 +2338,7 @@
    "answer": "aren't you",
    "source": "tatoeba:2402267",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2281,6 +2357,7 @@
    "answer": "does it",
    "source": "tatoeba:2276527",
    "status": "généré",
+   "form": "positive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2299,6 +2376,7 @@
    "answer": "isn't it",
    "source": "tatoeba:242884",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2317,6 +2395,7 @@
    "answer": "did you",
    "source": "tatoeba:2288137",
    "status": "généré",
+   "form": "positive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2335,6 +2414,7 @@
    "answer": "isn't she",
    "source": "tatoeba:313891",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2353,6 +2433,7 @@
    "answer": "did you do",
    "source": "tatoeba:10639608",
    "status": "généré",
+   "form": "direct",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2370,6 +2451,7 @@
    "answer": "I want",
    "source": "tatoeba:1785015",
    "status": "généré",
+   "form": "indirect",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2387,6 +2469,7 @@
    "answer": "is the next",
    "source": "tatoeba:12403686",
    "status": "généré",
+   "form": "direct",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2404,6 +2487,7 @@
    "answer": "this is",
    "source": "tatoeba:70064",
    "status": "généré",
+   "form": "indirect",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2421,6 +2505,7 @@
    "answer": "were your children",
    "source": "tatoeba:2644669",
    "status": "généré",
+   "form": "direct",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2438,6 +2523,7 @@
    "answer": "she is",
    "source": "tatoeba:1412485",
    "status": "généré",
+   "form": "indirect",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2455,6 +2541,7 @@
    "answer": "are you",
    "source": "tatoeba:35117",
    "status": "généré",
+   "form": "direct",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2472,6 +2559,7 @@
    "answer": "I am",
    "source": "tatoeba:2360133",
    "status": "généré",
+   "form": "indirect",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -2489,6 +2577,7 @@
    "answer": "can't",
    "source": "tatoeba:11666621",
    "status": "généré",
+   "form": "cant",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2507,6 +2596,7 @@
    "answer": "must",
    "source": "tatoeba:2957512",
    "status": "généré",
+   "form": "must",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2525,6 +2615,7 @@
    "answer": "can't",
    "source": "tatoeba:1343443",
    "status": "généré",
+   "form": "cant",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2543,6 +2634,7 @@
    "answer": "must",
    "source": "tatoeba:300414",
    "status": "généré",
+   "form": "must",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2561,6 +2653,7 @@
    "answer": "can't",
    "source": "tatoeba:287926",
    "status": "généré",
+   "form": "cant",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2579,6 +2672,7 @@
    "answer": "must",
    "source": "tatoeba:413023",
    "status": "généré",
+   "form": "must",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2597,6 +2691,7 @@
    "answer": "can't",
    "source": "tatoeba:2903860",
    "status": "généré",
+   "form": "cant",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2615,6 +2710,7 @@
    "answer": "must",
    "source": "tatoeba:2644179",
    "status": "généré",
+   "form": "must",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2633,6 +2729,7 @@
    "answer": "had married",
    "source": "tatoeba:1056839",
    "status": "généré",
+   "form": "pastperfect",
    "mode": "typed",
    "hint": "marry"
   },
@@ -2646,6 +2743,7 @@
    "answer": "were",
    "source": "tatoeba:2545543",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "be"
   },
@@ -2659,6 +2757,7 @@
    "answer": "had been",
    "source": "tatoeba:282882",
    "status": "généré",
+   "form": "pastperfect",
    "mode": "typed",
    "hint": "be"
   },
@@ -2672,6 +2771,7 @@
    "answer": "had",
    "source": "tatoeba:8434429",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "have"
   },
@@ -2685,6 +2785,7 @@
    "answer": "had seen",
    "source": "tatoeba:49511",
    "status": "généré",
+   "form": "pastperfect",
    "mode": "typed",
    "hint": "see"
   },
@@ -2698,6 +2799,7 @@
    "answer": "knew",
    "source": "tatoeba:2544938",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "know"
   },
@@ -2711,6 +2813,7 @@
    "answer": "had told",
    "source": "tatoeba:41837",
    "status": "généré",
+   "form": "pastperfect",
    "mode": "typed",
    "hint": "tell"
   },
@@ -2724,6 +2827,7 @@
    "answer": "earned",
    "source": "tatoeba:30512",
    "status": "généré",
+   "form": "past",
    "mode": "typed",
    "hint": "earn"
   },
@@ -2737,6 +2841,7 @@
    "answer": "would have died",
    "source": "tatoeba:6871098",
    "status": "généré",
+   "form": "past-unreal",
    "mode": "typed",
    "hint": "die"
   },
@@ -2750,6 +2855,7 @@
    "answer": "would have won",
    "source": "tatoeba:6335927",
    "status": "généré",
+   "form": "past-unreal",
    "mode": "typed",
    "hint": "win"
   },
@@ -2763,6 +2869,7 @@
    "answer": "had known",
    "source": "tatoeba:6663237",
    "status": "généré",
+   "form": "past-unreal",
    "mode": "typed",
    "hint": "know"
   },
@@ -2776,6 +2883,7 @@
    "answer": "would have helped",
    "source": "tatoeba:12770981",
    "status": "généré",
+   "form": "past-unreal",
    "mode": "typed",
    "hint": "help"
   },
@@ -2789,6 +2897,7 @@
    "answer": "would have failed",
    "source": "tatoeba:2741019",
    "status": "généré",
+   "form": "past-unreal",
    "mode": "typed",
    "hint": "fail"
   },
@@ -2802,6 +2911,7 @@
    "answer": "had asked",
    "source": "tatoeba:3202420",
    "status": "généré",
+   "form": "past-unreal",
    "mode": "typed",
    "hint": "ask"
   },
@@ -2815,6 +2925,7 @@
    "answer": "would have drowned",
    "source": "tatoeba:924415",
    "status": "généré",
+   "form": "past-unreal",
    "mode": "typed",
    "hint": "drown"
   },
@@ -2828,6 +2939,7 @@
    "answer": "would have given",
    "source": "tatoeba:6870924",
    "status": "généré",
+   "form": "past-unreal",
    "mode": "typed",
    "hint": "give"
   },
@@ -2841,6 +2953,7 @@
    "answer": "used to eating",
    "source": "tatoeba:1429061",
    "status": "généré",
+   "form": "be-used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2859,6 +2972,7 @@
    "answer": "used to working",
    "source": "tatoeba:5938779",
    "status": "généré",
+   "form": "be-used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2877,6 +2991,7 @@
    "answer": "used to being",
    "source": "tatoeba:12246044",
    "status": "généré",
+   "form": "be-used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2895,6 +3010,7 @@
    "answer": "used to doing",
    "source": "tatoeba:6110303",
    "status": "généré",
+   "form": "be-used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2913,6 +3029,7 @@
    "answer": "used to staying",
    "source": "tatoeba:1058983",
    "status": "généré",
+   "form": "be-used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2931,6 +3048,7 @@
    "answer": "used to playing",
    "source": "tatoeba:13860233",
    "status": "généré",
+   "form": "be-used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2949,6 +3067,7 @@
    "answer": "used to living",
    "source": "tatoeba:312562",
    "status": "généré",
+   "form": "be-used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2967,6 +3086,7 @@
    "answer": "used to wearing",
    "source": "tatoeba:6293821",
    "status": "généré",
+   "form": "be-used-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -2985,6 +3105,7 @@
    "answer": "are",
    "source": "tatoeba:13817989",
    "status": "généré",
+   "form": "are",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3003,6 +3124,7 @@
    "answer": "am",
    "source": "tatoeba:253373",
    "status": "généré",
+   "form": "am",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3021,6 +3143,7 @@
    "answer": "is",
    "source": "tatoeba:851537",
    "status": "généré",
+   "form": "is",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3039,6 +3162,7 @@
    "answer": "are",
    "source": "tatoeba:307554",
    "status": "généré",
+   "form": "are",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3057,6 +3181,7 @@
    "answer": "am",
    "source": "tatoeba:4102880",
    "status": "généré",
+   "form": "am",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3075,6 +3200,7 @@
    "answer": "is",
    "source": "tatoeba:313360",
    "status": "généré",
+   "form": "is",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3093,6 +3219,7 @@
    "answer": "are",
    "source": "tatoeba:3315088",
    "status": "généré",
+   "form": "are",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3111,6 +3238,7 @@
    "answer": "am",
    "source": "tatoeba:11879123",
    "status": "généré",
+   "form": "am",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3129,6 +3257,7 @@
    "answer": "were",
    "source": "tatoeba:10650095",
    "status": "généré",
+   "form": "were",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3147,6 +3276,7 @@
    "answer": "was",
    "source": "tatoeba:619818",
    "status": "généré",
+   "form": "was",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3165,6 +3295,7 @@
    "answer": "were",
    "source": "tatoeba:4494240",
    "status": "généré",
+   "form": "were",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3183,6 +3314,7 @@
    "answer": "was",
    "source": "tatoeba:6427620",
    "status": "généré",
+   "form": "was",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3201,6 +3333,7 @@
    "answer": "were",
    "source": "tatoeba:7410351",
    "status": "généré",
+   "form": "were",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3219,6 +3352,7 @@
    "answer": "was",
    "source": "tatoeba:266568",
    "status": "généré",
+   "form": "was",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3237,6 +3371,7 @@
    "answer": "were",
    "source": "tatoeba:1440152",
    "status": "généré",
+   "form": "were",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3255,6 +3390,7 @@
    "answer": "was",
    "source": "tatoeba:260641",
    "status": "généré",
+   "form": "was",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3273,6 +3409,7 @@
    "answer": "us",
    "source": "tatoeba:293703",
    "status": "généré",
+   "form": "us",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3291,6 +3428,7 @@
    "answer": "them",
    "source": "tatoeba:3915202",
    "status": "généré",
+   "form": "them",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3309,6 +3447,7 @@
    "answer": "me",
    "source": "tatoeba:1552",
    "status": "généré",
+   "form": "me",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3327,6 +3466,7 @@
    "answer": "him",
    "source": "tatoeba:10661145",
    "status": "généré",
+   "form": "him",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3345,6 +3485,7 @@
    "answer": "us",
    "source": "tatoeba:4684452",
    "status": "généré",
+   "form": "us",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3363,6 +3504,7 @@
    "answer": "them",
    "source": "tatoeba:2020614",
    "status": "généré",
+   "form": "them",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3381,6 +3523,7 @@
    "answer": "me",
    "source": "tatoeba:42105",
    "status": "généré",
+   "form": "me",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3399,6 +3542,7 @@
    "answer": "him",
    "source": "tatoeba:3906640",
    "status": "généré",
+   "form": "him",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3417,6 +3561,7 @@
    "answer": "their",
    "source": "tatoeba:12342137",
    "status": "généré",
+   "form": "their",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3435,6 +3580,7 @@
    "answer": "our",
    "source": "tatoeba:249376",
    "status": "généré",
+   "form": "our",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3453,6 +3599,7 @@
    "answer": "my",
    "source": "tatoeba:257951",
    "status": "généré",
+   "form": "my",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3471,6 +3618,7 @@
    "answer": "Their",
    "source": "tatoeba:305242",
    "status": "généré",
+   "form": "their",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3489,6 +3637,7 @@
    "answer": "Our",
    "source": "tatoeba:2940002",
    "status": "généré",
+   "form": "our",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3507,6 +3656,7 @@
    "answer": "My",
    "source": "tatoeba:778269",
    "status": "généré",
+   "form": "my",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3525,6 +3675,7 @@
    "answer": "Their",
    "source": "tatoeba:12774912",
    "status": "généré",
+   "form": "their",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3543,6 +3694,7 @@
    "answer": "Our",
    "source": "tatoeba:5132178",
    "status": "généré",
+   "form": "our",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -3561,6 +3713,7 @@
    "answer": "An",
    "source": "tatoeba:2900167",
    "status": "généré",
+   "form": "an",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3578,6 +3731,7 @@
    "answer": "A",
    "source": "tatoeba:806876",
    "status": "généré",
+   "form": "a",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3595,6 +3749,7 @@
    "answer": "an",
    "source": "tatoeba:312982",
    "status": "généré",
+   "form": "an",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3612,6 +3767,7 @@
    "answer": "a",
    "source": "tatoeba:349811",
    "status": "généré",
+   "form": "a",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3629,6 +3785,7 @@
    "answer": "An",
    "source": "tatoeba:9145046",
    "status": "généré",
+   "form": "an",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3646,6 +3803,7 @@
    "answer": "a",
    "source": "tatoeba:1808157",
    "status": "généré",
+   "form": "a",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3663,6 +3821,7 @@
    "answer": "An",
    "source": "tatoeba:3640259",
    "status": "généré",
+   "form": "an",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3680,6 +3839,7 @@
    "answer": "a",
    "source": "tatoeba:2396113",
    "status": "généré",
+   "form": "a",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3697,6 +3857,7 @@
    "answer": "men",
    "source": "tatoeba:28787",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "man"
   },
@@ -3710,6 +3871,7 @@
    "answer": "heresies",
    "source": "tatoeba:9741149",
    "status": "généré",
+   "form": "ies",
    "mode": "typed",
    "hint": "heresy"
   },
@@ -3723,6 +3885,7 @@
    "answer": "women",
    "source": "tatoeba:8598081",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "woman"
   },
@@ -3736,6 +3899,7 @@
    "answer": "nineties",
    "source": "tatoeba:10740769",
    "status": "généré",
+   "form": "ies",
    "mode": "typed",
    "hint": "ninety"
   },
@@ -3749,6 +3913,7 @@
    "answer": "feet",
    "source": "tatoeba:9483510",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "foot"
   },
@@ -3762,6 +3927,7 @@
    "answer": "abilities",
    "source": "tatoeba:7432185",
    "status": "généré",
+   "form": "ies",
    "mode": "typed",
    "hint": "ability"
   },
@@ -3775,6 +3941,7 @@
    "answer": "children",
    "source": "tatoeba:274635",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "child"
   },
@@ -3788,6 +3955,7 @@
    "answer": "countries",
    "source": "tatoeba:288701",
    "status": "généré",
+   "form": "ies",
    "mode": "typed",
    "hint": "country"
   },
@@ -3801,6 +3969,7 @@
    "answer": "These",
    "source": "tatoeba:463142",
    "status": "généré",
+   "form": "these",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3818,6 +3987,7 @@
    "answer": "this",
    "source": "tatoeba:59826",
    "status": "généré",
+   "form": "this",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3835,6 +4005,7 @@
    "answer": "these",
    "source": "tatoeba:2361047",
    "status": "généré",
+   "form": "these",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3852,6 +4023,7 @@
    "answer": "This",
    "source": "tatoeba:2276334",
    "status": "généré",
+   "form": "this",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3869,6 +4041,7 @@
    "answer": "these",
    "source": "tatoeba:681588",
    "status": "généré",
+   "form": "these",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3886,6 +4059,7 @@
    "answer": "this",
    "source": "tatoeba:9194594",
    "status": "généré",
+   "form": "this",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3903,6 +4077,7 @@
    "answer": "these",
    "source": "tatoeba:60950",
    "status": "généré",
+   "form": "these",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3920,6 +4095,7 @@
    "answer": "This",
    "source": "tatoeba:60161",
    "status": "généré",
+   "form": "this",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -3937,6 +4113,7 @@
    "answer": "seems",
    "source": "tatoeba:294581",
    "status": "généré",
+   "form": "third-person",
    "mode": "typed",
    "hint": "seem"
   },
@@ -3950,6 +4127,7 @@
    "answer": "rests",
    "source": "tatoeba:42491",
    "status": "généré",
+   "form": "third-person",
    "mode": "typed",
    "hint": "rest"
   },
@@ -3963,6 +4141,7 @@
    "answer": "yearns",
    "source": "tatoeba:5543442",
    "status": "généré",
+   "form": "third-person",
    "mode": "typed",
    "hint": "yearn"
   },
@@ -3976,6 +4155,7 @@
    "answer": "smothers",
    "source": "tatoeba:7820589",
    "status": "généré",
+   "form": "third-person",
    "mode": "typed",
    "hint": "smother"
   },
@@ -3989,6 +4169,7 @@
    "answer": "surprises",
    "source": "tatoeba:11739662",
    "status": "généré",
+   "form": "third-person",
    "mode": "typed",
    "hint": "surprise"
   },
@@ -4002,6 +4183,7 @@
    "answer": "thinks",
    "source": "tatoeba:14012474",
    "status": "généré",
+   "form": "third-person",
    "mode": "typed",
    "hint": "think"
   },
@@ -4015,6 +4197,7 @@
    "answer": "makes",
    "source": "tatoeba:10129123",
    "status": "généré",
+   "form": "third-person",
    "mode": "typed",
    "hint": "make"
   },
@@ -4028,6 +4211,7 @@
    "answer": "gets",
    "source": "tatoeba:10741464",
    "status": "généré",
+   "form": "third-person",
    "mode": "typed",
    "hint": "get"
   },
@@ -4041,6 +4225,7 @@
    "answer": "Do",
    "source": "tatoeba:324809",
    "status": "généré",
+   "form": "do",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -4058,6 +4243,7 @@
    "answer": "Does",
    "source": "tatoeba:6229602",
    "status": "généré",
+   "form": "does",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -4075,6 +4261,7 @@
    "answer": "Do",
    "source": "tatoeba:12181013",
    "status": "généré",
+   "form": "do",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -4092,6 +4279,7 @@
    "answer": "Does",
    "source": "tatoeba:13815668",
    "status": "généré",
+   "form": "does",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -4109,6 +4297,7 @@
    "answer": "Do",
    "source": "tatoeba:277537",
    "status": "généré",
+   "form": "do",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -4126,6 +4315,7 @@
    "answer": "Does",
    "source": "tatoeba:2703653",
    "status": "généré",
+   "form": "does",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -4143,6 +4333,7 @@
    "answer": "Do",
    "source": "tatoeba:3260460",
    "status": "généré",
+   "form": "do",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -4160,6 +4351,7 @@
    "answer": "Does",
    "source": "tatoeba:6080734",
    "status": "généré",
+   "form": "does",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -4177,6 +4369,7 @@
    "answer": "Who",
    "source": "tatoeba:12457038",
    "status": "généré",
+   "form": "who",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -4196,6 +4389,7 @@
    "answer": "When",
    "source": "tatoeba:1828419",
    "status": "généré",
+   "form": "when",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -4215,6 +4409,7 @@
    "answer": "How",
    "source": "tatoeba:291983",
    "status": "généré",
+   "form": "how",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -4234,6 +4429,7 @@
    "answer": "Why",
    "source": "tatoeba:3554427",
    "status": "généré",
+   "form": "why",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -4253,6 +4449,7 @@
    "answer": "Where",
    "source": "tatoeba:413605",
    "status": "généré",
+   "form": "where",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -4272,6 +4469,7 @@
    "answer": "Who",
    "source": "tatoeba:3396707",
    "status": "généré",
+   "form": "who",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -4291,6 +4489,7 @@
    "answer": "When",
    "source": "tatoeba:1771320",
    "status": "généré",
+   "form": "when",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -4310,6 +4509,7 @@
    "answer": "How",
    "source": "tatoeba:2036219",
    "status": "généré",
+   "form": "how",
    "mode": "choice",
    "choices": 4,
    "options": [
@@ -4329,6 +4529,7 @@
    "answer": "There are",
    "source": "tatoeba:9965131",
    "status": "généré",
+   "form": "are",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4347,6 +4548,7 @@
    "answer": "There is",
    "source": "tatoeba:245161",
    "status": "généré",
+   "form": "is",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4365,6 +4567,7 @@
    "answer": "there are",
    "source": "tatoeba:5314495",
    "status": "généré",
+   "form": "are",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4383,6 +4586,7 @@
    "answer": "there is",
    "source": "tatoeba:933648",
    "status": "généré",
+   "form": "is",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4401,6 +4605,7 @@
    "answer": "There are",
    "source": "tatoeba:19319",
    "status": "généré",
+   "form": "are",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4419,6 +4624,7 @@
    "answer": "There is",
    "source": "tatoeba:294357",
    "status": "généré",
+   "form": "is",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4437,6 +4643,7 @@
    "answer": "There are",
    "source": "tatoeba:11922213",
    "status": "généré",
+   "form": "are",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4455,6 +4662,7 @@
    "answer": "there is",
    "source": "tatoeba:773209",
    "status": "généré",
+   "form": "is",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4473,6 +4681,7 @@
    "answer": "have got",
    "source": "tatoeba:12573912",
    "status": "généré",
+   "form": "have",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4491,6 +4700,7 @@
    "answer": "has got",
    "source": "tatoeba:293212",
    "status": "généré",
+   "form": "has",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4509,6 +4719,7 @@
    "answer": "have got",
    "source": "tatoeba:5315939",
    "status": "généré",
+   "form": "have",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4527,6 +4738,7 @@
    "answer": "has got",
    "source": "tatoeba:315508",
    "status": "généré",
+   "form": "has",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4545,6 +4757,7 @@
    "answer": "have got",
    "source": "tatoeba:1199450",
    "status": "généré",
+   "form": "have",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4563,6 +4776,7 @@
    "answer": "has got",
    "source": "tatoeba:8345503",
    "status": "généré",
+   "form": "has",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4581,6 +4795,7 @@
    "answer": "have got",
    "source": "tatoeba:279488",
    "status": "généré",
+   "form": "have",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4599,6 +4814,7 @@
    "answer": "has got",
    "source": "tatoeba:4061596",
    "status": "généré",
+   "form": "has",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4617,6 +4833,7 @@
    "answer": "can do",
    "source": "tatoeba:239370",
    "status": "généré",
+   "form": "can",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4635,6 +4852,7 @@
    "answer": "can speak",
    "source": "tatoeba:4008820",
    "status": "généré",
+   "form": "can",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4653,6 +4871,7 @@
    "answer": "can play",
    "source": "tatoeba:9981907",
    "status": "généré",
+   "form": "can",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4671,6 +4890,7 @@
    "answer": "can swim",
    "source": "tatoeba:254527",
    "status": "généré",
+   "form": "can",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4689,6 +4909,7 @@
    "answer": "can trust",
    "source": "tatoeba:7521062",
    "status": "généré",
+   "form": "can",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4707,6 +4928,7 @@
    "answer": "can phone",
    "source": "tatoeba:1437956",
    "status": "généré",
+   "form": "can",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4725,6 +4947,7 @@
    "answer": "can stop",
    "source": "tatoeba:8021764",
    "status": "généré",
+   "form": "can",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4743,6 +4966,7 @@
    "answer": "can buy",
    "source": "tatoeba:9526256",
    "status": "généré",
+   "form": "can",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4761,6 +4985,7 @@
    "answer": "Don't",
    "source": "tatoeba:41408",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4779,6 +5004,7 @@
    "answer": "Don't",
    "source": "tatoeba:5624009",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4797,6 +5023,7 @@
    "answer": "Don't",
    "source": "tatoeba:2289017",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4815,6 +5042,7 @@
    "answer": "Don't",
    "source": "tatoeba:31095",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4833,6 +5061,7 @@
    "answer": "at",
    "source": "tatoeba:326238",
    "status": "généré",
+   "form": "at",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4851,6 +5080,7 @@
    "answer": "on",
    "source": "tatoeba:324496",
    "status": "généré",
+   "form": "on",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4869,6 +5099,7 @@
    "answer": "in",
    "source": "tatoeba:7465372",
    "status": "généré",
+   "form": "in",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4887,6 +5118,7 @@
    "answer": "at",
    "source": "tatoeba:37081",
    "status": "généré",
+   "form": "at",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4905,6 +5137,7 @@
    "answer": "on",
    "source": "tatoeba:18478",
    "status": "généré",
+   "form": "on",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4923,6 +5156,7 @@
    "answer": "in",
    "source": "tatoeba:281199",
    "status": "généré",
+   "form": "in",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4941,6 +5175,7 @@
    "answer": "at",
    "source": "tatoeba:2391155",
    "status": "généré",
+   "form": "at",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4959,6 +5194,7 @@
    "answer": "on",
    "source": "tatoeba:12434887",
    "status": "généré",
+   "form": "on",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -4977,6 +5213,7 @@
    "answer": "never discusses",
    "source": "tatoeba:1525583",
    "status": "généré",
+   "form": "before-verb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -4994,6 +5231,7 @@
    "answer": "usually walk",
    "source": "tatoeba:254901",
    "status": "généré",
+   "form": "before-verb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5011,6 +5249,7 @@
    "answer": "never know",
    "source": "tatoeba:2645068",
    "status": "généré",
+   "form": "before-verb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5028,6 +5267,7 @@
    "answer": "often hum",
    "source": "tatoeba:5850299",
    "status": "généré",
+   "form": "before-verb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5045,6 +5285,7 @@
    "answer": "seldom comes",
    "source": "tatoeba:293034",
    "status": "généré",
+   "form": "before-verb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5062,6 +5303,7 @@
    "answer": "rarely use",
    "source": "tatoeba:3826385",
    "status": "généré",
+   "form": "before-verb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5079,6 +5321,7 @@
    "answer": "always happens",
    "source": "tatoeba:3129514",
    "status": "généré",
+   "form": "before-verb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5096,6 +5339,7 @@
    "answer": "usually drinks",
    "source": "tatoeba:13862352",
    "status": "généré",
+   "form": "before-verb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5113,6 +5357,7 @@
    "answer": "am shouting",
    "source": "tatoeba:1665952",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "shout"
   },
@@ -5126,6 +5371,7 @@
    "answer": "is having",
    "source": "tatoeba:311618",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "have"
   },
@@ -5139,6 +5385,7 @@
    "answer": "is doing",
    "source": "tatoeba:7770333",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "do"
   },
@@ -5152,6 +5399,7 @@
    "answer": "am hugging",
    "source": "tatoeba:12487618",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "hug"
   },
@@ -5165,6 +5413,7 @@
    "answer": "am eating",
    "source": "tatoeba:1741545",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "eat"
   },
@@ -5178,6 +5427,7 @@
    "answer": "am playing",
    "source": "tatoeba:257470",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "play"
   },
@@ -5191,6 +5441,7 @@
    "answer": "am cuddling",
    "source": "tatoeba:12487619",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "cuddle"
   },
@@ -5204,6 +5455,7 @@
    "answer": "are thinking",
    "source": "tatoeba:1723695",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "think"
   },
@@ -5217,6 +5469,7 @@
    "answer": "waved",
    "source": "tatoeba:314218",
    "status": "généré",
+   "form": "regular",
    "mode": "typed",
    "hint": "wave"
   },
@@ -5230,6 +5483,7 @@
    "answer": "rested",
    "source": "tatoeba:682077",
    "status": "généré",
+   "form": "regular",
    "mode": "typed",
    "hint": "rest"
   },
@@ -5243,6 +5497,7 @@
    "answer": "kissed",
    "source": "tatoeba:11597087",
    "status": "généré",
+   "form": "regular",
    "mode": "typed",
    "hint": "kiss"
   },
@@ -5256,6 +5511,7 @@
    "answer": "refused",
    "source": "tatoeba:293483",
    "status": "généré",
+   "form": "regular",
    "mode": "typed",
    "hint": "refuse"
   },
@@ -5269,6 +5525,7 @@
    "answer": "climbed",
    "source": "tatoeba:248630",
    "status": "généré",
+   "form": "regular",
    "mode": "typed",
    "hint": "climb"
   },
@@ -5282,6 +5539,7 @@
    "answer": "lived",
    "source": "tatoeba:2956033",
    "status": "généré",
+   "form": "regular",
    "mode": "typed",
    "hint": "live"
   },
@@ -5295,6 +5553,7 @@
    "answer": "remained",
    "source": "tatoeba:306101",
    "status": "généré",
+   "form": "regular",
    "mode": "typed",
    "hint": "remain"
   },
@@ -5308,6 +5567,7 @@
    "answer": "enjoyed",
    "source": "tatoeba:262842",
    "status": "généré",
+   "form": "regular",
    "mode": "typed",
    "hint": "enjoy"
   },
@@ -5321,6 +5581,7 @@
    "answer": "told",
    "source": "tatoeba:3686649",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "tell"
   },
@@ -5334,6 +5595,7 @@
    "answer": "forgot",
    "source": "tatoeba:9177338",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "forget"
   },
@@ -5347,6 +5609,7 @@
    "answer": "won",
    "source": "tatoeba:4433752",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "win"
   },
@@ -5360,6 +5623,7 @@
    "answer": "came",
    "source": "tatoeba:296989",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "come"
   },
@@ -5373,6 +5637,7 @@
    "answer": "learned",
    "source": "tatoeba:5813324",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "learn"
   },
@@ -5386,6 +5651,7 @@
    "answer": "thought",
    "source": "tatoeba:1939142",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "think"
   },
@@ -5399,6 +5665,7 @@
    "answer": "felt",
    "source": "tatoeba:2926709",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "feel"
   },
@@ -5412,6 +5679,7 @@
    "answer": "grew",
    "source": "tatoeba:299545",
    "status": "généré",
+   "form": "irregular",
    "mode": "typed",
    "hint": "grow"
   },
@@ -5425,6 +5693,7 @@
    "answer": "grown",
    "source": "tatoeba:11894931",
    "status": "généré",
+   "form": "participle",
    "mode": "typed",
    "hint": "grow"
   },
@@ -5438,6 +5707,7 @@
    "answer": "eaten",
    "source": "tatoeba:11979201",
    "status": "généré",
+   "form": "participle",
    "mode": "typed",
    "hint": "eat"
   },
@@ -5451,6 +5721,7 @@
    "answer": "done",
    "source": "tatoeba:1996939",
    "status": "généré",
+   "form": "participle",
    "mode": "typed",
    "hint": "do"
   },
@@ -5464,6 +5735,7 @@
    "answer": "seen",
    "source": "tatoeba:3130337",
    "status": "généré",
+   "form": "participle",
    "mode": "typed",
    "hint": "see"
   },
@@ -5477,6 +5749,7 @@
    "answer": "shown",
    "source": "tatoeba:761849",
    "status": "généré",
+   "form": "participle",
    "mode": "typed",
    "hint": "show"
   },
@@ -5490,6 +5763,7 @@
    "answer": "taken",
    "source": "tatoeba:3348221",
    "status": "généré",
+   "form": "participle",
    "mode": "typed",
    "hint": "take"
   },
@@ -5503,6 +5777,7 @@
    "answer": "gone",
    "source": "tatoeba:1938911",
    "status": "généré",
+   "form": "participle",
    "mode": "typed",
    "hint": "go"
   },
@@ -5516,6 +5791,7 @@
    "answer": "spoken",
    "source": "tatoeba:3183394",
    "status": "généré",
+   "form": "participle",
    "mode": "typed",
    "hint": "speak"
   },
@@ -5529,6 +5805,7 @@
    "answer": "did not drive",
    "source": "tatoeba:11279302",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5547,6 +5824,7 @@
    "answer": "didn't mean",
    "source": "tatoeba:1956008",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5565,6 +5843,7 @@
    "answer": "didn't say",
    "source": "tatoeba:2290440",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5583,6 +5862,7 @@
    "answer": "did not leave",
    "source": "tatoeba:12035058",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5601,6 +5881,7 @@
    "answer": "didn't know",
    "source": "tatoeba:7255554",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5619,6 +5900,7 @@
    "answer": "didn't hear",
    "source": "tatoeba:24993",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5637,6 +5919,7 @@
    "answer": "didn't expect",
    "source": "tatoeba:6265115",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5655,6 +5938,7 @@
    "answer": "didn't eat",
    "source": "tatoeba:1830605",
    "status": "généré",
+   "form": "negative",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5673,6 +5957,7 @@
    "answer": "was thinking",
    "source": "tatoeba:1140129",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "think"
   },
@@ -5686,6 +5971,7 @@
    "answer": "was dreaming",
    "source": "tatoeba:1961297",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "dream"
   },
@@ -5699,6 +5985,7 @@
    "answer": "were playing",
    "source": "tatoeba:262813",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "play"
   },
@@ -5712,6 +5999,7 @@
    "answer": "was going",
    "source": "tatoeba:311957",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "go"
   },
@@ -5725,6 +6013,7 @@
    "answer": "were doing",
    "source": "tatoeba:3122328",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "do"
   },
@@ -5738,6 +6027,7 @@
    "answer": "was ironing",
    "source": "tatoeba:316863",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "iron"
   },
@@ -5751,6 +6041,7 @@
    "answer": "was crossing",
    "source": "tatoeba:302068",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "cross"
   },
@@ -5764,6 +6055,7 @@
    "answer": "was taking",
    "source": "tatoeba:47010",
    "status": "généré",
+   "form": "continuous",
    "mode": "typed",
    "hint": "take"
   },
@@ -5777,6 +6069,7 @@
    "answer": "advice",
    "source": "tatoeba:7071456",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5794,6 +6087,7 @@
    "answer": "homework",
    "source": "tatoeba:6321893",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5811,6 +6105,7 @@
    "answer": "information",
    "source": "tatoeba:46187",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5829,6 +6124,7 @@
    "answer": "traffic",
    "source": "tatoeba:11952821",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5846,6 +6142,7 @@
    "answer": "baggage",
    "source": "tatoeba:297578",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5863,6 +6160,7 @@
    "answer": "knowledge",
    "source": "tatoeba:10570660",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5881,6 +6179,7 @@
    "answer": "luggage",
    "source": "tatoeba:6635712",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -5898,6 +6197,7 @@
    "answer": "furniture",
    "source": "tatoeba:7733006",
    "status": "généré",
+   "form": "uncountable",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5916,6 +6216,7 @@
    "answer": "much",
    "source": "tatoeba:2912562",
    "status": "généré",
+   "form": "much",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5934,6 +6235,7 @@
    "answer": "many",
    "source": "tatoeba:11117081",
    "status": "généré",
+   "form": "many",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5952,6 +6254,7 @@
    "answer": "much",
    "source": "tatoeba:6698863",
    "status": "généré",
+   "form": "much",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5970,6 +6273,7 @@
    "answer": "many",
    "source": "tatoeba:11614068",
    "status": "généré",
+   "form": "many",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -5988,6 +6292,7 @@
    "answer": "much",
    "source": "tatoeba:3154845",
    "status": "généré",
+   "form": "much",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6006,6 +6311,7 @@
    "answer": "many",
    "source": "tatoeba:8884847",
    "status": "généré",
+   "form": "many",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6024,6 +6330,7 @@
    "answer": "much",
    "source": "tatoeba:434646",
    "status": "généré",
+   "form": "much",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6042,6 +6349,7 @@
    "answer": "many",
    "source": "tatoeba:7167462",
    "status": "généré",
+   "form": "many",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6060,6 +6368,7 @@
    "answer": "older",
    "source": "tatoeba:6268643",
    "status": "généré",
+   "form": "er",
    "mode": "typed",
    "hint": "old"
   },
@@ -6073,6 +6382,7 @@
    "answer": "more famous",
    "source": "tatoeba:5640531",
    "status": "généré",
+   "form": "more",
    "mode": "typed",
    "hint": "famous"
   },
@@ -6086,6 +6396,7 @@
    "answer": "smaller",
    "source": "tatoeba:2900746",
    "status": "généré",
+   "form": "er",
    "mode": "typed",
    "hint": "small"
   },
@@ -6099,6 +6410,7 @@
    "answer": "more powerful",
    "source": "tatoeba:2164569",
    "status": "généré",
+   "form": "more",
    "mode": "typed",
    "hint": "powerful"
   },
@@ -6112,6 +6424,7 @@
    "answer": "shorter",
    "source": "tatoeba:1627223",
    "status": "généré",
+   "form": "er",
    "mode": "typed",
    "hint": "short"
   },
@@ -6125,6 +6438,7 @@
    "answer": "more trouble",
    "source": "tatoeba:1792440",
    "status": "généré",
+   "form": "more",
    "mode": "typed",
    "hint": "trouble"
   },
@@ -6138,6 +6452,7 @@
    "answer": "younger",
    "source": "tatoeba:6254172",
    "status": "généré",
+   "form": "er",
    "mode": "typed",
    "hint": "young"
   },
@@ -6151,6 +6466,7 @@
    "answer": "more intelligent",
    "source": "tatoeba:3635670",
    "status": "généré",
+   "form": "more",
    "mode": "typed",
    "hint": "intelligent"
   },
@@ -6164,6 +6480,7 @@
    "answer": "Linda's",
    "source": "tatoeba:3998304",
    "status": "généré",
+   "form": "genitive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6182,6 +6499,7 @@
    "answer": "Susan's",
    "source": "tatoeba:2176425",
    "status": "généré",
+   "form": "genitive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6200,6 +6518,7 @@
    "answer": "Oleg's",
    "source": "tatoeba:11851147",
    "status": "généré",
+   "form": "genitive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6218,6 +6537,7 @@
    "answer": "Mary's",
    "source": "tatoeba:5104980",
    "status": "généré",
+   "form": "genitive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6236,6 +6556,7 @@
    "answer": "Tom's",
    "source": "tatoeba:5130166",
    "status": "généré",
+   "form": "genitive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6254,6 +6575,7 @@
    "answer": "John's",
    "source": "tatoeba:5621933",
    "status": "généré",
+   "form": "genitive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6272,6 +6594,7 @@
    "answer": "Matthew's",
    "source": "tatoeba:11587137",
    "status": "généré",
+   "form": "genitive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6290,6 +6613,7 @@
    "answer": "Dan's",
    "source": "tatoeba:3991207",
    "status": "généré",
+   "form": "genitive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6308,6 +6632,7 @@
    "answer": "going to have",
    "source": "tatoeba:250152",
    "status": "généré",
+   "form": "going-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6326,6 +6651,7 @@
    "answer": "going to take",
    "source": "tatoeba:2545390",
    "status": "généré",
+   "form": "going-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6344,6 +6670,7 @@
    "answer": "going to enjoy",
    "source": "tatoeba:5160684",
    "status": "généré",
+   "form": "going-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6362,6 +6689,7 @@
    "answer": "going to cover",
    "source": "tatoeba:7681695",
    "status": "généré",
+   "form": "going-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6380,6 +6708,7 @@
    "answer": "going to rent",
    "source": "tatoeba:8779904",
    "status": "généré",
+   "form": "going-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6398,6 +6727,7 @@
    "answer": "going to make",
    "source": "tatoeba:27115",
    "status": "généré",
+   "form": "going-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6416,6 +6746,7 @@
    "answer": "going to catch",
    "source": "tatoeba:10672253",
    "status": "généré",
+   "form": "going-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6434,6 +6765,7 @@
    "answer": "going to lock",
    "source": "tatoeba:2544185",
    "status": "généré",
+   "form": "going-to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6452,6 +6784,7 @@
    "answer": "will do",
    "source": "tatoeba:40447",
    "status": "généré",
+   "form": "will",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6470,6 +6803,7 @@
    "answer": "will name",
    "source": "tatoeba:13910578",
    "status": "généré",
+   "form": "will",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6488,6 +6822,7 @@
    "answer": "will burn",
    "source": "tatoeba:5444988",
    "status": "généré",
+   "form": "will",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6506,6 +6841,7 @@
    "answer": "will call",
    "source": "tatoeba:32559",
    "status": "généré",
+   "form": "will",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6524,6 +6860,7 @@
    "answer": "will see",
    "source": "tatoeba:69695",
    "status": "généré",
+   "form": "will",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6542,6 +6879,7 @@
    "answer": "will start",
    "source": "tatoeba:1350120",
    "status": "généré",
+   "form": "will",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6560,6 +6898,7 @@
    "answer": "will handle",
    "source": "tatoeba:3832039",
    "status": "généré",
+   "form": "will",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6578,6 +6917,7 @@
    "answer": "will take",
    "source": "tatoeba:5546123",
    "status": "généré",
+   "form": "will",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6596,6 +6936,7 @@
    "answer": "have to",
    "source": "tatoeba:13743637",
    "status": "généré",
+   "form": "have",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6614,6 +6955,7 @@
    "answer": "has to",
    "source": "tatoeba:10910170",
    "status": "généré",
+   "form": "has",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6632,6 +6974,7 @@
    "answer": "have to",
    "source": "tatoeba:5189364",
    "status": "généré",
+   "form": "have",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6650,6 +6993,7 @@
    "answer": "has to",
    "source": "tatoeba:2282390",
    "status": "généré",
+   "form": "has",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6668,6 +7012,7 @@
    "answer": "have to",
    "source": "tatoeba:1079088",
    "status": "généré",
+   "form": "have",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6686,6 +7031,7 @@
    "answer": "has to",
    "source": "tatoeba:8986256",
    "status": "généré",
+   "form": "has",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6704,6 +7050,7 @@
    "answer": "have to",
    "source": "tatoeba:3920055",
    "status": "généré",
+   "form": "have",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6722,6 +7069,7 @@
    "answer": "has to",
    "source": "tatoeba:10273753",
    "status": "généré",
+   "form": "has",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6740,6 +7088,7 @@
    "answer": "should take",
    "source": "tatoeba:6018457",
    "status": "généré",
+   "form": "should",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6758,6 +7107,7 @@
    "answer": "should do",
    "source": "tatoeba:2391524",
    "status": "généré",
+   "form": "should",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6776,6 +7126,7 @@
    "answer": "should go",
    "source": "tatoeba:2408127",
    "status": "généré",
+   "form": "should",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6794,6 +7145,7 @@
    "answer": "should tell",
    "source": "tatoeba:2408479",
    "status": "généré",
+   "form": "should",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6812,6 +7164,7 @@
    "answer": "should come",
    "source": "tatoeba:5550873",
    "status": "généré",
+   "form": "should",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6830,6 +7183,7 @@
    "answer": "should pay",
    "source": "tatoeba:1164194",
    "status": "généré",
+   "form": "should",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6848,6 +7202,7 @@
    "answer": "should run",
    "source": "tatoeba:1349542",
    "status": "généré",
+   "form": "should",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6866,6 +7221,7 @@
    "answer": "should think",
    "source": "tatoeba:15959",
    "status": "généré",
+   "form": "should",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -6884,6 +7240,7 @@
    "answer": "entirely",
    "source": "tatoeba:1742986",
    "status": "généré",
+   "form": "adverb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -6901,6 +7258,7 @@
    "answer": "voluntarily",
    "source": "tatoeba:3732074",
    "status": "généré",
+   "form": "adverb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -6918,6 +7276,7 @@
    "answer": "slowly",
    "source": "tatoeba:1707",
    "status": "généré",
+   "form": "adverb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -6935,6 +7294,7 @@
    "answer": "instinctively",
    "source": "tatoeba:2237591",
    "status": "généré",
+   "form": "adverb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -6952,6 +7312,7 @@
    "answer": "normally",
    "source": "tatoeba:2273057",
    "status": "généré",
+   "form": "adverb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -6969,6 +7330,7 @@
    "answer": "loudly",
    "source": "tatoeba:441969",
    "status": "généré",
+   "form": "adverb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -6986,6 +7348,7 @@
    "answer": "fluently",
    "source": "tatoeba:587174",
    "status": "généré",
+   "form": "adverb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -7003,6 +7366,7 @@
    "answer": "seriously",
    "source": "tatoeba:314354",
    "status": "généré",
+   "form": "adverb",
    "mode": "choice",
    "choices": 2,
    "options": [
@@ -7020,6 +7384,7 @@
    "answer": "talking",
    "source": "tatoeba:1920729",
    "status": "généré",
+   "form": "ing",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -7038,6 +7403,7 @@
    "answer": "to go",
    "source": "tatoeba:3368209",
    "status": "généré",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -7056,6 +7422,7 @@
    "answer": "drawing",
    "source": "tatoeba:10732533",
    "status": "généré",
+   "form": "ing",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -7074,6 +7441,7 @@
    "answer": "to do",
    "source": "tatoeba:2013056",
    "status": "généré",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -7092,6 +7460,7 @@
    "answer": "fasting",
    "source": "tatoeba:13322991",
    "status": "généré",
+   "form": "ing",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -7110,6 +7479,7 @@
    "answer": "to buy",
    "source": "tatoeba:2013685",
    "status": "généré",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -7128,6 +7498,7 @@
    "answer": "doing",
    "source": "tatoeba:2642935",
    "status": "généré",
+   "form": "ing",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -7146,6 +7517,7 @@
    "answer": "to handle",
    "source": "tatoeba:3592225",
    "status": "généré",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -7160,106 +7532,110 @@
    "evidenceId": "written:adjectives:1",
    "before": "They live in ",
    "after": ".",
-   "fr": "Ils habitent dans une grande maison.",
-   "answer": "a big house",
+   "fr": "Ils habitent dans de grandes maisons.",
+   "answer": "big houses",
    "source": "written:adjectives:1",
    "status": "rédigé",
+   "form": "plural",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "a big house",
-    "a house big",
-    "a bigs house"
+    "big houses",
+    "bigs houses",
+    "houses big"
    ]
   },
   {
    "id": "placement:adjectives:written:adjectives:2",
    "targetId": "adjectives",
    "evidenceId": "written:adjectives:2",
-   "before": "She has ",
+   "before": "We have ",
    "after": ".",
-   "fr": "Elle a les yeux bleus.",
-   "answer": "blue eyes",
+   "fr": "Nous avons des idées différentes.",
+   "answer": "different ideas",
    "source": "written:adjectives:2",
    "status": "rédigé",
+   "form": "plural",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "eyes blue",
-    "blues eyes",
-    "blue eyes"
+    "differents ideas",
+    "ideas different",
+    "different ideas"
    ]
   },
   {
    "id": "placement:adjectives:written:adjectives:3",
    "targetId": "adjectives",
    "evidenceId": "written:adjectives:3",
-   "before": "These are ",
+   "before": "She bought two ",
    "after": ".",
-   "fr": "Ce sont des chaussures chères.",
-   "answer": "expensive shoes",
+   "fr": "Elle a acheté deux robes rouges.",
+   "answer": "red dresses",
    "source": "written:adjectives:3",
    "status": "rédigé",
+   "form": "plural",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "expensives shoes",
-    "expensive shoes",
-    "shoes expensive"
+    "dresses red",
+    "red dresses",
+    "reds dresses"
    ]
   },
   {
    "id": "placement:adjectives:written:adjectives:4",
    "targetId": "adjectives",
    "evidenceId": "written:adjectives:4",
-   "before": "He drives ",
+   "before": "These are ",
    "after": ".",
-   "fr": "Il conduit une voiture rapide.",
-   "answer": "a fast car",
+   "fr": "Ce sont des livres intéressants.",
+   "answer": "interesting books",
    "source": "written:adjectives:4",
    "status": "rédigé",
+   "form": "plural",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "a fast car",
-    "a car fast",
-    "a fasts car"
+    "interesting books",
+    "interestings books",
+    "books interesting"
    ]
   },
   {
    "id": "placement:adjectives:written:adjectives:5",
    "targetId": "adjectives",
    "evidenceId": "written:adjectives:5",
-   "before": "My sisters are very ",
+   "before": "They have ",
    "after": ".",
-   "fr": "Mes sœurs sont très grandes.",
-   "answer": "tall",
+   "fr": "Ils ont un chat noir.",
+   "answer": "a black cat",
    "source": "written:adjectives:5",
    "status": "rédigé",
+   "form": "position",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "talls",
-    "the talls",
-    "tall"
+    "a black cat",
+    "a cat black"
    ]
   },
   {
    "id": "placement:adjectives:written:adjectives:6",
    "targetId": "adjectives",
    "evidenceId": "written:adjectives:6",
-   "before": "We need ",
+   "before": "My shoes are ",
    "after": ".",
-   "fr": "Il nous faut une vieille carte.",
-   "answer": "an old map",
+   "fr": "Mes chaussures sont vieilles.",
+   "answer": "old",
    "source": "written:adjectives:6",
    "status": "rédigé",
+   "form": "predicate",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "an olds map",
-    "an old map",
-    "a map old"
+    "olds",
+    "old"
    ]
   },
   {
@@ -7267,11 +7643,12 @@
    "targetId": "simple-vs-continuous",
    "evidenceId": "written:simple-vs-continuous:1",
    "before": "Look! It ",
-   "after": " outside.",
-   "fr": "Regarde ! Il est en train de neiger dehors.",
+   "after": ".",
+   "fr": "Regarde ! Il neige.",
    "answer": "is snowing",
    "source": "written:simple-vs-continuous:1",
    "status": "rédigé",
+   "form": "continuous",
    "mode": "typed",
    "hint": "snow"
   },
@@ -7285,6 +7662,7 @@
    "answer": "walks",
    "source": "written:simple-vs-continuous:2",
    "status": "rédigé",
+   "form": "simple",
    "mode": "typed",
    "hint": "walk"
   },
@@ -7292,12 +7670,13 @@
    "id": "placement:simple-vs-continuous:written:simple-vs-continuous:3",
    "targetId": "simple-vs-continuous",
    "evidenceId": "written:simple-vs-continuous:3",
-   "before": "Be quiet, the baby ",
+   "before": "Shh! The baby ",
    "after": ".",
-   "fr": "Silence, le bébé est en train de dormir.",
+   "fr": "Chut, le bébé dort.",
    "answer": "is sleeping",
    "source": "written:simple-vs-continuous:3",
    "status": "rédigé",
+   "form": "continuous",
    "mode": "typed",
    "hint": "sleep"
   },
@@ -7311,6 +7690,7 @@
    "answer": "boils",
    "source": "written:simple-vs-continuous:4",
    "status": "rédigé",
+   "form": "simple",
    "mode": "typed",
    "hint": "boil"
   },
@@ -7324,6 +7704,7 @@
    "answer": "understand",
    "source": "written:simple-vs-continuous:5",
    "status": "rédigé",
+   "form": "simple",
    "mode": "typed",
    "hint": "understand"
   },
@@ -7332,120 +7713,149 @@
    "targetId": "simple-vs-continuous",
    "evidenceId": "written:simple-vs-continuous:6",
    "before": "They ",
-   "after": " a film right now.",
-   "fr": "Ils sont en train de regarder un film.",
+   "after": " a film right now, so call back later.",
+   "fr": "Ils regardent un film, rappelle plus tard.",
    "answer": "are watching",
    "source": "written:simple-vs-continuous:6",
    "status": "rédigé",
+   "form": "continuous",
    "mode": "typed",
    "hint": "watch"
+  },
+  {
+   "id": "placement:simple-vs-continuous:written:simple-vs-continuous:7",
+   "targetId": "simple-vs-continuous",
+   "evidenceId": "written:simple-vs-continuous:7",
+   "before": "He usually ",
+   "after": " tea, but today he's having coffee.",
+   "fr": "D'habitude il boit du thé, mais aujourd'hui il prend un café.",
+   "answer": "drinks",
+   "source": "written:simple-vs-continuous:7",
+   "status": "rédigé",
+   "form": "simple",
+   "mode": "typed",
+   "hint": "drink"
+  },
+  {
+   "id": "placement:simple-vs-continuous:written:simple-vs-continuous:8",
+   "targetId": "simple-vs-continuous",
+   "evidenceId": "written:simple-vs-continuous:8",
+   "before": "Listen! Someone ",
+   "after": " at the door.",
+   "fr": "Écoute ! Quelqu'un frappe à la porte.",
+   "answer": "is knocking",
+   "source": "written:simple-vs-continuous:8",
+   "status": "rédigé",
+   "form": "continuous",
+   "mode": "typed",
+   "hint": "knock"
   },
   {
    "id": "placement:reported-statements:written:reported-statements:1",
    "targetId": "reported-statements",
    "evidenceId": "written:reported-statements:1",
-   "before": "Tom told me he ",
-   "after": " the film the day before.",
-   "fr": "Tom m'a dit qu'il avait vu le film la veille.",
-   "answer": "had seen",
+   "before": "She said she ",
+   "after": " working that day.",
+   "fr": "Elle a dit qu'elle travaillait ce jour-là.",
+   "answer": "was",
    "source": "written:reported-statements:1",
    "status": "rédigé",
+   "form": "was",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "had seen",
-    "has seen",
-    "sees"
+    "was",
+    "is"
    ]
   },
   {
    "id": "placement:reported-statements:written:reported-statements:2",
    "targetId": "reported-statements",
    "evidenceId": "written:reported-statements:2",
-   "before": "He said he ",
-   "after": " call me the next day.",
-   "fr": "Il a dit qu'il m'appellerait le lendemain.",
-   "answer": "would",
+   "before": "He told me he ",
+   "after": " swim when he was five.",
+   "fr": "Il m'a dit qu'il savait nager à cinq ans.",
+   "answer": "could",
    "source": "written:reported-statements:2",
    "status": "rédigé",
+   "form": "could",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "will",
-    "shall",
-    "would"
+    "can",
+    "could"
    ]
   },
   {
    "id": "placement:reported-statements:written:reported-statements:3",
    "targetId": "reported-statements",
    "evidenceId": "written:reported-statements:3",
-   "before": "He told me that he ",
-   "after": " in Paris the previous year.",
-   "fr": "Il m'a dit qu'il avait vécu à Paris l'année précédente.",
-   "answer": "had lived",
+   "before": "He said he ",
+   "after": " call me the next day.",
+   "fr": "Il a dit qu'il m'appellerait le lendemain.",
+   "answer": "would",
    "source": "written:reported-statements:3",
    "status": "rédigé",
+   "form": "would",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "lives",
-    "had lived",
-    "has lived"
+    "would",
+    "will"
    ]
   },
   {
    "id": "placement:reported-statements:written:reported-statements:4",
    "targetId": "reported-statements",
    "evidenceId": "written:reported-statements:4",
-   "before": "She said she ",
-   "after": " working that day.",
-   "fr": "Elle a dit qu'elle travaillait ce jour-là.",
-   "answer": "was",
+   "before": "Tom told me he ",
+   "after": " the film the day before.",
+   "fr": "Tom m'a dit qu'il avait vu le film la veille.",
+   "answer": "had seen",
    "source": "written:reported-statements:4",
    "status": "rédigé",
+   "form": "had",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "was",
-    "is being",
-    "were"
+    "has seen",
+    "had seen"
    ]
   },
   {
    "id": "placement:reported-statements:written:reported-statements:5",
    "targetId": "reported-statements",
    "evidenceId": "written:reported-statements:5",
-   "before": "Tom said that Mary ",
-   "after": " already left when he arrived.",
-   "fr": "Tom a dit que Mary était déjà partie quand il est arrivé.",
-   "answer": "had",
+   "before": "Last year, she told us she ",
+   "after": " too busy to travel.",
+   "fr": "L'an dernier, elle nous a dit qu'elle était trop occupée pour voyager.",
+   "answer": "was",
    "source": "written:reported-statements:5",
    "status": "rédigé",
+   "form": "was",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "has",
-    "have",
-    "had"
+    "was",
+    "is"
    ]
   },
   {
    "id": "placement:reported-statements:written:reported-statements:6",
    "targetId": "reported-statements",
    "evidenceId": "written:reported-statements:6",
-   "before": "They told us they ",
-   "after": " never been to London before that trip.",
-   "fr": "Ils nous ont dit qu'ils n'étaient jamais allés à Londres avant ce voyage.",
-   "answer": "had",
+   "before": "They said they ",
+   "after": " finish the work by the end of that week.",
+   "fr": "Ils ont dit qu'ils finiraient le travail avant la fin de cette semaine-là.",
+   "answer": "would",
    "source": "written:reported-statements:6",
    "status": "rédigé",
+   "form": "would",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "has",
-    "had",
-    "have"
+    "will",
+    "would"
    ]
   },
   {
@@ -7458,84 +7868,84 @@
    "answer": "broke",
    "source": "written:subject-questions:1",
    "status": "rédigé",
+   "form": "subject",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
     "broke",
-    "did broke",
-    "broken"
+    "did break"
    ]
   },
   {
    "id": "placement:subject-questions:written:subject-questions:2",
    "targetId": "subject-questions",
    "evidenceId": "written:subject-questions:2",
-   "before": "What ",
-   "after": " yesterday?",
-   "fr": "Que s'est-il passé hier ?",
-   "answer": "happened",
+   "before": "Who ",
+   "after": " last night?",
+   "fr": "Qui as-tu appelé hier soir ?",
+   "answer": "did you call",
    "source": "written:subject-questions:2",
    "status": "rédigé",
+   "form": "object",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "did happened",
-    "was happen",
-    "happened"
+    "you called",
+    "did you call"
    ]
   },
   {
    "id": "placement:subject-questions:written:subject-questions:3",
    "targetId": "subject-questions",
    "evidenceId": "written:subject-questions:3",
-   "before": "Who ",
-   "after": " in this house?",
-   "fr": "Qui habite dans cette maison ?",
-   "answer": "lives",
+   "before": "What ",
+   "after": " at the party?",
+   "fr": "Que s'est-il passé à la fête ?",
+   "answer": "happened",
    "source": "written:subject-questions:3",
    "status": "rédigé",
+   "form": "subject",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "is live",
-    "lives",
-    "does lives"
+    "happened",
+    "did happen"
    ]
   },
   {
    "id": "placement:subject-questions:written:subject-questions:4",
    "targetId": "subject-questions",
    "evidenceId": "written:subject-questions:4",
-   "before": "Who ",
-   "after": " you that?",
-   "fr": "Qui t'a dit ça ?",
-   "answer": "told",
+   "before": "What ",
+   "after": " to you?",
+   "fr": "Qu'est-ce qu'elle t'a dit ?",
+   "answer": "did she say",
    "source": "written:subject-questions:4",
    "status": "rédigé",
+   "form": "object",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "told",
-    "did told",
-    "telled"
+    "she said",
+    "did she say"
    ]
   },
   {
    "id": "placement:subject-questions:written:subject-questions:5",
    "targetId": "subject-questions",
    "evidenceId": "written:subject-questions:5",
-   "before": "How many people ",
-   "after": " to the party?",
-   "fr": "Combien de personnes sont venues à la fête ?",
-   "answer": "came",
+   "before": "Who ",
+   "after": " in that house?",
+   "fr": "Qui habite dans cette maison ?",
+   "answer": "lives",
    "source": "written:subject-questions:5",
    "status": "rédigé",
+   "form": "subject",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "did came",
-    "come",
-    "came"
+    "lives",
+    "does live"
    ]
   },
   {
@@ -7543,17 +7953,53 @@
    "targetId": "subject-questions",
    "evidenceId": "written:subject-questions:6",
    "before": "Who ",
-   "after": " this book?",
-   "fr": "Qui a écrit ce livre ?",
-   "answer": "wrote",
+   "after": " with?",
+   "fr": "Avec qui habites-tu ?",
+   "answer": "do you live",
    "source": "written:subject-questions:6",
    "status": "rédigé",
+   "form": "object",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "written",
-    "wrote",
-    "did wrote"
+    "you live",
+    "do you live"
+   ]
+  },
+  {
+   "id": "placement:subject-questions:written:subject-questions:7",
+   "targetId": "subject-questions",
+   "evidenceId": "written:subject-questions:7",
+   "before": "How many people ",
+   "after": " to the meeting?",
+   "fr": "Combien de personnes sont venues à la réunion ?",
+   "answer": "came",
+   "source": "written:subject-questions:7",
+   "status": "rédigé",
+   "form": "subject",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "came",
+    "did come"
+   ]
+  },
+  {
+   "id": "placement:subject-questions:written:subject-questions:8",
+   "targetId": "subject-questions",
+   "evidenceId": "written:subject-questions:8",
+   "before": "How many people ",
+   "after": "?",
+   "fr": "Combien de personnes as-tu invitées ?",
+   "answer": "did you invite",
+   "source": "written:subject-questions:8",
+   "status": "rédigé",
+   "form": "object",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "you invited",
+    "did you invite"
    ]
   },
   {
@@ -7566,102 +8012,105 @@
    "answer": "to buy",
    "source": "written:purpose-to:1",
    "status": "rédigé",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
     "to buy",
-    "for buy",
-    "for to buy"
+    "for buying",
+    "for buy"
    ]
   },
   {
    "id": "placement:purpose-to:written:purpose-to:2",
    "targetId": "purpose-to",
    "evidenceId": "written:purpose-to:2",
-   "before": "He called ",
-   "after": " about the job.",
-   "fr": "Il a appelé pour se renseigner sur le poste.",
-   "answer": "to ask",
+   "before": "We went out ",
+   "after": " after dinner.",
+   "fr": "Nous sommes sortis faire une promenade après le dîner.",
+   "answer": "for a walk",
    "source": "written:purpose-to:2",
    "status": "rédigé",
+   "form": "for",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "for ask",
-    "for to ask",
-    "to ask"
+    "to a walk",
+    "for a walk"
    ]
   },
   {
    "id": "placement:purpose-to:written:purpose-to:3",
    "targetId": "purpose-to",
    "evidenceId": "written:purpose-to:3",
-   "before": "We use a dictionary ",
-   "after": " new words.",
-   "fr": "On utilise un dictionnaire pour vérifier les mots nouveaux.",
-   "answer": "to check",
+   "before": "He called ",
+   "after": " about the job.",
+   "fr": "Il a appelé pour se renseigner sur le poste.",
+   "answer": "to ask",
    "source": "written:purpose-to:3",
    "status": "rédigé",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "for to check",
-    "to check",
-    "for check"
+    "for ask",
+    "to ask",
+    "for asking"
    ]
   },
   {
    "id": "placement:purpose-to:written:purpose-to:4",
    "targetId": "purpose-to",
    "evidenceId": "written:purpose-to:4",
-   "before": "I came here ",
-   "after": " you.",
-   "fr": "Je suis venu ici pour te voir.",
-   "answer": "to see",
+   "before": "She came to London ",
+   "after": " a job interview.",
+   "fr": "Elle est venue à Londres pour un entretien d'embauche.",
+   "answer": "for",
    "source": "written:purpose-to:4",
    "status": "rédigé",
+   "form": "for",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "to see",
-    "for see",
-    "for to see"
+    "to",
+    "for"
    ]
   },
   {
    "id": "placement:purpose-to:written:purpose-to:5",
    "targetId": "purpose-to",
    "evidenceId": "written:purpose-to:5",
-   "before": "She studies hard ",
-   "after": " the exam.",
-   "fr": "Elle travaille dur pour réussir l'examen.",
-   "answer": "to pass",
+   "before": "I came here ",
+   "after": " you.",
+   "fr": "Je suis venu ici pour te voir.",
+   "answer": "to see",
    "source": "written:purpose-to:5",
    "status": "rédigé",
+   "form": "to",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "for pass",
-    "for to pass",
-    "to pass"
+    "for seeing",
+    "for see",
+    "to see"
    ]
   },
   {
    "id": "placement:purpose-to:written:purpose-to:6",
    "targetId": "purpose-to",
    "evidenceId": "written:purpose-to:6",
-   "before": "They moved to London ",
-   "after": " work.",
-   "fr": "Ils ont déménagé à Londres pour trouver du travail.",
-   "answer": "to find",
+   "before": "Let's stop here ",
+   "after": " lunch.",
+   "fr": "Arrêtons-nous ici pour déjeuner.",
+   "answer": "for",
    "source": "written:purpose-to:6",
    "status": "rédigé",
+   "form": "for",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "for to find",
-    "to find",
-    "for find"
+    "to",
+    "for"
    ]
   },
   {
@@ -7674,6 +8123,7 @@
    "answer": "helping",
    "source": "written:preposition-ing:1",
    "status": "rédigé",
+   "form": "ing",
    "mode": "typed",
    "hint": "help"
   },
@@ -7687,6 +8137,7 @@
    "answer": "saying",
    "source": "written:preposition-ing:2",
    "status": "rédigé",
+   "form": "ing",
    "mode": "typed",
    "hint": "say"
   },
@@ -7694,53 +8145,57 @@
    "id": "placement:preposition-ing:written:preposition-ing:3",
    "targetId": "preposition-ing",
    "evidenceId": "written:preposition-ing:3",
-   "before": "I'm interested in ",
-   "after": " Japanese.",
-   "fr": "Ça m'intéresse d'apprendre le japonais.",
-   "answer": "learning",
+   "before": "We are looking forward to ",
+   "after": " you.",
+   "fr": "Nous avons hâte de vous voir.",
+   "answer": "seeing",
    "source": "written:preposition-ing:3",
    "status": "rédigé",
+   "form": "ing",
    "mode": "typed",
-   "hint": "learn"
+   "hint": "see"
   },
   {
    "id": "placement:preposition-ing:written:preposition-ing:4",
    "targetId": "preposition-ing",
    "evidenceId": "written:preposition-ing:4",
-   "before": "Wash your hands before ",
-   "after": ".",
-   "fr": "Lave-toi les mains avant de manger.",
-   "answer": "eating",
+   "before": "I'm thinking about ",
+   "after": " jobs.",
+   "fr": "Je pense à changer de travail.",
+   "answer": "changing",
    "source": "written:preposition-ing:4",
    "status": "rédigé",
+   "form": "ing",
    "mode": "typed",
-   "hint": "eat"
+   "hint": "change"
   },
   {
    "id": "placement:preposition-ing:written:preposition-ing:5",
    "targetId": "preposition-ing",
    "evidenceId": "written:preposition-ing:5",
-   "before": "I'm thinking about ",
-   "after": " jobs.",
-   "fr": "Je pense à changer de travail.",
-   "answer": "changing",
+   "before": "I'd like to ",
+   "after": " you soon.",
+   "fr": "J'aimerais te voir bientôt.",
+   "answer": "see",
    "source": "written:preposition-ing:5",
    "status": "rédigé",
+   "form": "infinitive",
    "mode": "typed",
-   "hint": "change"
+   "hint": "see"
   },
   {
    "id": "placement:preposition-ing:written:preposition-ing:6",
    "targetId": "preposition-ing",
    "evidenceId": "written:preposition-ing:6",
-   "before": "We are looking forward to ",
-   "after": " you.",
-   "fr": "Nous avons hâte de vous voir.",
-   "answer": "seeing",
+   "before": "She decided to ",
+   "after": " jobs.",
+   "fr": "Elle a décidé de changer de travail.",
+   "answer": "change",
    "source": "written:preposition-ing:6",
    "status": "rédigé",
+   "form": "infinitive",
    "mode": "typed",
-   "hint": "see"
+   "hint": "change"
   },
   {
    "id": "placement:make-let:written:make-let:1",
@@ -7752,30 +8207,30 @@
    "answer": "tidy",
    "source": "written:make-let:1",
    "status": "rédigé",
+   "form": "base",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
     "tidy",
-    "to tidy",
-    "tidying"
+    "to tidy"
    ]
   },
   {
    "id": "placement:make-let:written:make-let:2",
    "targetId": "make-let",
    "evidenceId": "written:make-let:2",
-   "before": "Let me ",
-   "after": " you.",
-   "fr": "Laisse-moi t'aider.",
-   "answer": "help",
+   "before": "My parents allowed me ",
+   "after": " out late.",
+   "fr": "Mes parents m'ont permis de sortir tard.",
+   "answer": "to stay",
    "source": "written:make-let:2",
    "status": "rédigé",
+   "form": "to",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "to help",
-    "helping",
-    "help"
+    "stay",
+    "to stay"
    ]
   },
   {
@@ -7788,10 +8243,10 @@
    "answer": "cry",
    "source": "written:make-let:3",
    "status": "rédigé",
+   "form": "base",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "crying",
     "cry",
     "to cry"
    ]
@@ -7800,54 +8255,90 @@
    "id": "placement:make-let:written:make-let:4",
    "targetId": "make-let",
    "evidenceId": "written:make-let:4",
-   "before": "My parents don't let me ",
-   "after": " out late.",
-   "fr": "Mes parents ne me laissent pas sortir tard.",
-   "answer": "stay",
+   "before": "He was made ",
+   "after": " for an hour.",
+   "fr": "On l'a fait attendre une heure.",
+   "answer": "to wait",
    "source": "written:make-let:4",
    "status": "rédigé",
+   "form": "to",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "stay",
-    "to stay",
-    "staying"
+    "wait",
+    "to wait"
    ]
   },
   {
    "id": "placement:make-let:written:make-let:5",
    "targetId": "make-let",
    "evidenceId": "written:make-let:5",
-   "before": "He made us ",
-   "after": " for an hour.",
-   "fr": "Il nous a fait attendre une heure.",
-   "answer": "wait",
+   "before": "Let me ",
+   "after": " you.",
+   "fr": "Laisse-moi t'aider.",
+   "answer": "help",
    "source": "written:make-let:5",
    "status": "rédigé",
+   "form": "base",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "to wait",
-    "waiting",
-    "wait"
+    "help",
+    "to help"
    ]
   },
   {
    "id": "placement:make-let:written:make-let:6",
    "targetId": "make-let",
    "evidenceId": "written:make-let:6",
+   "before": "They don't allow us ",
+   "after": " our phones in class.",
+   "fr": "Ils ne nous laissent pas utiliser nos téléphones en classe.",
+   "answer": "to use",
+   "source": "written:make-let:6",
+   "status": "rédigé",
+   "form": "to",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "use",
+    "to use"
+   ]
+  },
+  {
+   "id": "placement:make-let:written:make-let:7",
+   "targetId": "make-let",
+   "evidenceId": "written:make-let:7",
    "before": "Will you let him ",
    "after": "?",
    "fr": "Tu vas le laisser partir ?",
    "answer": "go",
-   "source": "written:make-let:6",
+   "source": "written:make-let:7",
    "status": "rédigé",
+   "form": "base",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "going",
     "go",
     "to go"
+   ]
+  },
+  {
+   "id": "placement:make-let:written:make-let:8",
+   "targetId": "make-let",
+   "evidenceId": "written:make-let:8",
+   "before": "She asked me ",
+   "after": " her back.",
+   "fr": "Elle m'a demandé de la rappeler.",
+   "answer": "to call",
+   "source": "written:make-let:8",
+   "status": "rédigé",
+   "form": "to",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "call",
+    "to call"
    ]
   },
   {
@@ -7860,102 +8351,138 @@
    "answer": "turn it down",
    "source": "written:phrasal-verbs:1",
    "status": "rédigé",
+   "form": "separable",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
     "turn it down",
-    "turn down it",
-    "it turn down"
+    "turn down it"
    ]
   },
   {
    "id": "placement:phrasal-verbs:written:phrasal-verbs:2",
    "targetId": "phrasal-verbs",
    "evidenceId": "written:phrasal-verbs:2",
-   "before": "Your coat is on the floor. Please ",
-   "after": ".",
-   "fr": "Ton manteau est par terre. Ramasse-le, s'il te plaît.",
-   "answer": "pick it up",
+   "before": "I've lost my keys. Can you help me ",
+   "after": "?",
+   "fr": "J'ai perdu mes clés. Tu peux m'aider à les chercher ?",
+   "answer": "look for them",
    "source": "written:phrasal-verbs:2",
    "status": "rédigé",
+   "form": "inseparable",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "pick up it",
-    "it pick up",
-    "pick it up"
+    "look them for",
+    "look for them"
    ]
   },
   {
    "id": "placement:phrasal-verbs:written:phrasal-verbs:3",
    "targetId": "phrasal-verbs",
    "evidenceId": "written:phrasal-verbs:3",
-   "before": "I can't find the paper with the number. Did you ",
-   "after": "?",
-   "fr": "Je ne trouve pas le papier avec le numéro. Tu l'as jeté ?",
-   "answer": "throw it away",
+   "before": "If you don't know the word, ",
+   "after": " in the dictionary.",
+   "fr": "Si tu ne connais pas le mot, cherche-le dans le dictionnaire.",
+   "answer": "look it up",
    "source": "written:phrasal-verbs:3",
    "status": "rédigé",
+   "form": "separable",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "it throw away",
-    "throw it away",
-    "throw away it"
+    "look it up",
+    "look up it"
    ]
   },
   {
    "id": "placement:phrasal-verbs:written:phrasal-verbs:4",
    "targetId": "phrasal-verbs",
    "evidenceId": "written:phrasal-verbs:4",
-   "before": "If you don't know the word, ",
-   "after": " in the dictionary.",
-   "fr": "Si tu ne connais pas le mot, cherche-le dans le dictionnaire.",
-   "answer": "look it up",
+   "before": "She has a dog and she ",
+   "after": " very well.",
+   "fr": "Elle a un chien et elle s'en occupe très bien.",
+   "answer": "looks after it",
    "source": "written:phrasal-verbs:4",
    "status": "rédigé",
+   "form": "inseparable",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "look it up",
-    "look up it",
-    "it look up"
+    "looks it after",
+    "looks after it"
    ]
   },
   {
    "id": "placement:phrasal-verbs:written:phrasal-verbs:5",
    "targetId": "phrasal-verbs",
    "evidenceId": "written:phrasal-verbs:5",
-   "before": "I like these shoes. Can I ",
-   "after": "?",
-   "fr": "J'aime ces chaussures. Je peux les essayer ?",
-   "answer": "try them on",
+   "before": "The meeting is tomorrow, but we may have to ",
+   "after": ".",
+   "fr": "La réunion est demain, mais nous devrons peut-être la reporter.",
+   "answer": "put it off",
    "source": "written:phrasal-verbs:5",
    "status": "rédigé",
+   "form": "separable",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "try on them",
-    "them try on",
-    "try them on"
+    "put it off",
+    "put off it"
    ]
   },
   {
    "id": "placement:phrasal-verbs:written:phrasal-verbs:6",
    "targetId": "phrasal-verbs",
    "evidenceId": "written:phrasal-verbs:6",
-   "before": "The meeting is tomorrow, but we may have to ",
+   "before": "The question surprised me, but I'll ",
    "after": ".",
-   "fr": "La réunion est demain, mais nous devrons peut-être la reporter.",
-   "answer": "put it off",
+   "fr": "La question m'a surpris, mais je vais m'en occuper.",
+   "answer": "deal with it",
    "source": "written:phrasal-verbs:6",
    "status": "rédigé",
+   "form": "inseparable",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "it put off",
-    "put it off",
-    "put off it"
+    "deal it with",
+    "deal with it"
+   ]
+  },
+  {
+   "id": "placement:phrasal-verbs:written:phrasal-verbs:7",
+   "targetId": "phrasal-verbs",
+   "evidenceId": "written:phrasal-verbs:7",
+   "before": "I like these shoes. Can I ",
+   "after": "?",
+   "fr": "J'aime ces chaussures. Je peux les essayer ?",
+   "answer": "try them on",
+   "source": "written:phrasal-verbs:7",
+   "status": "rédigé",
+   "form": "separable",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "try them on",
+    "try on them"
+   ]
+  },
+  {
+   "id": "placement:phrasal-verbs:written:phrasal-verbs:8",
+   "targetId": "phrasal-verbs",
+   "evidenceId": "written:phrasal-verbs:8",
+   "before": "He had the flu, but he ",
+   "after": " quickly.",
+   "fr": "Il a eu la grippe, mais il s'en est vite remis.",
+   "answer": "got over it",
+   "source": "written:phrasal-verbs:8",
+   "status": "rédigé",
+   "form": "inseparable",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "got it over",
+    "got over it"
    ]
   },
   {
@@ -7968,6 +8495,7 @@
    "answer": "would be",
    "source": "written:mixed-conditionals:1",
    "status": "rédigé",
+   "form": "present-result",
    "mode": "typed",
    "hint": "be"
   },
@@ -7981,6 +8509,7 @@
    "answer": "had taken",
    "source": "written:mixed-conditionals:2",
    "status": "rédigé",
+   "form": "past-condition",
    "mode": "typed",
    "hint": "take"
   },
@@ -7994,12 +8523,12 @@
    "answer": "wouldn't be",
    "source": "written:mixed-conditionals:3",
    "status": "rédigé",
+   "form": "present-result",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "wouldn't have been",
     "wouldn't be",
-    "won't be"
+    "wouldn't have been"
    ]
   },
   {
@@ -8012,6 +8541,7 @@
    "answer": "would have joined",
    "source": "written:mixed-conditionals:4",
    "status": "rédigé",
+   "form": "past-result",
    "mode": "typed",
    "hint": "join"
   },
@@ -8025,12 +8555,12 @@
    "answer": "hadn't missed",
    "source": "written:mixed-conditionals:5",
    "status": "rédigé",
+   "form": "past-condition",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "didn't miss",
-    "wouldn't miss",
-    "hadn't missed"
+    "hadn't missed",
+    "didn't miss"
    ]
   },
   {
@@ -8043,6 +8573,7 @@
    "answer": "would have understood",
    "source": "written:mixed-conditionals:6",
    "status": "rédigé",
+   "form": "past-result",
    "mode": "typed",
    "hint": "understand"
   },
@@ -8056,6 +8587,7 @@
    "answer": "be finished",
    "source": "written:passive-modals:1",
    "status": "rédigé",
+   "form": "passive",
    "mode": "typed",
    "hint": "finish"
   },
@@ -8069,6 +8601,7 @@
    "answer": "be taken",
    "source": "written:passive-modals:2",
    "status": "rédigé",
+   "form": "passive",
    "mode": "typed",
    "hint": "take"
   },
@@ -8082,6 +8615,7 @@
    "answer": "be bought",
    "source": "written:passive-modals:3",
    "status": "rédigé",
+   "form": "passive",
    "mode": "typed",
    "hint": "buy"
   },
@@ -8095,6 +8629,7 @@
    "answer": "be solved",
    "source": "written:passive-modals:4",
    "status": "rédigé",
+   "form": "passive",
    "mode": "typed",
    "hint": "solve"
   },
@@ -8108,6 +8643,7 @@
    "answer": "be left",
    "source": "written:passive-modals:5",
    "status": "rédigé",
+   "form": "passive",
    "mode": "typed",
    "hint": "leave"
   },
@@ -8121,6 +8657,7 @@
    "answer": "be sent",
    "source": "written:passive-modals:6",
    "status": "rédigé",
+   "form": "passive",
    "mode": "typed",
    "hint": "send"
   },
@@ -8129,107 +8666,107 @@
    "targetId": "have-something-done",
    "evidenceId": "written:have-something-done:1",
    "before": "Yesterday I ",
-   "after": ".",
-   "fr": "Hier, je me suis fait couper les cheveux.",
+   "after": " at the hairdresser's.",
+   "fr": "Hier, je me suis fait couper les cheveux chez le coiffeur.",
    "answer": "had my hair cut",
    "source": "written:have-something-done:1",
    "status": "rédigé",
+   "form": "causative",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
     "had my hair cut",
-    "cut my hair",
-    "had cut my hair"
+    "cut my hair"
    ]
   },
   {
    "id": "placement:have-something-done:written:have-something-done:2",
    "targetId": "have-something-done",
    "evidenceId": "written:have-something-done:2",
-   "before": "We are ",
-   "after": " next week.",
-   "fr": "Nous faisons repeindre notre maison la semaine prochaine.",
-   "answer": "having our house painted",
+   "before": "I didn't go to the hairdresser's: I ",
+   "after": " myself.",
+   "fr": "Je ne suis pas allé chez le coiffeur : je me suis coupé les cheveux moi-même.",
+   "answer": "cut my hair",
    "source": "written:have-something-done:2",
    "status": "rédigé",
+   "form": "self",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "painting our house",
-    "having painted our house",
-    "having our house painted"
+    "had my hair cut",
+    "cut my hair"
    ]
   },
   {
    "id": "placement:have-something-done:written:have-something-done:3",
    "targetId": "have-something-done",
    "evidenceId": "written:have-something-done:3",
-   "before": "She ",
-   "after": " at the garage.",
-   "fr": "Elle a fait réparer sa voiture au garage.",
-   "answer": "had her car repaired",
+   "before": "We are ",
+   "after": " next week.",
+   "fr": "Nous faisons repeindre notre maison la semaine prochaine.",
+   "answer": "having our house painted",
    "source": "written:have-something-done:3",
    "status": "rédigé",
+   "form": "causative",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "had repaired her car",
-    "had her car repaired",
-    "repaired her car"
+    "having our house painted",
+    "painting our house"
    ]
   },
   {
    "id": "placement:have-something-done:written:have-something-done:4",
    "targetId": "have-something-done",
    "evidenceId": "written:have-something-done:4",
-   "before": "You should ",
-   "after": ".",
-   "fr": "Tu devrais te faire contrôler la vue.",
-   "answer": "have your eyes tested",
+   "before": "We are ",
+   "after": " ourselves this weekend.",
+   "fr": "Nous repeignons nous-mêmes notre maison ce week-end.",
+   "answer": "painting our house",
    "source": "written:have-something-done:4",
    "status": "rédigé",
+   "form": "self",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "have your eyes tested",
-    "test your eyes",
-    "have tested your eyes"
+    "having our house painted",
+    "painting our house"
    ]
   },
   {
    "id": "placement:have-something-done:written:have-something-done:5",
    "targetId": "have-something-done",
    "evidenceId": "written:have-something-done:5",
-   "before": "I need to ",
-   "after": ".",
-   "fr": "Il faut que je fasse réparer ma montre.",
-   "answer": "get my watch fixed",
+   "before": "She ",
+   "after": " at the garage.",
+   "fr": "Elle a fait réparer sa voiture au garage.",
+   "answer": "had her car repaired",
    "source": "written:have-something-done:5",
    "status": "rédigé",
+   "form": "causative",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "fix my watch",
-    "get fixed my watch",
-    "get my watch fixed"
+    "had her car repaired",
+    "repaired her car"
    ]
   },
   {
    "id": "placement:have-something-done:written:have-something-done:6",
    "targetId": "have-something-done",
    "evidenceId": "written:have-something-done:6",
-   "before": "They ",
-   "after": " last month.",
-   "fr": "Ils ont fait installer une nouvelle cuisine le mois dernier.",
-   "answer": "had a new kitchen installed",
+   "before": "I need to ",
+   "after": ".",
+   "fr": "Il faut que je fasse réparer ma montre.",
+   "answer": "get my watch fixed",
    "source": "written:have-something-done:6",
    "status": "rédigé",
+   "form": "causative",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "had installed a new kitchen",
-    "had a new kitchen installed",
-    "installed a new kitchen"
+    "get fixed my watch",
+    "get my watch fixed"
    ]
   },
   {
@@ -8242,6 +8779,7 @@
    "answer": "who",
    "source": "written:relatives-non-defining:1",
    "status": "rédigé",
+   "form": "who",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8260,6 +8798,7 @@
    "answer": "which",
    "source": "written:relatives-non-defining:2",
    "status": "rédigé",
+   "form": "which",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8278,6 +8817,7 @@
    "answer": "which",
    "source": "written:relatives-non-defining:3",
    "status": "rédigé",
+   "form": "which",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8296,6 +8836,7 @@
    "answer": "whose",
    "source": "written:relatives-non-defining:4",
    "status": "rédigé",
+   "form": "whose",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8314,6 +8855,7 @@
    "answer": "which",
    "source": "written:relatives-non-defining:5",
    "status": "rédigé",
+   "form": "which",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8332,6 +8874,7 @@
    "answer": "which",
    "source": "written:relatives-non-defining:6",
    "status": "rédigé",
+   "form": "which",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8350,6 +8893,7 @@
    "answer": "must have gone",
    "source": "written:deduction-past:1",
    "status": "rédigé",
+   "form": "must",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8368,6 +8912,7 @@
    "answer": "can't have seen",
    "source": "written:deduction-past:2",
    "status": "rédigé",
+   "form": "can't",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8386,6 +8931,7 @@
    "answer": "might have missed",
    "source": "written:deduction-past:3",
    "status": "rédigé",
+   "form": "might",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8404,6 +8950,7 @@
    "answer": "must have been",
    "source": "written:deduction-past:4",
    "status": "rédigé",
+   "form": "must",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8422,6 +8969,7 @@
    "answer": "must have thrown",
    "source": "written:deduction-past:5",
    "status": "rédigé",
+   "form": "must",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8440,6 +8988,7 @@
    "answer": "may have left",
    "source": "written:deduction-past:6",
    "status": "rédigé",
+   "form": "might",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8458,6 +9007,7 @@
    "answer": "where I lived",
    "source": "written:reported-questions:1",
    "status": "rédigé",
+   "form": "wh",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8476,6 +9026,7 @@
    "answer": "if I was",
    "source": "written:reported-questions:2",
    "status": "rédigé",
+   "form": "if",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8494,6 +9045,7 @@
    "answer": "what time the train left",
    "source": "written:reported-questions:3",
    "status": "rédigé",
+   "form": "wh",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8512,6 +9064,7 @@
    "answer": "to be",
    "source": "written:reported-questions:4",
    "status": "rédigé",
+   "form": "order",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8530,6 +9083,7 @@
    "answer": "not to tell",
    "source": "written:reported-questions:5",
    "status": "rédigé",
+   "form": "order",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8548,6 +9102,7 @@
    "answer": "why he was",
    "source": "written:reported-questions:6",
    "status": "rédigé",
+   "form": "wh",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8562,10 +9117,11 @@
    "evidenceId": "written:future-continuous:1",
    "before": "This time tomorrow, I ",
    "after": " to New York.",
-   "fr": "Demain à cette heure-ci, je serai en train de voler vers New York.",
+   "fr": "Demain à la même heure, je serai dans l'avion pour New York.",
    "answer": "will be flying",
    "source": "written:future-continuous:1",
    "status": "rédigé",
+   "form": "continuous",
    "mode": "typed",
    "hint": "fly"
   },
@@ -8573,12 +9129,13 @@
    "id": "placement:future-continuous:written:future-continuous:2",
    "targetId": "future-continuous",
    "evidenceId": "written:future-continuous:2",
-   "before": "Don't call at eight; we ",
-   "after": " dinner.",
-   "fr": "N'appelle pas à huit heures ; nous serons en train de dîner.",
+   "before": "Don't call at eight tonight; we ",
+   "after": " dinner then.",
+   "fr": "N'appelle pas ce soir à huit heures : nous serons à table.",
    "answer": "will be having",
    "source": "written:future-continuous:2",
    "status": "rédigé",
+   "form": "continuous",
    "mode": "typed",
    "hint": "have"
   },
@@ -8586,53 +9143,60 @@
    "id": "placement:future-continuous:written:future-continuous:3",
    "targetId": "future-continuous",
    "evidenceId": "written:future-continuous:3",
-   "before": "At midnight, she ",
-   "after": ".",
-   "fr": "À minuit, elle sera en train de dormir.",
-   "answer": "will be sleeping",
+   "before": "This time next week, we ",
+   "after": " on a beach.",
+   "fr": "La semaine prochaine à la même heure, nous nous détendrons sur une plage.",
+   "answer": "will be relaxing",
    "source": "written:future-continuous:3",
    "status": "rédigé",
+   "form": "continuous",
    "mode": "typed",
-   "hint": "sleep"
+   "hint": "relax"
   },
   {
    "id": "placement:future-continuous:written:future-continuous:4",
    "targetId": "future-continuous",
    "evidenceId": "written:future-continuous:4",
-   "before": "When you arrive, I ",
-   "after": " at the station.",
-   "fr": "Quand tu arriveras, je serai en train de t'attendre à la gare.",
-   "answer": "will be waiting",
+   "before": "At this time on Monday, she ",
+   "after": " her exam.",
+   "fr": "Lundi à cette heure-ci, elle passera son examen.",
+   "answer": "will be sitting",
    "source": "written:future-continuous:4",
    "status": "rédigé",
+   "form": "continuous",
    "mode": "typed",
-   "hint": "wait"
+   "hint": "sit"
   },
   {
    "id": "placement:future-continuous:written:future-continuous:5",
    "targetId": "future-continuous",
    "evidenceId": "written:future-continuous:5",
-   "before": "This time next week, we ",
-   "after": " on the beach.",
-   "fr": "La semaine prochaine à la même heure, nous serons en train de nous prélasser sur la plage.",
-   "answer": "will be lying",
+   "before": "Don't phone at nine tomorrow: I ",
+   "after": " to work.",
+   "fr": "N'appelle pas demain à neuf heures : je serai sur la route du travail.",
+   "answer": "will be driving",
    "source": "written:future-continuous:5",
    "status": "rédigé",
+   "form": "continuous",
    "mode": "typed",
-   "hint": "lie"
+   "hint": "drive"
   },
   {
    "id": "placement:future-continuous:written:future-continuous:6",
    "targetId": "future-continuous",
    "evidenceId": "written:future-continuous:6",
-   "before": "At ten tomorrow morning, he ",
-   "after": " his exam.",
-   "fr": "Demain à dix heures, il sera en train de passer son examen.",
-   "answer": "will be taking",
+   "before": "This time next year, they ",
+   "after": " in Spain.",
+   "fr": "L'an prochain à la même époque, ils vivront en Espagne.",
+   "answer": "will be living",
    "source": "written:future-continuous:6",
    "status": "rédigé",
+   "form": "continuous",
    "mode": "typed",
-   "hint": "take"
+   "hint": "live",
+   "accept": [
+    "will live"
+   ]
   },
   {
    "id": "placement:future-perfect:written:future-perfect:1",
@@ -8644,6 +9208,7 @@
    "answer": "will have finished",
    "source": "written:future-perfect:1",
    "status": "rédigé",
+   "form": "perfect",
    "mode": "typed",
    "hint": "finish"
   },
@@ -8657,8 +9222,12 @@
    "answer": "will have eaten",
    "source": "written:future-perfect:2",
    "status": "rédigé",
+   "form": "perfect",
    "mode": "typed",
-   "hint": "eat"
+   "hint": "eat",
+   "accept": [
+    "will already have eaten"
+   ]
   },
   {
    "id": "placement:future-perfect:written:future-perfect:3",
@@ -8670,6 +9239,7 @@
    "answer": "will have left",
    "source": "written:future-perfect:3",
    "status": "rédigé",
+   "form": "perfect",
    "mode": "typed",
    "hint": "leave"
   },
@@ -8683,6 +9253,7 @@
    "answer": "will have found",
    "source": "written:future-perfect:4",
    "status": "rédigé",
+   "form": "perfect",
    "mode": "typed",
    "hint": "find"
   },
@@ -8696,6 +9267,7 @@
    "answer": "will have been",
    "source": "written:future-perfect:5",
    "status": "rédigé",
+   "form": "perfect",
    "mode": "typed",
    "hint": "be"
   },
@@ -8709,6 +9281,7 @@
    "answer": "will have written",
    "source": "written:future-perfect:6",
    "status": "rédigé",
+   "form": "perfect",
    "mode": "typed",
    "hint": "write"
   },
@@ -8722,6 +9295,7 @@
    "answer": "have I seen",
    "source": "written:inversion:1",
    "status": "rédigé",
+   "form": "inverted",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8740,11 +9314,11 @@
    "answer": "does he arrive",
    "source": "written:inversion:2",
    "status": "rédigé",
+   "form": "inverted",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
     "he arrives",
-    "arrives he",
     "does he arrive"
    ]
   },
@@ -8758,10 +9332,10 @@
    "answer": "did she win",
    "source": "written:inversion:3",
    "status": "rédigé",
+   "form": "inverted",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "won she",
     "did she win",
     "she won"
    ]
@@ -8776,12 +9350,12 @@
    "answer": "had we sat",
    "source": "written:inversion:4",
    "status": "rédigé",
+   "form": "inverted",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "had we sat",
     "we had sat",
-    "did we sat"
+    "had we sat"
    ]
   },
   {
@@ -8794,12 +9368,12 @@
    "answer": "should you open",
    "source": "written:inversion:5",
    "status": "rédigé",
+   "form": "inverted",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "you should open",
-    "you open",
-    "should you open"
+    "should you open",
+    "you should open"
    ]
   },
   {
@@ -8812,12 +9386,12 @@
    "answer": "did they know",
    "source": "written:inversion:6",
    "status": "rédigé",
+   "form": "inverted",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "knew they",
-    "did they know",
-    "they knew"
+    "they knew",
+    "did they know"
    ]
   },
   {
@@ -8830,12 +9404,12 @@
    "answer": "What I need",
    "source": "written:cleft-sentences:1",
    "status": "rédigé",
+   "form": "what",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
     "What I need",
-    "That I need",
-    "What I need it"
+    "That I need"
    ]
   },
   {
@@ -8848,6 +9422,7 @@
    "answer": "who",
    "source": "written:cleft-sentences:2",
    "status": "rédigé",
+   "form": "it-who",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8866,12 +9441,13 @@
    "answer": "What happened",
    "source": "written:cleft-sentences:3",
    "status": "rédigé",
+   "form": "what",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "What it happened",
+    "That happened",
     "What happened",
-    "That happened"
+    "What it happened"
    ]
   },
   {
@@ -8884,12 +9460,12 @@
    "answer": "that",
    "source": "written:cleft-sentences:4",
    "status": "rédigé",
+   "form": "it-that",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "that",
-    "when it",
-    "which"
+    "which",
+    "that"
    ]
   },
   {
@@ -8902,6 +9478,7 @@
    "answer": "All I want",
    "source": "written:cleft-sentences:5",
    "status": "rédigé",
+   "form": "all",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8920,12 +9497,13 @@
    "answer": "What she did",
    "source": "written:cleft-sentences:6",
    "status": "rédigé",
+   "form": "what",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "What did she",
+    "That she did",
     "What she did",
-    "That she did"
+    "What did she"
    ]
   },
   {
@@ -8938,6 +9516,7 @@
    "answer": "Having finished",
    "source": "written:participle-clauses:1",
    "status": "rédigé",
+   "form": "perfect",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -8956,11 +9535,11 @@
    "answer": "Feeling",
    "source": "written:participle-clauses:2",
    "status": "rédigé",
+   "form": "present",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
     "Felt",
-    "Feel",
     "Feeling"
    ]
   },
@@ -8974,10 +9553,10 @@
    "answer": "Built",
    "source": "written:participle-clauses:3",
    "status": "rédigé",
+   "form": "past",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "Having built",
     "Built",
     "Building"
    ]
@@ -8992,12 +9571,12 @@
    "answer": "Not knowing",
    "source": "written:participle-clauses:4",
    "status": "rédigé",
+   "form": "present",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "Not knowing",
-    "Knowing not",
-    "Don't knowing"
+    "Don't knowing",
+    "Not knowing"
    ]
   },
   {
@@ -9010,12 +9589,12 @@
    "answer": "sitting",
    "source": "written:participle-clauses:5",
    "status": "rédigé",
+   "form": "present",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "who sitting",
-    "sits",
-    "sitting"
+    "sitting",
+    "who sitting"
    ]
   },
   {
@@ -9028,12 +9607,12 @@
    "answer": "Written",
    "source": "written:participle-clauses:6",
    "status": "rédigé",
+   "form": "past",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "Wrote",
-    "Written",
-    "Writing"
+    "Writing",
+    "Written"
    ]
   },
   {
@@ -9046,6 +9625,7 @@
    "answer": "be",
    "source": "written:subjunctive:1",
    "status": "rédigé",
+   "form": "subjunctive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -9064,6 +9644,7 @@
    "answer": "rest",
    "source": "written:subjunctive:2",
    "status": "rédigé",
+   "form": "subjunctive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -9082,12 +9663,13 @@
    "answer": "stay",
    "source": "written:subjunctive:3",
    "status": "rédigé",
+   "form": "subjunctive",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "staying",
+    "to stay",
     "stay",
-    "would to stay"
+    "will stay"
    ]
   },
   {
@@ -9100,6 +9682,7 @@
    "answer": "see",
    "source": "written:subjunctive:4",
    "status": "rédigé",
+   "form": "subjunctive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -9118,6 +9701,7 @@
    "answer": "attend",
    "source": "written:subjunctive:5",
    "status": "rédigé",
+   "form": "subjunctive",
    "mode": "choice",
    "choices": 3,
    "options": [
@@ -9136,12 +9720,13 @@
    "answer": "be",
    "source": "written:subjunctive:6",
    "status": "rédigé",
+   "form": "subjunctive",
    "mode": "choice",
    "choices": 3,
    "options": [
     "to be",
     "be",
-    "is being"
+    "is"
    ]
   },
   {
@@ -9154,12 +9739,12 @@
    "answer": "do like",
    "source": "written:emphatic-do:1",
    "status": "rédigé",
+   "form": "do",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
     "do like",
-    "am like",
-    "do liking"
+    "does like"
    ]
   },
   {
@@ -9172,11 +9757,11 @@
    "answer": "did call",
    "source": "written:emphatic-do:2",
    "status": "rédigé",
+   "form": "did",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
     "did called",
-    "was call",
     "did call"
    ]
   },
@@ -9190,10 +9775,10 @@
    "answer": "does work",
    "source": "written:emphatic-do:3",
    "status": "rédigé",
+   "form": "does",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "is work",
     "does work",
     "does works"
    ]
@@ -9202,54 +9787,54 @@
    "id": "placement:emphatic-do:written:emphatic-do:4",
    "targetId": "emphatic-do",
    "evidenceId": "written:emphatic-do:4",
-   "before": "",
-   "after": " down, please.",
-   "fr": "Asseyez-vous donc, je vous en prie.",
-   "answer": "Do sit",
+   "before": "We ",
+   "after": " the concert.",
+   "fr": "Nous avons vraiment apprécié le concert.",
+   "answer": "did enjoy",
    "source": "written:emphatic-do:4",
    "status": "rédigé",
+   "form": "did",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "Do sit",
-    "Do sitting",
-    "Does sit"
+    "did enjoyed",
+    "did enjoy"
    ]
   },
   {
    "id": "placement:emphatic-do:written:emphatic-do:5",
    "targetId": "emphatic-do",
    "evidenceId": "written:emphatic-do:5",
-   "before": "We ",
-   "after": " the concert.",
-   "fr": "Nous avons vraiment apprécié le concert.",
-   "answer": "did enjoy",
+   "before": "I ",
+   "after": " your problem.",
+   "fr": "Je comprends bien votre problème.",
+   "answer": "do understand",
    "source": "written:emphatic-do:5",
    "status": "rédigé",
+   "form": "do",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "did enjoyed",
-    "were enjoy",
-    "did enjoy"
+    "do understand",
+    "do understood"
    ]
   },
   {
    "id": "placement:emphatic-do:written:emphatic-do:6",
    "targetId": "emphatic-do",
    "evidenceId": "written:emphatic-do:6",
-   "before": "I ",
-   "after": " your problem.",
-   "fr": "Je comprends bien votre problème.",
-   "answer": "do understand",
+   "before": "He ",
+   "after": " the answer; he is just shy.",
+   "fr": "Il connaît bien la réponse ; il est juste timide.",
+   "answer": "does know",
    "source": "written:emphatic-do:6",
    "status": "rédigé",
+   "form": "does",
    "mode": "choice",
-   "choices": 3,
+   "choices": 2,
    "options": [
-    "am understand",
-    "do understand",
-    "do understood"
+    "does knows",
+    "does know"
    ]
   }
  ]

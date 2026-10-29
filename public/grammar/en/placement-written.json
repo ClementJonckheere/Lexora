@@ -1,93 +1,98 @@
 {
- "version": 1,
- "note": "Questions rédigées pour les points sans leçon ni générateur (étape 3). Phrases écrites pour le placement, traduction comprise ; à relire avant activation.",
+ "version": 2,
+ "note": "Questions rédigées pour les points sans leçon ni générateur (étape 3), revues : natures de réponse alternées, distracteurs plausibles pour un francophone (une seule faute chacun), traductions naturelles. À relire avant activation.",
  "items": [
   {
    "id": "written:adjectives:1",
    "targetId": "adjectives",
    "before": "They live in ",
-   "answer": "a big house",
+   "answer": "big houses",
    "after": ".",
-   "fr": "Ils habitent dans une grande maison.",
+   "fr": "Ils habitent dans de grandes maisons.",
    "options": [
-    "a big house",
-    "a house big",
-    "a bigs house"
-   ]
+    "big houses",
+    "bigs houses",
+    "houses big"
+   ],
+   "form": "plural"
   },
   {
    "id": "written:adjectives:2",
    "targetId": "adjectives",
-   "before": "She has ",
-   "answer": "blue eyes",
+   "before": "We have ",
+   "answer": "different ideas",
    "after": ".",
-   "fr": "Elle a les yeux bleus.",
+   "fr": "Nous avons des idées différentes.",
    "options": [
-    "blue eyes",
-    "eyes blue",
-    "blues eyes"
-   ]
+    "different ideas",
+    "differents ideas",
+    "ideas different"
+   ],
+   "form": "plural"
   },
   {
    "id": "written:adjectives:3",
    "targetId": "adjectives",
-   "before": "These are ",
-   "answer": "expensive shoes",
+   "before": "She bought two ",
+   "answer": "red dresses",
    "after": ".",
-   "fr": "Ce sont des chaussures chères.",
+   "fr": "Elle a acheté deux robes rouges.",
    "options": [
-    "expensive shoes",
-    "shoes expensive",
-    "expensives shoes"
-   ]
+    "red dresses",
+    "reds dresses",
+    "dresses red"
+   ],
+   "form": "plural"
   },
   {
    "id": "written:adjectives:4",
    "targetId": "adjectives",
-   "before": "He drives ",
-   "answer": "a fast car",
+   "before": "These are ",
+   "answer": "interesting books",
    "after": ".",
-   "fr": "Il conduit une voiture rapide.",
+   "fr": "Ce sont des livres intéressants.",
    "options": [
-    "a fast car",
-    "a car fast",
-    "a fasts car"
-   ]
+    "interesting books",
+    "interestings books",
+    "books interesting"
+   ],
+   "form": "plural"
   },
   {
    "id": "written:adjectives:5",
    "targetId": "adjectives",
-   "before": "My sisters are very ",
-   "answer": "tall",
+   "before": "They have ",
+   "answer": "a black cat",
    "after": ".",
-   "fr": "Mes sœurs sont très grandes.",
+   "fr": "Ils ont un chat noir.",
    "options": [
-    "tall",
-    "talls",
-    "the talls"
-   ]
+    "a black cat",
+    "a cat black"
+   ],
+   "form": "position"
   },
   {
    "id": "written:adjectives:6",
    "targetId": "adjectives",
-   "before": "We need ",
-   "answer": "an old map",
+   "before": "My shoes are ",
+   "answer": "old",
    "after": ".",
-   "fr": "Il nous faut une vieille carte.",
+   "fr": "Mes chaussures sont vieilles.",
    "options": [
-    "an old map",
-    "a map old",
-    "an olds map"
-   ]
+    "old",
+    "olds"
+   ],
+   "form": "predicate"
   },
   {
    "id": "written:simple-vs-continuous:1",
    "targetId": "simple-vs-continuous",
    "before": "Look! It ",
    "answer": "is snowing",
-   "after": " outside.",
-   "fr": "Regarde ! Il est en train de neiger dehors.",
-   "hint": "snow"
+   "after": ".",
+   "fr": "Regarde ! Il neige.",
+   "hint": "snow",
+   "form": "continuous"
   },
   {
    "id": "written:simple-vs-continuous:2",
@@ -96,16 +101,18 @@
    "answer": "walks",
    "after": " to work every day.",
    "fr": "Elle va au travail à pied tous les jours.",
-   "hint": "walk"
+   "hint": "walk",
+   "form": "simple"
   },
   {
    "id": "written:simple-vs-continuous:3",
    "targetId": "simple-vs-continuous",
-   "before": "Be quiet, the baby ",
+   "before": "Shh! The baby ",
    "answer": "is sleeping",
    "after": ".",
-   "fr": "Silence, le bébé est en train de dormir.",
-   "hint": "sleep"
+   "fr": "Chut, le bébé dort.",
+   "hint": "sleep",
+   "form": "continuous"
   },
   {
    "id": "written:simple-vs-continuous:4",
@@ -114,7 +121,8 @@
    "answer": "boils",
    "after": " at 100 degrees.",
    "fr": "L'eau bout à 100 degrés.",
-   "hint": "boil"
+   "hint": "boil",
+   "form": "simple"
   },
   {
    "id": "written:simple-vs-continuous:5",
@@ -123,58 +131,41 @@
    "answer": "understand",
    "after": " what you mean.",
    "fr": "Je comprends ce que tu veux dire.",
-   "hint": "understand"
+   "hint": "understand",
+   "form": "simple"
   },
   {
    "id": "written:simple-vs-continuous:6",
    "targetId": "simple-vs-continuous",
    "before": "They ",
    "answer": "are watching",
-   "after": " a film right now.",
-   "fr": "Ils sont en train de regarder un film.",
-   "hint": "watch"
+   "after": " a film right now, so call back later.",
+   "fr": "Ils regardent un film, rappelle plus tard.",
+   "hint": "watch",
+   "form": "continuous"
+  },
+  {
+   "id": "written:simple-vs-continuous:7",
+   "targetId": "simple-vs-continuous",
+   "before": "He usually ",
+   "answer": "drinks",
+   "after": " tea, but today he's having coffee.",
+   "fr": "D'habitude il boit du thé, mais aujourd'hui il prend un café.",
+   "hint": "drink",
+   "form": "simple"
+  },
+  {
+   "id": "written:simple-vs-continuous:8",
+   "targetId": "simple-vs-continuous",
+   "before": "Listen! Someone ",
+   "answer": "is knocking",
+   "after": " at the door.",
+   "fr": "Écoute ! Quelqu'un frappe à la porte.",
+   "hint": "knock",
+   "form": "continuous"
   },
   {
    "id": "written:reported-statements:1",
-   "targetId": "reported-statements",
-   "before": "Tom told me he ",
-   "answer": "had seen",
-   "after": " the film the day before.",
-   "fr": "Tom m'a dit qu'il avait vu le film la veille.",
-   "options": [
-    "had seen",
-    "has seen",
-    "sees"
-   ]
-  },
-  {
-   "id": "written:reported-statements:2",
-   "targetId": "reported-statements",
-   "before": "He said he ",
-   "answer": "would",
-   "after": " call me the next day.",
-   "fr": "Il a dit qu'il m'appellerait le lendemain.",
-   "options": [
-    "would",
-    "will",
-    "shall"
-   ]
-  },
-  {
-   "id": "written:reported-statements:3",
-   "targetId": "reported-statements",
-   "before": "He told me that he ",
-   "answer": "had lived",
-   "after": " in Paris the previous year.",
-   "fr": "Il m'a dit qu'il avait vécu à Paris l'année précédente.",
-   "options": [
-    "had lived",
-    "has lived",
-    "lives"
-   ]
-  },
-  {
-   "id": "written:reported-statements:4",
    "targetId": "reported-statements",
    "before": "She said she ",
    "answer": "was",
@@ -182,35 +173,74 @@
    "fr": "Elle a dit qu'elle travaillait ce jour-là.",
    "options": [
     "was",
-    "is being",
-    "were"
-   ]
+    "is"
+   ],
+   "form": "was"
+  },
+  {
+   "id": "written:reported-statements:2",
+   "targetId": "reported-statements",
+   "before": "He told me he ",
+   "answer": "could",
+   "after": " swim when he was five.",
+   "fr": "Il m'a dit qu'il savait nager à cinq ans.",
+   "options": [
+    "could",
+    "can"
+   ],
+   "form": "could"
+  },
+  {
+   "id": "written:reported-statements:3",
+   "targetId": "reported-statements",
+   "before": "He said he ",
+   "answer": "would",
+   "after": " call me the next day.",
+   "fr": "Il a dit qu'il m'appellerait le lendemain.",
+   "options": [
+    "would",
+    "will"
+   ],
+   "form": "would"
+  },
+  {
+   "id": "written:reported-statements:4",
+   "targetId": "reported-statements",
+   "before": "Tom told me he ",
+   "answer": "had seen",
+   "after": " the film the day before.",
+   "fr": "Tom m'a dit qu'il avait vu le film la veille.",
+   "options": [
+    "had seen",
+    "has seen"
+   ],
+   "form": "had"
   },
   {
    "id": "written:reported-statements:5",
    "targetId": "reported-statements",
-   "before": "Tom said that Mary ",
-   "answer": "had",
-   "after": " already left when he arrived.",
-   "fr": "Tom a dit que Mary était déjà partie quand il est arrivé.",
+   "before": "Last year, she told us she ",
+   "answer": "was",
+   "after": " too busy to travel.",
+   "fr": "L'an dernier, elle nous a dit qu'elle était trop occupée pour voyager.",
    "options": [
-    "had",
-    "has",
-    "have"
-   ]
+    "was",
+    "is"
+   ],
+   "form": "was"
   },
   {
    "id": "written:reported-statements:6",
    "targetId": "reported-statements",
-   "before": "They told us they ",
-   "answer": "had",
-   "after": " never been to London before that trip.",
-   "fr": "Ils nous ont dit qu'ils n'étaient jamais allés à Londres avant ce voyage.",
+   "before": "They said they ",
+   "answer": "would",
+   "after": " finish the work by the end of that week.",
+   "fr": "Ils ont dit qu'ils finiraient le travail avant la fin de cette semaine-là.",
    "options": [
-    "had",
-    "have",
-    "has"
-   ]
+    "would",
+    "will"
+   ],
+   "form": "would"
   },
   {
    "id": "written:subject-questions:1",
@@ -221,74 +251,100 @@
    "fr": "Qui a cassé la fenêtre ?",
    "options": [
     "broke",
-    "did broke",
-    "broken"
-   ]
+    "did break"
+   ],
+   "form": "subject"
   },
   {
    "id": "written:subject-questions:2",
    "targetId": "subject-questions",
-   "before": "What ",
-   "answer": "happened",
-   "after": " yesterday?",
-   "fr": "Que s'est-il passé hier ?",
+   "before": "Who ",
+   "answer": "did you call",
+   "after": " last night?",
+   "fr": "Qui as-tu appelé hier soir ?",
    "options": [
-    "happened",
-    "did happened",
-    "was happen"
-   ]
+    "did you call",
+    "you called"
+   ],
+   "form": "object"
   },
   {
    "id": "written:subject-questions:3",
    "targetId": "subject-questions",
-   "before": "Who ",
-   "answer": "lives",
-   "after": " in this house?",
-   "fr": "Qui habite dans cette maison ?",
+   "before": "What ",
+   "answer": "happened",
+   "after": " at the party?",
+   "fr": "Que s'est-il passé à la fête ?",
    "options": [
-    "lives",
-    "does lives",
-    "is live"
-   ]
+    "happened",
+    "did happen"
+   ],
+   "form": "subject"
   },
   {
    "id": "written:subject-questions:4",
    "targetId": "subject-questions",
-   "before": "Who ",
-   "answer": "told",
-   "after": " you that?",
-   "fr": "Qui t'a dit ça ?",
+   "before": "What ",
+   "answer": "did she say",
+   "after": " to you?",
+   "fr": "Qu'est-ce qu'elle t'a dit ?",
    "options": [
-    "told",
-    "did told",
-    "telled"
-   ]
+    "did she say",
+    "she said"
+   ],
+   "form": "object"
   },
   {
    "id": "written:subject-questions:5",
    "targetId": "subject-questions",
-   "before": "How many people ",
-   "answer": "came",
-   "after": " to the party?",
-   "fr": "Combien de personnes sont venues à la fête ?",
+   "before": "Who ",
+   "answer": "lives",
+   "after": " in that house?",
+   "fr": "Qui habite dans cette maison ?",
    "options": [
-    "came",
-    "did came",
-    "come"
-   ]
+    "lives",
+    "does live"
+   ],
+   "form": "subject"
   },
   {
    "id": "written:subject-questions:6",
    "targetId": "subject-questions",
    "before": "Who ",
-   "answer": "wrote",
-   "after": " this book?",
-   "fr": "Qui a écrit ce livre ?",
+   "answer": "do you live",
+   "after": " with?",
+   "fr": "Avec qui habites-tu ?",
    "options": [
-    "wrote",
-    "did wrote",
-    "written"
-   ]
+    "do you live",
+    "you live"
+   ],
+   "form": "object"
+  },
+  {
+   "id": "written:subject-questions:7",
+   "targetId": "subject-questions",
+   "before": "How many people ",
+   "answer": "came",
+   "after": " to the meeting?",
+   "fr": "Combien de personnes sont venues à la réunion ?",
+   "options": [
+    "came",
+    "did come"
+   ],
+   "form": "subject"
+  },
+  {
+   "id": "written:subject-questions:8",
+   "targetId": "subject-questions",
+   "before": "How many people ",
+   "answer": "did you invite",
+   "after": "?",
+   "fr": "Combien de personnes as-tu invitées ?",
+   "options": [
+    "did you invite",
+    "you invited"
+   ],
+   "form": "object"
   },
   {
    "id": "written:purpose-to:1",
@@ -299,12 +355,26 @@
    "fr": "Je suis allé au magasin pour acheter du pain.",
    "options": [
     "to buy",
-    "for buy",
-    "for to buy"
-   ]
+    "for buying",
+    "for buy"
+   ],
+   "form": "to"
   },
   {
    "id": "written:purpose-to:2",
+   "targetId": "purpose-to",
+   "before": "We went out ",
+   "answer": "for a walk",
+   "after": " after dinner.",
+   "fr": "Nous sommes sortis faire une promenade après le dîner.",
+   "options": [
+    "for a walk",
+    "to a walk"
+   ],
+   "form": "for"
+  },
+  {
+   "id": "written:purpose-to:3",
    "targetId": "purpose-to",
    "before": "He called ",
    "answer": "to ask",
@@ -312,25 +382,26 @@
    "fr": "Il a appelé pour se renseigner sur le poste.",
    "options": [
     "to ask",
-    "for ask",
-    "for to ask"
-   ]
-  },
-  {
-   "id": "written:purpose-to:3",
-   "targetId": "purpose-to",
-   "before": "We use a dictionary ",
-   "answer": "to check",
-   "after": " new words.",
-   "fr": "On utilise un dictionnaire pour vérifier les mots nouveaux.",
-   "options": [
-    "to check",
-    "for check",
-    "for to check"
-   ]
+    "for asking",
+    "for ask"
+   ],
+   "form": "to"
   },
   {
    "id": "written:purpose-to:4",
+   "targetId": "purpose-to",
+   "before": "She came to London ",
+   "answer": "for",
+   "after": " a job interview.",
+   "fr": "Elle est venue à Londres pour un entretien d'embauche.",
+   "options": [
+    "for",
+    "to"
+   ],
+   "form": "for"
+  },
+  {
+   "id": "written:purpose-to:5",
    "targetId": "purpose-to",
    "before": "I came here ",
    "answer": "to see",
@@ -338,89 +409,23 @@
    "fr": "Je suis venu ici pour te voir.",
    "options": [
     "to see",
-    "for see",
-    "for to see"
-   ]
-  },
-  {
-   "id": "written:purpose-to:5",
-   "targetId": "purpose-to",
-   "before": "She studies hard ",
-   "answer": "to pass",
-   "after": " the exam.",
-   "fr": "Elle travaille dur pour réussir l'examen.",
-   "options": [
-    "to pass",
-    "for pass",
-    "for to pass"
-   ]
+    "for seeing",
+    "for see"
+   ],
+   "form": "to"
   },
   {
    "id": "written:purpose-to:6",
    "targetId": "purpose-to",
-   "before": "They moved to London ",
-   "answer": "to find",
-   "after": " work.",
-   "fr": "Ils ont déménagé à Londres pour trouver du travail.",
+   "before": "Let's stop here ",
+   "answer": "for",
+   "after": " lunch.",
+   "fr": "Arrêtons-nous ici pour déjeuner.",
    "options": [
-    "to find",
-    "for find",
-    "for to find"
-   ]
-  },
-  {
-   "id": "written:preposition-ing:1",
-   "targetId": "preposition-ing",
-   "before": "Thank you for ",
-   "answer": "helping",
-   "after": " me.",
-   "fr": "Merci de m'avoir aidé.",
-   "hint": "help"
-  },
-  {
-   "id": "written:preposition-ing:2",
-   "targetId": "preposition-ing",
-   "before": "She left without ",
-   "answer": "saying",
-   "after": " goodbye.",
-   "fr": "Elle est partie sans dire au revoir.",
-   "hint": "say"
-  },
-  {
-   "id": "written:preposition-ing:3",
-   "targetId": "preposition-ing",
-   "before": "I'm interested in ",
-   "answer": "learning",
-   "after": " Japanese.",
-   "fr": "Ça m'intéresse d'apprendre le japonais.",
-   "hint": "learn"
-  },
-  {
-   "id": "written:preposition-ing:4",
-   "targetId": "preposition-ing",
-   "before": "Wash your hands before ",
-   "answer": "eating",
-   "after": ".",
-   "fr": "Lave-toi les mains avant de manger.",
-   "hint": "eat"
-  },
-  {
-   "id": "written:preposition-ing:5",
-   "targetId": "preposition-ing",
-   "before": "I'm thinking about ",
-   "answer": "changing",
-   "after": " jobs.",
-   "fr": "Je pense à changer de travail.",
-   "hint": "change"
-  },
-  {
-   "id": "written:preposition-ing:6",
-   "targetId": "preposition-ing",
-   "before": "We are looking forward to ",
-   "answer": "seeing",
-   "after": " you.",
-   "fr": "Nous avons hâte de vous voir.",
-   "hint": "see"
+    "for",
+    "to"
+   ],
+   "form": "for"
   },
   {
    "id": "written:make-let:1",
@@ -431,22 +436,22 @@
    "fr": "Ma mère m'a fait ranger ma chambre.",
    "options": [
     "tidy",
-    "to tidy",
-    "tidying"
-   ]
+    "to tidy"
+   ],
+   "form": "base"
   },
   {
    "id": "written:make-let:2",
    "targetId": "make-let",
-   "before": "Let me ",
-   "answer": "help",
-   "after": " you.",
-   "fr": "Laisse-moi t'aider.",
+   "before": "My parents allowed me ",
+   "answer": "to stay",
+   "after": " out late.",
+   "fr": "Mes parents m'ont permis de sortir tard.",
    "options": [
-    "help",
-    "to help",
-    "helping"
-   ]
+    "to stay",
+    "stay"
+   ],
+   "form": "to"
   },
   {
    "id": "written:make-let:3",
@@ -457,38 +462,51 @@
    "fr": "Le film l'a fait pleurer.",
    "options": [
     "cry",
-    "to cry",
-    "crying"
-   ]
+    "to cry"
+   ],
+   "form": "base"
   },
   {
    "id": "written:make-let:4",
    "targetId": "make-let",
-   "before": "My parents don't let me ",
-   "answer": "stay",
-   "after": " out late.",
-   "fr": "Mes parents ne me laissent pas sortir tard.",
+   "before": "He was made ",
+   "answer": "to wait",
+   "after": " for an hour.",
+   "fr": "On l'a fait attendre une heure.",
    "options": [
-    "stay",
-    "to stay",
-    "staying"
-   ]
+    "to wait",
+    "wait"
+   ],
+   "form": "to"
   },
   {
    "id": "written:make-let:5",
    "targetId": "make-let",
-   "before": "He made us ",
-   "answer": "wait",
-   "after": " for an hour.",
-   "fr": "Il nous a fait attendre une heure.",
+   "before": "Let me ",
+   "answer": "help",
+   "after": " you.",
+   "fr": "Laisse-moi t'aider.",
    "options": [
-    "wait",
-    "to wait",
-    "waiting"
-   ]
+    "help",
+    "to help"
+   ],
+   "form": "base"
   },
   {
    "id": "written:make-let:6",
+   "targetId": "make-let",
+   "before": "They don't allow us ",
+   "answer": "to use",
+   "after": " our phones in class.",
+   "fr": "Ils ne nous laissent pas utiliser nos téléphones en classe.",
+   "options": [
+    "to use",
+    "use"
+   ],
+   "form": "to"
+  },
+  {
+   "id": "written:make-let:7",
    "targetId": "make-let",
    "before": "Will you let him ",
    "answer": "go",
@@ -496,9 +514,22 @@
    "fr": "Tu vas le laisser partir ?",
    "options": [
     "go",
-    "to go",
-    "going"
-   ]
+    "to go"
+   ],
+   "form": "base"
+  },
+  {
+   "id": "written:make-let:8",
+   "targetId": "make-let",
+   "before": "She asked me ",
+   "answer": "to call",
+   "after": " her back.",
+   "fr": "Elle m'a demandé de la rappeler.",
+   "options": [
+    "to call",
+    "call"
+   ],
+   "form": "to"
   },
   {
    "id": "written:phrasal-verbs:1",
@@ -509,38 +540,25 @@
    "fr": "La radio est trop forte. Tu peux la baisser ?",
    "options": [
     "turn it down",
-    "turn down it",
-    "it turn down"
-   ]
+    "turn down it"
+   ],
+   "form": "separable"
   },
   {
    "id": "written:phrasal-verbs:2",
    "targetId": "phrasal-verbs",
-   "before": "Your coat is on the floor. Please ",
-   "answer": "pick it up",
-   "after": ".",
-   "fr": "Ton manteau est par terre. Ramasse-le, s'il te plaît.",
+   "before": "I've lost my keys. Can you help me ",
+   "answer": "look for them",
+   "after": "?",
+   "fr": "J'ai perdu mes clés. Tu peux m'aider à les chercher ?",
    "options": [
-    "pick it up",
-    "pick up it",
-    "it pick up"
-   ]
+    "look for them",
+    "look them for"
+   ],
+   "form": "inseparable"
   },
   {
    "id": "written:phrasal-verbs:3",
-   "targetId": "phrasal-verbs",
-   "before": "I can't find the paper with the number. Did you ",
-   "answer": "throw it away",
-   "after": "?",
-   "fr": "Je ne trouve pas le papier avec le numéro. Tu l'as jeté ?",
-   "options": [
-    "throw it away",
-    "throw away it",
-    "it throw away"
-   ]
-  },
-  {
-   "id": "written:phrasal-verbs:4",
    "targetId": "phrasal-verbs",
    "before": "If you don't know the word, ",
    "answer": "look it up",
@@ -548,25 +566,25 @@
    "fr": "Si tu ne connais pas le mot, cherche-le dans le dictionnaire.",
    "options": [
     "look it up",
-    "look up it",
-    "it look up"
-   ]
+    "look up it"
+   ],
+   "form": "separable"
+  },
+  {
+   "id": "written:phrasal-verbs:4",
+   "targetId": "phrasal-verbs",
+   "before": "She has a dog and she ",
+   "answer": "looks after it",
+   "after": " very well.",
+   "fr": "Elle a un chien et elle s'en occupe très bien.",
+   "options": [
+    "looks after it",
+    "looks it after"
+   ],
+   "form": "inseparable"
   },
   {
    "id": "written:phrasal-verbs:5",
-   "targetId": "phrasal-verbs",
-   "before": "I like these shoes. Can I ",
-   "answer": "try them on",
-   "after": "?",
-   "fr": "J'aime ces chaussures. Je peux les essayer ?",
-   "options": [
-    "try them on",
-    "try on them",
-    "them try on"
-   ]
-  },
-  {
-   "id": "written:phrasal-verbs:6",
    "targetId": "phrasal-verbs",
    "before": "The meeting is tomorrow, but we may have to ",
    "answer": "put it off",
@@ -574,9 +592,48 @@
    "fr": "La réunion est demain, mais nous devrons peut-être la reporter.",
    "options": [
     "put it off",
-    "put off it",
-    "it put off"
-   ]
+    "put off it"
+   ],
+   "form": "separable"
+  },
+  {
+   "id": "written:phrasal-verbs:6",
+   "targetId": "phrasal-verbs",
+   "before": "The question surprised me, but I'll ",
+   "answer": "deal with it",
+   "after": ".",
+   "fr": "La question m'a surpris, mais je vais m'en occuper.",
+   "options": [
+    "deal with it",
+    "deal it with"
+   ],
+   "form": "inseparable"
+  },
+  {
+   "id": "written:phrasal-verbs:7",
+   "targetId": "phrasal-verbs",
+   "before": "I like these shoes. Can I ",
+   "answer": "try them on",
+   "after": "?",
+   "fr": "J'aime ces chaussures. Je peux les essayer ?",
+   "options": [
+    "try them on",
+    "try on them"
+   ],
+   "form": "separable"
+  },
+  {
+   "id": "written:phrasal-verbs:8",
+   "targetId": "phrasal-verbs",
+   "before": "He had the flu, but he ",
+   "answer": "got over it",
+   "after": " quickly.",
+   "fr": "Il a eu la grippe, mais il s'en est vite remis.",
+   "options": [
+    "got over it",
+    "got it over"
+   ],
+   "form": "inseparable"
   },
   {
    "id": "written:mixed-conditionals:1",
@@ -585,7 +642,8 @@
    "answer": "would be",
    "after": " a doctor now.",
    "fr": "Si j'avais fait médecine, je serais médecin aujourd'hui.",
-   "hint": "be"
+   "hint": "be",
+   "form": "present-result"
   },
   {
    "id": "written:mixed-conditionals:2",
@@ -594,7 +652,8 @@
    "answer": "had taken",
    "after": " the job, she would be living in Paris now.",
    "fr": "Si elle avait accepté le poste, elle vivrait à Paris maintenant.",
-   "hint": "take"
+   "hint": "take",
+   "form": "past-condition"
   },
   {
    "id": "written:mixed-conditionals:3",
@@ -605,9 +664,9 @@
    "fr": "Si tu m'avais écouté, nous ne serions pas perdus maintenant.",
    "options": [
     "wouldn't be",
-    "won't be",
     "wouldn't have been"
-   ]
+   ],
+   "form": "present-result"
   },
   {
    "id": "written:mixed-conditionals:4",
@@ -616,7 +675,8 @@
    "answer": "would have joined",
    "after": " the basketball team last year.",
    "fr": "Si j'étais plus grand, j'aurais intégré l'équipe de basket l'an dernier.",
-   "hint": "join"
+   "hint": "join",
+   "form": "past-result"
   },
   {
    "id": "written:mixed-conditionals:5",
@@ -627,9 +687,9 @@
    "fr": "S'il n'avait pas raté le train, il serait là maintenant.",
    "options": [
     "hadn't missed",
-    "didn't miss",
-    "wouldn't miss"
-   ]
+    "didn't miss"
+   ],
+   "form": "past-condition"
   },
   {
    "id": "written:mixed-conditionals:6",
@@ -638,7 +698,8 @@
    "answer": "would have understood",
    "after": " the film yesterday.",
    "fr": "S'ils parlaient anglais, ils auraient compris le film hier.",
-   "hint": "understand"
+   "hint": "understand",
+   "form": "past-result"
   },
   {
    "id": "written:passive-modals:1",
@@ -647,7 +708,8 @@
    "answer": "be finished",
    "after": " by Friday.",
    "fr": "Le travail doit être terminé d'ici vendredi.",
-   "hint": "finish"
+   "hint": "finish",
+   "form": "passive"
   },
   {
    "id": "written:passive-modals:2",
@@ -656,7 +718,8 @@
    "answer": "be taken",
    "after": " with food.",
    "fr": "Ce médicament doit être pris pendant les repas.",
-   "hint": "take"
+   "hint": "take",
+   "form": "passive"
   },
   {
    "id": "written:passive-modals:3",
@@ -665,7 +728,8 @@
    "answer": "be bought",
    "after": " online.",
    "fr": "Les billets peuvent être achetés en ligne.",
-   "hint": "buy"
+   "hint": "buy",
+   "form": "passive"
   },
   {
    "id": "written:passive-modals:4",
@@ -674,7 +738,8 @@
    "answer": "be solved",
    "after": " soon.",
    "fr": "Le problème pourrait être résolu bientôt.",
-   "hint": "solve"
+   "hint": "solve",
+   "form": "passive"
   },
   {
    "id": "written:passive-modals:5",
@@ -683,7 +748,8 @@
    "answer": "be left",
    "after": " alone.",
    "fr": "Les jeunes enfants ne doivent pas être laissés seuls.",
-   "hint": "leave"
+   "hint": "leave",
+   "form": "passive"
   },
   {
    "id": "written:passive-modals:6",
@@ -692,23 +758,37 @@
    "answer": "be sent",
    "after": " tomorrow.",
    "fr": "La lettre sera envoyée demain.",
-   "hint": "send"
+   "hint": "send",
+   "form": "passive"
   },
   {
    "id": "written:have-something-done:1",
    "targetId": "have-something-done",
    "before": "Yesterday I ",
    "answer": "had my hair cut",
-   "after": ".",
-   "fr": "Hier, je me suis fait couper les cheveux.",
+   "after": " at the hairdresser's.",
+   "fr": "Hier, je me suis fait couper les cheveux chez le coiffeur.",
    "options": [
     "had my hair cut",
-    "cut my hair",
-    "had cut my hair"
-   ]
+    "cut my hair"
+   ],
+   "form": "causative"
   },
   {
    "id": "written:have-something-done:2",
+   "targetId": "have-something-done",
+   "before": "I didn't go to the hairdresser's: I ",
+   "answer": "cut my hair",
+   "after": " myself.",
+   "fr": "Je ne suis pas allé chez le coiffeur : je me suis coupé les cheveux moi-même.",
+   "options": [
+    "cut my hair",
+    "had my hair cut"
+   ],
+   "form": "self"
+  },
+  {
+   "id": "written:have-something-done:3",
    "targetId": "have-something-done",
    "before": "We are ",
    "answer": "having our house painted",
@@ -716,12 +796,25 @@
    "fr": "Nous faisons repeindre notre maison la semaine prochaine.",
    "options": [
     "having our house painted",
-    "painting our house",
-    "having painted our house"
-   ]
+    "painting our house"
+   ],
+   "form": "causative"
   },
   {
-   "id": "written:have-something-done:3",
+   "id": "written:have-something-done:4",
+   "targetId": "have-something-done",
+   "before": "We are ",
+   "answer": "painting our house",
+   "after": " ourselves this weekend.",
+   "fr": "Nous repeignons nous-mêmes notre maison ce week-end.",
+   "options": [
+    "painting our house",
+    "having our house painted"
+   ],
+   "form": "self"
+  },
+  {
+   "id": "written:have-something-done:5",
    "targetId": "have-something-done",
    "before": "She ",
    "answer": "had her car repaired",
@@ -729,25 +822,12 @@
    "fr": "Elle a fait réparer sa voiture au garage.",
    "options": [
     "had her car repaired",
-    "repaired her car",
-    "had repaired her car"
-   ]
+    "repaired her car"
+   ],
+   "form": "causative"
   },
   {
-   "id": "written:have-something-done:4",
-   "targetId": "have-something-done",
-   "before": "You should ",
-   "answer": "have your eyes tested",
-   "after": ".",
-   "fr": "Tu devrais te faire contrôler la vue.",
-   "options": [
-    "have your eyes tested",
-    "test your eyes",
-    "have tested your eyes"
-   ]
-  },
-  {
-   "id": "written:have-something-done:5",
+   "id": "written:have-something-done:6",
    "targetId": "have-something-done",
    "before": "I need to ",
    "answer": "get my watch fixed",
@@ -755,22 +835,9 @@
    "fr": "Il faut que je fasse réparer ma montre.",
    "options": [
     "get my watch fixed",
-    "fix my watch",
     "get fixed my watch"
-   ]
-  },
-  {
-   "id": "written:have-something-done:6",
-   "targetId": "have-something-done",
-   "before": "They ",
-   "answer": "had a new kitchen installed",
-   "after": " last month.",
-   "fr": "Ils ont fait installer une nouvelle cuisine le mois dernier.",
-   "options": [
-    "had a new kitchen installed",
-    "installed a new kitchen",
-    "had installed a new kitchen"
-   ]
+   ],
+   "form": "causative"
   },
   {
    "id": "written:relatives-non-defining:1",
@@ -783,7 +850,8 @@
     "who",
     "that",
     "which"
-   ]
+   ],
+   "form": "who"
   },
   {
    "id": "written:relatives-non-defining:2",
@@ -796,7 +864,8 @@
     "which",
     "that",
     "who"
-   ]
+   ],
+   "form": "which"
   },
   {
    "id": "written:relatives-non-defining:3",
@@ -809,7 +878,8 @@
     "which",
     "that",
     "where"
-   ]
+   ],
+   "form": "which"
   },
   {
    "id": "written:relatives-non-defining:4",
@@ -822,7 +892,8 @@
     "whose",
     "who",
     "which"
-   ]
+   ],
+   "form": "whose"
   },
   {
    "id": "written:relatives-non-defining:5",
@@ -835,7 +906,8 @@
     "which",
     "what",
     "that"
-   ]
+   ],
+   "form": "which"
   },
   {
    "id": "written:relatives-non-defining:6",
@@ -848,7 +920,8 @@
     "which",
     "what",
     "that"
-   ]
+   ],
+   "form": "which"
   },
   {
    "id": "written:deduction-past:1",
@@ -861,7 +934,8 @@
     "must have gone",
     "must go",
     "can't have gone"
-   ]
+   ],
+   "form": "must"
   },
   {
    "id": "written:deduction-past:2",
@@ -874,7 +948,8 @@
     "can't have seen",
     "mustn't have seen",
     "can't see"
-   ]
+   ],
+   "form": "can't"
   },
   {
    "id": "written:deduction-past:3",
@@ -887,7 +962,8 @@
     "might have missed",
     "might miss",
     "must miss"
-   ]
+   ],
+   "form": "might"
   },
   {
    "id": "written:deduction-past:4",
@@ -900,7 +976,8 @@
     "must have been",
     "must be",
     "had been"
-   ]
+   ],
+   "form": "must"
   },
   {
    "id": "written:deduction-past:5",
@@ -913,7 +990,8 @@
     "must have thrown",
     "must throw",
     "should have thrown"
-   ]
+   ],
+   "form": "must"
   },
   {
    "id": "written:deduction-past:6",
@@ -926,7 +1004,8 @@
     "may have left",
     "may leave",
     "must leave"
-   ]
+   ],
+   "form": "might"
   },
   {
    "id": "written:reported-questions:1",
@@ -939,7 +1018,8 @@
     "where I lived",
     "where did I live",
     "where do I live"
-   ]
+   ],
+   "form": "wh"
   },
   {
    "id": "written:reported-questions:2",
@@ -952,7 +1032,8 @@
     "if I was",
     "was I",
     "if was I"
-   ]
+   ],
+   "form": "if"
   },
   {
    "id": "written:reported-questions:3",
@@ -965,7 +1046,8 @@
     "what time the train left",
     "what time did the train leave",
     "what time left the train"
-   ]
+   ],
+   "form": "wh"
   },
   {
    "id": "written:reported-questions:4",
@@ -978,7 +1060,8 @@
     "to be",
     "be",
     "being"
-   ]
+   ],
+   "form": "order"
   },
   {
    "id": "written:reported-questions:5",
@@ -991,7 +1074,8 @@
     "not to tell",
     "to not telling",
     "don't tell"
-   ]
+   ],
+   "form": "order"
   },
   {
    "id": "written:reported-questions:6",
@@ -1004,7 +1088,8 @@
     "why he was",
     "why was he",
     "why did he be"
-   ]
+   ],
+   "form": "wh"
   },
   {
    "id": "written:future-continuous:1",
@@ -1012,53 +1097,62 @@
    "before": "This time tomorrow, I ",
    "answer": "will be flying",
    "after": " to New York.",
-   "fr": "Demain à cette heure-ci, je serai en train de voler vers New York.",
-   "hint": "fly"
+   "fr": "Demain à la même heure, je serai dans l'avion pour New York.",
+   "hint": "fly",
+   "form": "continuous"
   },
   {
    "id": "written:future-continuous:2",
    "targetId": "future-continuous",
-   "before": "Don't call at eight; we ",
+   "before": "Don't call at eight tonight; we ",
    "answer": "will be having",
-   "after": " dinner.",
-   "fr": "N'appelle pas à huit heures ; nous serons en train de dîner.",
-   "hint": "have"
+   "after": " dinner then.",
+   "fr": "N'appelle pas ce soir à huit heures : nous serons à table.",
+   "hint": "have",
+   "form": "continuous"
   },
   {
    "id": "written:future-continuous:3",
    "targetId": "future-continuous",
-   "before": "At midnight, she ",
-   "answer": "will be sleeping",
-   "after": ".",
-   "fr": "À minuit, elle sera en train de dormir.",
-   "hint": "sleep"
+   "before": "This time next week, we ",
+   "answer": "will be relaxing",
+   "after": " on a beach.",
+   "fr": "La semaine prochaine à la même heure, nous nous détendrons sur une plage.",
+   "hint": "relax",
+   "form": "continuous"
   },
   {
    "id": "written:future-continuous:4",
    "targetId": "future-continuous",
-   "before": "When you arrive, I ",
-   "answer": "will be waiting",
-   "after": " at the station.",
-   "fr": "Quand tu arriveras, je serai en train de t'attendre à la gare.",
-   "hint": "wait"
+   "before": "At this time on Monday, she ",
+   "answer": "will be sitting",
+   "after": " her exam.",
+   "fr": "Lundi à cette heure-ci, elle passera son examen.",
+   "hint": "sit",
+   "form": "continuous"
   },
   {
    "id": "written:future-continuous:5",
    "targetId": "future-continuous",
-   "before": "This time next week, we ",
-   "answer": "will be lying",
-   "after": " on the beach.",
-   "fr": "La semaine prochaine à la même heure, nous serons en train de nous prélasser sur la plage.",
-   "hint": "lie"
+   "before": "Don't phone at nine tomorrow: I ",
+   "answer": "will be driving",
+   "after": " to work.",
+   "fr": "N'appelle pas demain à neuf heures : je serai sur la route du travail.",
+   "hint": "drive",
+   "form": "continuous"
   },
   {
    "id": "written:future-continuous:6",
    "targetId": "future-continuous",
-   "before": "At ten tomorrow morning, he ",
-   "answer": "will be taking",
-   "after": " his exam.",
-   "fr": "Demain à dix heures, il sera en train de passer son examen.",
-   "hint": "take"
+   "before": "This time next year, they ",
+   "answer": "will be living",
+   "after": " in Spain.",
+   "fr": "L'an prochain à la même époque, ils vivront en Espagne.",
+   "hint": "live",
+   "form": "continuous",
+   "accept": [
+    "will live"
+   ]
   },
   {
    "id": "written:future-perfect:1",
@@ -1067,7 +1161,8 @@
    "answer": "will have finished",
    "after": " my studies.",
    "fr": "D'ici l'an prochain, j'aurai terminé mes études.",
-   "hint": "finish"
+   "hint": "finish",
+   "form": "perfect"
   },
   {
    "id": "written:future-perfect:2",
@@ -1076,7 +1171,11 @@
    "answer": "will have eaten",
    "after": ".",
    "fr": "Quand tu arriveras, nous aurons déjà mangé.",
-   "hint": "eat"
+   "hint": "eat",
+   "form": "perfect",
+   "accept": [
+    "will already have eaten"
+   ]
   },
   {
    "id": "written:future-perfect:3",
@@ -1085,7 +1184,8 @@
    "answer": "will have left",
    "after": " by six o'clock.",
    "fr": "Elle sera partie avant six heures.",
-   "hint": "leave"
+   "hint": "leave",
+   "form": "perfect"
   },
   {
    "id": "written:future-perfect:4",
@@ -1094,7 +1194,8 @@
    "answer": "will have found",
    "after": " a cure.",
    "fr": "D'ici 2030, les scientifiques auront trouvé un remède.",
-   "hint": "find"
+   "hint": "find",
+   "form": "perfect"
   },
   {
    "id": "written:future-perfect:5",
@@ -1103,7 +1204,8 @@
    "answer": "will have been",
    "after": " married for ten years.",
    "fr": "En juin, cela fera dix ans qu'ils sont mariés.",
-   "hint": "be"
+   "hint": "be",
+   "form": "perfect"
   },
   {
    "id": "written:future-perfect:6",
@@ -1112,7 +1214,8 @@
    "answer": "will have written",
    "after": " three reports.",
    "fr": "D'ici la fin de la journée, il aura écrit trois rapports.",
-   "hint": "write"
+   "hint": "write",
+   "form": "perfect"
   },
   {
    "id": "written:inversion:1",
@@ -1125,7 +1228,8 @@
     "have I seen",
     "I have seen",
     "I saw"
-   ]
+   ],
+   "form": "inverted"
   },
   {
    "id": "written:inversion:2",
@@ -1136,9 +1240,9 @@
    "fr": "Il arrive rarement à l'heure.",
    "options": [
     "does he arrive",
-    "he arrives",
-    "arrives he"
-   ]
+    "he arrives"
+   ],
+   "form": "inverted"
   },
   {
    "id": "written:inversion:3",
@@ -1149,9 +1253,9 @@
    "fr": "Non seulement elle a gagné, mais elle a aussi battu le record.",
    "options": [
     "did she win",
-    "she won",
-    "won she"
-   ]
+    "she won"
+   ],
+   "form": "inverted"
   },
   {
    "id": "written:inversion:4",
@@ -1162,9 +1266,9 @@
    "fr": "À peine nous étions-nous assis que le téléphone a sonné.",
    "options": [
     "had we sat",
-    "we had sat",
-    "did we sat"
-   ]
+    "we had sat"
+   ],
+   "form": "inverted"
   },
   {
    "id": "written:inversion:5",
@@ -1175,9 +1279,9 @@
    "fr": "Vous ne devez en aucun cas ouvrir cette porte.",
    "options": [
     "should you open",
-    "you should open",
-    "you open"
-   ]
+    "you should open"
+   ],
+   "form": "inverted"
   },
   {
    "id": "written:inversion:6",
@@ -1188,9 +1292,9 @@
    "fr": "Ils étaient loin de se douter de ce qui allait arriver.",
    "options": [
     "did they know",
-    "they knew",
-    "knew they"
-   ]
+    "they knew"
+   ],
+   "form": "inverted"
   },
   {
    "id": "written:cleft-sentences:1",
@@ -1201,9 +1305,9 @@
    "fr": "Ce dont j'ai besoin, c'est de vacances.",
    "options": [
     "What I need",
-    "That I need",
-    "What I need it"
-   ]
+    "That I need"
+   ],
+   "form": "what"
   },
   {
    "id": "written:cleft-sentences:2",
@@ -1216,7 +1320,8 @@
     "who",
     "which",
     "what"
-   ]
+   ],
+   "form": "it-who"
   },
   {
    "id": "written:cleft-sentences:3",
@@ -1227,9 +1332,10 @@
    "fr": "Ce qui s'est passé a été une catastrophe.",
    "options": [
     "What happened",
-    "That happened",
-    "What it happened"
-   ]
+    "What it happened",
+    "That happened"
+   ],
+   "form": "what"
   },
   {
    "id": "written:cleft-sentences:4",
@@ -1240,9 +1346,9 @@
    "fr": "C'est en 2010 que nous nous sommes rencontrés.",
    "options": [
     "that",
-    "when it",
     "which"
-   ]
+   ],
+   "form": "it-that"
   },
   {
    "id": "written:cleft-sentences:5",
@@ -1255,7 +1361,8 @@
     "All I want",
     "All what I want",
     "Everything what I want"
-   ]
+   ],
+   "form": "all"
   },
   {
    "id": "written:cleft-sentences:6",
@@ -1266,9 +1373,10 @@
    "fr": "Ce qu'elle a fait, c'est appeler la police.",
    "options": [
     "What she did",
-    "That she did",
-    "What did she"
-   ]
+    "What did she",
+    "That she did"
+   ],
+   "form": "what"
   },
   {
    "id": "written:participle-clauses:1",
@@ -1281,7 +1389,8 @@
     "Having finished",
     "Finished",
     "Have finished"
-   ]
+   ],
+   "form": "perfect"
   },
   {
    "id": "written:participle-clauses:2",
@@ -1292,9 +1401,9 @@
    "fr": "Se sentant fatigué, il s'est couché tôt.",
    "options": [
     "Feeling",
-    "Felt",
-    "Feel"
-   ]
+    "Felt"
+   ],
+   "form": "present"
   },
   {
    "id": "written:participle-clauses:3",
@@ -1305,9 +1414,9 @@
    "fr": "Construit en 1890, le pont est toujours utilisé.",
    "options": [
     "Built",
-    "Building",
-    "Having built"
-   ]
+    "Building"
+   ],
+   "form": "past"
   },
   {
    "id": "written:participle-clauses:4",
@@ -1318,9 +1427,9 @@
    "fr": "Ne sachant pas quoi dire, elle est restée silencieuse.",
    "options": [
     "Not knowing",
-    "Knowing not",
     "Don't knowing"
-   ]
+   ],
+   "form": "present"
   },
   {
    "id": "written:participle-clauses:5",
@@ -1331,9 +1440,9 @@
    "fr": "L'homme assis à côté de moi était très impoli.",
    "options": [
     "sitting",
-    "who sitting",
-    "sits"
-   ]
+    "who sitting"
+   ],
+   "form": "present"
   },
   {
    "id": "written:participle-clauses:6",
@@ -1344,9 +1453,9 @@
    "fr": "Écrit dans un anglais simple, le livre est facile à lire.",
    "options": [
     "Written",
-    "Writing",
-    "Wrote"
-   ]
+    "Writing"
+   ],
+   "form": "past"
   },
   {
    "id": "written:subjunctive:1",
@@ -1359,7 +1468,8 @@
     "be",
     "will be",
     "to be"
-   ]
+   ],
+   "form": "subjunctive"
   },
   {
    "id": "written:subjunctive:2",
@@ -1372,7 +1482,8 @@
     "rest",
     "will rest",
     "to rest"
-   ]
+   ],
+   "form": "subjunctive"
   },
   {
    "id": "written:subjunctive:3",
@@ -1383,9 +1494,10 @@
    "fr": "Ils ont insisté pour que nous restions dîner.",
    "options": [
     "stay",
-    "would to stay",
-    "staying"
-   ]
+    "will stay",
+    "to stay"
+   ],
+   "form": "subjunctive"
   },
   {
    "id": "written:subjunctive:4",
@@ -1398,7 +1510,8 @@
     "see",
     "will see",
     "to see"
-   ]
+   ],
+   "form": "subjunctive"
   },
   {
    "id": "written:subjunctive:5",
@@ -1411,7 +1524,8 @@
     "attend",
     "will attend",
     "to attend"
-   ]
+   ],
+   "form": "subjunctive"
   },
   {
    "id": "written:subjunctive:6",
@@ -1422,9 +1536,10 @@
    "fr": "Le juge a ordonné que l'homme soit libéré.",
    "options": [
     "be",
-    "is being",
+    "is",
     "to be"
-   ]
+   ],
+   "form": "subjunctive"
   },
   {
    "id": "written:emphatic-do:1",
@@ -1435,9 +1550,9 @@
    "fr": "J'aime vraiment ta nouvelle coupe !",
    "options": [
     "do like",
-    "am like",
-    "do liking"
-   ]
+    "does like"
+   ],
+   "form": "do"
   },
   {
    "id": "written:emphatic-do:2",
@@ -1448,9 +1563,9 @@
    "fr": "Il a bien appelé, mais tu étais sorti.",
    "options": [
     "did call",
-    "did called",
-    "was call"
-   ]
+    "did called"
+   ],
+   "form": "did"
   },
   {
    "id": "written:emphatic-do:3",
@@ -1461,25 +1576,12 @@
    "fr": "Elle travaille vraiment dur, même si tu ne le crois pas.",
    "options": [
     "does work",
-    "does works",
-    "is work"
-   ]
+    "does works"
+   ],
+   "form": "does"
   },
   {
    "id": "written:emphatic-do:4",
-   "targetId": "emphatic-do",
-   "before": "",
-   "answer": "Do sit",
-   "after": " down, please.",
-   "fr": "Asseyez-vous donc, je vous en prie.",
-   "options": [
-    "Do sit",
-    "Do sitting",
-    "Does sit"
-   ]
-  },
-  {
-   "id": "written:emphatic-do:5",
    "targetId": "emphatic-do",
    "before": "We ",
    "answer": "did enjoy",
@@ -1487,12 +1589,12 @@
    "fr": "Nous avons vraiment apprécié le concert.",
    "options": [
     "did enjoy",
-    "did enjoyed",
-    "were enjoy"
-   ]
+    "did enjoyed"
+   ],
+   "form": "did"
   },
   {
-   "id": "written:emphatic-do:6",
+   "id": "written:emphatic-do:5",
    "targetId": "emphatic-do",
    "before": "I ",
    "answer": "do understand",
@@ -1500,9 +1602,82 @@
    "fr": "Je comprends bien votre problème.",
    "options": [
     "do understand",
-    "do understood",
-    "am understand"
-   ]
+    "do understood"
+   ],
+   "form": "do"
+  },
+  {
+   "id": "written:emphatic-do:6",
+   "targetId": "emphatic-do",
+   "before": "He ",
+   "answer": "does know",
+   "after": " the answer; he is just shy.",
+   "fr": "Il connaît bien la réponse ; il est juste timide.",
+   "options": [
+    "does know",
+    "does knows"
+   ],
+   "form": "does"
+  },
+  {
+   "id": "written:preposition-ing:1",
+   "targetId": "preposition-ing",
+   "before": "Thank you for ",
+   "answer": "helping",
+   "after": " me.",
+   "fr": "Merci de m'avoir aidé.",
+   "hint": "help",
+   "form": "ing"
+  },
+  {
+   "id": "written:preposition-ing:2",
+   "targetId": "preposition-ing",
+   "before": "She left without ",
+   "answer": "saying",
+   "after": " goodbye.",
+   "fr": "Elle est partie sans dire au revoir.",
+   "hint": "say",
+   "form": "ing"
+  },
+  {
+   "id": "written:preposition-ing:3",
+   "targetId": "preposition-ing",
+   "before": "We are looking forward to ",
+   "answer": "seeing",
+   "after": " you.",
+   "fr": "Nous avons hâte de vous voir.",
+   "hint": "see",
+   "form": "ing"
+  },
+  {
+   "id": "written:preposition-ing:4",
+   "targetId": "preposition-ing",
+   "before": "I'm thinking about ",
+   "answer": "changing",
+   "after": " jobs.",
+   "fr": "Je pense à changer de travail.",
+   "hint": "change",
+   "form": "ing"
+  },
+  {
+   "id": "written:preposition-ing:5",
+   "targetId": "preposition-ing",
+   "before": "I'd like to ",
+   "answer": "see",
+   "after": " you soon.",
+   "fr": "J'aimerais te voir bientôt.",
+   "hint": "see",
+   "form": "infinitive"
+  },
+  {
+   "id": "written:preposition-ing:6",
+   "targetId": "preposition-ing",
+   "before": "She decided to ",
+   "answer": "change",
+   "after": " jobs.",
+   "fr": "Elle a décidé de changer de travail.",
+   "hint": "change",
+   "form": "infinitive"
   }
  ]
 }

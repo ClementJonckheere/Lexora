@@ -23,6 +23,8 @@ export interface PlacementItem extends PlacementQuestion {
   hint?: string;
   /** Propositions affichées (choix), dans l'ordre d'affichage. */
   options?: string[];
+  /** Nature de la bonne réponse (sujet / objet, to / for…) : la simulation y modélise les règles superficielles. */
+  form?: string;
   /** Provenance : phrase Tatoeba (CC BY 2.0 FR) ou question rédigée. */
   source: string;
   /** « généré » : sorti du générateur, contrôlé automatiquement ; « rédigé » : écrit à la main, à relire ; « relu » : validé par une personne. */
@@ -112,6 +114,7 @@ export function placementItem(lessonId: string, ex: Exercise, targetId = lessonI
     answer: ex.answer,
     source: `tatoeba:${sentenceId}`,
     status: 'généré' as const,
+    ...(ex.form ? { form: ex.form } : {}),
   };
   // Verbe en indice : la forme se tape, sans propositions.
   if (ex.hint) return { ...base, mode: 'typed', hint: ex.hint, ...(ex.accept ? { accept: ex.accept } : {}) };
@@ -164,9 +167,12 @@ export interface WrittenQuestion {
   after: string;
   fr: string;
   answer: string;
-  /** Forme à taper (verbe en indice), sinon propositions. */
+  /** Autres réponses tapées admises (« will already have eaten »). */
+  accept?: string[];
+  /** Forme à taper (verbe en indice), sinon propositions plausibles pour un francophone, une seule faute chacune. */
   hint?: string;
   options?: string[];
+  form: string;
 }
 
 /** Question de placement tirée d'une question rédigée ; les propositions tournent pour que la réponse change de place. */
@@ -181,8 +187,9 @@ export function writtenItem(q: WrittenQuestion, index: number): PlacementItem {
     answer: q.answer,
     source: q.id,
     status: 'rédigé' as const,
+    form: q.form,
   };
-  if (q.hint) return { ...base, mode: 'typed', hint: q.hint };
+  if (q.hint) return { ...base, mode: 'typed', hint: q.hint, ...(q.accept ? { accept: q.accept } : {}) };
   const options = rotate(q.options ?? [], index);
   return { ...base, mode: 'choice', choices: options.length, options };
 }
