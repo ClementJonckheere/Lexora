@@ -25,8 +25,8 @@ export interface PlacementItem extends PlacementQuestion {
   options?: string[];
   /** Provenance : phrase Tatoeba (CC BY 2.0 FR) ou question rédigée. */
   source: string;
-  /** « généré » : sorti du générateur, contrôlé automatiquement ; « relu » : validé par une personne. */
-  status: 'généré' | 'relu';
+  /** « généré » : sorti du générateur, contrôlé automatiquement ; « rédigé » : écrit à la main, à relire ; « relu » : validé par une personne. */
+  status: 'généré' | 'rédigé' | 'relu';
 }
 
 /** Questions retenues par point (le moteur en pose au moins 2 et n'utilise jamais deux fois la même phrase). */
@@ -154,4 +154,35 @@ export function placementItems(lessonId: string, bank: Exercise[], excluded: Rea
     }
   }
   return out;
+}
+
+/** Question rédigée (public/grammar/en/placement-written.json) : pour les points sans leçon ni générateur. */
+export interface WrittenQuestion {
+  id: string;
+  targetId: string;
+  before: string;
+  after: string;
+  fr: string;
+  answer: string;
+  /** Forme à taper (verbe en indice), sinon propositions. */
+  hint?: string;
+  options?: string[];
+}
+
+/** Question de placement tirée d'une question rédigée ; les propositions tournent pour que la réponse change de place. */
+export function writtenItem(q: WrittenQuestion, index: number): PlacementItem {
+  const base = {
+    id: `placement:${q.targetId}:${q.id}`,
+    targetId: q.targetId,
+    evidenceId: q.id,
+    before: q.before,
+    after: q.after,
+    fr: q.fr,
+    answer: q.answer,
+    source: q.id,
+    status: 'rédigé' as const,
+  };
+  if (q.hint) return { ...base, mode: 'typed', hint: q.hint };
+  const options = rotate(q.options ?? [], index);
+  return { ...base, mode: 'choice', choices: options.length, options };
 }

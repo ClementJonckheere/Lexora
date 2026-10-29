@@ -4,7 +4,7 @@
 // Points sans leçon : questions des banques du placement (public/grammar/en/placement, générées par la CI). Les points
 // restants sont listés dans le fichier : ils attendent des questions rédigées.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { placementItems, type PlacementItem } from '../src/core/learn/placementBank';
+import { placementItems, writtenItem, type PlacementItem, type WrittenQuestion } from '../src/core/learn/placementBank';
 import type { Exercise } from '../src/core/learn/exercises';
 
 const DIR = 'public/grammar/en';
@@ -37,6 +37,20 @@ for (const { target: id, lesson, file } of sources) {
   };
 }
 
+// Points restants : questions rédigées (étape 3), à relire avant activation.
+const written = JSON.parse(readFileSync(`${DIR}/placement-written.json`, 'utf8')).items as WrittenQuestion[];
+for (const p of points) {
+  if (covered[p.id]) continue;
+  const chosen = written.filter((q) => q.targetId === p.id).map((q, i) => writtenItem(q, i));
+  if (chosen.length < 2) continue;
+  items.push(...chosen);
+  covered[p.id] = {
+    typed: chosen.filter((q) => q.mode === 'typed').length,
+    choice2: chosen.filter((q) => q.mode === 'choice' && q.choices === 2).length,
+    choice3plus: chosen.filter((q) => q.mode === 'choice' && q.choices! >= 3).length,
+  };
+}
+
 const missing = points
   .filter((p) => !covered[p.id])
   .map((p) => ({ id: p.id, level: p.level, title: p.title, tatoebaWithFrench: counts[p.id]?.withFrench ?? 0 }));
@@ -53,7 +67,7 @@ writeFileSync(
     {
       version: 1,
       generatedAt: new Date().toISOString(),
-      source: 'Tatoeba (CC BY 2.0 FR), banques des leçons',
+      source: 'Tatoeba (CC BY 2.0 FR) : banques des leçons et du placement ; questions rédigées (placement-written.json)',
       status: 'généré automatiquement, à relire avant activation',
       covered,
       missing,
