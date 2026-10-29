@@ -43,7 +43,7 @@ export function AccountSection() {
         <div className="row" style={{ gap: 12 }}>
           <Avatar user={auth.user} size={40} />
           <div>
-            <div style={{ fontWeight: 600 }}>{auth.user.name}</div>
+            <div style={{ fontWeight: 500 }}>{auth.user.name}</div>
             <div className="muted small">{auth.user.email}</div>
           </div>
         </div>
