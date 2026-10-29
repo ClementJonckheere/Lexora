@@ -72,6 +72,8 @@ export type PlacementRecord =
       results: { id: string; state: PlacementState; probability: number; evidence: string }[];
       /** Corrections de l'utilisateur (« je connais déjà », « à revoir »). */
       overrides: Record<string, PlacementState>;
+      /** Mini-tests passés au début d'une leçon, pour les points que le test n'a pas tranchés. */
+      checks?: Record<string, { at: number; probability: number; state: PlacementState }>;
     };
 
 const PLACEMENT_STATES = new Set<string>(['mastered', 'consolidate', 'learn']);
@@ -92,7 +94,16 @@ function sanitizePlacement(raw: unknown): Record<string, PlacementRecord> {
           (e): e is [string, PlacementState] => typeof e[1] === 'string' && PLACEMENT_STATES.has(e[1]),
         ),
       );
-      out[universe] = { status: 'done', at: rec.at, results, overrides };
+      const rawChecks = (rec as { checks?: unknown }).checks;
+      const checks = Object.fromEntries(
+        Object.entries((rawChecks && typeof rawChecks === 'object' ? rawChecks : {}) as Record<string, unknown>).filter(
+          (e): e is [string, { at: number; probability: number; state: PlacementState }] => {
+            const c = e[1] as { at?: unknown; probability?: unknown; state?: unknown } | null;
+            return !!c && typeof c.at === 'number' && typeof c.probability === 'number' && typeof c.state === 'string' && PLACEMENT_STATES.has(c.state);
+          },
+        ),
+      );
+      out[universe] = { status: 'done', at: rec.at, results, overrides, ...(Object.keys(checks).length ? { checks } : {}) };
     }
   }
   return out;

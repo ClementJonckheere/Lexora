@@ -9,7 +9,11 @@ import { Button, Kbd } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { speakText } from '@/ui/speech';
 import { LessonBar, progressLabel } from './LearnPage';
-import { loadExercises, useGrammarData } from './grammarData';
+import { loadExercises, loadPlacementItems, useGrammarData } from './grammarData';
+import type { PlacementState } from '@/core/domain/settings';
+import type { PlacementResponse } from '@/core/learn/placement';
+import type { PlacementItem } from '@/core/learn/placementBank';
+import { checkItems, checkResult, needsCheck } from '@/core/learn/placementResults';
 
 /** Une leçon : l'explication et ses exemples, puis des séances d'exercices tirées au hasard. */
 export function LessonPage({ id, startReview = false }: { id: string; startReview?: boolean }) {
@@ -19,6 +23,9 @@ export function LessonPage({ id, startReview = false }: { id: string; startRevie
   const { navigate } = useApp.getState();
   const [bank, setBank] = useState<Exercise[] | null>(null);
   const [session, setSession] = useState<{ items: Exercise[]; review: boolean } | null>(null);
+  const placement = useApp((s) => (universeId ? s.settings.placement[universeId] : undefined));
+  // Mini-test proposé tant que la leçon n'est pas commencée ; son verdict reste affiché après coup.
+  const [checkVerdict, setCheckVerdict] = useState<PlacementState | null>(null);
 
   useEffect(() => {
     void loadExercises(id).then(setBank);
@@ -78,6 +85,26 @@ export function LessonPage({ id, startReview = false }: { id: string; startRevie
           <p className="page-subtitle">{lesson.summary}</p>
         </div>
       </div>
+
+      {placement?.status === 'done' && progress.state === 'new' && needsCheck(placement, id) && !checkVerdict && (
+        <LessonCheck id={id} onDone={setCheckVerdict} />
+      )}
+      {checkVerdict && (
+        <section className={`card card-pad lesson-check lesson-check--${checkVerdict}`}>
+          <strong>
+            {checkVerdict === 'mastered'
+              ? 'Point acquis : vous pouvez passer directement aux exercices.'
+              : checkVerdict === 'learn'
+                ? 'Mieux vaut lire la leçon avant les exercices.'
+                : 'Encore incertain : un coup d’œil à la règle, puis les exercices trancheront.'}
+          </strong>
+          {checkVerdict === 'mastered' && bank && bank.length > 0 && (
+            <Button variant="primary" onClick={() => start(false)}>
+              Commencer les exercices ({SESSION_SIZE})
+            </Button>
+          )}
+        </section>
+      )}
 
       <section className="card card-pad stack stack--sm">
         <div className="row row--between">
@@ -369,5 +396,109 @@ function ExerciseSession({
       </div>
       <FocusFooter state={focus.state} />
     </div>
+  );
+}
+
+/**
+ * Mini-test au début d'une leçon : le test de placement n'a pas tranché ce point (« à consolider »). Trois questions
+ * de la banque du placement disent s'il est acquis (on peut passer aux exercices) ou à apprendre (lire la leçon).
+ */
+function LessonCheck({ id, onDone }: { id: string; onDone: (state: PlacementState) => void }) {
+  const universe = useApp((s) => s.universe);
+  const placement = useApp((s) => s.settings.placement);
+  const record = universe ? placement[universe.id] : undefined;
+  const { updateSettings, toast } = useApp.getState();
+  const [items, setItems] = useState<PlacementItem[] | null>(null);
+  const [started, setStarted] = useState(false);
+  const [responses, setResponses] = useState<{ response: PlacementResponse; mode: 'typed' | 'choice'; choices?: number }[]>([]);
+  const [typed, setTyped] = useState('');
+  const input = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    void loadPlacementItems().then((bank) => setItems(checkItems(bank, id)));
+  }, [id]);
+  const item = items?.[responses.length];
+  useEffect(() => {
+    if (started && item?.mode === 'typed') input.current?.focus();
+  }, [started, item?.id, item?.mode]);
+
+  if (!record || record.status !== 'done' || !items || items.length < 2) return null;
+
+  const respond = (response: PlacementResponse) => {
+    if (!item) return;
+    const next = [...responses, { response, mode: item.mode, choices: item.choices }];
+    setResponses(next);
+    setTyped('');
+    if (next.length < items.length) return;
+    const prior = record.results.find((r) => r.id === id)?.probability ?? 0.5;
+    const check = checkResult(prior, next);
+    void updateSettings({ placement: { ...placement, [universe!.id]: { ...record, checks: { ...record.checks, [id]: check } } } })
+      .then(() => onDone(check.state))
+      .catch((err) => toast('error', errorMessage(err)));
+  };
+  const submitTyped = () =>
+    item && typed.trim() && respond(isCorrect({ id: item.id, en: '', fr: '', before: item.before, after: item.after, answer: item.answer, accept: item.accept }, typed) ? 'correct' : 'incorrect');
+
+  if (!started)
+    return (
+      <section className="card card-pad lesson-check">
+        <div>
+          <strong>Le test de placement n'a pas tranché pour ce point.</strong>
+          <p className="muted small" style={{ margin: '4px 0 0' }}>
+            {items.length} questions pour savoir si vous pouvez passer directement aux exercices, ou s'il vaut mieux lire la leçon d'abord.
+          </p>
+        </div>
+        <Button variant="primary" onClick={() => setStarted(true)}>
+          Faire les {items.length} questions
+        </Button>
+      </section>
+    );
+  if (!item) return null;
+  return (
+    <section className="card card-pad lesson-check lesson-check--running">
+      <span className="muted small">
+        Question {responses.length + 1} sur {items.length} · {item.mode === 'choice' ? 'choisissez la bonne forme' : `complétez avec « ${item.hint} »`}
+      </span>
+      <p className="exercise-sentence" lang="en">
+        {item.before}
+        {item.mode === 'typed' ? (
+          <input
+            ref={input}
+            className="exercise-input"
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && submitTyped()}
+            size={Math.max(8, item.answer.length + 2)}
+            autoComplete="off"
+            spellCheck={false}
+            lang="en"
+            aria-label="Votre réponse"
+          />
+        ) : (
+          <span className="exercise-blank">{' '.repeat(8)}</span>
+        )}
+        {item.after}
+      </p>
+      <p className="exercise-translation">
+        <span className="muted small">Traduction : </span>
+        {item.fr}
+      </p>
+      <div className="row row--wrap" style={{ justifyContent: 'center', gap: 10 }}>
+        {item.mode === 'choice' ? (
+          item.options!.map((o) => (
+            <Button key={o} className="exercise-choice" onClick={() => respond(o === item.answer ? 'correct' : 'incorrect')}>
+              {o}
+            </Button>
+          ))
+        ) : (
+          <Button variant="primary" onClick={submitTyped} disabled={!typed.trim()}>
+            Valider
+          </Button>
+        )}
+        <button className="link small" onClick={() => respond('unknown')}>
+          Je ne sais pas
+        </button>
+      </div>
+    </section>
   );
 }
