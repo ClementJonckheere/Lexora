@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-10-29T15:29:31.177Z",
+ "generatedAt": "2026-10-29T15:31:20.953Z",
  "source": "Tatoeba (CC BY 2.0 FR), banques des leçons",
  "status": "généré automatiquement, à relire avant activation",
  "covered": {
@@ -81,8 +81,8 @@
   },
   "question-tags": {
    "typed": 0,
-   "choice2": 2,
-   "choice3plus": 6
+   "choice2": 1,
+   "choice3plus": 7
   },
   "indirect-questions": {
    "typed": 0,
@@ -2255,21 +2255,21 @@
    ]
   },
   {
-   "id": "placement:question-tags:question-tags:1950751",
+   "id": "placement:question-tags:question-tags:12391239",
    "targetId": "question-tags",
-   "evidenceId": "tatoeba:1950751",
-   "before": "We can't be sure, ",
+   "evidenceId": "tatoeba:12391239",
+   "before": "Not bad, that one, ",
    "after": "?",
-   "fr": "Nous ne pouvons en être certains, si ?",
-   "answer": "can we",
-   "source": "tatoeba:1950751",
+   "fr": "Pas mal, celle-là, non ?",
+   "answer": "is it",
+   "source": "tatoeba:12391239",
    "status": "généré",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "can't we",
+    "is it",
     "isn't it",
-    "can we"
+    "doesn't it"
    ]
   },
   {
@@ -2308,21 +2308,21 @@
    ]
   },
   {
-   "id": "placement:question-tags:question-tags:2545254",
+   "id": "placement:question-tags:question-tags:2402267",
    "targetId": "question-tags",
-   "evidenceId": "tatoeba:2545254",
-   "before": "It's difficult, ",
+   "evidenceId": "tatoeba:2402267",
+   "before": "You're picky, ",
    "after": "?",
-   "fr": "C'est difficile, n'est-ce pas ?",
-   "answer": "isn't it",
-   "source": "tatoeba:2545254",
+   "fr": "Vous êtes difficile, n'est-ce pas ?",
+   "answer": "aren't you",
+   "source": "tatoeba:2402267",
    "status": "généré",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "is it",
     "isn't it",
-    "doesn't it"
+    "aren't you",
+    "are you"
    ]
   },
   {
@@ -2344,21 +2344,21 @@
    ]
   },
   {
-   "id": "placement:question-tags:question-tags:313891",
+   "id": "placement:question-tags:question-tags:242884",
    "targetId": "question-tags",
-   "evidenceId": "tatoeba:313891",
-   "before": "She's at work, ",
+   "evidenceId": "tatoeba:242884",
+   "before": "It's hot today, ",
    "after": "?",
-   "fr": "Elle est au travail, n'est-ce pas ?",
-   "answer": "isn't she",
-   "source": "tatoeba:313891",
+   "fr": "Il fait chaud, aujourd'hui, n'est-ce pas ?",
+   "answer": "isn't it",
+   "source": "tatoeba:242884",
    "status": "généré",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "is she",
     "isn't it",
-    "isn't she"
+    "doesn't it",
+    "is it"
    ]
   },
   {
@@ -2380,156 +2380,157 @@
    ]
   },
   {
-   "id": "placement:question-tags:question-tags:3166131",
+   "id": "placement:question-tags:question-tags:313891",
    "targetId": "question-tags",
-   "evidenceId": "tatoeba:3166131",
-   "before": "Tom is the one, ",
+   "evidenceId": "tatoeba:313891",
+   "before": "She's at work, ",
    "after": "?",
-   "fr": "Tom est le bon, n'est-ce pas ?",
-   "answer": "isn't he",
-   "source": "tatoeba:3166131",
+   "fr": "Elle est au travail, n'est-ce pas ?",
+   "answer": "isn't she",
+   "source": "tatoeba:313891",
    "status": "généré",
    "mode": "choice",
-   "choices": 2,
+   "choices": 3,
    "options": [
+    "is she",
     "isn't it",
-    "isn't he"
+    "isn't she"
    ]
   },
   {
-   "id": "placement:indirect-questions:indirect-questions:10906843",
+   "id": "placement:indirect-questions:indirect-questions:10639608",
    "targetId": "indirect-questions",
-   "evidenceId": "tatoeba:10906843",
-   "before": "How ",
-   "after": "?",
-   "fr": "Comment s'est passée l'opération ?",
-   "answer": "did the operation go",
-   "source": "tatoeba:10906843",
+   "evidenceId": "tatoeba:10639608",
+   "before": "Why ",
+   "after": " that, Tom?",
+   "fr": "Pourquoi as-tu fait ça, Tom ?",
+   "answer": "did you do",
+   "source": "tatoeba:10639608",
    "status": "généré",
    "mode": "choice",
    "choices": 2,
    "options": [
-    "the operation went",
-    "did the operation go"
+    "you did",
+    "did you do"
    ]
   },
   {
-   "id": "placement:indirect-questions:indirect-questions:1670795",
+   "id": "placement:indirect-questions:indirect-questions:1785015",
    "targetId": "indirect-questions",
-   "evidenceId": "tatoeba:1670795",
-   "before": "I know who ",
-   "after": " with.",
-   "fr": "Je sais avec qui tu étais.",
-   "answer": "you were",
-   "source": "tatoeba:1670795",
-   "status": "généré",
-   "mode": "choice",
-   "choices": 2,
-   "options": [
-    "were you",
-    "you were"
-   ]
-  },
-  {
-   "id": "placement:indirect-questions:indirect-questions:11155355",
-   "targetId": "indirect-questions",
-   "evidenceId": "tatoeba:11155355",
-   "before": "When ",
-   "after": "?",
-   "fr": "Quand est-ce que le film commence ?",
-   "answer": "does the film start",
-   "source": "tatoeba:11155355",
-   "status": "généré",
-   "mode": "choice",
-   "choices": 2,
-   "options": [
-    "the film starts",
-    "does the film start"
-   ]
-  },
-  {
-   "id": "placement:indirect-questions:indirect-questions:2545530",
-   "targetId": "indirect-questions",
-   "evidenceId": "tatoeba:2545530",
-   "before": "I wonder what ",
+   "evidenceId": "tatoeba:1785015",
+   "before": "I don't know what ",
    "after": ".",
-   "fr": "Je me demande ce que Tom voulait.",
-   "answer": "Tom wanted",
-   "source": "tatoeba:2545530",
+   "fr": "Je ne sais pas ce que je veux.",
+   "answer": "I want",
+   "source": "tatoeba:1785015",
    "status": "généré",
    "mode": "choice",
    "choices": 2,
    "options": [
-    "did Tom want",
-    "Tom wanted"
+    "do I want",
+    "I want"
    ]
   },
   {
-   "id": "placement:indirect-questions:indirect-questions:13693792",
+   "id": "placement:indirect-questions:indirect-questions:12403686",
    "targetId": "indirect-questions",
-   "evidenceId": "tatoeba:13693792",
+   "evidenceId": "tatoeba:12403686",
    "before": "What ",
-   "after": " you with?",
-   "fr": "Avec quoi t'a-t-il frappé ?",
-   "answer": "did he hit",
-   "source": "tatoeba:13693792",
+   "after": " station?",
+   "fr": "Quel est le prochain arrêt ?",
+   "answer": "is the next",
+   "source": "tatoeba:12403686",
    "status": "généré",
    "mode": "choice",
    "choices": 2,
    "options": [
-    "he hit",
-    "did he hit"
+    "the next is",
+    "is the next"
    ]
   },
   {
-   "id": "placement:indirect-questions:indirect-questions:2645094",
+   "id": "placement:indirect-questions:indirect-questions:70064",
    "targetId": "indirect-questions",
-   "evidenceId": "tatoeba:2645094",
+   "evidenceId": "tatoeba:70064",
    "before": "Do you know what ",
    "after": "?",
-   "fr": "Sais-tu ce que Tom a fait ?",
-   "answer": "Tom did",
-   "source": "tatoeba:2645094",
+   "fr": "Savez-vous ce que c'est ?",
+   "answer": "this is",
+   "source": "tatoeba:70064",
    "status": "généré",
    "mode": "choice",
    "choices": 2,
    "options": [
-    "did Tom do",
-    "Tom did"
+    "is this",
+    "this is"
    ]
   },
   {
-   "id": "placement:indirect-questions:indirect-questions:16259",
+   "id": "placement:indirect-questions:indirect-questions:2644669",
    "targetId": "indirect-questions",
-   "evidenceId": "tatoeba:16259",
-   "before": "What ",
-   "after": " to do?",
-   "fr": "Qu'as-tu l'intention de faire ?",
-   "answer": "do you intend",
-   "source": "tatoeba:16259",
+   "evidenceId": "tatoeba:2644669",
+   "before": "Where ",
+   "after": "?",
+   "fr": "Où étaient tes enfants ?",
+   "answer": "were your children",
+   "source": "tatoeba:2644669",
    "status": "généré",
    "mode": "choice",
    "choices": 2,
    "options": [
-    "you intend",
-    "do you intend"
+    "your children were",
+    "were your children"
    ]
   },
   {
-   "id": "placement:indirect-questions:indirect-questions:3628522",
+   "id": "placement:indirect-questions:indirect-questions:1412485",
    "targetId": "indirect-questions",
-   "evidenceId": "tatoeba:3628522",
-   "before": "I know what ",
+   "evidenceId": "tatoeba:1412485",
+   "before": "I have no idea who ",
    "after": ".",
-   "fr": "Je sais quel est votre nom.",
-   "answer": "your name is",
-   "source": "tatoeba:3628522",
+   "fr": "Je n'ai aucune idée de qui elle est.",
+   "answer": "she is",
+   "source": "tatoeba:1412485",
    "status": "généré",
    "mode": "choice",
    "choices": 2,
    "options": [
-    "is your name",
-    "your name is"
+    "is she",
+    "she is"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:35117",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:35117",
+   "before": "Where ",
+   "after": " going, Dad?",
+   "fr": "Où vas-tu, papa ?",
+   "answer": "are you",
+   "source": "tatoeba:35117",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "you are",
+    "are you"
+   ]
+  },
+  {
+   "id": "placement:indirect-questions:indirect-questions:2360133",
+   "targetId": "indirect-questions",
+   "evidenceId": "tatoeba:2360133",
+   "before": "I have no idea where ",
+   "after": ".",
+   "fr": "Je n'ai aucune idée d'où je me trouve.",
+   "answer": "I am",
+   "source": "tatoeba:2360133",
+   "status": "généré",
+   "mode": "choice",
+   "choices": 2,
+   "options": [
+    "am I",
+    "I am"
    ]
   },
   {
@@ -2551,21 +2552,21 @@
    ]
   },
   {
-   "id": "placement:deduction-present:deduction-present:300414",
+   "id": "placement:deduction-present:deduction-present:2957512",
    "targetId": "deduction-present",
-   "evidenceId": "tatoeba:300414",
-   "before": "He ",
-   "after": " be an honest man.",
-   "fr": "Ce doit être un homme honnête.",
+   "evidenceId": "tatoeba:2957512",
+   "before": "Tom ",
+   "after": " be proud of you.",
+   "fr": "Tom doit être fier de toi.",
    "answer": "must",
-   "source": "tatoeba:300414",
+   "source": "tatoeba:2957512",
    "status": "généré",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "can't",
     "must",
-    "mustn't"
+    "mustn't",
+    "can't"
    ]
   },
   {
@@ -2587,21 +2588,21 @@
    ]
   },
   {
-   "id": "placement:deduction-present:deduction-present:413023",
+   "id": "placement:deduction-present:deduction-present:300414",
    "targetId": "deduction-present",
-   "evidenceId": "tatoeba:413023",
+   "evidenceId": "tatoeba:300414",
    "before": "He ",
-   "after": " be the principal.",
-   "fr": "Il doit être le principal.",
+   "after": " be an honest man.",
+   "fr": "Ce doit être un homme honnête.",
    "answer": "must",
-   "source": "tatoeba:413023",
+   "source": "tatoeba:300414",
    "status": "généré",
    "mode": "choice",
    "choices": 3,
    "options": [
     "can't",
-    "mustn't",
-    "must"
+    "must",
+    "mustn't"
    ]
   },
   {
@@ -2623,21 +2624,21 @@
    ]
   },
   {
-   "id": "placement:deduction-present:deduction-present:5058083",
+   "id": "placement:deduction-present:deduction-present:413023",
    "targetId": "deduction-present",
-   "evidenceId": "tatoeba:5058083",
-   "before": "There ",
-   "after": " be a solution.",
-   "fr": "Il doit y avoir une solution.",
+   "evidenceId": "tatoeba:413023",
+   "before": "He ",
+   "after": " be the principal.",
+   "fr": "Il doit être le principal.",
    "answer": "must",
-   "source": "tatoeba:5058083",
+   "source": "tatoeba:413023",
    "status": "généré",
    "mode": "choice",
    "choices": 3,
    "options": [
+    "can't",
     "mustn't",
-    "must",
-    "can't"
+    "must"
    ]
   },
   {
@@ -2659,21 +2660,21 @@
    ]
   },
   {
-   "id": "placement:deduction-present:deduction-present:3178610",
+   "id": "placement:deduction-present:deduction-present:2644179",
    "targetId": "deduction-present",
-   "evidenceId": "tatoeba:3178610",
-   "before": "It ",
-   "after": " be here somewhere.",
-   "fr": "Il doit être quelque part, ici.",
+   "evidenceId": "tatoeba:2644179",
+   "before": "You ",
+   "after": " be very busy now.",
+   "fr": "Tu dois être très occupé en ce moment.",
    "answer": "must",
-   "source": "tatoeba:3178610",
+   "source": "tatoeba:2644179",
    "status": "généré",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "mustn't",
+    "must",
     "can't",
-    "must"
+    "mustn't"
    ]
   },
   {
@@ -2729,17 +2730,17 @@
    "hint": "have"
   },
   {
-   "id": "placement:wish:wish:4264712",
+   "id": "placement:wish:wish:49511",
    "targetId": "wish",
-   "evidenceId": "tatoeba:4264712",
+   "evidenceId": "tatoeba:49511",
    "before": "I wish I ",
-   "after": " a map.",
-   "fr": "J'aimerais avoir apporté une carte.",
-   "answer": "had brought",
-   "source": "tatoeba:4264712",
+   "after": " the film.",
+   "fr": "J'aurais aimé voir le film.",
+   "answer": "had seen",
+   "source": "tatoeba:49511",
    "status": "généré",
    "mode": "typed",
-   "hint": "bring"
+   "hint": "see"
   },
   {
    "id": "placement:wish:wish:2544938",
@@ -2755,17 +2756,17 @@
    "hint": "know"
   },
   {
-   "id": "placement:wish:wish:49511",
+   "id": "placement:wish:wish:41837",
    "targetId": "wish",
-   "evidenceId": "tatoeba:49511",
-   "before": "I wish I ",
-   "after": " the film.",
-   "fr": "J'aurais aimé voir le film.",
-   "answer": "had seen",
-   "source": "tatoeba:49511",
+   "evidenceId": "tatoeba:41837",
+   "before": "I wish you ",
+   "after": " me that.",
+   "fr": "J'aurais souhaité que tu me l'aies dit.",
+   "answer": "had told",
+   "source": "tatoeba:41837",
    "status": "généré",
    "mode": "typed",
-   "hint": "see"
+   "hint": "tell"
   },
   {
    "id": "placement:wish:wish:30512",
@@ -2807,14 +2808,14 @@
    "hint": "win"
   },
   {
-   "id": "placement:third-conditional:third-conditional:6678340",
+   "id": "placement:third-conditional:third-conditional:6663237",
    "targetId": "third-conditional",
-   "evidenceId": "tatoeba:6678340",
-   "before": "If I ",
-   "after": ", I would've told you.",
-   "fr": "Si j'avais su, je te l'aurais dit.",
+   "evidenceId": "tatoeba:6663237",
+   "before": "I would've told you if I ",
+   "after": ".",
+   "fr": "Je vous l'aurais dit, si je l'avais su.",
    "answer": "had known",
-   "source": "tatoeba:6678340",
+   "source": "tatoeba:6663237",
    "status": "généré",
    "mode": "typed",
    "hint": "know"
@@ -2872,17 +2873,17 @@
    "hint": "drown"
   },
   {
-   "id": "placement:third-conditional:third-conditional:2640635",
+   "id": "placement:third-conditional:third-conditional:6870924",
    "targetId": "third-conditional",
-   "evidenceId": "tatoeba:2640635",
-   "before": "Tom could've killed you if he ",
-   "after": " to.",
-   "fr": "Tom aurait pu te tuer s'il avait voulu.",
-   "answer": "had wanted",
-   "source": "tatoeba:2640635",
+   "evidenceId": "tatoeba:6870924",
+   "before": "Without your help, I ",
+   "after": " up.",
+   "fr": "Sans ton aide, j'aurais laissé tomber.",
+   "answer": "would have given",
+   "source": "tatoeba:6870924",
    "status": "généré",
    "mode": "typed",
-   "hint": "want"
+   "hint": "give"
   },
   {
    "id": "placement:be-used-to:used-to:1429061",
