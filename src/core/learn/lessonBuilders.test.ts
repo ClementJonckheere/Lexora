@@ -105,6 +105,7 @@ describe('B2', () => {
       'I had my car [repaired {repaired | repair | repairing}] last week.',
     );
     expect(shown('have-something-done', 'She has a son named Tom.', 'Elle a un fils qui s’appelle Tom.')).toBeNull();
+    expect(shown('have-something-done', 'How much has the plan been changed?', 'Dans quelle mesure le plan a-t-il changé ?')).toBeNull();
   });
   it('relatives explicatives : who, which, whose, jamais that', () => {
     expect(shown('relatives-non-defining', 'My brother, who lives in Paris, is a chef.', 'Mon frère, qui vit à Paris, est chef.')).toBe(
@@ -113,6 +114,7 @@ describe('B2', () => {
     expect(shown('relatives-non-defining', 'The car, which was very old, broke down.', 'La voiture, qui était très vieille, est tombée en panne.')).toBe(
       'The car, [which {which | who | that}] was very old, broke down.',
     );
+    expect(shown('relatives-non-defining', 'If you could take one book, which one would you choose?', 'Si tu pouvais prendre un livre, lequel choisirais-tu ?')).toBeNull();
   });
   it('déduction au passé : la traduction donne la nuance', () => {
     expect(shown('deduction-past', 'He must have missed the train.', 'Il a dû rater le train.')).toBe("He [must have {must have | can't have | might have}] missed the train.");

@@ -225,7 +225,7 @@ const haveDone: Builder = (s, known) => {
   const [, noun, part] = m;
   const base = baseOf(part, known);
   // « a son named Tom », « a friend called Ann », « the house left to him » : pas une tâche confiée à quelqu'un.
-  if (!base || !isParticiple(part, known) || base === part || /(?:ing|ed)$/.test(noun) || /^(?:named|called|left|located|based|known|born|used|involved|concerned)$/.test(part)) return [];
+  if (!base || base === 'be' || !isParticiple(part, known) || base === part || /(?:ing|ed)$/.test(noun) || /^(?:named|called|left|located|based|known|born|used|involved|concerned)$/.test(part)) return [];
   const at = m.index + m[0].length - part.length;
   return [blank(s, at, part, part, { choices: [part, base, ingOf(base)], form: 'done' })];
 };
@@ -233,7 +233,8 @@ const haveDone: Builder = (s, known) => {
 /** Relative explicative (entre virgules) : who pour une personne, which pour une chose, whose ; jamais that. */
 const relativesNonDefining: Builder = (s) => {
   const m = only(/,\s+(who|which|whose)\b/, s.en);
-  if (!m) return [];
+  // « …, which one would you choose? » : interrogatif, pas une relative.
+  if (!m || /^\s*(?:one|ones|of)\b/.test(s.en.slice(m.index + m[0].length)) || /\?\s*$/.test(s.en)) return [];
   const word = m[1];
   const at = m.index + m[0].length - word.length;
   const choices = word === 'whose' ? ['whose', 'who', 'which'] : [word, word === 'who' ? 'which' : 'who', 'that'];
