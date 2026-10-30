@@ -1,6 +1,6 @@
 import { useApp } from '@/app/store';
 import { TITLE_CATEGORIES, type Title } from '@/core/progress/titles';
-import { FOCUS_STEPS, NOTE_XP_PER_DAY, RANKS, type XpSummary } from '@/core/progress/xp';
+import { BOOK_FINISHED_XP, FOCUS_STEPS, NOTE_XP_PER_DAY, RANKS, READING_MINUTES_PER_DAY, READING_XP_PER_MINUTE, type XpSummary } from '@/core/progress/xp';
 import { Ornament } from './Ornament';
 import { useProgress } from './useXp';
 
@@ -50,6 +50,8 @@ const SCALE: { label: string; value: string; accent?: boolean }[] = [
   { label: 'Leçon acquise · révisée', value: '60 · 25 XP' },
   { label: 'Nouveau mot avec exemple · sans', value: `3 · 1 XP, ${NOTE_XP_PER_DAY} par jour` },
   { label: 'Entraînement libre', value: '1 XP' },
+  { label: 'Lecture (temps actif, pages tournées)', value: `${READING_XP_PER_MINUTE} XP par minute, ${READING_MINUTES_PER_DAY / 60} h par jour` },
+  { label: 'Livre fini, lu au moins une heure', value: `${BOOK_FINISHED_XP} XP` },
   {
     label: 'Concentration sans pause',
     value: [...FOCUS_STEPS].reverse().map((s) => `${mult(s.multiplier)} à ${s.afterMin} min`).join(' · '),
@@ -162,6 +164,7 @@ export function ProgressPage() {
           <Fact label="Grammaire" value={`${fmt(xp.bySource.grammar)} XP`} />
           <Fact label="Leçons" value={`${fmt(xp.bySource.lessons)} XP`} />
           <Fact label="Mots ajoutés" value={`${fmt(xp.bySource.words)} XP`} />
+          <Fact label="Lecture" value={`${fmt(xp.bySource.reading)} XP`} />
         </div>
       </section>
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createMemoryDatabase } from '../db/testing';
 import type { GrammarAnswer } from '../learn/progress';
-import { loadHistory, loadXpEvents, recordNoteEntry } from './xpRepo';
+import { loadHistory, loadXpEvents, recordNoteEntry, saveReadingSession } from './xpRepo';
 
 const T = new Date(2026, 9, 29, 9, 0).getTime();
 
@@ -72,5 +72,28 @@ describe('durée de saisie', () => {
     await recordNoteEntry(db, 'en', 'n2', 11 * 60_000, T);
     await recordNoteEntry(db, 'es', 'n3', 2000, T);
     expect((await loadHistory(db, 'en', [])).entries).toEqual([{ at: T, durationMs: 3200 }]);
+  });
+});
+
+describe('séances de lecture', () => {
+  it('enregistrées puis réécrites ; minutes bornées par les pages ; bonus du livre fini lu une heure', async () => {
+    const db = await createMemoryDatabase();
+    const session = { id: 's1', universeId: 'en', bookKey: 'b1', startedAt: T, activeMs: 10 * 60_000, pages: 1 };
+    await saveReadingSession(db, { ...session, activeMs: 0 }); // rien à écrire
+    expect(await db.select('SELECT id FROM reading_sessions')).toEqual([]);
+    await saveReadingSession(db, session);
+    await saveReadingSession(db, { ...session, activeMs: 40 * 60_000, pages: 20 });
+    await saveReadingSession(db, { id: 's2', universeId: 'en', bookKey: 'b1', startedAt: T + 86_400_000, activeMs: 30 * 60_000, pages: 2 });
+    await db.execute(
+      `INSERT INTO books (book_key, universe_id, title, language, text_url, progress, added_at, last_read_at, updated_at)
+       VALUES ('b1', 'en', 'Livre', 'en', 'x', 0.99, ?, ?, ?)`,
+      [T, T + 86_400_000, T],
+    );
+    const h = await loadHistory(db, 'en', []);
+    expect(h.events.filter((e) => e.kind === 'reading').map((e) => e.kind === 'reading' && e.minutes)).toEqual([40, 10]);
+    expect(h.readingMinutes).toBe(50);
+    expect(h.events.filter((e) => e.kind === 'book-finished')).toHaveLength(0); // 50 minutes : moins d'une heure
+    await saveReadingSession(db, { id: 's3', universeId: 'en', bookKey: 'b1', startedAt: T + 2 * 86_400_000, activeMs: 10 * 60_000, pages: 5 });
+    expect((await loadHistory(db, 'en', [])).events.filter((e) => e.kind === 'book-finished')).toHaveLength(1);
   });
 });

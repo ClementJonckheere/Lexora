@@ -98,6 +98,11 @@ describe('titres', () => {
     expect(get(base({ lessons: Array(10).fill(held) }), 'gardien').earned).toBe(true);
   });
 
+  it('Rat de bibliothèque : 25 heures de lecture comptées', () => {
+    expect(get(base({ readingMinutes: 24 * 60 + 59 }), 'rat-bibliotheque').progress).toBe('24 / 25 h');
+    expect(get(base({ readingMinutes: 25 * 60 }), 'rat-bibliotheque').earned).toBe(true);
+  });
+
   it('titre affiché : celui choisi s’il est gagné, sinon le premier gagné ; « aucun » possible', () => {
     const titles = computeTitles(base({ books: [{ progress: 1, level: 'B1' }], levels: [10, 10] }));
     expect(displayedTitle(titles, undefined)?.id).toBe('tourne-page');

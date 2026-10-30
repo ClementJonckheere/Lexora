@@ -276,6 +276,25 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_typed_answers_universe ON typed_answers(universe_id, deleted)',
   ],
+}, {
+  version: 10,
+  name: 'lecture : temps de lecture',
+  statements: [
+    // Une ligne par ouverture d'un livre, mise à jour pendant la lecture : temps actif (gestes espacés de 5 minutes au
+    // plus) et pages tournées vers l'avant (src/core/reading/readingTime.ts). XP de lecture et titre « Rat de bibliothèque ».
+    `CREATE TABLE reading_sessions (
+      id           TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      book_key     TEXT    NOT NULL,
+      started_at   INTEGER NOT NULL,
+      active_ms    INTEGER NOT NULL DEFAULT 0,
+      pages        INTEGER NOT NULL DEFAULT 0,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_reading_sessions_universe ON reading_sessions(universe_id, deleted)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

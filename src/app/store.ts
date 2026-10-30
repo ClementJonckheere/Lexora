@@ -209,6 +209,8 @@ interface AppState {
   removeBook(key: string): Promise<void>;
   /** Position de lecture : enregistrée sans recharger l'application. */
   saveBookProgress(key: string, chapter: number, block: number, progress: number): Promise<void>;
+  /** Séance de lecture en cours (temps actif, pages tournées), réécrite pendant la lecture ; `done` à la fermeture du livre. */
+  saveReadingSession(session: xpRepo.ReadingSession, done?: boolean): Promise<void>;
   setBookLevel(key: string, estimate: LevelEstimate): Promise<void>;
   /** Marque des mots comme connus (true), inconnus (false) ou retire la marque (null). */
   markWords(words: string[], known: boolean | null): Promise<void>;
@@ -601,6 +603,12 @@ export const useApp = create<AppState>((set, get) => {
       await booksRepo.saveProgress(db(), key, chapter, block, progress);
       const now = Date.now();
       set((s) => ({ books: s.books.map((b) => (b.key === key ? { ...b, chapter, block, progress, lastReadAt: now, updatedAt: now } : b)) }));
+      scheduleSync();
+    },
+    async saveReadingSession(session, done = false) {
+      await xpRepo.saveReadingSession(db(), session);
+      // L'XP et les titres se recalculent à la fermeture du livre, pas à chaque enregistrement intermédiaire.
+      if (done) set((s) => ({ revision: s.revision + 1 }));
       scheduleSync();
     },
     async markWords(words, known) {

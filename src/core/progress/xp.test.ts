@@ -77,3 +77,23 @@ describe('XP', () => {
     expect(s.todayFocusShare).toBeCloseTo(15 / 35);
   });
 });
+
+describe('XP de lecture', () => {
+  it('2 XP par minute, 2 heures comptées par jour au plus ; livre fini 50 XP', () => {
+    const s = computeXp(
+      [
+        { kind: 'reading', at: T0, minutes: 90 },
+        { kind: 'reading', at: T0 + 120 * MIN, minutes: 60 }, // 30 minutes au-delà du plafond du jour
+        { kind: 'book-finished', at: T0 + 200 * MIN, bookKey: 'b' },
+      ],
+      T0,
+    );
+    expect(s.bySource.reading).toBe(120 * 2 + 50);
+    expect(s.total).toBe(290);
+  });
+
+  it('la lecture ne compte pas dans les séances de concentration', () => {
+    const s = computeXp([{ kind: 'reading', at: T0, minutes: 30 }, review(T0 + 30 * MIN, 'a')], T0);
+    expect(s.bySource.vocabulary).toBe(2);
+  });
+});

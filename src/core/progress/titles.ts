@@ -38,6 +38,8 @@ export interface TitleData {
   grammarCorrect: number;
   /** Ajouts de mots depuis le formulaire : date et durée de saisie. */
   entries: readonly { at: number; durationMs: number }[];
+  /** Minutes de lecture comptées (séances de lecture). */
+  readingMinutes?: number;
   /** Niveau atteint dans chaque univers. */
   levels: readonly number[];
 }
@@ -195,6 +197,7 @@ export function computeTitles(d: TitleData): Title[] {
   const deep = sessions.filter((s) => s.end - s.start >= 45 * 60_000).length;
   const focusHours = Math.floor(sessions.reduce((sum, s) => sum + (s.end - s.start), 0) / 3_600_000);
   const silver = d.levels.filter((l) => l >= SILVER_LEVEL).length;
+  const readingHours = Math.floor((d.readingMinutes ?? 0) / 60);
 
   const t = (id: string, name: string, category: TitleCategory, description: string, earned: boolean, progress: string): Title => ({
     id,
@@ -209,6 +212,7 @@ export function computeTitles(d: TitleData): Title[] {
     t('collectionneur', 'Collectionneur de mondes', 'Lecture', 'Finir des livres de 4 niveaux différents', finishedLevels >= 4, count(finishedLevels, 4)),
     t('pilleur', 'Pilleur de chapitres', 'Lecture', 'Passer en revue les mots de 20 chapitres', chapters >= 20, count(chapters, 20)),
     t('grand-lecteur', 'Grand lecteur', 'Lecture', 'Finir 10 livres', finished.length >= 10, count(finished.length, 10)),
+    t('rat-bibliotheque', 'Rat de bibliothèque', 'Lecture', '25 heures de lecture', readingHours >= 25, count(readingHours, 25, ' h')),
     t('archiviste', "Archiviste de l'instant", 'Saisie et vitesse', 'Ajouter ses mots en moins de 5 s, 7 jours de suite', fastDays >= 7, count(fastDays, 7, ' jours')),
     t('dactylographe', 'Dactylographe éclair', 'Saisie et vitesse', '30 séances menées à 95 % au clavier', keyboardSessions >= 30, count(keyboardSessions, 30)),
     t(
