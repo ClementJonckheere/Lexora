@@ -482,7 +482,8 @@ const conditionalInversion: Builder = (s, known) => {
  * Passif impersonnel : be said / believed / thought… to + base (état présent) ou to have + participe (fait passé). La
  * traduction tranche : « il serait riche », « on dit qu'il est » / « il aurait quitté », « on dit qu'il a quitté ».
  */
-const REPORTING_PP = 'said|believed|thought|known|reported|expected|supposed|considered|rumoured|rumored|alleged|understood|claimed';
+// Sans « supposed » : be supposed to (« devoir ») n'est pas un passif de rapport, et to have done y serait juste aussi.
+const REPORTING_PP = 'said|believed|thought|known|reported|expected|considered|rumoured|rumored|alleged|understood|claimed';
 const impersonalPassive: Builder = (s, known) => {
   const m = only(new RegExp(`\\b(?:is|are|was|were)\\s+(?:${REPORTING_PP})\\s+to\\s+(have\\s+)?([a-z]+)\\b`), s.en);
   if (!m) return [];

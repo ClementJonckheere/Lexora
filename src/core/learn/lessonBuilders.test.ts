@@ -198,6 +198,7 @@ describe('C2', () => {
       'He is said [to have left {to have left | to leave | having left}] the country.',
     );
     expect(shown('impersonal-passive', 'She is believed to be very rich.', 'On la dit très riche.')).toBe('She is believed [to be {to be | to have been | being}] very rich.');
+    expect(shown('impersonal-passive', 'I have done everything I was supposed to do.', "J'ai fait tout ce que j'étais censé faire.")).toBeNull();
   });
   it('passé irréel', () => {
     expect(shown('unreal-past', "It's time we went home.", 'Il est temps que nous rentrions.')).toBe("It's time we [went {went | go}] home.");
