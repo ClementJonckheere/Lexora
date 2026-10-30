@@ -77,6 +77,7 @@ describe('questions du placement (A1, A2)', () => {
     // Sans action interrompue ni simultanée, le prétérit simple est juste aussi.
     expect(ex('past-continuous', 'I was playing tennis all day.', "J'ai joué au tennis toute la journée.")).toBeNull();
     expect(ex('past-continuous', 'I was wondering when you would show up.', 'Je me demandais quand tu viendrais.')).toBeNull();
+    expect(ex('past-continuous', 'The cat purred when it was being pet.', "Le chat a ronronné lorsqu'il fut caressé.")).toBeNull();
   });
 
   it('noms, comparatifs, génitif', () => {

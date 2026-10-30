@@ -105,17 +105,24 @@ if (existsSync(join(dir, 'reported.json'))) {
 }
 console.log(`${excluded.size} exercices exclus après signalement (${excluded.size - before} nouveaux)`);
 
+/** Questions du placement écartées à la relecture (réponse discutable, phrase sans repère) : écartées des leçons aussi. */
+const REVIEW_FILE = 'public/grammar/en/placement-excluded.json';
+const rejected = new Set<string>(
+  existsSync(REVIEW_FILE) ? (JSON.parse(readFileSync(REVIEW_FILE, 'utf8')).items as { id: string }[]).map((i) => i.id.split(':').slice(2).join(':')) : [],
+);
+console.log(`${rejected.size} exercices écartés à la relecture du placement`);
+
 const lessons = JSON.parse(readFileSync('public/grammar/en/lessons.json', 'utf8')).lessons as { id: string }[];
 mkdirSync('public/grammar/en/exercises', { recursive: true });
 const translated = english.filter((s) => frenchText.has(frenchOf.get(s.id) ?? -1));
 const kept = translated.filter((s) => !blocked(s.text) && !blocked(frenchText.get(frenchOf.get(s.id)!)!));
 console.log(`${translated.length - kept.length} phrases traduites écartées par la liste de mots bloqués`);
 /** Banque équilibrée d'un générateur : tour à tour dans chaque nature de réponse, une même réponse plafonnée. */
-function makeBank(label: string, build: (s: { id: number; en: string; fr: string }) => Exercise | null, size: number): Exercise[] {
+function makeBank(label: string, build: (s: { id: number; en: string; fr: string }) => Exercise | null, size: number, skip?: Set<string>): Exercise[] {
   const all: Exercise[] = [];
   for (const s of kept) {
     const ex = build({ id: s.id, en: s.text, fr: frenchText.get(frenchOf.get(s.id)!)! });
-    if (ex && !excluded.has(ex.id)) all.push(ex);
+    if (ex && !excluded.has(ex.id) && !skip?.has(ex.id)) all.push(ex);
   }
   for (let i = all.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
@@ -157,7 +164,9 @@ function makeBank(label: string, build: (s: { id: number; en: string; fr: string
 
 const bankSizes: Record<string, number> = {};
 for (const { id } of lessons) {
-  const items = makeBank(`leçon ${id}`, (s) => buildExercise(id, s, known), BANK_SIZE);
+  // Leçons A1 et A2 : mêmes générateurs que les questions du placement (placementBuilders.ts), banque plus grande.
+  const build = id in PLACEMENT_BUILDERS ? buildPlacementExercise : buildExercise;
+  const items = makeBank(`leçon ${id}`, (s) => build(id, s, known), BANK_SIZE, rejected);
   bankSizes[id] = items.length;
   if (items.length < MIN_CANDIDATES) console.log(`::warning::Leçon ${id} : seulement ${items.length} exercices`);
   writeFileSync(
@@ -166,9 +175,10 @@ for (const { id } of lessons) {
   );
 }
 
-/* ------------------------------------- questions du placement (sans leçon) --- */
+/* ------------------------------------------- questions du placement A1, A2 --- */
 
-// Points A1 et A2 sans leçon : une petite banque par point, dont scripts/placement-bank.ts tire ses questions.
+// Points A1 et A2 : une petite banque par point, dont scripts/placement-bank.ts tire ses questions (relues, stables
+// d'une génération à l'autre ; la banque de la leçon, plus grande, sert aux exercices).
 const PLACEMENT_BANK_SIZE = 60;
 mkdirSync('public/grammar/en/placement', { recursive: true });
 const placementSizes: Record<string, number> = {};

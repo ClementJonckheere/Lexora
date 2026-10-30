@@ -109,6 +109,26 @@
   {
    "id": "placement:past-continuous:past-continuous:2797557",
    "reason": "Traduction « en train d'étudier » : elle dicte la forme continue (le filtre ne reconnaissait pas « en train d' » élidé)."
+  },
+  {
+   "id": "placement:have-got:have-got:471455",
+   "reason": "Phrase vulgaire (« buttocks », « cul »)."
+  },
+  {
+   "id": "placement:past-continuous:past-continuous:1055664",
+   "reason": "« I sat while smoking a pipe » est aussi juste : la traduction « j'étais assis » ne tranche pas."
+  },
+  {
+   "id": "placement:past-continuous:past-continuous:3024292",
+   "reason": "« when I stayed in Boston » est aussi juste : un séjour, pas une action en cours."
+  },
+  {
+   "id": "placement:possessive-s:possessive-s:4008865",
+   "reason": "Série de phrases de faits divers (Dan, Linda)."
+  },
+  {
+   "id": "placement:should:should:11578967",
+   "reason": "Affirmation politique (« corner Russia »)."
   }
  ]
 }

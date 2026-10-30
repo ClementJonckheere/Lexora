@@ -1,7 +1,7 @@
 // Banque du placement grammatical (public/grammar/en/placement.json), tirée des banques d'exercices des leçons.
 // Exécuté par la CI après la génération des banques (.github/workflows/grammar.yml), ou à la main :
 //   npx vite-node scripts/placement-bank.ts
-// Points sans leçon : questions des banques du placement (public/grammar/en/placement, générées par la CI). Les points
+// Points A1 et A2 : questions des banques du placement (public/grammar/en/placement, générées par la CI). Les points
 // restants sont listés dans le fichier : ils attendent des questions rédigées.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { placementItems, writtenItem, type PlacementItem, type WrittenQuestion } from '../src/core/learn/placementBank';
@@ -21,10 +21,11 @@ const items: PlacementItem[] = [];
 const covered: Record<string, { typed: number; choice2: number; choice3plus: number }> = {};
 /** Points du parcours servis par la banque d'une leçon : la leçon elle-même, et be-used-to (phrases de la leçon used to). */
 const sources = [
+  // Points A1 et A2 : banques des générateurs du placement (placementBuilders.ts), d'abord, même quand le point a une
+  // leçon : ce sont elles qui ont été relues (placement-excluded.json), la banque de la leçon en est un sur-ensemble.
+  ...points.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/placement/${id}.json` })),
   ...lessons.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/exercises/${id}.json` })),
   { target: 'be-used-to', lesson: 'used-to', file: `${DIR}/exercises/used-to.json` },
-  // Points sans leçon (A1, A2) : banques produites par les générateurs du placement (placementBuilders.ts).
-  ...points.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/placement/${id}.json` })),
 ];
 for (const { target: id, lesson, file } of sources) {
   if (covered[id]) continue;

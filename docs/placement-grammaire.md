@@ -1,6 +1,6 @@
 # Placement grammatical : moteur, banque et validation
 
-**État (2.24).** Le moteur (`src/core/learn/placement.ts`) est actif dans *Apprendre* depuis la 2.22 : test de 40 questions au plus sur les 20 leçons et leurs prérequis (35 points), niveau global et modèle de règle superficielle (2.23), résultats corrigeables enregistrés dans les réglages synchronisés (`placement`, par univers), mini-test de leçon pour les points que le test n'a pas tranchés. Les réponses brutes du test et des mini-tests sont conservées (vue Supabase `placement_answers`) pour l'analyse par question. Rien ne touche à FSRS ni à l'historique des leçons. La banque des 35 points est générée depuis Tatoeba puis filtrée (relecture de la 2.23 : 26 questions écartées et autant de filtres) ; les 126 questions rédigées couvrent les 39 autres points, hors du test actuel. Les sections ci-dessous retracent les étapes ; les chiffres de la 2.24 sont dans la dernière.
+**État (2.25).** Le moteur (`src/core/learn/placement.ts`) est actif dans *Apprendre* depuis la 2.22 : test de 40 questions au plus sur les 52 leçons et leurs prérequis (52 points depuis la 2.25, 35 avant), niveau global et modèle de règle superficielle (2.23), résultats corrigeables enregistrés dans les réglages synchronisés (`placement`, par univers), mini-test de leçon pour les points que le test n'a pas tranchés. Les réponses brutes du test et des mini-tests sont conservées (vue Supabase `placement_answers`) pour l'analyse par question. Rien ne touche à FSRS ni à l'historique des leçons. La banque est générée depuis Tatoeba puis filtrée et relue (2.24 : 26 questions écartées sur les 35 points d'alors ; 2.25 : 136 questions des 17 nouveaux points relues, 5 écartées) ; les questions rédigées couvrent les 22 points sans leçon, hors du test actuel. Les sections ci-dessous retracent les étapes ; les chiffres de la 2.25 sont dans la dernière.
 
 ## Modèle et règles
 
@@ -147,3 +147,22 @@ from others group by question_id order by reussite_chez_les_bons nulls last;
 ```
 
 **Mini-test.** Questions tapées d'abord, puis à 3 propositions, les choix binaires en dernier ; autant de questions (3 à 5) qu'il faut pour que tout réussir au hasard tombe à 1 chance sur 16 (4 sur 4 en choix binaires, alors que 3 sur 3 arrive au hasard une fois sur 8) ; a priori neutre (0,5 au plus) plutôt que la probabilité du test ; « acquis » refusé si le hasard aurait pu suffire.
+
+## Leçons A1 et A2 dans le périmètre (2.25)
+
+**32 leçons A1 et A2** (`public/grammar/en/lessons.json`, texte lisible : [docs/lecons-a1-a2.md](lecons-a1-a2.md), à relire). Leurs exercices viennent des générateurs du placement, appliqués à tout Tatoeba par le workflow Grammaire (banques de 300 exercices au plus). Les questions du placement de ces points restent tirées des petites banques relues (`public/grammar/en/placement/<point>.json`), et les questions écartées à la relecture (`placement-excluded.json`) sont aussi retirées des exercices des leçons, B1 et B2 compris.
+
+**Relecture des 17 points entrés dans le test** (adverbes de manière, articles, can, comparatifs, adverbes de fréquence, going to, have got, impératif, prétérit continu, questions au prétérit, possessifs, génitif, prépositions, should, there is, this / these, indénombrables ; les 15 autres points A1 et A2 y étaient déjà comme prérequis) : 136 questions, 5 écartées (deux prétérits continus où le prétérit simple est juste aussi, une phrase vulgaire, une politique, une de la série de faits divers Dan / Linda), et les remplaçantes relues à leur tour (3 écartées par les règles ci-dessous). Règles ajoutées : le prétérit continu écarte « was being » (passif) ; la liste de mots bloqués couvre aussi la sexualité explicite, les meurtres et la torture, des noms de dirigeants politiques et les personnages des séries de faits divers (Dan, Linda, Yidir).
+
+**Simulation** (52 points, réglages inchangés) :
+
+| Profil | Incertains 2.24 (35 points) | Incertains 2.25 (52 points) | Faux acquis 2.25 |
+|---|---|---|---|
+| Débutant | 4 % | 27 % | 1,7 % |
+| Acquis jusqu'à A1 / A2 / B1 | 51 / 45 / 28 % | 67 / 60 / 38 % | 0,5 / 0,1 / 0,5 % |
+| Acquis jusqu'à B2 / C1 | 7 / 8 % | 5 / 6 % | 0 % |
+| Avancé avec lacunes, dispersés | 43 / 41 % | 61 / 57 % | 0,8 / 2,9 % |
+
+Robustesse (règles inconnues du modèle, parts 0,2 et 0,8, 15 % de questions mal posées) : faux acquis au plus 3,8 % (2,8 % en 2.24), faux « à apprendre » au plus 1,0 % sans questions mal posées et 3,3 % avec.
+
+**Limite assumée.** Avec 40 questions et au moins deux par point, le test tranche directement une vingtaine de points ; les 17 points A1 et A2 ajoutés ont peu de prérequis, la déduction les atteint peu, et le niveau global ne classe pas un point A1 chez un débutant sans une très forte certitude (une grille de θ étendue vers le bas a été essayée : 27 → 24,5 % d'incertains chez le débutant, mais faux acquis doublés chez les profils avancés irréguliers ; écartée). Les points incertains passent par le mini-test de leur leçon (3 à 5 questions). Pour un vrai débutant, « Commencer au début » reste plus simple que le test. Pistes si l'usage montre trop de mini-tests : test en deux temps (A1 et A2 d'abord, puis la suite selon le niveau), ou plus de questions pour les profils A1 et A2.

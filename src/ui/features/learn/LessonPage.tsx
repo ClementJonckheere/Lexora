@@ -267,6 +267,8 @@ function ExerciseSession({
       enter: () => (finished ? (review ? onClose() : onAgain()) : result ? next() : ex?.choices ? undefined : submit(typed)),
       '1': () => ex?.choices && !result && submit(ex.choices[0]),
       '2': () => ex?.choices && !result && submit(ex.choices[1]),
+      '3': () => ex?.choices?.[2] && !result && submit(ex.choices[2]),
+      '4': () => ex?.choices?.[3] && !result && submit(ex.choices[3]),
       escape: onClose,
     },
     { allowInInputs: ['enter', 'escape'] },
@@ -329,7 +331,7 @@ function ExerciseSession({
         ) : (
           <div className="card flashcard exercise-card">
             <div className="flashcard-meta">
-              <span>{ex.choices ? 'Choisissez la bonne forme' : `Complétez avec le verbe ${ex.hint ? `« ${ex.hint} »` : ''}`.trim()}</span>
+              <span>{ex.choices ? 'Choisissez la bonne forme' : ex.hint ? `Complétez avec « ${ex.hint} »` : 'Complétez la phrase'}</span>
             </div>
             <p className="exercise-sentence" lang="en">
               {ex.before}
@@ -358,7 +360,7 @@ function ExerciseSession({
               {ex.fr}
             </p>
             {!result && ex.choices && (
-              <div className="row" style={{ justifyContent: 'center', gap: 10 }}>
+              <div className="row row--wrap" style={{ justifyContent: 'center', gap: 10 }}>
                 {ex.choices.map((c, i) => (
                   <Button key={c} className="exercise-choice" onClick={() => submit(c)}>
                     {c} <Kbd>{String(i + 1)}</Kbd>

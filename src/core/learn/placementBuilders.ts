@@ -366,8 +366,8 @@ const pastQuestions: Builder = (s, known) => {
 // Action en cours interrompue (when + sujet + verbe) ou simultanée (while) ; « all day », « at 11 » admettent le prétérit
 // simple (« I played tennis all day »).
 const EN_IN_PROGRESS = /\bwhile\b|\bwhen\s+(?:i|you|he|she|it|we|they|[A-Z][a-z]+)\s+(?!would|will|could|'d)[a-z]+/i;
-/** Verbes d'état ou de pensée : « I was wondering » vaut « I wondered ». */
-const STATE_ING = /^(?:wondering|expecting|hoping|thinking|wanting|meaning|feeling|knowing|believing|liking|loving)$/;
+/** Verbes d'état ou de pensée : « I was wondering » vaut « I wondered ». « Being » : passif (« was being pet »), pas ce point. */
+const STATE_ING = /^(?:wondering|expecting|hoping|thinking|wanting|meaning|feeling|knowing|believing|liking|loving|being)$/;
 const pastContinuous: Builder = (s, known) => {
   const m = only(new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+(was|were)\\s+([a-z]+ing)\\b`), s.en);
   if (!m || !EN_IN_PROGRESS.test(s.en) || /\ben train d(?:e\b|')/i.test(s.fr) || /\bgoing to\b/.test(s.en) || STATE_ING.test(m[3])) return [];
