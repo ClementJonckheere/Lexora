@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-10-30T10:48:38.714Z",
+ "generatedAt": "2026-10-30T10:51:45.193Z",
  "source": "Tatoeba (CC BY 2.0 FR) : banques des leçons et du placement ; questions rédigées (placement-written.json)",
  "status": "généré automatiquement, à relire avant activation",
  "covered": {
@@ -3979,22 +3979,22 @@
    ]
   },
   {
-   "id": "placement:possessive-s:possessive-s:52970",
+   "id": "placement:possessive-s:possessive-s:3643363",
    "targetId": "possessive-s",
-   "evidenceId": "tatoeba:52970",
+   "evidenceId": "tatoeba:3643363",
    "before": "",
-   "after": " sister made me some sandwiches.",
-   "fr": "La sœur de George m'a fait quelques sandwiches.",
-   "answer": "George's",
-   "source": "tatoeba:52970",
+   "after": " destiny was to conquer the world.",
+   "fr": "La destinée de Rome était de conquérir le monde.",
+   "answer": "Rome's",
+   "source": "tatoeba:3643363",
    "status": "généré",
    "form": "genitive",
    "mode": "choice",
    "choices": 3,
    "options": [
-    "George",
-    "George's",
-    "Georges"
+    "Romes",
+    "Rome",
+    "Rome's"
    ]
   },
   {
