@@ -1,7 +1,7 @@
 {
   "version": 1,
   "language": "en",
-  "status": "Leçons B1 et B2 : les 10 premières relues, les 10 suivantes (present perfect continu au 3e conditionnel) rédigées, à relire. Leçons A1 et A2 (32) rédigées, à relire.",
+  "status": "Leçons B1 et B2 : les 10 premières relues, les 10 suivantes (present perfect continu au 3e conditionnel) rédigées, à relire. Leçons A1 et A2 (32) rédigées, à relire. Leçons B1 de la 2.29 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs) rédigées, à relire.",
   "lessons": [
     {
       "id": "be",
@@ -1151,6 +1151,140 @@
         { "en": "If it hadn't rained, we would have gone to the beach.", "fr": "S'il n'avait pas plu, nous serions allés à la plage." }
       ],
       "traps": ["if-would"]
+    },
+    {
+      "id": "reported-statements",
+      "summary": "Rapporter ce que quelqu'un a dit : après said ou told au passé, le verbe recule d'un temps (is devient was, will devient would).",
+      "rules": [
+        "Say + ce qui est dit : He said (that) he was tired. Tell + la personne : He told me (that) he was tired. That est facultatif.",
+        "Après un verbe de parole au passé, le temps recule : présent → prétérit (is → was, live → lived), will → would, can → could.",
+        "Prétérit et present perfect → plus-que-parfait : « I lost my keys » → He said he had lost his keys.",
+        "C'est la même concordance qu'en français : « il a dit qu'il était fatigué », « qu'il viendrait », « qu'il avait perdu ses clés ».",
+        "Les pronoms et repères changent avec le point de vue : I → he, my → his, here → there, tomorrow → the next day, yesterday → the day before.",
+        "Si le verbe de parole est au présent (He says…), rien ne recule : He says he is tired.",
+        "Si c'est encore vrai, on peut garder le présent (She said she lives in Paris), comme en français ; dans le doute, reculer d'un temps est toujours juste."
+      ],
+      "examples": [
+        { "en": "She said she was tired.", "fr": "Elle a dit qu'elle était fatiguée." },
+        { "en": "He told me he would call later.", "fr": "Il m'a dit qu'il appellerait plus tard." },
+        { "en": "They said they could help us.", "fr": "Ils ont dit qu'ils pouvaient nous aider." },
+        { "en": "Tom said he had lost his keys.", "fr": "Tom a dit qu'il avait perdu ses clés." },
+        { "en": "She told us she lived in Lyon.", "fr": "Elle nous a dit qu'elle habitait à Lyon." },
+        { "en": "He said he didn't know the answer.", "fr": "Il a dit qu'il ne connaissait pas la réponse." },
+        { "en": "He says he is tired.", "fr": "Il dit qu'il est fatigué (verbe de parole au présent : rien ne recule)." }
+      ],
+      "traps": ["say-me"]
+    },
+    {
+      "id": "subject-questions",
+      "summary": "Quand who ou what est le sujet, la question garde l'ordre de la phrase affirmative, sans do : Who called you? What happened?",
+      "rules": [
+        "Who ou what sujet : pas de do, does, did, et le verbe se conjugue normalement. Who called? (quelqu'un a appelé.) What happened?",
+        "Au présent, le verbe prend le -s de la 3e personne : Who wants coffee? Who lives here?",
+        "Who ou what complément : do revient, avec l'inversion habituelle. Who did you call? (tu as appelé quelqu'un.) What did she say?",
+        "Pour savoir lequel : mettez « quelqu'un » ou « quelque chose » à la place du mot interrogatif. « Quelqu'un t'a appelé » : sujet, sans did ; « tu as appelé quelqu'un » : complément, avec did.",
+        "Le français ne marque pas la différence (« qui a appelé ? », « qui as-tu appelé ? ») : c'est l'ordre des mots anglais qui la porte.",
+        "Avec be ou un modal, rien ne change : Who is there? Who can help me?"
+      ],
+      "examples": [
+        { "en": "Who called you?", "fr": "Qui t'a appelé ?" },
+        { "en": "Who did you call?", "fr": "Qui as-tu appelé ?" },
+        { "en": "What happened last night?", "fr": "Que s'est-il passé hier soir ?" },
+        { "en": "What did you do last night?", "fr": "Qu'as-tu fait hier soir ?" },
+        { "en": "Who wants another coffee?", "fr": "Qui veut un autre café ?" },
+        { "en": "Who lives in that house?", "fr": "Qui habite dans cette maison ?" },
+        { "en": "Which team won the match?", "fr": "Quelle équipe a gagné le match ?" }
+      ],
+      "traps": ["subject-question-did"]
+    },
+    {
+      "id": "purpose-to",
+      "summary": "Le but (« pour » + infinitif) se dit to + base verbale : I came to learn English, jamais for learn.",
+      "rules": [
+        "But d'une action : to + base verbale. I went to the shop to buy some milk. She called to ask a question.",
+        "Jamais for + verbe : for learn, for to learn sont faux. For se met devant un nom : I went out for a walk, for some milk.",
+        "In order to ou so as to insistent sur le but, plus soutenus : We left early in order to avoid the traffic.",
+        "Négation du but : so as not to ou in order not to (so as not to wake the baby) ; not to seul est à éviter.",
+        "Pour un but avec un autre sujet : so that + sujet + can / could. I'll speak slowly so that you can understand.",
+        "Pour dire à quoi sert un objet, for + -ing est possible : a knife for cutting bread (= to cut bread)."
+      ],
+      "examples": [
+        { "en": "I came to learn English.", "fr": "Je suis venu pour apprendre l'anglais." },
+        { "en": "She went to the bank to get some money.", "fr": "Elle est allée à la banque pour retirer de l'argent." },
+        { "en": "He called to say sorry.", "fr": "Il a appelé pour s'excuser." },
+        { "en": "We stopped to have lunch.", "fr": "Nous nous sommes arrêtés pour déjeuner." },
+        { "en": "I went out for a walk.", "fr": "Je suis sorti me promener (for + nom)." },
+        { "en": "She left early so as not to miss the train.", "fr": "Elle est partie tôt pour ne pas rater le train." },
+        { "en": "I'll write it down so that I don't forget.", "fr": "Je vais le noter pour ne pas oublier." }
+      ],
+      "traps": ["for-purpose"]
+    },
+    {
+      "id": "preposition-ing",
+      "summary": "Après une préposition (before, after, without, of, about, at…), le verbe prend la forme en -ing : before leaving, good at drawing.",
+      "rules": [
+        "Préposition + verbe : toujours -ing. before leaving, after eating, without saying, instead of waiting.",
+        "Le français met l'infinitif (« avant de partir », « sans dire ») : c'est le piège, before to leave et without say sont faux.",
+        "Après un adjectif ou un verbe à préposition aussi : good at drawing, interested in learning, afraid of flying, thank you for coming, I'm thinking about moving.",
+        "Attention à to quand c'est une préposition : I look forward to seeing you, I'm used to working at night, I object to paying. Le test : on peut mettre un nom après (look forward to the holidays).",
+        "By + -ing dit le moyen : You can improve by reading every day (« en lisant »).",
+        "Un nom en -ing n'est pas concerné : in the morning, a meeting."
+      ],
+      "examples": [
+        { "en": "Wash your hands before eating.", "fr": "Lave-toi les mains avant de manger." },
+        { "en": "He left without saying goodbye.", "fr": "Il est parti sans dire au revoir." },
+        { "en": "She is good at drawing.", "fr": "Elle est douée pour le dessin." },
+        { "en": "Thank you for coming.", "fr": "Merci d'être venu." },
+        { "en": "I'm interested in learning Spanish.", "fr": "Apprendre l'espagnol m'intéresse." },
+        { "en": "I look forward to seeing you.", "fr": "J'ai hâte de te voir." },
+        { "en": "You can improve by reading every day.", "fr": "Tu peux progresser en lisant tous les jours." }
+      ],
+      "traps": ["preposition-to-infinitive"]
+    },
+    {
+      "id": "make-let",
+      "summary": "Make (faire faire, obliger) et let (laisser, permettre) + personne + base verbale, sans to : She made me wait. Let me go.",
+      "rules": [
+        "Make + personne + base verbale : obliger, faire faire. She made me wait. The film made me cry.",
+        "Let + personne + base verbale : laisser, permettre. Let me help you. My parents let me go out.",
+        "Jamais to après le complément : made me to wait, let me to go sont faux.",
+        "La traduction guide le choix : « faire » + infinitif → make (il m'a fait rire : he made me laugh) ; « laisser » → let (laisse-moi partir : let me go).",
+        "Let est irrégulier et ne change pas : let, let, let (He let me drive yesterday). Make : made.",
+        "Au passif, to revient avec make : I was made to wait. Let n'a pas de passif : on dit be allowed to (I was allowed to go).",
+        "Let's + base : proposition (let's go = allons-y), à part de let + personne."
+      ],
+      "examples": [
+        { "en": "She made me wait for an hour.", "fr": "Elle m'a fait attendre une heure." },
+        { "en": "Let me help you.", "fr": "Laisse-moi t'aider." },
+        { "en": "That joke made everyone laugh.", "fr": "Cette blague a fait rire tout le monde." },
+        { "en": "My parents didn't let me go to the party.", "fr": "Mes parents ne m'ont pas laissé aller à la fête." },
+        { "en": "Don't make me say it again.", "fr": "Ne m'oblige pas à le répéter." },
+        { "en": "He let the children play outside.", "fr": "Il a laissé les enfants jouer dehors." },
+        { "en": "I was made to wait outside.", "fr": "On m'a fait attendre dehors (passif : to revient)." }
+      ],
+      "traps": ["make-to"]
+    },
+    {
+      "id": "phrasal-verbs",
+      "summary": "Verbe + particule (pick up, turn off, give back) : un pronom complément se met entre les deux, pick it up, jamais pick up it.",
+      "rules": [
+        "Un verbe à particule (up, down, off, on, out, back, away, over) forme un sens à part : turn off = éteindre, give back = rendre, pick up = ramasser, aller chercher.",
+        "Avec un nom complément, deux ordres possibles : turn off the light ou turn the light off.",
+        "Avec un pronom (it, them, him, her, me, us), un seul ordre : entre le verbe et la particule. Turn it off. Pick them up. Give it back.",
+        "Pick up it, turn off it sont faux : c'est l'erreur la plus fréquente.",
+        "Certains verbes sont suivis d'une préposition et non d'une particule : look at it, look after them, listen to her. Là, le pronom reste après (look after them).",
+        "Le sens se retient avec le verbe, comme un mot de vocabulaire : enregistrez-les dans votre bibliothèque avec un exemple."
+      ],
+      "examples": [
+        { "en": "Please turn it off.", "fr": "Éteins-le, s'il te plaît." },
+        { "en": "Turn off the light, please.", "fr": "Éteins la lumière, s'il te plaît." },
+        { "en": "I picked them up at the station.", "fr": "Je suis allé les chercher à la gare." },
+        { "en": "Can you give it back to me?", "fr": "Tu peux me le rendre ?" },
+        { "en": "She put her coat on and went out.", "fr": "Elle a mis son manteau et elle est sortie." },
+        { "en": "Don't throw it away!", "fr": "Ne le jette pas !" },
+        { "en": "Who looks after them?", "fr": "Qui s'occupe d'eux ? (look after : préposition, le pronom reste après)" }
+      ],
+      "traps": ["phrasal-pronoun"]
     }
   ]
 }

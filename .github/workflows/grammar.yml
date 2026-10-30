@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      ['scripts/grammar-tatoeba.ts', 'scripts/grammar-blocklist.txt', 'src/core/learn/patterns.ts', 'src/core/learn/exercises.ts', 'src/core/learn/placementBank.ts', 'src/core/learn/placementBuilders.ts', 'scripts/placement-bank.ts', 'public/grammar/en/placement-written.json', 'public/grammar/en/placement-excluded.json', 'public/grammar/en/points.json', 'public/grammar/en/lessons.json', '.github/workflows/grammar.yml']
+      ['scripts/grammar-tatoeba.ts', 'scripts/grammar-blocklist.txt', 'src/core/learn/patterns.ts', 'src/core/learn/exercises.ts', 'src/core/learn/placementBank.ts', 'src/core/learn/placementBuilders.ts', 'src/core/learn/lessonBuilders.ts', 'scripts/placement-bank.ts', 'public/grammar/en/placement-written.json', 'public/grammar/en/placement-excluded.json', 'public/grammar/en/points.json', 'public/grammar/en/lessons.json', '.github/workflows/grammar.yml']
 
 permissions:
   contents: write

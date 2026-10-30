@@ -15,6 +15,7 @@ import { join } from 'node:path';
 import { PATTERN_IDS, matchSentence } from '../src/core/learn/patterns';
 import { buildExercise, type Exercise } from '../src/core/learn/exercises';
 import { PLACEMENT_BUILDERS, buildPlacementExercise } from '../src/core/learn/placementBuilders';
+import { LESSON_BUILDERS, buildLessonExercise } from '../src/core/learn/lessonBuilders';
 import { mkdirSync } from 'node:fs';
 
 const MIN_CANDIDATES = 30;
@@ -185,8 +186,9 @@ function makeBank(
 
 const bankSizes: Record<string, number> = {};
 for (const { id } of lessons) {
-  // Leçons A1 et A2 : mêmes générateurs que les questions du placement (placementBuilders.ts), banque plus grande.
-  const build = id in PLACEMENT_BUILDERS ? buildPlacementExercise : buildExercise;
+  // Leçons A1 et A2 : mêmes générateurs que les questions du placement (placementBuilders.ts), banque plus grande ;
+  // leçons B1 ajoutées en 2.29 : lessonBuilders.ts.
+  const build = id in PLACEMENT_BUILDERS ? buildPlacementExercise : id in LESSON_BUILDERS ? buildLessonExercise : buildExercise;
   const items = makeBank(`leçon ${id}`, (s) => build(id, s, known), BANK_SIZE, previousIds(`public/grammar/en/exercises/${id}.json`), rejected);
   bankSizes[id] = items.length;
   if (items.length < MIN_CANDIDATES) console.log(`::warning::Leçon ${id} : seulement ${items.length} exercices`);

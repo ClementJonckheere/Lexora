@@ -31,14 +31,14 @@ const SUBJECTS = '(?:I|you|he|she|it|we|they|You|He|She|It|We|They)';
 const SUBJECT_WORD = new RegExp(`(?:^|[\\s,])(${SUBJECTS})\\s+([a-z]+)\\b`, 'g');
 
 /** Majuscule quand le trou ouvre la phrase. */
-const cap = (w: string, atStart: boolean) => (atStart ? w.charAt(0).toUpperCase() + w.slice(1) : w);
+export const cap = (w: string, atStart: boolean) => (atStart ? w.charAt(0).toUpperCase() + w.slice(1) : w);
 /** Une seule occurrence d'un motif dans la phrase (sinon le trou serait ambigu). */
-function only(re: RegExp, text: string): RegExpExecArray | null {
+export function only(re: RegExp, text: string): RegExpExecArray | null {
   const all = [...text.matchAll(new RegExp(re.source, re.flags.includes('g') ? re.flags : `${re.flags}g`))];
   return all.length === 1 ? (all[0] as RegExpExecArray) : null;
 }
 /** Trou sur `span` (position `at`), réponse et propositions. */
-function blank(s: SourceSentence, at: number, span: string, answer: string, rest: Partial<Candidate>): Candidate {
+export function blank(s: SourceSentence, at: number, span: string, answer: string, rest: Partial<Candidate>): Candidate {
   return { before: s.en.slice(0, at), after: s.en.slice(at + span.length), answer, ...rest };
 }
 

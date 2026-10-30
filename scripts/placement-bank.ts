@@ -27,6 +27,21 @@ const sources = [
   ...lessons.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/exercises/${id}.json` })),
   { target: 'be-used-to', lesson: 'used-to', file: `${DIR}/exercises/used-to.json` },
 ];
+// Questions rédigées (étape 3) : prioritaires sur la banque générée d'une leçon ajoutée ensuite (2.29 : B1), plus variées
+// et faites pour le test ; les phrases générées servent aux exercices de la leçon.
+const written = JSON.parse(readFileSync(`${DIR}/placement-written.json`, 'utf8')).items as WrittenQuestion[];
+for (const p of points) {
+  if (covered[p.id] || existsSync(`${DIR}/placement/${p.id}.json`)) continue;
+  const chosen = written.filter((q) => q.targetId === p.id).map((q, i) => writtenItem(q, i));
+  if (chosen.length < 2) continue;
+  items.push(...chosen);
+  covered[p.id] = {
+    typed: chosen.filter((q) => q.mode === 'typed').length,
+    choice2: chosen.filter((q) => q.mode === 'choice' && q.choices === 2).length,
+    choice3plus: chosen.filter((q) => q.mode === 'choice' && q.choices! >= 3).length,
+  };
+}
+
 for (const { target: id, lesson, file } of sources) {
   if (covered[id]) continue;
   if (!existsSync(file)) continue;
@@ -35,20 +50,6 @@ for (const { target: id, lesson, file } of sources) {
   if (chosen.length < 2) continue; // le moteur pose au moins deux questions par point
   items.push(...chosen);
   covered[id] = {
-    typed: chosen.filter((q) => q.mode === 'typed').length,
-    choice2: chosen.filter((q) => q.mode === 'choice' && q.choices === 2).length,
-    choice3plus: chosen.filter((q) => q.mode === 'choice' && q.choices! >= 3).length,
-  };
-}
-
-// Points restants : questions rédigées (étape 3), à relire avant activation.
-const written = JSON.parse(readFileSync(`${DIR}/placement-written.json`, 'utf8')).items as WrittenQuestion[];
-for (const p of points) {
-  if (covered[p.id]) continue;
-  const chosen = written.filter((q) => q.targetId === p.id).map((q, i) => writtenItem(q, i));
-  if (chosen.length < 2) continue;
-  items.push(...chosen);
-  covered[p.id] = {
     typed: chosen.filter((q) => q.mode === 'typed').length,
     choice2: chosen.filter((q) => q.mode === 'choice' && q.choices === 2).length,
     choice3plus: chosen.filter((q) => q.mode === 'choice' && q.choices! >= 3).length,

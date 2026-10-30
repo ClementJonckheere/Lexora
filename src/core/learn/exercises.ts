@@ -1072,6 +1072,22 @@ export function buildExercise(lessonId: string, s: SourceSentence, known?: Known
   return { id: `${lessonId}:${s.id}`, en: s.en, fr: s.fr, ...options[s.id % options.length] };
 }
 
+/**
+ * Propositions dans un ordre fixé par l'exercice (même ordre d'une séance à l'autre) mais sans rapport avec la réponse :
+ * les générateurs du placement donnent la bonne réponse en premier, et « toujours la 1 » ne doit pas suffire.
+ */
+export function shuffledChoices(choices: readonly string[], key: string): string[] {
+  let h = 2166136261;
+  for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 16777619) >>> 0;
+  const out = [...choices];
+  for (let i = out.length - 1; i > 0; i--) {
+    h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0;
+    const j = h % (i + 1);
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 /** Phrase affichée avec le trou. */
 export function withBlank(ex: Exercise): string {
   return `${ex.before}___${ex.after}`;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { Exercise } from '@/core/learn/exercises';
+import { shuffledChoices, type Exercise } from '@/core/learn/exercises';
 import type { PlacementItem } from '@/core/learn/placementBank';
 
 /** Données de grammaire fournies avec l'application (public/grammar/en). */
@@ -70,7 +70,9 @@ const banks = new Map<string, Promise<Exercise[]>>();
 export function loadExercises(lessonId: string): Promise<Exercise[]> {
   let p = banks.get(lessonId);
   if (!p) {
-    p = json<{ items: Exercise[] }>(`/grammar/en/exercises/${encodeURIComponent(lessonId)}.json`).then((d) => d?.items ?? []);
+    p = json<{ items: Exercise[] }>(`/grammar/en/exercises/${encodeURIComponent(lessonId)}.json`).then((d) =>
+      (d?.items ?? []).map((ex) => (ex.choices ? { ...ex, choices: shuffledChoices(ex.choices, ex.id) } : ex)),
+    );
     banks.set(lessonId, p);
   }
   return p;

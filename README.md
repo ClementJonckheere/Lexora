@@ -13,7 +13,7 @@ Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, 
 
 La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
 
-**État documenté : version 2.28.0.** Le parcours grammatical comporte 74 points de A1 à C1 et 40 pièges francophones ; 52 leçons disposent actuellement d'exercices (32 en A1 et A2, rédigées en 2.25 et à relire, 20 en B1 et B2). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
+**État documenté : version 2.28.0.** Le parcours grammatical comporte 74 points de A1 à C1 et 40 pièges francophones ; 58 leçons disposent actuellement d'exercices (32 en A1 et A2, rédigées en 2.25, et 6 en B1, rédigées en 2.29, à relire ; 20 en B1 et B2). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -217,7 +217,7 @@ Les chantiers suivants restent **indisponibles dans l'interface** :
 
 **Limite à mesurer pour le placement** : 40 questions avec au moins deux questions par point permettent de tester directement 20 points au maximum. Les autres points ne peuvent être déduits que si `requires` fournit des éléments suffisants ; les résultats incertains doivent rester signalés comme tels. La simulation doit évaluer cette limite avant toute mise en ligne.
 
-La rédaction et la relecture des **22 autres leçons** du parcours restent également à faire : *adjectives* et *simple-vs-continuous* (A2, sans générateur d'exercices), et 20 points B1 à C1. Leurs questions de placement rédigées (`placement-written.json`) entreront dans le test avec leur leçon.
+**2.29** : 6 leçons B1 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs), exercices tirés de Tatoeba par `src/core/learn/lessonBuilders.ts` ; dans le test de placement, ces points gardent leurs questions rédigées, prioritaires sur la banque générée. Les propositions des exercices sont mélangées à l'affichage (ordre fixé par exercice) : dans les leçons A1 et A2 de la 2.25, la bonne réponse était toujours la première. La rédaction et la relecture des **16 autres leçons** du parcours restent à faire : *adjectives* et *simple-vs-continuous* (A2, sans générateur d'exercices), et 14 points B2 et C1. Leurs questions de placement rédigées (`placement-written.json`) entreront dans le test avec leur leçon.
 
 ---
 
