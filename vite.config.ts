@@ -7,6 +7,8 @@ const host = process.env.TAURI_DEV_HOST;
 
 // https://v2.tauri.app/start/frontend/vite/
 export default defineConfig({
+  // Version web publiée dans un sous-dossier (GitHub Pages : /Lexora/) ; l'application Windows reste à la racine.
+  base: process.env.LEXORA_BASE || '/',
   plugins: [react()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },

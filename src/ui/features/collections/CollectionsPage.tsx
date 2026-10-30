@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { assetUrl } from '@/core/platform/env';
 import { ArrowLeft, Download, FolderPlus, Layers, Pencil, Plus, Trash2, Zap } from 'lucide-react';
 import { attempt, errorMessage, useApp } from '@/app/store';
 import type { Collection } from '@/core/domain/types';
@@ -304,7 +305,7 @@ function ReadyCollections() {
     let alive = true;
     void Promise.all(
       READY_COLLECTIONS.map((id) =>
-        fetch(`/grammar/en/collections/${id}.json`)
+        fetch(assetUrl(`grammar/en/collections/${id}.json`))
           .then((r) => (r.ok ? (r.json() as Promise<ReadyCollection>) : null))
           .catch(() => null),
       ),

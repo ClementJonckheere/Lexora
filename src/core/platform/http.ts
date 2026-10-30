@@ -5,6 +5,7 @@ import { isTauri } from './env';
  * - Application : via la couche native (tauri-plugin-http), limitée à ces domaines ;
  *   Project Gutenberg n'autorise pas les requêtes directes depuis une page web.
  * - Aperçu navigateur : via le proxy du serveur de développement (vite.config.ts).
+ * - Version web publiée (téléphone) : via la fonction Supabase « proxy » (voir `relayed`).
  */
 
 const PROXIES: [string, string][] = [
@@ -52,7 +53,27 @@ async function doFetch(url: string, init: RequestInit): Promise<Response> {
     const { fetch } = await import('@tauri-apps/plugin-http');
     return fetch(url, { ...init, connectTimeout: 20_000 });
   }
-  return fetch(proxied(url), init);
+  if (import.meta.env?.DEV) return fetch(proxied(url), init);
+  return relayed(url, init);
+}
+
+/**
+ * Version web publiée (téléphone) : les domaines de PROXIES passent par la fonction Supabase « proxy »
+ * (supabase/functions/proxy), réservée aux utilisateurs connectés. Les autres adresses sont appelées directement.
+ */
+async function relayed(url: string, init: RequestInit): Promise<Response> {
+  if (!PROXIES.some(([from]) => url.startsWith(from))) return fetch(url, init);
+  const { authConfigured, supabase, supabaseOrigin } = await import('./auth');
+  if (!authConfigured || !supabaseOrigin) throw new HttpError(0, 'Version web sans Supabase : ce service n’est pas joignable.');
+  const { data } = await supabase().auth.getSession();
+  if (!data.session) throw new HttpError(401, 'Connectez-vous (Paramètres) pour accéder à ce service depuis la version web.');
+  const headers = new Headers(init.headers);
+  // La clé DeepL personnelle voyage à part : Authorization porte la session Supabase.
+  const upstream = headers.get('Authorization');
+  if (upstream) headers.set('x-upstream-authorization', upstream);
+  headers.set('Authorization', `Bearer ${data.session.access_token}`);
+  headers.set('apikey', import.meta.env.VITE_SUPABASE_ANON_KEY as string);
+  return fetch(`${supabaseOrigin}/functions/v1/proxy?url=${encodeURIComponent(url)}`, { ...init, headers });
 }
 
 export async function httpGet(url: string, opts: GetOptions = {}): Promise<Uint8Array> {

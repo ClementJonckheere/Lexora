@@ -3589,3 +3589,133 @@ p {
 .leaderboard-xp {
   font-size: 14px;
 }
+
+/* ======================================================================= */
+/*  Téléphone (version web installée) : navigation en bas, marges réduites. */
+/* ======================================================================= */
+@media (max-width: 720px) {
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    padding: calc(8px + env(safe-area-inset-top)) 12px 8px;
+  }
+  .topbar-side {
+    gap: 8px;
+  }
+  /* Barre d'onglets fixe en bas, au-dessus de la zone de geste de l'iPhone. */
+  .topnav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    justify-content: space-around;
+    gap: 0;
+    padding: 4px 2px calc(4px + env(safe-area-inset-bottom));
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    background: var(--bg);
+  }
+  .topnav-item,
+  .topnav-item:not(.topnav-item--active) {
+    position: relative;
+    flex: 1;
+    justify-content: center;
+    height: 46px;
+    padding: 0;
+    border-radius: 10px;
+  }
+  .topnav-item .label,
+  .topnav-item--active .label {
+    display: none;
+  }
+  .topnav-item svg {
+    width: 21px;
+    height: 21px;
+  }
+  .topnav-item .nav-count {
+    position: absolute;
+    top: 3px;
+    right: 6px;
+  }
+  .main {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom));
+  }
+  .page {
+    padding: 18px 16px 32px;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .page-title {
+    font-size: 24px;
+  }
+  .hero-headline {
+    font-size: 30px;
+  }
+  .hero {
+    padding: 18px;
+  }
+  /* Séances et lecteur (sans barre du haut) : sous l'encoche et au-dessus de la zone de geste. */
+  .session-top {
+    gap: 10px;
+    padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+  }
+  .reader-bar {
+    padding-top: calc(10px + env(safe-area-inset-top));
+  }
+  .reader-nav {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+  .reader-hint,
+  .reader-options {
+    display: none;
+  }
+  /* Messages au-dessus de la barre d'onglets. */
+  .toasts {
+    left: 12px;
+    right: 12px;
+    bottom: calc(68px + env(safe-area-inset-bottom));
+  }
+  .toast {
+    min-width: 0;
+    max-width: none;
+  }
+  .kpis {
+    grid-template-columns: 1fr 1fr;
+  }
+  /* Réglages : le libellé au-dessus du contrôle. */
+  .setting {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+  .placement-offer .row {
+    flex-wrap: wrap;
+  }
+  /* Bibliothèque : expression, traduction et maîtrise seulement. */
+  .table-head,
+  .table-row,
+  .library--detail .table-head,
+  .library--detail .table-row {
+    grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr) 92px;
+    gap: 8px;
+    padding: 0 10px;
+  }
+  .col-category,
+  .col-date {
+    display: none;
+  }
+}
+
+/* Écran tactile sans clavier : les raccourcis affichés n'ont pas d'objet. */
+@media (hover: none) and (pointer: coarse) {
+  .kbd,
+  .keys-only,
+  .session-hints {
+    display: none;
+  }
+}

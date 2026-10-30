@@ -1,0 +1,49 @@
+name: Version web (GitHub Pages)
+
+# Lexora pour téléphone et navigateur : la même application, publiée sur https://<compte>.github.io/Lexora/ et
+# installable depuis Safari (iPhone) ou Chrome (Android). Publiée à chaque push sur main ; relançable à la main.
+# Prérequis (une fois) : Settings → Pages → Source : GitHub Actions. Voir docs/SUPABASE.md, « Version web (téléphone) ».
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Construire la version web (sous-dossier /<dépôt>/)
+        env:
+          LEXORA_BASE: /${{ github.event.repository.name }}/
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: npx vite build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

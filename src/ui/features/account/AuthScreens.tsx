@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import { assetUrl, isTauri } from '@/core/platform/env';
 import { useApp } from '@/app/store';
 import { Button } from '@/ui/components/ui';
 
@@ -17,7 +18,7 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="auth-screen">
       <div className="card auth-card">
-        <img src="/favicon.png" alt="" width={44} height={44} />
+        <img src={assetUrl('favicon.png')} alt="" width={44} height={44} />
         {children}
       </div>
     </div>
@@ -27,6 +28,7 @@ function Shell({ children }: { children: ReactNode }) {
 export function LoginScreen() {
   const auth = useApp((s) => s.auth);
   const { signIn } = useApp.getState();
+  const [emailMode, setEmailMode] = useState(false);
   return (
     <Shell>
       <h1 className="auth-title">Lexora</h1>
@@ -34,7 +36,8 @@ export function LoginScreen() {
       <Button variant="secondary" size="lg" block onClick={() => void signIn()} disabled={auth.busy}>
         <GoogleLogo /> {auth.busy ? 'Connexion dans le navigateur…' : 'Continuer avec Google'}
       </Button>
-      {auth.busy && <p className="muted small">Terminez la connexion dans la fenêtre du navigateur qui vient de s'ouvrir, puis revenez ici.</p>}
+      {auth.busy && !emailMode && <p className="muted small">Terminez la connexion dans la fenêtre du navigateur qui vient de s'ouvrir, puis revenez ici.</p>}
+      {!isTauri() && <EmailCodeLogin onOpen={setEmailMode} />}
       {auth.error && <p className="field-error">{auth.error}</p>}
       <p className="muted small">Une connexion Internet est nécessaire la première fois. Ensuite, Lexora fonctionne aussi hors ligne.</p>
     </Shell>
@@ -70,5 +73,60 @@ export function FirstSyncScreen() {
         <span className="indeterminate" />
       </div>
     </Shell>
+  );
+}
+
+/**
+ * Connexion par code reçu par e-mail (version web) : utile sur iPhone, où la page Google s'ouvre hors de l'application
+ * installée. Le compte doit déjà exister (première connexion avec Google, même adresse).
+ */
+function EmailCodeLogin({ onOpen }: { onOpen: (open: boolean) => void }) {
+  const busy = useApp((s) => s.auth.busy);
+  const { signInWithCode } = useApp.getState();
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [sent, setSent] = useState(false);
+  if (!open)
+    return (
+      <button
+        className="link small"
+        onClick={() => {
+          setOpen(true);
+          onOpen(true);
+        }}
+      >
+        Recevoir un code par e-mail
+      </button>
+    );
+  return (
+    <form
+      className="stack stack--sm"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!sent) void signInWithCode(email).then((ok) => ok && setSent(true));
+        else void signInWithCode(email, code);
+      }}
+    >
+      <input className="input" type="email" autoComplete="email" placeholder="Votre adresse e-mail" value={email} onChange={(e) => setEmail(e.target.value)} disabled={sent} required />
+      {sent && (
+        <>
+          <p className="muted small">Un code à 6 chiffres vient d'être envoyé à cette adresse.</p>
+          <input
+            className="input"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="Code reçu"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
+            autoFocus
+          />
+        </>
+      )}
+      <Button type="submit" variant="primary" block disabled={busy || !email.trim() || (sent && code.trim().length < 6)}>
+        {sent ? 'Se connecter' : 'Envoyer le code'}
+      </Button>
+    </form>
   );
 }

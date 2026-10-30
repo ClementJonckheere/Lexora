@@ -23,7 +23,7 @@ import type { ParsedBook } from '@/core/reading/gutenberg';
 import type { LevelEstimate } from '@/core/reading/level';
 import { downloadBook, downloadCover, languageFactor, levelOfText, loadRanks } from '@/core/reading/catalog';
 import { createScheduler, type Scheduler } from '@/core/srs/scheduler';
-import { authConfigured, currentUser, signInWithGoogle, signOut as authSignOut, type AccountUser } from '@/core/platform/auth';
+import { authConfigured, currentUser, sendEmailCode, signInWithGoogle, signOut as authSignOut, verifyEmailCode, type AccountUser } from '@/core/platform/auth';
 import { bindAccount, getSyncState, resetLocalData } from '@/core/sync/engine';
 import { readPref, writePref } from '@/ui/prefs';
 import type { AvailableUpdate } from '@/core/platform/desktop';
@@ -175,6 +175,8 @@ interface AppState {
   showNote(id: string): void;
 
   signIn(): Promise<void>;
+  /** Connexion par code reçu par e-mail : envoi (sans code), puis vérification (avec le code). */
+  signInWithCode(email: string, code?: string): Promise<boolean>;
   signOut(): Promise<void>;
   resolveAccountConflict(replaceLocal: boolean): Promise<void>;
   syncNow(): Promise<void>;
@@ -435,6 +437,24 @@ export const useApp = create<AppState>((set, get) => {
         if (user) await enter(user);
       } catch (err) {
         set((s) => ({ auth: { ...s.auth, error: errorMessage(err) } }));
+      } finally {
+        set((s) => ({ auth: { ...s.auth, busy: false } }));
+      }
+    },
+
+    async signInWithCode(email, code) {
+      set((s) => ({ auth: { ...s.auth, busy: true, error: null } }));
+      try {
+        if (!code) {
+          await sendEmailCode(email);
+          return true;
+        }
+        const user = await verifyEmailCode(email, code);
+        if (user) await enter(user);
+        return !!user;
+      } catch (err) {
+        set((s) => ({ auth: { ...s.auth, error: errorMessage(err) } }));
+        return false;
       } finally {
         set((s) => ({ auth: { ...s.auth, busy: false } }));
       }
