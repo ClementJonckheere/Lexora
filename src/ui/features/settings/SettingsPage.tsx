@@ -290,7 +290,7 @@ export function SettingsPage() {
           </Setting>
           <Setting
             title="Sauvegarde complète"
-            desc="Fichier unique, tous univers : notes, fiches de mémorisation, historique des révisions et réglages."
+            desc="Fichier unique, tous univers : notes, fiches de mémorisation, historique des révisions, livres et position de lecture, mots connus, test de vocabulaire, exercices de grammaire et progression, réglages."
           >
             <Button variant="primary" onClick={backupToFile}>
               <HardDriveDownload size={15} /> Sauvegarder

@@ -99,7 +99,7 @@ export async function exportToJson(): Promise<void> {
   }
 }
 
-/** Sauvegarde complète (notes, fiches FSRS, historique, réglages) en JSON. */
+/** Sauvegarde complète (toutes les tables synchronisées : notes, fiches FSRS, historique, lecture, grammaire, progression, réglages) en JSON. */
 export async function backupToFile(): Promise<void> {
   const s = state();
   try {

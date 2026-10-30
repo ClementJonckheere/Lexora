@@ -11,7 +11,6 @@ import { UniversesOverview } from '@/ui/features/universes/Universes';
 import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
 import { estimateMinutes } from '@/core/repo/progressRepo';
 import { GettingStarted, ResumeReading } from './Widgets';
-import { useLessonReviews } from '@/ui/features/learn/reviews';
 import { RankBadge } from '@/ui/features/progress/ProgressPage';
 import { useProgress } from '@/ui/features/progress/useXp';
 
@@ -32,7 +31,6 @@ export function HomePage() {
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate, openEditor, showNote } = useApp.getState();
   const due = useDueCounts();
-  const lessonsDue = useLessonReviews().due.length;
   const progress = useDailyProgress();
   const rankProgress = useProgress();
   const xp = rankProgress?.xp ?? null;
@@ -128,18 +126,6 @@ export function HomePage() {
           <div>
             <span className="hero-fact-label">Bibliothèque</span>
             <span>{plural(notes.length, 'expression', 'expressions')}</span>
-          </div>
-          <div>
-            <span className="hero-fact-label">Grammaire</span>
-            <span>
-              {lessonsDue > 0 ? (
-                <button className="link" onClick={() => navigate({ name: 'learn' })}>
-                  {plural(lessonsDue, 'leçon à réviser', 'leçons à réviser')}
-                </button>
-              ) : (
-                'Aucune leçon à réviser'
-              )}
-            </span>
           </div>
         </div>
         <UniversesOverview />
