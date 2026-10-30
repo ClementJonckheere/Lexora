@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, GraduationCap, Loader2, RotateCcw } from 'lucide-react';
 import { useApp } from '@/app/store';
 import { lessonProgress, MASTERY_TARGET, MASTERY_WINDOW, type LessonProgress } from '@/core/learn/progress';
@@ -7,6 +7,8 @@ import { Button, EmptyState } from '@/ui/components/ui';
 import { useGrammarData, type GrammarPoint } from './grammarData';
 import { useLessonReviews } from './reviews';
 import { placementSummary, pointState, STATE_LABEL, suggestedLesson } from '@/core/learn/placementResults';
+import { verbSummary } from '@/core/learn/irregularVerbs';
+import { loadVerbAnswers } from '@/core/repo/learnRepo';
 
 /** « Plus tard » : la proposition du test revient à la prochaine ouverture de l'application. */
 let placementLater = false;
@@ -42,6 +44,7 @@ export function LearnPage() {
   const placementAll = useApp((s) => s.settings.placement);
   const placement = universe ? placementAll[universe.id] : undefined;
   const [later, setLater] = useState(placementLater);
+  const verbs = useVerbSummary();
 
   const progressOf = useMemo(() => {
     const byLesson = new Map<string, typeof answers>();
@@ -206,6 +209,23 @@ export function LearnPage() {
         </p>
       )}
 
+      {verbs && (
+        <section className="card card-pad learn-verbs">
+          <div className="row row--between row--wrap">
+            <span>
+              <strong>Verbes irréguliers</strong>{' '}
+              <span className="muted small">
+                · {verbs.mastered} maîtrisés sur {verbs.total}
+                {verbs.due > 0 && `, ${verbs.due} à revoir`}
+              </span>
+            </span>
+            <Button variant={verbs.due > 0 ? 'primary' : 'secondary'} size="sm" onClick={() => navigate({ name: 'verbs' })}>
+              {verbs.seen ? "S'entraîner" : 'Découvrir'}
+            </Button>
+          </div>
+        </section>
+      )}
+
       {dueLessons.length > 0 && (
         <section className="card card-pad learn-due">
           <div className="row row--between">
@@ -266,4 +286,23 @@ export function LearnPage() {
       </p>
     </div>
   );
+}
+
+/** Bilan des verbes irréguliers de l'univers (maîtrisés, à revoir), relu après chaque séance. */
+function useVerbSummary() {
+  const db = useApp((s) => s.db);
+  const universe = useApp((s) => s.universe);
+  const revision = useApp((s) => s.revision);
+  const [summary, setSummary] = useState<ReturnType<typeof verbSummary> | null>(null);
+  useEffect(() => {
+    if (!db || !universe) return;
+    let alive = true;
+    void loadVerbAnswers(db, universe.id)
+      .then((a) => alive && setSummary(verbSummary(a)))
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [db, universe, revision]);
+  return summary;
 }

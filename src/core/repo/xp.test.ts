@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createMemoryDatabase } from '../db/testing';
 import type { GrammarAnswer } from '../learn/progress';
 import { loadHistory, loadXpEvents, recordNoteEntry, saveReadingSession } from './xpRepo';
+import { loadVerbAnswers, recordVerbAnswer } from './learnRepo';
 
 const T = new Date(2026, 9, 29, 9, 0).getTime();
 
@@ -95,5 +96,21 @@ describe('séances de lecture', () => {
     expect(h.events.filter((e) => e.kind === 'book-finished')).toHaveLength(0); // 50 minutes : moins d'une heure
     await saveReadingSession(db, { id: 's3', universeId: 'en', bookKey: 'b1', startedAt: T + 2 * 86_400_000, activeMs: 10 * 60_000, pages: 5 });
     expect((await loadHistory(db, 'en', [])).events.filter((e) => e.kind === 'book-finished')).toHaveLength(1);
+  });
+});
+
+describe('réponses aux verbes irréguliers', () => {
+  it('enregistrées avec les formes tapées, relues dans l’historique (XP, verbes maîtrisés)', async () => {
+    const db = await createMemoryDatabase();
+    const DAY = 86_400_000;
+    for (const [i, at] of [T, T + DAY, T + 4 * DAY].entries())
+      await recordVerbAnswer(db, 'en', { verb: 'go', at, pastOk: true, participleOk: true, pastGiven: 'went', participleGiven: i ? 'gone' : ' Gone ' });
+    await recordVerbAnswer(db, 'en', { verb: 'take', at: T, pastOk: true, participleOk: false, pastGiven: 'took', participleGiven: 'took' });
+    await recordVerbAnswer(db, 'es', { verb: 'go', at: T, pastOk: true, participleOk: true, pastGiven: 'went', participleGiven: 'gone' });
+    expect(await loadVerbAnswers(db, 'en')).toHaveLength(4);
+    expect(await db.select("SELECT participle_given FROM verb_answers WHERE verb = 'take'")).toEqual([{ participle_given: 'took' }]);
+    const h = await loadHistory(db, 'en', []);
+    expect(h.events.filter((e) => e.kind === 'verb')).toHaveLength(4);
+    expect(h.verbsMastered).toBe(1);
   });
 });

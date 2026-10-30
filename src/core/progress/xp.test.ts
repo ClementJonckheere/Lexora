@@ -97,3 +97,17 @@ describe('XP de lecture', () => {
     expect(s.bySource.vocabulary).toBe(2);
   });
 });
+
+describe('XP des verbes irréguliers', () => {
+  it('4 XP les deux formes justes, 1 XP sinon ; le même verbe le même jour rapporte moitié moins', () => {
+    const s = computeXp(
+      [
+        { kind: 'verb', at: T0, verb: 'go', correct: true },
+        { kind: 'verb', at: T0 + 10_000, verb: 'take', correct: false },
+        { kind: 'verb', at: T0 + 20_000, verb: 'go', correct: true },
+      ],
+      T0,
+    );
+    expect(s.bySource.grammar).toBe(4 + 1 + 2);
+  });
+});

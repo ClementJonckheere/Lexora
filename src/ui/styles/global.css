@@ -3483,3 +3483,64 @@ p {
 .lesson-check--mastered strong {
   color: var(--mastered);
 }
+
+/* ------------------------------------------------- verbes irréguliers --- */
+.verb-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  column-gap: 24px;
+  border-top: 1px solid var(--border);
+}
+.verb-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.verb-row > span:first-child::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--border-strong);
+}
+.verb-row--seen > span:first-child::before {
+  background: var(--gold);
+}
+.verb-row--mastered > span:first-child::before {
+  background: var(--mastered);
+}
+.verb-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 20px;
+}
+.exercise-input--ok {
+  border-bottom-color: var(--mastered);
+  color: var(--mastered);
+}
+.exercise-input--ko {
+  border-bottom-color: var(--danger);
+  color: var(--danger);
+}
+.verb-answer {
+  color: var(--mastered);
+}
+.learn-verbs {
+  margin-bottom: 16px;
+}
+.verb-reference {
+  margin-top: 8px;
+}
+.verb-reference > summary {
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 8px;
+}

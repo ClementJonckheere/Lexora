@@ -46,6 +46,7 @@ export function useProgress(): ProgressState | null {
         grammarCorrect: history.grammarCorrect,
         entries: history.entries,
         readingMinutes: history.readingMinutes,
+        verbsMastered: history.verbsMastered,
         levels: [xp.level, ...others],
       });
       if (alive) setState({ xp, titles });

@@ -1,5 +1,6 @@
 {
 "version": 1,
+"note": "Traduction française usuelle (fr) et niveau de fréquence (tier : 1 = les plus courants, à apprendre d'abord ; 3 = les plus rares), pour le module Verbes irréguliers.",
 "verbs": [
 {
 "base": "arise",
@@ -8,7 +9,9 @@
 ],
 "participle": [
 "arisen"
-]
+],
+"fr": "survenir",
+"tier": 3
 },
 {
 "base": "awake",
@@ -17,7 +20,9 @@
 ],
 "participle": [
 "awoken"
-]
+],
+"fr": "s'éveiller",
+"tier": 3
 },
 {
 "base": "be",
@@ -27,7 +32,9 @@
 ],
 "participle": [
 "been"
-]
+],
+"fr": "être",
+"tier": 1
 },
 {
 "base": "bear",
@@ -36,7 +43,9 @@
 ],
 "participle": [
 "borne"
-]
+],
+"fr": "porter, supporter",
+"tier": 3
 },
 {
 "base": "beat",
@@ -45,7 +54,9 @@
 ],
 "participle": [
 "beaten"
-]
+],
+"fr": "battre",
+"tier": 3
 },
 {
 "base": "become",
@@ -54,7 +65,9 @@
 ],
 "participle": [
 "become"
-]
+],
+"fr": "devenir",
+"tier": 1
 },
 {
 "base": "begin",
@@ -63,7 +76,9 @@
 ],
 "participle": [
 "begun"
-]
+],
+"fr": "commencer",
+"tier": 1
 },
 {
 "base": "bend",
@@ -72,7 +87,9 @@
 ],
 "participle": [
 "bent"
-]
+],
+"fr": "plier, se pencher",
+"tier": 3
 },
 {
 "base": "bet",
@@ -81,7 +98,9 @@
 ],
 "participle": [
 "bet"
-]
+],
+"fr": "parier",
+"tier": 3
 },
 {
 "base": "bind",
@@ -90,7 +109,9 @@
 ],
 "participle": [
 "bound"
-]
+],
+"fr": "lier, attacher",
+"tier": 3
 },
 {
 "base": "bite",
@@ -99,7 +120,9 @@
 ],
 "participle": [
 "bitten"
-]
+],
+"fr": "mordre",
+"tier": 2
 },
 {
 "base": "bleed",
@@ -108,7 +131,9 @@
 ],
 "participle": [
 "bled"
-]
+],
+"fr": "saigner",
+"tier": 3
 },
 {
 "base": "blow",
@@ -117,7 +142,9 @@
 ],
 "participle": [
 "blown"
-]
+],
+"fr": "souffler",
+"tier": 2
 },
 {
 "base": "break",
@@ -126,7 +153,9 @@
 ],
 "participle": [
 "broken"
-]
+],
+"fr": "casser",
+"tier": 2
 },
 {
 "base": "breed",
@@ -135,7 +164,9 @@
 ],
 "participle": [
 "bred"
-]
+],
+"fr": "élever (des animaux)",
+"tier": 3
 },
 {
 "base": "bring",
@@ -144,7 +175,9 @@
 ],
 "participle": [
 "brought"
-]
+],
+"fr": "apporter",
+"tier": 1
 },
 {
 "base": "broadcast",
@@ -153,7 +186,9 @@
 ],
 "participle": [
 "broadcast"
-]
+],
+"fr": "diffuser",
+"tier": 3
 },
 {
 "base": "build",
@@ -162,7 +197,9 @@
 ],
 "participle": [
 "built"
-]
+],
+"fr": "construire",
+"tier": 2
 },
 {
 "base": "burn",
@@ -173,7 +210,9 @@
 "participle": [
 "burnt",
 "burned"
-]
+],
+"fr": "brûler",
+"tier": 2
 },
 {
 "base": "burst",
@@ -182,7 +221,9 @@
 ],
 "participle": [
 "burst"
-]
+],
+"fr": "éclater",
+"tier": 3
 },
 {
 "base": "buy",
@@ -191,7 +232,9 @@
 ],
 "participle": [
 "bought"
-]
+],
+"fr": "acheter",
+"tier": 1
 },
 {
 "base": "catch",
@@ -200,7 +243,9 @@
 ],
 "participle": [
 "caught"
-]
+],
+"fr": "attraper",
+"tier": 2
 },
 {
 "base": "choose",
@@ -209,7 +254,9 @@
 ],
 "participle": [
 "chosen"
-]
+],
+"fr": "choisir",
+"tier": 2
 },
 {
 "base": "cling",
@@ -218,7 +265,9 @@
 ],
 "participle": [
 "clung"
-]
+],
+"fr": "s'accrocher",
+"tier": 3
 },
 {
 "base": "come",
@@ -227,7 +276,9 @@
 ],
 "participle": [
 "come"
-]
+],
+"fr": "venir",
+"tier": 1
 },
 {
 "base": "cost",
@@ -236,7 +287,9 @@
 ],
 "participle": [
 "cost"
-]
+],
+"fr": "coûter",
+"tier": 2
 },
 {
 "base": "creep",
@@ -245,7 +298,9 @@
 ],
 "participle": [
 "crept"
-]
+],
+"fr": "ramper",
+"tier": 3
 },
 {
 "base": "cut",
@@ -254,7 +309,9 @@
 ],
 "participle": [
 "cut"
-]
+],
+"fr": "couper",
+"tier": 2
 },
 {
 "base": "deal",
@@ -263,7 +320,9 @@
 ],
 "participle": [
 "dealt"
-]
+],
+"fr": "distribuer, traiter",
+"tier": 3
 },
 {
 "base": "dig",
@@ -272,7 +331,9 @@
 ],
 "participle": [
 "dug"
-]
+],
+"fr": "creuser",
+"tier": 3
 },
 {
 "base": "do",
@@ -281,7 +342,9 @@
 ],
 "participle": [
 "done"
-]
+],
+"fr": "faire",
+"tier": 1
 },
 {
 "base": "draw",
@@ -290,7 +353,9 @@
 ],
 "participle": [
 "drawn"
-]
+],
+"fr": "dessiner, tirer",
+"tier": 2
 },
 {
 "base": "dream",
@@ -301,7 +366,9 @@
 "participle": [
 "dreamt",
 "dreamed"
-]
+],
+"fr": "rêver",
+"tier": 2
 },
 {
 "base": "drink",
@@ -310,7 +377,9 @@
 ],
 "participle": [
 "drunk"
-]
+],
+"fr": "boire",
+"tier": 1
 },
 {
 "base": "drive",
@@ -319,7 +388,9 @@
 ],
 "participle": [
 "driven"
-]
+],
+"fr": "conduire",
+"tier": 1
 },
 {
 "base": "eat",
@@ -328,7 +399,9 @@
 ],
 "participle": [
 "eaten"
-]
+],
+"fr": "manger",
+"tier": 1
 },
 {
 "base": "fall",
@@ -337,7 +410,9 @@
 ],
 "participle": [
 "fallen"
-]
+],
+"fr": "tomber",
+"tier": 1
 },
 {
 "base": "feed",
@@ -346,7 +421,9 @@
 ],
 "participle": [
 "fed"
-]
+],
+"fr": "nourrir",
+"tier": 2
 },
 {
 "base": "feel",
@@ -355,7 +432,9 @@
 ],
 "participle": [
 "felt"
-]
+],
+"fr": "(se) sentir",
+"tier": 1
 },
 {
 "base": "fight",
@@ -364,7 +443,9 @@
 ],
 "participle": [
 "fought"
-]
+],
+"fr": "se battre",
+"tier": 2
 },
 {
 "base": "find",
@@ -373,7 +454,9 @@
 ],
 "participle": [
 "found"
-]
+],
+"fr": "trouver",
+"tier": 1
 },
 {
 "base": "flee",
@@ -382,7 +465,9 @@
 ],
 "participle": [
 "fled"
-]
+],
+"fr": "fuir",
+"tier": 3
 },
 {
 "base": "fling",
@@ -391,7 +476,9 @@
 ],
 "participle": [
 "flung"
-]
+],
+"fr": "lancer violemment",
+"tier": 3
 },
 {
 "base": "fly",
@@ -400,7 +487,9 @@
 ],
 "participle": [
 "flown"
-]
+],
+"fr": "voler (dans les airs)",
+"tier": 2
 },
 {
 "base": "forbid",
@@ -409,7 +498,9 @@
 ],
 "participle": [
 "forbidden"
-]
+],
+"fr": "interdire",
+"tier": 3
 },
 {
 "base": "forget",
@@ -418,7 +509,9 @@
 ],
 "participle": [
 "forgotten"
-]
+],
+"fr": "oublier",
+"tier": 1
 },
 {
 "base": "forgive",
@@ -427,7 +520,9 @@
 ],
 "participle": [
 "forgiven"
-]
+],
+"fr": "pardonner",
+"tier": 2
 },
 {
 "base": "freeze",
@@ -436,7 +531,9 @@
 ],
 "participle": [
 "frozen"
-]
+],
+"fr": "geler",
+"tier": 2
 },
 {
 "base": "get",
@@ -446,7 +543,9 @@
 "participle": [
 "got",
 "gotten"
-]
+],
+"fr": "obtenir, devenir",
+"tier": 1
 },
 {
 "base": "give",
@@ -455,7 +554,9 @@
 ],
 "participle": [
 "given"
-]
+],
+"fr": "donner",
+"tier": 1
 },
 {
 "base": "go",
@@ -464,7 +565,9 @@
 ],
 "participle": [
 "gone"
-]
+],
+"fr": "aller",
+"tier": 1
 },
 {
 "base": "grind",
@@ -473,7 +576,9 @@
 ],
 "participle": [
 "ground"
-]
+],
+"fr": "moudre",
+"tier": 3
 },
 {
 "base": "grow",
@@ -482,7 +587,9 @@
 ],
 "participle": [
 "grown"
-]
+],
+"fr": "grandir, cultiver",
+"tier": 2
 },
 {
 "base": "hang",
@@ -491,7 +598,9 @@
 ],
 "participle": [
 "hung"
-]
+],
+"fr": "accrocher, suspendre",
+"tier": 2
 },
 {
 "base": "have",
@@ -500,7 +609,9 @@
 ],
 "participle": [
 "had"
-]
+],
+"fr": "avoir",
+"tier": 1
 },
 {
 "base": "hear",
@@ -509,7 +620,9 @@
 ],
 "participle": [
 "heard"
-]
+],
+"fr": "entendre",
+"tier": 1
 },
 {
 "base": "hide",
@@ -518,7 +631,9 @@
 ],
 "participle": [
 "hidden"
-]
+],
+"fr": "(se) cacher",
+"tier": 2
 },
 {
 "base": "hit",
@@ -527,7 +642,9 @@
 ],
 "participle": [
 "hit"
-]
+],
+"fr": "frapper",
+"tier": 2
 },
 {
 "base": "hold",
@@ -536,7 +653,9 @@
 ],
 "participle": [
 "held"
-]
+],
+"fr": "tenir",
+"tier": 1
 },
 {
 "base": "hurt",
@@ -545,7 +664,9 @@
 ],
 "participle": [
 "hurt"
-]
+],
+"fr": "blesser, faire mal",
+"tier": 2
 },
 {
 "base": "keep",
@@ -554,7 +675,9 @@
 ],
 "participle": [
 "kept"
-]
+],
+"fr": "garder",
+"tier": 1
 },
 {
 "base": "kneel",
@@ -563,7 +686,9 @@
 ],
 "participle": [
 "knelt"
-]
+],
+"fr": "s'agenouiller",
+"tier": 3
 },
 {
 "base": "know",
@@ -572,7 +697,9 @@
 ],
 "participle": [
 "known"
-]
+],
+"fr": "savoir, connaître",
+"tier": 1
 },
 {
 "base": "lay",
@@ -581,7 +708,9 @@
 ],
 "participle": [
 "laid"
-]
+],
+"fr": "poser, mettre (la table)",
+"tier": 2
 },
 {
 "base": "lead",
@@ -590,7 +719,9 @@
 ],
 "participle": [
 "led"
-]
+],
+"fr": "mener",
+"tier": 2
 },
 {
 "base": "lean",
@@ -601,7 +732,9 @@
 "participle": [
 "leant",
 "leaned"
-]
+],
+"fr": "(se) pencher, s'appuyer",
+"tier": 3
 },
 {
 "base": "leap",
@@ -612,7 +745,9 @@
 "participle": [
 "leapt",
 "leaped"
-]
+],
+"fr": "bondir",
+"tier": 3
 },
 {
 "base": "learn",
@@ -623,7 +758,9 @@
 "participle": [
 "learnt",
 "learned"
-]
+],
+"fr": "apprendre",
+"tier": 2
 },
 {
 "base": "leave",
@@ -632,7 +769,9 @@
 ],
 "participle": [
 "left"
-]
+],
+"fr": "partir, laisser",
+"tier": 1
 },
 {
 "base": "lend",
@@ -641,7 +780,9 @@
 ],
 "participle": [
 "lent"
-]
+],
+"fr": "prêter",
+"tier": 2
 },
 {
 "base": "let",
@@ -650,7 +791,9 @@
 ],
 "participle": [
 "let"
-]
+],
+"fr": "laisser, permettre",
+"tier": 1
 },
 {
 "base": "lie",
@@ -659,7 +802,9 @@
 ],
 "participle": [
 "lain"
-]
+],
+"fr": "être allongé",
+"tier": 2
 },
 {
 "base": "light",
@@ -668,7 +813,9 @@
 ],
 "participle": [
 "lit"
-]
+],
+"fr": "allumer",
+"tier": 2
 },
 {
 "base": "lose",
@@ -677,7 +824,9 @@
 ],
 "participle": [
 "lost"
-]
+],
+"fr": "perdre",
+"tier": 1
 },
 {
 "base": "make",
@@ -686,7 +835,9 @@
 ],
 "participle": [
 "made"
-]
+],
+"fr": "faire, fabriquer",
+"tier": 1
 },
 {
 "base": "mean",
@@ -695,7 +846,9 @@
 ],
 "participle": [
 "meant"
-]
+],
+"fr": "signifier, vouloir dire",
+"tier": 1
 },
 {
 "base": "meet",
@@ -704,7 +857,9 @@
 ],
 "participle": [
 "met"
-]
+],
+"fr": "rencontrer",
+"tier": 1
 },
 {
 "base": "pay",
@@ -713,7 +868,9 @@
 ],
 "participle": [
 "paid"
-]
+],
+"fr": "payer",
+"tier": 1
 },
 {
 "base": "put",
@@ -722,7 +879,9 @@
 ],
 "participle": [
 "put"
-]
+],
+"fr": "mettre",
+"tier": 1
 },
 {
 "base": "quit",
@@ -731,7 +890,9 @@
 ],
 "participle": [
 "quit"
-]
+],
+"fr": "quitter, arrêter",
+"tier": 3
 },
 {
 "base": "read",
@@ -740,7 +901,9 @@
 ],
 "participle": [
 "read"
-]
+],
+"fr": "lire",
+"tier": 1
 },
 {
 "base": "ride",
@@ -749,7 +912,9 @@
 ],
 "participle": [
 "ridden"
-]
+],
+"fr": "monter (à cheval, à vélo)",
+"tier": 2
 },
 {
 "base": "ring",
@@ -758,7 +923,9 @@
 ],
 "participle": [
 "rung"
-]
+],
+"fr": "sonner",
+"tier": 2
 },
 {
 "base": "rise",
@@ -767,7 +934,9 @@
 ],
 "participle": [
 "risen"
-]
+],
+"fr": "se lever, monter",
+"tier": 2
 },
 {
 "base": "run",
@@ -776,7 +945,9 @@
 ],
 "participle": [
 "run"
-]
+],
+"fr": "courir",
+"tier": 1
 },
 {
 "base": "say",
@@ -785,7 +956,9 @@
 ],
 "participle": [
 "said"
-]
+],
+"fr": "dire",
+"tier": 1
 },
 {
 "base": "see",
@@ -794,7 +967,9 @@
 ],
 "participle": [
 "seen"
-]
+],
+"fr": "voir",
+"tier": 1
 },
 {
 "base": "seek",
@@ -803,7 +978,9 @@
 ],
 "participle": [
 "sought"
-]
+],
+"fr": "chercher",
+"tier": 3
 },
 {
 "base": "sell",
@@ -812,7 +989,9 @@
 ],
 "participle": [
 "sold"
-]
+],
+"fr": "vendre",
+"tier": 1
 },
 {
 "base": "send",
@@ -821,7 +1000,9 @@
 ],
 "participle": [
 "sent"
-]
+],
+"fr": "envoyer",
+"tier": 1
 },
 {
 "base": "set",
@@ -830,7 +1011,9 @@
 ],
 "participle": [
 "set"
-]
+],
+"fr": "fixer, placer",
+"tier": 1
 },
 {
 "base": "sew",
@@ -839,7 +1022,9 @@
 ],
 "participle": [
 "sewn"
-]
+],
+"fr": "coudre",
+"tier": 3
 },
 {
 "base": "shake",
@@ -848,7 +1033,9 @@
 ],
 "participle": [
 "shaken"
-]
+],
+"fr": "secouer",
+"tier": 2
 },
 {
 "base": "shine",
@@ -857,7 +1044,9 @@
 ],
 "participle": [
 "shone"
-]
+],
+"fr": "briller",
+"tier": 2
 },
 {
 "base": "shoot",
@@ -866,7 +1055,9 @@
 ],
 "participle": [
 "shot"
-]
+],
+"fr": "tirer (au fusil), filmer",
+"tier": 2
 },
 {
 "base": "show",
@@ -875,7 +1066,9 @@
 ],
 "participle": [
 "shown"
-]
+],
+"fr": "montrer",
+"tier": 2
 },
 {
 "base": "shrink",
@@ -884,7 +1077,9 @@
 ],
 "participle": [
 "shrunk"
-]
+],
+"fr": "rétrécir",
+"tier": 3
 },
 {
 "base": "shut",
@@ -893,7 +1088,9 @@
 ],
 "participle": [
 "shut"
-]
+],
+"fr": "fermer",
+"tier": 2
 },
 {
 "base": "sing",
@@ -902,7 +1099,9 @@
 ],
 "participle": [
 "sung"
-]
+],
+"fr": "chanter",
+"tier": 2
 },
 {
 "base": "sink",
@@ -911,7 +1110,9 @@
 ],
 "participle": [
 "sunk"
-]
+],
+"fr": "couler, sombrer",
+"tier": 2
 },
 {
 "base": "sit",
@@ -920,7 +1121,9 @@
 ],
 "participle": [
 "sat"
-]
+],
+"fr": "s'asseoir",
+"tier": 1
 },
 {
 "base": "sleep",
@@ -929,7 +1132,9 @@
 ],
 "participle": [
 "slept"
-]
+],
+"fr": "dormir",
+"tier": 1
 },
 {
 "base": "slide",
@@ -938,7 +1143,9 @@
 ],
 "participle": [
 "slid"
-]
+],
+"fr": "glisser",
+"tier": 3
 },
 {
 "base": "smell",
@@ -949,7 +1156,9 @@
 "participle": [
 "smelt",
 "smelled"
-]
+],
+"fr": "sentir (une odeur)",
+"tier": 2
 },
 {
 "base": "speak",
@@ -958,7 +1167,9 @@
 ],
 "participle": [
 "spoken"
-]
+],
+"fr": "parler",
+"tier": 1
 },
 {
 "base": "speed",
@@ -967,7 +1178,9 @@
 ],
 "participle": [
 "sped"
-]
+],
+"fr": "aller vite",
+"tier": 3
 },
 {
 "base": "spell",
@@ -978,7 +1191,9 @@
 "participle": [
 "spelt",
 "spelled"
-]
+],
+"fr": "épeler",
+"tier": 2
 },
 {
 "base": "spend",
@@ -987,7 +1202,9 @@
 ],
 "participle": [
 "spent"
-]
+],
+"fr": "dépenser, passer (du temps)",
+"tier": 1
 },
 {
 "base": "spill",
@@ -998,7 +1215,9 @@
 "participle": [
 "spilt",
 "spilled"
-]
+],
+"fr": "renverser (un liquide)",
+"tier": 2
 },
 {
 "base": "spin",
@@ -1007,7 +1226,9 @@
 ],
 "participle": [
 "spun"
-]
+],
+"fr": "tourner, filer",
+"tier": 3
 },
 {
 "base": "spit",
@@ -1016,7 +1237,9 @@
 ],
 "participle": [
 "spat"
-]
+],
+"fr": "cracher",
+"tier": 3
 },
 {
 "base": "split",
@@ -1025,7 +1248,9 @@
 ],
 "participle": [
 "split"
-]
+],
+"fr": "fendre, partager",
+"tier": 3
 },
 {
 "base": "spoil",
@@ -1036,7 +1261,9 @@
 "participle": [
 "spoilt",
 "spoiled"
-]
+],
+"fr": "gâcher, gâter",
+"tier": 3
 },
 {
 "base": "spread",
@@ -1045,7 +1272,9 @@
 ],
 "participle": [
 "spread"
-]
+],
+"fr": "étaler, répandre",
+"tier": 3
 },
 {
 "base": "spring",
@@ -1054,7 +1283,9 @@
 ],
 "participle": [
 "sprung"
-]
+],
+"fr": "jaillir, bondir",
+"tier": 3
 },
 {
 "base": "stand",
@@ -1063,7 +1294,9 @@
 ],
 "participle": [
 "stood"
-]
+],
+"fr": "être debout",
+"tier": 1
 },
 {
 "base": "steal",
@@ -1072,7 +1305,9 @@
 ],
 "participle": [
 "stolen"
-]
+],
+"fr": "voler (dérober)",
+"tier": 2
 },
 {
 "base": "stick",
@@ -1081,7 +1316,9 @@
 ],
 "participle": [
 "stuck"
-]
+],
+"fr": "coller",
+"tier": 3
 },
 {
 "base": "sting",
@@ -1090,7 +1327,9 @@
 ],
 "participle": [
 "stung"
-]
+],
+"fr": "piquer",
+"tier": 3
 },
 {
 "base": "stink",
@@ -1099,7 +1338,9 @@
 ],
 "participle": [
 "stunk"
-]
+],
+"fr": "puer",
+"tier": 3
 },
 {
 "base": "strike",
@@ -1108,7 +1349,9 @@
 ],
 "participle": [
 "struck"
-]
+],
+"fr": "frapper, faire grève",
+"tier": 3
 },
 {
 "base": "strive",
@@ -1117,7 +1360,9 @@
 ],
 "participle": [
 "striven"
-]
+],
+"fr": "s'efforcer",
+"tier": 3
 },
 {
 "base": "swear",
@@ -1126,7 +1371,9 @@
 ],
 "participle": [
 "sworn"
-]
+],
+"fr": "jurer",
+"tier": 3
 },
 {
 "base": "sweep",
@@ -1135,7 +1382,9 @@
 ],
 "participle": [
 "swept"
-]
+],
+"fr": "balayer",
+"tier": 3
 },
 {
 "base": "swell",
@@ -1144,7 +1393,9 @@
 ],
 "participle": [
 "swollen"
-]
+],
+"fr": "enfler",
+"tier": 3
 },
 {
 "base": "swim",
@@ -1153,7 +1404,9 @@
 ],
 "participle": [
 "swum"
-]
+],
+"fr": "nager",
+"tier": 2
 },
 {
 "base": "swing",
@@ -1162,7 +1415,9 @@
 ],
 "participle": [
 "swung"
-]
+],
+"fr": "(se) balancer",
+"tier": 3
 },
 {
 "base": "take",
@@ -1171,7 +1426,9 @@
 ],
 "participle": [
 "taken"
-]
+],
+"fr": "prendre",
+"tier": 1
 },
 {
 "base": "teach",
@@ -1180,7 +1437,9 @@
 ],
 "participle": [
 "taught"
-]
+],
+"fr": "enseigner",
+"tier": 1
 },
 {
 "base": "tear",
@@ -1189,7 +1448,9 @@
 ],
 "participle": [
 "torn"
-]
+],
+"fr": "déchirer",
+"tier": 3
 },
 {
 "base": "tell",
@@ -1198,7 +1459,9 @@
 ],
 "participle": [
 "told"
-]
+],
+"fr": "dire, raconter",
+"tier": 1
 },
 {
 "base": "think",
@@ -1207,7 +1470,9 @@
 ],
 "participle": [
 "thought"
-]
+],
+"fr": "penser",
+"tier": 1
 },
 {
 "base": "throw",
@@ -1216,7 +1481,9 @@
 ],
 "participle": [
 "thrown"
-]
+],
+"fr": "jeter, lancer",
+"tier": 2
 },
 {
 "base": "tread",
@@ -1225,7 +1492,9 @@
 ],
 "participle": [
 "trodden"
-]
+],
+"fr": "marcher sur, fouler",
+"tier": 3
 },
 {
 "base": "understand",
@@ -1234,7 +1503,9 @@
 ],
 "participle": [
 "understood"
-]
+],
+"fr": "comprendre",
+"tier": 1
 },
 {
 "base": "upset",
@@ -1243,7 +1514,9 @@
 ],
 "participle": [
 "upset"
-]
+],
+"fr": "contrarier",
+"tier": 3
 },
 {
 "base": "wake",
@@ -1252,7 +1525,9 @@
 ],
 "participle": [
 "woken"
-]
+],
+"fr": "(se) réveiller",
+"tier": 2
 },
 {
 "base": "wear",
@@ -1261,7 +1536,9 @@
 ],
 "participle": [
 "worn"
-]
+],
+"fr": "porter (un vêtement)",
+"tier": 1
 },
 {
 "base": "weave",
@@ -1270,7 +1547,9 @@
 ],
 "participle": [
 "woven"
-]
+],
+"fr": "tisser",
+"tier": 3
 },
 {
 "base": "weep",
@@ -1279,7 +1558,9 @@
 ],
 "participle": [
 "wept"
-]
+],
+"fr": "pleurer",
+"tier": 3
 },
 {
 "base": "win",
@@ -1288,7 +1569,9 @@
 ],
 "participle": [
 "won"
-]
+],
+"fr": "gagner",
+"tier": 1
 },
 {
 "base": "wind",
@@ -1297,7 +1580,9 @@
 ],
 "participle": [
 "wound"
-]
+],
+"fr": "enrouler, remonter",
+"tier": 3
 },
 {
 "base": "withdraw",
@@ -1306,7 +1591,9 @@
 ],
 "participle": [
 "withdrawn"
-]
+],
+"fr": "retirer",
+"tier": 3
 },
 {
 "base": "write",
@@ -1315,7 +1602,9 @@
 ],
 "participle": [
 "written"
-]
+],
+"fr": "écrire",
+"tier": 1
 }
 ]
 }

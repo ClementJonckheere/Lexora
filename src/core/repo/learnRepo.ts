@@ -1,5 +1,6 @@
 import type { Database, Queryable } from '../db/types';
 import type { GrammarAnswer } from '../learn/progress';
+import type { VerbAnswer } from '../learn/irregularVerbs';
 import { newId } from '../domain/text';
 
 /** Réponses aux exercices de grammaire de l'univers (toutes leçons). */
@@ -29,4 +30,28 @@ export async function reportGrammarItem(db: Database, universeId: string, lesson
       [newId(), universeId, lessonId, itemId, now, now],
     );
   });
+}
+
+/* ---------------------------------------------------- verbes irréguliers --- */
+
+/** Réponse à un verbe irrégulier : les formes tapées et leur justesse. */
+export async function recordVerbAnswer(
+  db: Database,
+  universeId: string,
+  a: VerbAnswer & { pastGiven: string; participleGiven: string },
+  now = Date.now(),
+): Promise<void> {
+  await db.execute(
+    `INSERT INTO verb_answers (id, universe_id, verb, past_given, participle_given, past_ok, participle_ok, created_at, updated_at, deleted, dirty)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1)`,
+    [newId(), universeId, a.verb, a.pastGiven.trim().slice(0, 60), a.participleGiven.trim().slice(0, 60), a.pastOk ? 1 : 0, a.participleOk ? 1 : 0, a.at, now],
+  );
+}
+
+export async function loadVerbAnswers(db: Queryable, universeId: string): Promise<VerbAnswer[]> {
+  const rows = await db.select<{ verb: string; past_ok: number; participle_ok: number; created_at: number }>(
+    'SELECT verb, past_ok, participle_ok, created_at FROM verb_answers WHERE universe_id = ? AND deleted = 0 ORDER BY created_at',
+    [universeId],
+  );
+  return rows.map((r) => ({ verb: r.verb, pastOk: Number(r.past_ok) === 1, participleOk: Number(r.participle_ok) === 1, at: Number(r.created_at) }));
 }

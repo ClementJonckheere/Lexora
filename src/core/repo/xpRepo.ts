@@ -3,6 +3,8 @@ import { newId } from '../domain/text';
 import type { GrammarAnswer } from '../learn/progress';
 import { lessonReview, type LessonReview } from '../learn/review';
 import { countedReadingMinutes } from '../reading/readingTime';
+import { masteredVerbs } from '../learn/irregularVerbs';
+import { loadVerbAnswers } from './learnRepo';
 import { BOOK_DONE, type TitleData } from '../progress/titles';
 import { BOOK_FINISHED_MIN_MINUTES, type XpEvent } from '../progress/xp';
 
@@ -19,6 +21,8 @@ export interface History {
   entries: TitleData['entries'];
   /** Minutes de lecture comptées, toutes séances confondues. */
   readingMinutes: number;
+  /** Verbes irréguliers maîtrisés. */
+  verbsMastered: number;
 }
 
 /** Séance de lecture (une ouverture d'un livre), réécrite pendant la lecture. */
@@ -37,7 +41,7 @@ export async function loadXpEvents(db: Queryable, universeId: string, grammar: G
 }
 
 export async function loadHistory(db: Queryable, universeId: string, grammar: GrammarAnswer[]): Promise<History> {
-  const [reviews, practice, notes, chapter, entries, sessions, books] = await Promise.all([
+  const [reviews, practice, notes, chapter, entries, sessions, books, verbs] = await Promise.all([
     // Réponse tapée : enregistrée dans typed_answers (synchronisée) ; avant elle, seul typed_ms (propre à l'appareil,
     // réponses exactes sur des fiches en révision) en gardait la trace.
     db.select<{ card_id: string; note_id: string; rating: number; elapsed_days: number; reviewed_at: number; due: number; typed: number }>(
@@ -73,6 +77,7 @@ export async function loadHistory(db: Queryable, universeId: string, grammar: Gr
       'SELECT book_key, progress, last_read_at FROM books WHERE universe_id = ? AND deleted = 0',
       [universeId],
     ),
+    loadVerbAnswers(db, universeId),
   ]);
 
   const events: XpEvent[] = [];
@@ -99,6 +104,7 @@ export async function loadHistory(db: Queryable, universeId: string, grammar: Gr
     perBook.set(r.book_key, (perBook.get(r.book_key) ?? 0) + minutes);
     readingMinutes += minutes;
   }
+  for (const v of verbs) events.push({ kind: 'verb', at: v.at, verb: v.verb, correct: v.pastOk && v.participleOk });
   for (const b of books)
     if (Number(b.progress) >= BOOK_DONE && b.last_read_at != null && (perBook.get(b.book_key) ?? 0) >= BOOK_FINISHED_MIN_MINUTES)
       events.push({ kind: 'book-finished', at: Number(b.last_read_at), bookKey: b.book_key });
@@ -133,6 +139,7 @@ export async function loadHistory(db: Queryable, universeId: string, grammar: Gr
     chapterDecisions: chapter.map((c) => Number(c.created_at)),
     entries: entries.map((e) => ({ at: Number(e.created_at), durationMs: Number(e.duration_ms) })),
     readingMinutes,
+    verbsMastered: masteredVerbs(verbs),
   };
 }
 

@@ -11,6 +11,7 @@ import { dayKey } from '../domain/dates';
  * - entraînement libre : 1 XP ; grammaire : 5 XP réponse tapée juste, 2 XP choix juste, 1 XP une erreur ;
  * - leçon acquise : 60 XP ; révision de leçon réussie : 25 XP ;
  * - mot ajouté : 3 XP avec un exemple, 1 XP sans, 30 XP par jour au plus ;
+ * - verbe irrégulier : 4 XP les deux formes justes (tapées), 1 XP sinon ;
  * - lecture : 2 XP par minute comptée (temps actif, 5 minutes au plus par page tournée), 2 heures par jour au plus ;
  *   livre fini : 50 XP, s'il a été lu au moins une heure (aller à la fin par la table des matières ne suffit pas) ;
  * - concentration : dans une séance sans pause de plus de 2 minutes, ×1,25 après 10 minutes, ×1,5 après 25 ;
@@ -26,6 +27,7 @@ export type XpEvent =
   | { kind: 'lesson-review'; at: number; lessonId: string; passed: boolean }
   /** Une séance de lecture : minutes comptées (`countedReadingMinutes`). */
   | { kind: 'reading'; at: number; minutes: number }
+  | { kind: 'verb'; at: number; verb: string; correct: boolean }
   | { kind: 'book-finished'; at: number; bookKey: string };
 
 export type XpSource = 'vocabulary' | 'grammar' | 'words' | 'lessons' | 'reading';
@@ -114,7 +116,7 @@ export interface XpSummary extends LevelInfo {
   bySource: Record<XpSource, number>;
 }
 
-const ACTIVE = new Set<XpEvent['kind']>(['review', 'practice', 'grammar']);
+const ACTIVE = new Set<XpEvent['kind']>(['review', 'practice', 'grammar', 'verb']);
 
 /** Multiplicateur de concentration après `minutes` de séance sans pause. */
 export function focusMultiplier(minutes: number): number {
@@ -136,6 +138,8 @@ export function baseXp(e: XpEvent): number {
       return 60;
     case 'lesson-review':
       return e.passed ? 25 : 0;
+    case 'verb':
+      return e.correct ? 4 : 1;
     case 'reading':
       return e.minutes * READING_XP_PER_MINUTE;
     case 'book-finished':
@@ -145,7 +149,7 @@ export function baseXp(e: XpEvent): number {
 
 function source(e: XpEvent): XpSource {
   if (e.kind === 'review' || e.kind === 'practice') return 'vocabulary';
-  if (e.kind === 'grammar') return 'grammar';
+  if (e.kind === 'grammar' || e.kind === 'verb') return 'grammar';
   if (e.kind === 'note') return 'words';
   if (e.kind === 'reading' || e.kind === 'book-finished') return 'reading';
   return 'lessons';
@@ -155,6 +159,7 @@ function itemKey(e: XpEvent): string | null {
   if (e.kind === 'review') return `c:${e.cardId}`;
   if (e.kind === 'practice') return `p:${e.noteId}`;
   if (e.kind === 'grammar') return `g:${e.itemId}`;
+  if (e.kind === 'verb') return `v:${e.verb}`;
   return null;
 }
 

@@ -98,6 +98,11 @@ describe('titres', () => {
     expect(get(base({ lessons: Array(10).fill(held) }), 'gardien').earned).toBe(true);
   });
 
+  it("Dompteur d'irréguliers : 100 verbes maîtrisés", () => {
+    expect(get(base({ verbsMastered: 40 }), 'dompteur').progress).toBe('40 / 100');
+    expect(get(base({ verbsMastered: 100 }), 'dompteur').earned).toBe(true);
+  });
+
   it('Rat de bibliothèque : 25 heures de lecture comptées', () => {
     expect(get(base({ readingMinutes: 24 * 60 + 59 }), 'rat-bibliotheque').progress).toBe('24 / 25 h');
     expect(get(base({ readingMinutes: 25 * 60 }), 'rat-bibliotheque').earned).toBe(true);

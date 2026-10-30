@@ -40,6 +40,8 @@ export interface TitleData {
   entries: readonly { at: number; durationMs: number }[];
   /** Minutes de lecture comptées (séances de lecture). */
   readingMinutes?: number;
+  /** Verbes irréguliers maîtrisés. */
+  verbsMastered?: number;
   /** Niveau atteint dans chaque univers. */
   levels: readonly number[];
 }
@@ -198,6 +200,7 @@ export function computeTitles(d: TitleData): Title[] {
   const focusHours = Math.floor(sessions.reduce((sum, s) => sum + (s.end - s.start), 0) / 3_600_000);
   const silver = d.levels.filter((l) => l >= SILVER_LEVEL).length;
   const readingHours = Math.floor((d.readingMinutes ?? 0) / 60);
+  const verbs = d.verbsMastered ?? 0;
 
   const t = (id: string, name: string, category: TitleCategory, description: string, earned: boolean, progress: string): Title => ({
     id,
@@ -224,6 +227,7 @@ export function computeTitles(d: TitleData): Title[] {
       `${count(mastered, 10)} leçons · ${count(d.grammarCorrect, 500)}`,
     ),
     t('gardien', 'Gardien des règles', 'Grammaire', '10 leçons réussies sur 3 révisions de suite', held >= 10, count(held, 10)),
+    t('dompteur', "Dompteur d'irréguliers", 'Grammaire', '100 verbes irréguliers maîtrisés', verbs >= 100, count(verbs, 100)),
     t('resilient', 'Résilient', 'Mémorisation', '50 fiches oubliées, puis retrouvées un autre jour', resilient >= 50, count(resilient, 50)),
     t('stratege', 'Stratège du temps', 'Mémorisation', '90 jours sans laisser une fiche plus de 2 jours en retard', onTime >= 90, count(onTime, 90, ' jours')),
     t('memoire-longue', 'Mémoire longue', 'Mémorisation', '500 mots retrouvés après plus de 3 mois', longMemory >= 500, count(longMemory, 500)),

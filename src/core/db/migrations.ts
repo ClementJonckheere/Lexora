@@ -295,6 +295,27 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_reading_sessions_universe ON reading_sessions(universe_id, deleted)',
   ],
+}, {
+  version: 11,
+  name: 'apprendre : verbes irréguliers',
+  statements: [
+    // Une ligne par réponse (prétérit et participe tapés) : répétition espacée de chaque verbe, XP, titre « Dompteur
+    // d'irréguliers » (src/core/learn/irregularVerbs.ts). Les réponses tapées sont gardées pour l'analyse des erreurs.
+    `CREATE TABLE verb_answers (
+      id               TEXT PRIMARY KEY,
+      universe_id      TEXT    NOT NULL,
+      verb             TEXT    NOT NULL,
+      past_given       TEXT    NOT NULL DEFAULT '',
+      participle_given TEXT    NOT NULL DEFAULT '',
+      past_ok          INTEGER NOT NULL,
+      participle_ok    INTEGER NOT NULL,
+      created_at       INTEGER NOT NULL,
+      updated_at       INTEGER NOT NULL,
+      deleted          INTEGER NOT NULL DEFAULT 0,
+      dirty            INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_verb_answers_universe ON verb_answers(universe_id, deleted)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

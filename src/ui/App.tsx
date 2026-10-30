@@ -28,6 +28,7 @@ import { GrammarAnnotatePage } from '@/ui/features/learn/GrammarAnnotate';
 import { LearnPage } from '@/ui/features/learn/LearnPage';
 import { LessonPage } from '@/ui/features/learn/LessonPage';
 import { PlacementPage } from '@/ui/features/learn/PlacementPage';
+import { VerbsPage } from '@/ui/features/learn/VerbsPage';
 import { AccountConflictScreen, FirstSyncScreen, LoginScreen } from './features/account/AuthScreens';
 import { SidebarAccount } from './features/account/SyncIndicator';
 import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/universes/Universes';
@@ -94,7 +95,7 @@ function TopBar() {
   const route = useApp((s) => s.route);
   const { navigate, openEditor, setSearchOpen } = useApp.getState();
   const due = useDueCounts();
-  const current = route.name === 'collection' ? 'collections' : route.name === 'lesson' || route.name === 'placement' || route.name === 'grammar-annotate' ? 'learn' : route.name;
+  const current = route.name === 'collection' ? 'collections' : route.name === 'lesson' || route.name === 'placement' || route.name === 'verbs' || route.name === 'grammar-annotate' ? 'learn' : route.name;
   return (
     <header className="topbar">
       <div className="topbar-side">
@@ -207,6 +208,8 @@ function Page() {
       return <LessonPage key={route.id} id={route.id} startReview={route.review} />;
     case 'placement':
       return <PlacementPage retake={route.retake} />;
+    case 'verbs':
+      return <VerbsPage />;
     case 'stats':
       return <StatsPage />;
     case 'progress':
