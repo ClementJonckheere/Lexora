@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { assetUrl } from '@/core/platform/env';
 import { shuffledChoices, type Exercise } from '@/core/learn/exercises';
 import type { PlacementItem } from '@/core/learn/placementBank';
 
@@ -54,9 +55,9 @@ let cache: Promise<GrammarData | null> | null = null;
 export function loadGrammarData(): Promise<GrammarData | null> {
   cache ??= (async () => {
     const [points, lessons, index] = await Promise.all([
-      json<{ points: GrammarPoint[]; traps: Trap[] }>('/grammar/en/points.json'),
-      json<{ lessons: Lesson[] }>('/grammar/en/lessons.json'),
-      json<{ sizes: Record<string, number> }>('/grammar/en/exercises/index.json'),
+      json<{ points: GrammarPoint[]; traps: Trap[] }>(assetUrl('grammar/en/points.json')),
+      json<{ lessons: Lesson[] }>(assetUrl('grammar/en/lessons.json')),
+      json<{ sizes: Record<string, number> }>(assetUrl('grammar/en/exercises/index.json')),
     ]);
     if (!points || !lessons) return null;
     return { points: points.points, traps: points.traps, lessons: lessons.lessons, bankSizes: index?.sizes ?? {} };
@@ -70,7 +71,7 @@ const banks = new Map<string, Promise<Exercise[]>>();
 export function loadExercises(lessonId: string): Promise<Exercise[]> {
   let p = banks.get(lessonId);
   if (!p) {
-    p = json<{ items: Exercise[] }>(`/grammar/en/exercises/${encodeURIComponent(lessonId)}.json`).then((d) =>
+    p = json<{ items: Exercise[] }>(assetUrl(`grammar/en/exercises/${encodeURIComponent(lessonId)}.json`)).then((d) =>
       (d?.items ?? []).map((ex) => (ex.choices ? { ...ex, choices: shuffledChoices(ex.choices, ex.id) } : ex)),
     );
     banks.set(lessonId, p);
@@ -92,5 +93,5 @@ export function useGrammarData(): GrammarData | null | undefined {
 
 /** Questions du test de placement (banque préparée par la CI, plus les questions rédigées). */
 export function loadPlacementItems(): Promise<PlacementItem[]> {
-  return json<{ items: PlacementItem[] }>('/grammar/en/placement.json').then((d) => d?.items ?? []);
+  return json<{ items: PlacementItem[] }>(assetUrl('grammar/en/placement.json')).then((d) => d?.items ?? []);
 }

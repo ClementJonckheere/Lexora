@@ -420,7 +420,7 @@ function NoteEditorDialog() {
             </label>
           </div>
         )}
-        <p className="muted small">
+        <p className="muted small keys-only">
           <Kbd>Entrée</Kbd> champ suivant · <Kbd>Ctrl</Kbd>+<Kbd>Entrée</Kbd> enregistrer · <Kbd>Échap</Kbd> fermer
         </p>
         <button type="submit" hidden />

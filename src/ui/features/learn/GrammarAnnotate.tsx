@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { assetUrl } from '@/core/platform/env';
 import { BookOpen, Check, Download, Loader2, SkipForward, X } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import { collectCandidates, exportAnnotations, HIGHLIGHT_PRECISION, precisionOf, TARGET_ANNOTATIONS, type Annotations } from '@/core/learn/annotation';
@@ -42,7 +43,7 @@ export function GrammarAnnotatePage() {
   const [pointId, setPointId] = useState<string | null>(null);
 
   useEffect(() => {
-    void fetch('/grammar/en/points.json')
+    void fetch(assetUrl('grammar/en/points.json'))
       .then((r) => r.json())
       .then((d: { points: GrammarPoint[] }) => setPoints(d.points.filter((p) => hasPattern(p.id))))
       .catch((err) => toast('error', errorMessage(err)));

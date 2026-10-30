@@ -155,3 +155,14 @@ Une voix neuronale de qualité studio ([Azure AI Speech](https://learn.microsoft
 Avec la ligne de commande Supabase : `supabase functions deploy speak` puis `supabase secrets set AZURE_SPEECH_KEY=… AZURE_SPEECH_REGION=westeurope`.
 
 Les expressions à prononcer sont envoyées à Azure (via cette fonction). La voix naturelle se désactive dans *Paramètres → Voix naturelle*.
+
+## Version web (téléphone)
+
+Lexora existe aussi en version web, publiée sur GitHub Pages (`https://<compte>.github.io/Lexora/`) et installable sur l'écran d'accueil d'un iPhone ou d'un téléphone Android, sans licence ni boutique. Même compte, mêmes données : la synchronisation Supabase fait le lien avec l'application Windows. Mise en place, une fois :
+
+1. **Publier le site** : sur GitHub, *Settings → Pages → Build and deployment → Source : GitHub Actions*. Le workflow « Version web (GitHub Pages) » (`.github/workflows/pages.yml`) publie ensuite chaque push sur `main` ; il reprend les secrets `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` déjà utilisés par l'installateur.
+2. **Autoriser le retour de connexion** : dans Supabase, *Authentication → URL Configuration → Redirect URLs*, ajouter `https://<compte>.github.io/Lexora/` (avec la barre finale).
+3. **Relais pour les livres, exemples et dictionnaire** : Project Gutenberg, Gutendex, Tatoeba, MyMemory, DeepL et le Wiktionnaire refusent les requêtes directes depuis une page web. Déployer la fonction `proxy` (`supabase/functions/proxy`) : *Edge Functions → Deploy a new function → Via Editor*, nom `proxy`, coller le contenu de `supabase/functions/proxy/index.ts`, *Deploy*. Elle n'accepte que ces domaines et les utilisateurs connectés (`ALLOWED_EMAILS`, s'il est défini pour la traduction, s'applique aussi). En ligne de commande : `supabase functions deploy proxy`.
+4. **Connexion par code (iPhone)** : dans une web app installée sur iPhone, la page Google s'ouvre dans une feuille Safari et la session peut y rester. L'écran de connexion propose donc aussi « Recevoir un code par e-mail ». Pour que l'e-mail contienne le code, *Authentication → Emails → Magic Link* : ajouter au modèle `<p>Votre code Lexora : <strong>{{ .Token }}</strong></p>`. Seuls les comptes existants (une première connexion avec Google, même adresse) peuvent se connecter ainsi.
+
+Ce qui change par rapport à Windows : pas de zone de notification, de démarrage avec Windows, de raccourci global ni de mise à jour par installateur (la version web se met à jour toute seule) ; les données locales sont dans le navigateur (IndexedDB), protégées du nettoyage automatique quand c'est possible et de toute façon synchronisées.

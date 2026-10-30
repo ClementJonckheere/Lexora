@@ -289,8 +289,11 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
         {typing && typedNotice && !revealed && (
           <div className="typed-notice">
             <span>
-              Tapez la réponse : Lexora propose la note selon la justesse et la rapidité. <Kbd>Entrée</Kbd> pour l'accepter, <Kbd>1</Kbd> à <Kbd>4</Kbd> pour la
-              changer. Désactivable dans les Paramètres.
+              Tapez la réponse : Lexora propose la note selon la justesse et la rapidité.{' '}
+              <span className="keys-only">
+                <Kbd>Entrée</Kbd> pour l'accepter, <Kbd>1</Kbd> à <Kbd>4</Kbd> pour la changer.{' '}
+              </span>
+              Désactivable dans les Paramètres.
             </span>
             <button
               className="link small"

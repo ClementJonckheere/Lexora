@@ -1,4 +1,5 @@
 import { httpGet, httpGetJson, httpGetText } from '../platform/http';
+import { assetUrl } from '../platform/env';
 import { opdsUrl, parseOpds } from './opds';
 import { decodeText, parseGutenberg, type ParsedBook } from './gutenberg';
 import { catalogUrl, parseCatalogPage, shortTitle, type CatalogBook, type GutendexPage } from './gutendex';
@@ -73,7 +74,7 @@ const bundleCache = new Map<string, Promise<BundledCatalog | null>>();
 export function loadBundledCatalog(language: string): Promise<BundledCatalog | null> {
   let p = bundleCache.get(language);
   if (!p) {
-    p = fetch(`/reading/catalog/${encodeURIComponent(language)}.json`)
+    p = fetch(assetUrl(`reading/catalog/${encodeURIComponent(language)}.json`))
       .then(async (res) => {
         const type = res.headers.get('content-type') ?? '';
         if (!res.ok || type.includes('html')) return null;
@@ -109,7 +110,7 @@ const ranksCache = new Map<string, Promise<FrequencyRanks | null>>();
 function loadFrequencyText(language: string): Promise<string | null> {
   let p = listCache.get(language);
   if (!p) {
-    p = fetch(`/reading/freq/${encodeURIComponent(language)}.txt`)
+    p = fetch(assetUrl(`reading/freq/${encodeURIComponent(language)}.txt`))
       .then(async (res) => {
         const type = res.headers.get('content-type') ?? '';
         // Un serveur de développement renvoie index.html pour un fichier absent.
@@ -141,7 +142,7 @@ export async function loadFrequencyList(language: string): Promise<string[] | nu
 /** Banque de mots du test préparée par la CI (null : absente, le test utilise la liste de fréquence seule). */
 export async function loadVocabBank(language: string): Promise<VocabBank | null> {
   try {
-    const res = await fetch(`/reading/vocab/${encodeURIComponent(language)}.json`);
+    const res = await fetch(assetUrl(`reading/vocab/${encodeURIComponent(language)}.json`));
     const type = res.headers.get('content-type') ?? '';
     if (!res.ok || type.includes('html')) return null;
     const data = (await res.json()) as VocabBank;

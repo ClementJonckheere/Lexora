@@ -30,6 +30,8 @@ function projectOrigin(raw: string | undefined): string | undefined {
 }
 
 const URL_ = projectOrigin(import.meta.env.VITE_SUPABASE_URL);
+/** Origine du projet Supabase (https://xxxx.supabase.co), pour les appels directs aux fonctions. */
+export const supabaseOrigin = URL_;
 const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 
 export const authConfigured = Boolean(URL_ && KEY);
@@ -112,6 +114,22 @@ export async function signInWithGoogle(): Promise<AccountUser | null> {
   const { data: exchanged, error: exErr } = await sb.auth.exchangeCodeForSession(code);
   if (exErr) throw exErr;
   return toUser(exchanged.session);
+}
+
+/**
+ * Connexion par code à 6 chiffres reçu par e-mail : tout se passe dans l'application, sans redirection. C'est la voie
+ * sûre pour la version web installée sur iPhone, où la page Google s'ouvre hors de l'application. Seul un compte
+ * existant (créé avec Google, même adresse) peut se connecter ainsi : pas de nouveau compte.
+ */
+export async function sendEmailCode(email: string): Promise<void> {
+  const { error } = await supabase().auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: false } });
+  if (error) throw new Error(/signups not allowed|not found/i.test(error.message) ? "Aucun compte Lexora pour cette adresse : connectez-vous d'abord une fois avec Google." : error.message);
+}
+
+export async function verifyEmailCode(email: string, code: string): Promise<AccountUser | null> {
+  const { data, error } = await supabase().auth.verifyOtp({ email: email.trim(), token: code.replace(/\s+/g, ''), type: 'email' });
+  if (error) throw new Error(/expired|invalid/i.test(error.message) ? 'Code invalide ou expiré : demandez-en un nouveau.' : error.message);
+  return toUser(data.session);
 }
 
 export async function signOut(): Promise<void> {
