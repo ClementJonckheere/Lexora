@@ -1,0 +1,433 @@
+{
+ "version": 1,
+ "status": "rédigé, à relire",
+ "id": "dependent-prepositions",
+ "title": "Verbes et adjectifs à préposition",
+ "description": "La préposition qui suit un verbe ou un adjectif (depend on, listen to, good at) ne se devine pas depuis le français : elle s'apprend avec le mot. La phrase à trous fait taper la préposition.",
+ "notes": [
+  {
+   "expression": "To depend on sth",
+   "translation": "Dépendre de qqch",
+   "examples": [
+    "It depends on the weather."
+   ]
+  },
+  {
+   "expression": "To listen to sb",
+   "translation": "Écouter qqn",
+   "examples": [
+    "Listen to me, please."
+   ],
+   "comment": "Pas de to devant le complément en français : écouter qqn."
+  },
+  {
+   "expression": "To wait for sb",
+   "translation": "Attendre qqn",
+   "examples": [
+    "I waited for you for an hour."
+   ]
+  },
+  {
+   "expression": "To look for sth",
+   "translation": "Chercher qqch",
+   "examples": [
+    "I'm looking for my keys."
+   ]
+  },
+  {
+   "expression": "To look at sth",
+   "translation": "Regarder qqch",
+   "examples": [
+    "Look at this photo!"
+   ]
+  },
+  {
+   "expression": "To look after sb",
+   "translation": "S'occuper de qqn",
+   "examples": [
+    "She looks after her little brother."
+   ]
+  },
+  {
+   "expression": "To ask for sth",
+   "translation": "Demander qqch",
+   "examples": [
+    "He asked for a glass of water."
+   ]
+  },
+  {
+   "expression": "To pay for sth",
+   "translation": "Payer qqch",
+   "examples": [
+    "Who paid for the tickets?"
+   ]
+  },
+  {
+   "expression": "To belong to sb",
+   "translation": "Appartenir à qqn",
+   "examples": [
+    "This bag belongs to my sister."
+   ]
+  },
+  {
+   "expression": "To agree with sb",
+   "translation": "Être d'accord avec qqn",
+   "examples": [
+    "I agree with you."
+   ]
+  },
+  {
+   "expression": "To believe in sth",
+   "translation": "Croire en qqch",
+   "examples": [
+    "Do you believe in ghosts?"
+   ]
+  },
+  {
+   "expression": "To care about sth",
+   "translation": "Se soucier de qqch",
+   "examples": [
+    "He really cares about the environment."
+   ]
+  },
+  {
+   "expression": "To complain about sth",
+   "translation": "Se plaindre de qqch",
+   "examples": [
+    "She complained about the service."
+   ]
+  },
+  {
+   "expression": "To dream of sth",
+   "translation": "Rêver de qqch",
+   "examples": [
+    "I dream of living by the sea."
+   ]
+  },
+  {
+   "expression": "To think about sth",
+   "translation": "Penser à qqch",
+   "examples": [
+    "I'm thinking about the problem."
+   ]
+  },
+  {
+   "expression": "To talk about sth",
+   "translation": "Parler de qqch",
+   "examples": [
+    "We talked about the trip."
+   ]
+  },
+  {
+   "expression": "To worry about sth",
+   "translation": "S'inquiéter de qqch",
+   "examples": [
+    "Don't worry about the exam."
+   ]
+  },
+  {
+   "expression": "To laugh at sth",
+   "translation": "Rire de qqch",
+   "examples": [
+    "Everyone laughed at his joke."
+   ]
+  },
+  {
+   "expression": "To apologise for sth",
+   "translation": "S'excuser de qqch",
+   "examples": [
+    "He apologised for being late."
+   ]
+  },
+  {
+   "expression": "To succeed in sth",
+   "translation": "Réussir (à faire) qqch",
+   "examples": [
+    "She succeeded in passing the test."
+   ]
+  },
+  {
+   "expression": "To insist on sth",
+   "translation": "Insister sur qqch",
+   "examples": [
+    "He insisted on paying for dinner."
+   ]
+  },
+  {
+   "expression": "To rely on sb",
+   "translation": "Compter sur qqn",
+   "examples": [
+    "You can rely on me."
+   ]
+  },
+  {
+   "expression": "To concentrate on sth",
+   "translation": "Se concentrer sur qqch",
+   "examples": [
+    "I can't concentrate on my work."
+   ]
+  },
+  {
+   "expression": "To arrive at",
+   "translation": "Arriver à (un bâtiment, une gare, un endroit précis)",
+   "examples": [
+    "We arrived at the station at six."
+   ],
+   "comment": "Arrive in pour une ville ou un pays : arrive in London."
+  },
+  {
+   "expression": "To arrive in",
+   "translation": "Arriver à, en (une ville, un pays)",
+   "examples": [
+    "They arrived in Paris yesterday."
+   ]
+  },
+  {
+   "expression": "To consist of sth",
+   "translation": "Se composer de qqch",
+   "examples": [
+    "The team consists of five people."
+   ]
+  },
+  {
+   "expression": "To suffer from sth",
+   "translation": "Souffrir de qqch",
+   "examples": [
+    "He suffers from headaches."
+   ]
+  },
+  {
+   "expression": "To protect sb from sth",
+   "translation": "Protéger qqn de qqch",
+   "examples": [
+    "Sunglasses protect your eyes from the sun."
+   ]
+  },
+  {
+   "expression": "To prepare for sth",
+   "translation": "Se préparer à qqch",
+   "examples": [
+    "We are preparing for the exam."
+   ]
+  },
+  {
+   "expression": "To search for sth",
+   "translation": "Rechercher qqch",
+   "examples": [
+    "The police searched for the missing boy."
+   ]
+  },
+  {
+   "expression": "To shout at sb",
+   "translation": "Crier sur qqn",
+   "examples": [
+    "Don't shout at me!"
+   ]
+  },
+  {
+   "expression": "To explain sth to sb",
+   "translation": "Expliquer qqch à qqn",
+   "examples": [
+    "Can you explain the rule to me?"
+   ],
+   "comment": "Jamais explain me : explain to me."
+  },
+  {
+   "expression": "To introduce sb to sb",
+   "translation": "Présenter qqn à qqn",
+   "examples": [
+    "Let me introduce you to my wife."
+   ]
+  },
+  {
+   "expression": "To spend money on sth",
+   "translation": "Dépenser de l'argent pour qqch",
+   "examples": [
+    "She spends a lot of money on clothes."
+   ]
+  },
+  {
+   "expression": "To be good at sth",
+   "translation": "Être bon en qqch",
+   "examples": [
+    "She is good at maths."
+   ]
+  },
+  {
+   "expression": "To be bad at sth",
+   "translation": "Être mauvais en qqch",
+   "examples": [
+    "I am bad at remembering names."
+   ]
+  },
+  {
+   "expression": "To be interested in sth",
+   "translation": "S'intéresser à qqch",
+   "examples": [
+    "He is interested in history."
+   ]
+  },
+  {
+   "expression": "To be afraid of sth",
+   "translation": "Avoir peur de qqch",
+   "examples": [
+    "My son is afraid of the dark."
+   ]
+  },
+  {
+   "expression": "To be proud of sb",
+   "translation": "Être fier de qqn",
+   "examples": [
+    "We are very proud of you."
+   ]
+  },
+  {
+   "expression": "To be tired of sth",
+   "translation": "En avoir assez de qqch",
+   "examples": [
+    "I am tired of waiting."
+   ]
+  },
+  {
+   "expression": "To be fond of sth",
+   "translation": "Aimer beaucoup qqch",
+   "examples": [
+    "She is fond of old films."
+   ]
+  },
+  {
+   "expression": "To be keen on sth",
+   "translation": "Être passionné de qqch, tenir à qqch",
+   "examples": [
+    "He is not keen on football."
+   ]
+  },
+  {
+   "expression": "To be famous for sth",
+   "translation": "Être célèbre pour qqch",
+   "examples": [
+    "The town is famous for its cheese."
+   ]
+  },
+  {
+   "expression": "To be responsible for sth",
+   "translation": "Être responsable de qqch",
+   "examples": [
+    "Who is responsible for this project?"
+   ]
+  },
+  {
+   "expression": "To be similar to sth",
+   "translation": "Être semblable à qqch",
+   "examples": [
+    "Your bag is similar to mine."
+   ]
+  },
+  {
+   "expression": "To be different from sth",
+   "translation": "Être différent de qqch",
+   "examples": [
+    "This city is different from what I expected."
+   ]
+  },
+  {
+   "expression": "To be married to sb",
+   "translation": "Être marié avec qqn",
+   "examples": [
+    "She is married to a doctor."
+   ],
+   "comment": "Pas with : married to."
+  },
+  {
+   "expression": "To be angry with sb",
+   "translation": "Être en colère contre qqn",
+   "examples": [
+    "Are you angry with me?"
+   ]
+  },
+  {
+   "expression": "To be angry about sth",
+   "translation": "Être en colère à cause de qqch",
+   "examples": [
+    "He was angry about the delay."
+   ]
+  },
+  {
+   "expression": "To be worried about sth",
+   "translation": "Être inquiet pour qqch",
+   "examples": [
+    "I am worried about my exams."
+   ]
+  },
+  {
+   "expression": "To be excited about sth",
+   "translation": "Avoir hâte de qqch, être enthousiaste",
+   "examples": [
+    "The kids are excited about the holidays."
+   ]
+  },
+  {
+   "expression": "To be full of sth",
+   "translation": "Être plein de qqch",
+   "examples": [
+    "The room was full of people."
+   ]
+  },
+  {
+   "expression": "To be aware of sth",
+   "translation": "Être conscient de qqch",
+   "examples": [
+    "Are you aware of the risks?"
+   ]
+  },
+  {
+   "expression": "To be capable of sth",
+   "translation": "Être capable de qqch",
+   "examples": [
+    "She is capable of great things."
+   ]
+  },
+  {
+   "expression": "To be kind to sb",
+   "translation": "Être gentil avec qqn",
+   "examples": [
+    "He was very kind to me."
+   ]
+  },
+  {
+   "expression": "To be late for sth",
+   "translation": "Être en retard pour qqch",
+   "examples": [
+    "Don't be late for school."
+   ]
+  },
+  {
+   "expression": "To be ready for sth",
+   "translation": "Être prêt pour qqch",
+   "examples": [
+    "Are you ready for the trip?"
+   ]
+  },
+  {
+   "expression": "To be sorry for sth",
+   "translation": "Être désolé de qqch",
+   "examples": [
+    "I am sorry for the trouble."
+   ]
+  },
+  {
+   "expression": "To be used to sth",
+   "translation": "Être habitué à qqch",
+   "examples": [
+    "I am used to the cold."
+   ]
+  },
+  {
+   "expression": "To be surprised at sth",
+   "translation": "Être surpris par qqch",
+   "examples": [
+    "We were surprised at the result."
+   ]
+  }
+ ]
+}

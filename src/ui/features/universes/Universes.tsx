@@ -10,7 +10,7 @@ import { confirm } from '@/ui/components/Confirm';
 
 export function LanguageBadge({ language, size = 22 }: { language: string; size?: number }) {
   return (
-    <span className="lang-badge" style={{ background: languageInfo(language).color, width: size, height: size, fontSize: size * 0.42 }}>
+    <span className="lang-badge" style={{ width: size, height: size, fontSize: size * 0.4 }}>
       {languageBadge(language)}
     </span>
   );
@@ -123,7 +123,7 @@ function UniverseForm({ onDone, autoFocus }: { onDone?: (id: string) => void; au
           </button>
         ))}
         <button className="language-option" onClick={() => setCustom(!custom)}>
-          <span className="lang-badge" style={{ background: 'var(--border-strong)', width: 26, height: 26 }}>
+          <span className="lang-badge" style={{ width: 26, height: 26 }}>
             <Plus size={14} />
           </span>
           <span>Autre langue…</span>

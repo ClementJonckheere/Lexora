@@ -13,6 +13,8 @@ import { SelectionBubble, useReaderSelection, useSelectionTranslation } from './
 import { ChapterWords, CHAPTER_WORDS } from './ChapterWords';
 import { analyzeText, wordBase } from '@/core/reading/coverage';
 import { useKnowledge } from '@/ui/hooks/useKnowledge';
+import { countedReadingMinutes, ReadingClock } from '@/core/reading/readingTime';
+import { newId } from '@/core/domain/text';
 
 type Paper = 'ivory' | 'white' | 'night';
 type FontFamily = 'sans' | 'serif';
@@ -82,6 +84,7 @@ export function ReaderPage({ bookKey }: { bookKey: string }) {
       author={book.authors.join(', ')}
       language={book.language}
       universeId={book.universeId}
+      bookKey={bookKey}
       start={{ chapter: book.chapter, block: book.block }}
       onPosition={(chapter, block) => void saveBookProgress(bookKey, chapter, block, progressAt(text, chapter, block))}
       onClose={close}
@@ -95,6 +98,7 @@ function Reader({
   author,
   language,
   universeId,
+  bookKey,
   start,
   onPosition,
   onClose,
@@ -104,11 +108,13 @@ function Reader({
   author: string;
   language: string;
   universeId: string;
+  bookKey: string;
   start: { chapter: number; block: number };
   onPosition: (chapter: number, block: number) => void;
   onClose: () => void;
 }) {
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen || s.universesOpen);
+  const reading = useReadingTime(bookKey, universeId);
   const chapters = text.chapters;
   const [chapter, setChapter] = useState(() => Math.min(Math.max(0, start.chapter), chapters.length - 1));
   const [spread, setSpread] = useState(0);
@@ -331,6 +337,8 @@ function Reader({
   };
   const next = () => {
     clearSel();
+    if (atEnd) return;
+    reading.turn();
     if (spread < spreads - 1) setSpread(spread + 1);
     else goChapter(chapter + 1, { kind: 'start' });
   };
@@ -495,6 +503,7 @@ function Reader({
             {progress} % du livre
             {highlight && knownInChapter > 0 && ` · ${knownInChapter} de vos mots dans ce chapitre`}
             {analysis && ` · environ ${Math.round(analysis.coverage * 100)} % de mots connus`}
+            {reading.minutes > 0 && ` · ${reading.minutes} min de lecture`}
           </small>
         </div>
         <button className="reader-pill reader-pill--lg" onClick={next} disabled={atEnd}>
@@ -562,4 +571,66 @@ function Reader({
       )}
     </div>
   );
+}
+
+/**
+ * Temps de lecture de la séance (une ouverture du livre) : gestes du lecteur (touches, clics, molette, souris), pages
+ * tournées, pause quand la fenêtre est masquée ou perd le focus. Enregistré toutes les 30 secondes et à la fermeture.
+ */
+function useReadingTime(bookKey: string, universeId: string) {
+  const clock = useRef<ReadingClock>(new ReadingClock());
+  const [minutes, setMinutes] = useState(0);
+
+  useEffect(() => {
+    const c = new ReadingClock();
+    clock.current = c;
+    const session = { id: newId(), universeId, bookKey, startedAt: Date.now() };
+    const save = (done = false) =>
+      void useApp
+        .getState()
+        .saveReadingSession({ ...session, activeMs: c.activeMs, pages: c.pages }, done)
+        .catch(() => undefined);
+    const act = () => {
+      if (!document.hidden) c.activity(Date.now());
+    };
+    // Mouvements de souris : un geste toutes les 15 secondes au plus suffit.
+    let lastMove = 0;
+    const move = () => {
+      const now = Date.now();
+      if (now - lastMove < 15_000) return;
+      lastMove = now;
+      act();
+    };
+    const away = () => {
+      c.pause();
+      save();
+    };
+    const visibility = () => (document.hidden ? away() : act());
+    act();
+    window.addEventListener('keydown', act);
+    window.addEventListener('mousedown', act);
+    window.addEventListener('mousemove', move);
+    window.addEventListener('wheel', move);
+    window.addEventListener('blur', away);
+    window.addEventListener('focus', act);
+    document.addEventListener('visibilitychange', visibility);
+    const timer = setInterval(() => {
+      setMinutes(Math.floor(countedReadingMinutes(c.activeMs, c.pages)));
+      save();
+    }, 30_000);
+    return () => {
+      window.removeEventListener('keydown', act);
+      window.removeEventListener('mousedown', act);
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('wheel', move);
+      window.removeEventListener('blur', away);
+      window.removeEventListener('focus', act);
+      document.removeEventListener('visibilitychange', visibility);
+      clearInterval(timer);
+      act();
+      save(true);
+    };
+  }, [bookKey, universeId]);
+
+  return { minutes, turn: () => clock.current.pageTurn(Date.now()) };
 }

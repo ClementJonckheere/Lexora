@@ -22,6 +22,8 @@ export interface PlacementQuestion {
   choices?: number;
   /** Une meme phrase ne peut servir deux fois dans le test. Par defaut : id. */
   evidenceId?: string;
+  /** Nature de la bonne réponse (sujet / objet, will / présent…) : sert à démasquer une règle superficielle. */
+  form?: string;
 }
 
 export type PlacementResponse = 'correct' | 'incorrect' | 'unknown';
@@ -39,6 +41,21 @@ export interface PlacementConfig {
   prior: number;
   slip: number;
   typedChance: number;
+  /**
+   * Niveau global (principe des tests adaptatifs, IRT) : 0 pour l'ignorer. Sinon, pente de la probabilité de
+   * départ d'un point selon l'écart entre le niveau θ de l'apprenant et la difficulté du point (A1 = 0 … C1 = 4) :
+   * P(connu | θ) = logistique(pente × (θ − difficulté)). θ est estimé à partir de toutes les réponses.
+   */
+  globalLevel: number;
+  /** Confiance exigée pour classer un point jamais posé à partir du seul niveau global. */
+  levelConfidence: number;
+  /**
+   * Part des apprenants qui, sans connaître un point, appliquent une règle superficielle (toujours la même forme :
+   * sans do, toujours to…) plutôt que de répondre au hasard. Pour un point dont les questions ont plusieurs natures de
+   * réponse, l'hypothèse « inconnu » mêle hasard et règle unique : réussir toutes les phrases d'une nature et rater les
+   * autres ne prouve alors rien. 0 pour l'ignorer.
+   */
+  shortcutShare: number;
 }
 
 export const DEFAULT_PLACEMENT_CONFIG: Readonly<PlacementConfig> = Object.freeze({
@@ -49,7 +66,20 @@ export const DEFAULT_PLACEMENT_CONFIG: Readonly<PlacementConfig> = Object.freeze
   prior: 0.5,
   slip: 0.1,
   typedChance: 0.05,
+  globalLevel: 0,
+  levelConfidence: 0.99,
+  shortcutShare: 0.5,
 });
+
+/** Difficulté d'un point selon son niveau du CECRL (A1 = 0 … C1 = 4) ; milieu de l'échelle sinon. */
+const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+export function levelDifficulty(level?: string): number {
+  const i = LEVELS.indexOf(level ?? '');
+  return i >= 0 ? i : 2;
+}
+/** Grille du niveau θ, et a priori sur θ : large, centré sur B1. */
+const THETA = Array.from({ length: 41 }, (_, i) => -3 + i * 0.25);
+const THETA_PRIOR = THETA.map((t) => Math.exp(-((t - 2) ** 2) / (2 * 2.5 ** 2)));
 
 export interface PlacementEstimate {
   id: string;
@@ -59,7 +89,7 @@ export interface PlacementEstimate {
   answered: number;
   unknown: number;
   state: 'mastered' | 'consolidate' | 'learn';
-  evidence: 'direct' | 'requires' | 'unassessed' | 'incomplete' | 'uncertain' | 'conflict';
+  evidence: 'direct' | 'requires' | 'level' | 'unassessed' | 'incomplete' | 'uncertain' | 'conflict';
   /** Identifiants des points qui fournissent la preuve, pour rendre la déduction explicable. */
   sources: string[];
 }
@@ -137,6 +167,8 @@ export class PlacementModel {
   private lastSignature?: string;
   private lastDecision?: PlacementDecision;
   private readonly weightsCache = new Map<string, readonly [number, number, number]>();
+  /** Natures de réponse des questions de chaque point (seulement s'il en a au moins deux). */
+  private readonly formsOf = new Map<string, string[]>();
 
   constructor(targets: readonly PlacementTarget[], questions: readonly PlacementQuestion[], config: Partial<PlacementConfig> = {}) {
     const c = { ...DEFAULT_PLACEMENT_CONFIG, ...config };
@@ -145,7 +177,10 @@ export class PlacementModel {
       || !Number.isFinite(c.deductionConfidence) || c.deductionConfidence < c.confidence || c.deductionConfidence >= 1
       || !Number.isFinite(c.prior) || c.prior <= 0 || c.prior >= 1
       || !Number.isInteger(c.maxQuestions) || c.maxQuestions < 2 || c.maxQuestions > 40 || !Number.isInteger(c.minQuestions)
-      || c.minQuestions < 2 || c.minQuestions > c.maxQuestions) throw new Error('Configuration du placement invalide.');
+      || c.minQuestions < 2 || c.minQuestions > c.maxQuestions
+      || !Number.isFinite(c.globalLevel) || c.globalLevel < 0
+      || !Number.isFinite(c.levelConfidence) || c.levelConfidence < c.confidence || c.levelConfidence >= 1
+      || !Number.isFinite(c.shortcutShare) || c.shortcutShare < 0 || c.shortcutShare >= 1) throw new Error('Configuration du placement invalide.');
     this.config = Object.freeze(c);
     this.targets = Object.freeze(targets.map((t) => Object.freeze({ ...t, requires: Object.freeze([...t.requires]), after: Object.freeze([...(t.after ?? [])]) })));
     this.questions = Object.freeze(questions.map((q) => Object.freeze({ ...q })));
@@ -171,6 +206,8 @@ export class PlacementModel {
       return found;
     };
     for (const t of this.targets) for (const id of visit(t.id, new Set())) this.descendants.get(id)!.add(t.id);
+    for (const q of this.questions) if (q.form) this.formsOf.set(q.targetId, [...new Set([...(this.formsOf.get(q.targetId) ?? []), q.form])]);
+    for (const [id, forms] of this.formsOf) if (forms.length < 2) this.formsOf.delete(id);
     for (const q of this.questions) {
       if (!q.id || !this.byTarget.has(q.targetId) || !['typed', 'choice'].includes(q.mode) || q.evidenceId === '') throw new Error('Question de placement invalide.');
       if (q.mode === 'choice' && (!Number.isInteger(q.choices) || q.choices! < 2)) throw new Error('Nombre de propositions invalide.');
@@ -185,7 +222,9 @@ export class PlacementModel {
   private history(answers: readonly PlacementAnswer[]) {
     if (answers.length > this.config.maxQuestions) throw new Error('Plafond de questions dépassé.');
     const seen = new Set<string>();
-    const data = new Map(this.targets.map((t) => [t.id, { logOdds: logit(this.config.prior), n: 0, unknown: 0 }]));
+    const { slip, shortcutShare } = this.config;
+    const data = new Map(this.targets.map((t) => [t.id, { logOdds: logit(this.config.prior), n: 0, unknown: 0, forms: new Map<string, number>() }]));
+    const observations = new Map<string, { correct: boolean; chance: number; form?: string }[]>();
     for (const a of answers) {
       const q = this.byQuestion.get(a.questionId);
       if (!q || !['correct', 'incorrect', 'unknown'].includes(a.response)) throw new Error('Historique de placement invalide.');
@@ -193,17 +232,76 @@ export class PlacementModel {
       if (seen.has(evidence)) throw new Error('Une phrase ne peut pas compter deux fois.');
       seen.add(evidence);
       const d = data.get(q.targetId)!;
-      d.logOdds += likelihood(a.response === 'correct', this.config.slip, this.chance(q));
       d.n++;
       if (a.response === 'unknown') d.unknown++;
+      if (q.form) d.forms.set(q.form, (d.forms.get(q.form) ?? 0) + 1);
+      observations.set(q.targetId, [...(observations.get(q.targetId) ?? []), { correct: a.response === 'correct', chance: this.chance(q), form: q.form }]);
+    }
+    for (const [id, obs] of observations) {
+      const d = data.get(id)!;
+      const forms = this.formsOf.get(id);
+      // Connu : réussite sauf inattention. Inconnu : hasard, ou (points à plusieurs natures) une règle unique.
+      const known = obs.reduce((s, o) => s + Math.log(o.correct ? 1 - slip : slip), 0);
+      const guess = obs.reduce((s, o) => s + Math.log(o.correct ? o.chance : 1 - o.chance), 0);
+      let unknown = guess;
+      if (forms && shortcutShare > 0) {
+        const terms = [Math.log(1 - shortcutShare) + guess];
+        for (const f of forms) {
+          const rule = obs.reduce((s, o) => {
+            const right = o.form ? (o.form === f ? 1 - slip : slip) : o.chance;
+            return s + Math.log(o.correct ? right : 1 - right);
+          }, 0);
+          terms.push(Math.log(shortcutShare / forms.length) + rule);
+        }
+        const m = Math.max(...terms);
+        unknown = m + Math.log(terms.reduce((s, t) => s + Math.exp(t - m), 0));
+      }
+      d.logOdds += known - unknown;
     }
     return { data, seen };
+  }
+
+  /**
+   * Probabilité de chaque point avec le niveau global : calcul bayésien exact sur une grille de θ. Les réponses d'un
+   * point comptent une seule fois : P(θ | réponses) ∝ a priori(θ) × Π [p(θ) · e^r + 1 − p(θ)], où r est le
+   * log-rapport de vraisemblance des réponses du point, puis P(connu) = Σ P(θ | réponses) · p(θ) · e^r / (p(θ) · e^r + 1 − p(θ)).
+   */
+  private withLevel(data: Map<string, { logOdds: number }>): Map<string, number> {
+    const slope = this.config.globalLevel;
+    const priorLogit = logit(this.config.prior);
+    const llr = new Map([...data].map(([id, d]) => [id, d.logOdds - priorLogit]));
+    const p = (t: PlacementTarget, theta: number) => logistic(slope * (theta - levelDifficulty(t.level)));
+    const logPost = THETA.map((theta, i) => {
+      let s = Math.log(THETA_PRIOR[i]);
+      for (const t of this.targets) {
+        const r = llr.get(t.id)!;
+        if (r !== 0) s += Math.log(1 + p(t, theta) * (Math.exp(r) - 1));
+      }
+      return s;
+    });
+    const max = Math.max(...logPost);
+    const weights = logPost.map((s) => Math.exp(s - max));
+    const total = weights.reduce((a, b) => a + b, 0);
+    return new Map(
+      this.targets.map((t) => {
+        const r = llr.get(t.id)!;
+        let known = 0;
+        THETA.forEach((theta, i) => {
+          const q = p(t, theta);
+          known += (weights[i] / total) * ((q * Math.exp(r)) / (q * Math.exp(r) + 1 - q));
+        });
+        return [t.id, Math.max(EPSILON, Math.min(1 - EPSILON, known))];
+      }),
+    );
   }
 
   estimate(answers: readonly PlacementAnswer[]): PlacementEstimate[] {
     const { data } = this.history(answers);
     const { confidence, minQuestions } = this.config;
+    // Un point posé se classe sur ses seules réponses ; le niveau global (s'il est activé) oriente le choix des
+    // questions et classe les points jamais posés, sans pouvoir faire basculer un point posé.
     const direct = new Map([...data].map(([id, d]) => [id, logistic(d.logOdds)]));
+    const levelled = this.config.globalLevel > 0 ? this.withLevel(data) : direct;
     const strong = (id: string) => data.get(id)!.n >= minQuestions;
     // Une réussite du dependant et un échec de son prérequis sont contradictoires. Ces sources sont
     // suspendues pour la déduction ; un controle supplémentaire doit les départager.
@@ -230,10 +328,16 @@ export class PlacementModel {
       if (p >= this.config.deductionConfidence) for (const id of this.ancestors.get(t.id)!) add(positive, id, p, t.id, true);
       if (p <= 1 - this.config.deductionConfidence) for (const id of this.descendants.get(t.id)!) add(negative, id, p, t.id, false);
     }
+    // Le niveau n'extrapole pas au-delà de ce que les réponses montrent : « acquis » seulement jusqu'au niveau le plus
+    // haut d'un point acquis en réponses directes, « à apprendre » seulement à partir du plus bas d'un point raté.
+    const directLevels = (high: boolean) =>
+      this.targets.filter((t) => strong(t.id) && (high ? direct.get(t.id)! >= confidence : direct.get(t.id)! <= 1 - confidence)).map((t) => levelDifficulty(t.level));
+    const ceiling = Math.max(-Infinity, ...directLevels(true));
+    const floor = Math.min(Infinity, ...directLevels(false));
     return this.targets.map((t) => {
       const d = data.get(t.id)!;
       const raw = direct.get(t.id)!;
-      const common = { id: t.id, kind: t.kind, directProbability: raw, answered: d.n, unknown: d.unknown };
+      const common = { id: t.id, kind: t.kind, directProbability: levelled.get(t.id)!, answered: d.n, unknown: d.unknown };
       if (conflicts.has(t.id)) return { ...common, probability: 0.5, state: 'consolidate', evidence: 'conflict', sources: [...conflicts.get(t.id)!].sort() };
       const proof = positive.get(t.id) ?? negative.get(t.id);
       if (d.n > 0 && d.n < minQuestions) return { ...common, probability: raw, state: 'consolidate', evidence: 'incomplete', sources: [] };
@@ -241,7 +345,13 @@ export class PlacementModel {
         ...common, probability: proof.probability, state: proof.probability >= confidence ? 'mastered' : 'learn',
         evidence: proof.sources.includes(t.id) ? 'direct' : 'requires', sources: [...proof.sources].sort(),
       };
-      return { ...common, probability: raw, state: 'consolidate', evidence: d.n ? 'uncertain' : 'unassessed', sources: [] };
+      // Niveau global : un point jamais posé mais loin du niveau estimé se classe seul.
+      const lc = this.config.levelConfidence;
+      const level = levelDifficulty(t.level);
+      const fromLevel = levelled.get(t.id)!;
+      if (this.config.globalLevel > 0 && !d.n && ((fromLevel >= lc && level <= ceiling) || (fromLevel <= 1 - lc && level >= floor)))
+        return { ...common, probability: fromLevel, state: fromLevel >= lc ? 'mastered' : 'learn', evidence: 'level', sources: [] };
+      return { ...common, probability: d.n ? raw : fromLevel, state: 'consolidate', evidence: d.n ? 'uncertain' : 'unassessed', sources: [] };
     });
   }
 
@@ -260,7 +370,7 @@ export class PlacementModel {
     if (estimates.every((e) => e.state !== 'consolidate')) return { question: null, reason: 'complete' };
     const budget = this.config.maxQuestions - answers.length;
     if (!budget) return { question: null, reason: 'budget' };
-    const { seen } = this.history(answers);
+    const { seen, data } = this.history(answers);
     const available = new Map<string, PlacementQuestion[]>();
     for (const q of this.questions) if (!seen.has(q.evidenceId ?? q.id)) {
       const pool = available.get(q.targetId);
@@ -278,7 +388,9 @@ export class PlacementModel {
       const confirm = e.evidence === 'direct' && (e.state === 'mastered' ? parents > 0 : children > 0)
         && Math.max(e.directProbability, 1 - e.directProbability) < this.config.deductionConfidence;
       if (!unresolved.has(e.id) && !confirm) continue;
-      const pool = available.get(e.id) ?? [];
+      // Natures de réponse alternées : la phrase suivante est d'une nature encore peu posée pour ce point.
+      const used = data.get(e.id)!.forms;
+      const pool = [...(available.get(e.id) ?? [])].sort((a, b) => (used.get(a.form ?? '') ?? 0) - (used.get(b.form ?? '') ?? 0));
       const distinct = new Set(pool.map((q) => q.evidenceId ?? q.id)).size;
       const needed = Math.max(1, this.config.minQuestions - e.answered);
       if (distinct < needed) continue; // ne pas commencer un point avec une seule phrase disponible

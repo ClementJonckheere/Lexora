@@ -23,10 +23,12 @@ export interface PlacementItem extends PlacementQuestion {
   hint?: string;
   /** Propositions affichées (choix), dans l'ordre d'affichage. */
   options?: string[];
+  /** Nature de la bonne réponse (sujet / objet, to / for…) : la simulation y modélise les règles superficielles. */
+  form?: string;
   /** Provenance : phrase Tatoeba (CC BY 2.0 FR) ou question rédigée. */
   source: string;
-  /** « généré » : sorti du générateur, contrôlé automatiquement ; « relu » : validé par une personne. */
-  status: 'généré' | 'relu';
+  /** « généré » : sorti du générateur, contrôlé automatiquement ; « rédigé » : écrit à la main, à relire ; « relu » : validé par une personne. */
+  status: 'généré' | 'rédigé' | 'relu';
 }
 
 /** Questions retenues par point (le moteur en pose au moins 2 et n'utilise jamais deux fois la même phrase). */
@@ -40,13 +42,55 @@ const MIN_LENGTH = 25;
  * phrases d'irréel du passé (pas celles du 2e qui servent de contraste dans la leçon) ; le present perfect continu exige
  * une durée, sans quoi « j'ai travaillé » se dit aussi I worked.
  */
+/** Repère du present perfect : sans lui, le prétérit est aussi juste (« Mary has arrived on time » / « arrived »). */
+const PERFECT_CUE =
+  /\b(?:ever|never|yet|already|just|so far|since|how long|lately|recently|up to now|until now|before|times|this (?:week|month|year|morning)|for (?:(?:a|two|three|many|several|some|ten|\d+) )?(?:years?|months?|weeks?|days?|hours?|ages|a long time|a while))\b/i;
+/** Repère d'antériorité du plus-que-parfait : une phrase isolée (« No one had seen anything ») admet aussi le prétérit. */
+const PAST_PERFECT_CUE = /\b(?:before|after|when|by the time|by then|until|already|as soon as)\b/i;
+/** Proposition de temps : la conjonction est suivie d'un sujet et d'un verbe (« until four » n'en est pas une). */
+const TIME_CLAUSE =
+  /\b(?:when|as soon as|until|before|after)\s+(?:i|you|he|she|it|we|they|the\s+[a-z]+|my\s+[a-z]+|[A-Z][a-z]+)\s+(?!(?:of|in|on|at|to|for|with|from|and|or|the|a|an)\b)[a-z]+/;
+/** Question indirecte (« Do you know when it shuts? ») : will est juste aussi. */
+const INDIRECT = /\b(?:know|knows|ask|asked|wonder|tell me|sure|idea|find out)\s+(?:when|if|whether)\b/i;
+
 const POINT_FILTER: Record<string, (ex: Exercise) => boolean> = {
   'third-conditional': (ex) => ex.form === 'past-unreal',
   // Les phrases « be used to + -ing » de la leçon used to mesurent le point be-used-to (B2), pas used to.
   'used-to': (ex) => ex.form !== 'be-used-to',
   'be-used-to': (ex) => ex.form === 'be-used-to',
-  'perfect-continuous': (ex) => /\b(?:for|since|all\s+(?:day|night|morning|week)|how long|lately|recently)\b/i.test(ex.en),
+  // Une durée chiffrée (for, since, how long) : avec « all day », le present perfect simple est juste aussi.
+  'perfect-continuous': (ex) => /\b(?:for|since|how long)\b/i.test(ex.en),
+  'present-perfect': (ex) => PERFECT_CUE.test(ex.en) && !/\bjust now\b/i.test(ex.en),
+  // « just now » (= il y a un instant) se construit avec le prétérit.
+  'perfect-vs-past': (ex) => !/\bjust now\b/i.test(ex.en),
+  // wish et if au plus-que-parfait relèvent d'autres points (wish, conditionnels).
+  'past-perfect': (ex) => PAST_PERFECT_CUE.test(ex.en) && !/\b(?:wish|wished|if)\b/i.test(ex.en),
+  // Phrase source fautive (« I would go nuts if we stay here ») : la subordonnée doit être au passé.
+  'second-conditional': (ex) =>
+    !/\bif\s+(?:i|you|he|she|it|we|they)\s+(?!(?:were|was|had|could|did|didn't|weren't|wasn't|knew|went|got|came|saw|took|[a-z]+ed)\b)[a-z]+\b/i.test(
+      `${ex.before}${ex.answer}${ex.after}`,
+    ),
+  // try + -ing et try + to sont justes tous les deux, et « essayer de » ne tranche pas.
+  'gerund-infinitive-meaning': (ex) => !/\btr(?:y|ies|ied|ying)\b/i.test(ex.en),
+  // « I'll see if I can… » : if = si interrogatif (whether), pas un conditionnel.
+  'first-conditional': (ex) => !INDIRECT.test(ex.en) && !/\b(?:see|check|decide)\s+if\b/i.test(ex.en),
+  'time-clauses': (ex) => TIME_CLAUSE.test(ex.en) && !INDIRECT.test(ex.en),
+  // much adverbe (« Does it snow much here? ») : a lot est juste aussi.
+  countables: (ex) => !(ex.answer === 'much' && /^\s+(?:here|there|now|today|anymore|at|in|on|about|lately|these|this)\b/i.test(ex.after)),
 };
+
+/**
+ * Variété : deux questions d'un même point ne partagent ni une suite de trois mots (« if I were you ») ni un tour
+ * figé (« Without your help, I would have… ») ; sinon la même phrase-type compte plusieurs fois.
+ */
+const TEMPLATES = [/^\s*without\b/i, /^\s*but for\b/i, /\bif i were you\b/i, /\bif i had known\b/i];
+function shingles(ex: Exercise): Set<string> {
+  const w = ex.en.toLowerCase().replace(/[^a-z' ]/g, ' ').split(/\s+/).filter(Boolean);
+  const out = new Set<string>();
+  for (let i = 0; i + 2 < w.length; i++) out.add(w.slice(i, i + 3).join(' '));
+  TEMPLATES.forEach((t, i) => t.test(ex.en) && out.add(`#${i}`));
+  return out;
+}
 
 /** Ordre fixé par la phrase : même ordre à chaque génération, réponse pas toujours à la même place. */
 function rotate<T>(list: T[], seed: number): T[] {
@@ -101,6 +145,9 @@ export function placementItem(lessonId: string, ex: Exercise, targetId = lessonI
   // Une autre réponse admise (prétérit sans repère, variante proche) : la question ne prouve rien.
   if (ex.accept?.length) return null;
   if (POINT_FILTER[targetId] && !POINT_FILTER[targetId](ex)) return null;
+  // « I wish it were » : was est admis aussi (même connaissance, registre courant).
+  const singular = /\b(?:i|he|she|it|this|that|[A-Z][a-z]+)\s+$/i.test(ex.before);
+  const beToo = singular && (ex.answer === 'were' || ex.answer === 'was') ? [ex.answer === 'were' ? 'was' : 'were'] : null;
   const sentenceId = ex.id.split(':')[1];
   const base = {
     id: `placement:${targetId}:${ex.id}`,
@@ -112,9 +159,10 @@ export function placementItem(lessonId: string, ex: Exercise, targetId = lessonI
     answer: ex.answer,
     source: `tatoeba:${sentenceId}`,
     status: 'généré' as const,
+    ...(ex.form ? { form: ex.form } : {}),
   };
   // Verbe en indice : la forme se tape, sans propositions.
-  if (ex.hint) return { ...base, mode: 'typed', hint: ex.hint, ...(ex.accept ? { accept: ex.accept } : {}) };
+  if (ex.hint) return { ...base, mode: 'typed', hint: ex.hint, ...(beToo ? { accept: beToo } : {}) };
   if (!ex.choices) return null;
   const options = widen(lessonId, ex) ?? ex.choices;
   const unique = [...new Set(options)];
@@ -136,22 +184,61 @@ export function placementItems(lessonId: string, bank: Exercise[], excluded: Rea
   for (const c of candidates) byForm.set(c.ex.form ?? '', [...(byForm.get(c.ex.form ?? '') ?? []), c]);
   const queues = [...byForm.values()];
   const answers = new Set<string>();
+  const used = new Set<string>();
   const out: PlacementItem[] = [];
-  // Tour à tour dans chaque nature ; une réponse déjà prise ne revient qu'en dernier recours.
-  for (let pass = 0; pass < 2 && out.length < ITEMS_PER_POINT; pass++) {
+  const fresh = (c: { ex: Exercise }) => ![...shingles(c.ex)].some((s) => used.has(s));
+  // Tour à tour dans chaque nature ; une réponse déjà prise ne revient qu'en deuxième passe, une phrase-type déjà
+  // prise seulement en dernier recours (banque trop petite).
+  for (let pass = 0; pass < 3 && out.length < ITEMS_PER_POINT; pass++) {
     const pools = queues.map((q) => q.filter((c) => !out.includes(c.item)));
     let added = true;
     while (out.length < ITEMS_PER_POINT && added) {
       added = false;
       for (const pool of pools) {
-        const i = pool.findIndex((c) => pass === 1 || !answers.has(c.item.answer));
+        const i = pool.findIndex((c) => (pass === 2 || fresh(c)) && (pass > 0 || !answers.has(c.item.answer)));
         if (i < 0 || out.length >= ITEMS_PER_POINT) continue;
         const [c] = pool.splice(i, 1);
         out.push(c.item);
         answers.add(c.item.answer);
+        for (const s of shingles(c.ex)) used.add(s);
         added = true;
       }
     }
   }
   return out;
+}
+
+/** Question rédigée (public/grammar/en/placement-written.json) : pour les points sans leçon ni générateur. */
+export interface WrittenQuestion {
+  id: string;
+  targetId: string;
+  before: string;
+  after: string;
+  fr: string;
+  answer: string;
+  /** Autres réponses tapées admises (« will already have eaten »). */
+  accept?: string[];
+  /** Forme à taper (verbe en indice), sinon propositions plausibles pour un francophone, une seule faute chacune. */
+  hint?: string;
+  options?: string[];
+  form: string;
+}
+
+/** Question de placement tirée d'une question rédigée ; les propositions tournent pour que la réponse change de place. */
+export function writtenItem(q: WrittenQuestion, index: number): PlacementItem {
+  const base = {
+    id: `placement:${q.targetId}:${q.id}`,
+    targetId: q.targetId,
+    evidenceId: q.id,
+    before: q.before,
+    after: q.after,
+    fr: q.fr,
+    answer: q.answer,
+    source: q.id,
+    status: 'rédigé' as const,
+    form: q.form,
+  };
+  if (q.hint) return { ...base, mode: 'typed', hint: q.hint, ...(q.accept ? { accept: q.accept } : {}) };
+  const options = rotate(q.options ?? [], index);
+  return { ...base, mode: 'choice', choices: options.length, options };
 }

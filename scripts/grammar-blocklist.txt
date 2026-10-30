@@ -15,6 +15,11 @@
 \bincest
 \bpedophil|\bpédophil
 \bprostitu
+\bma(?:ke|kes|de|king) love\b|\bfai\w* l'amour|\bbuttocks?\b|\bcul\b(?!-de-sac)|\bcunnilingus|\bfellat|\bblow ?jobs?\b|\bpénis\b|\bpenis\b|\bvagin|\berotic|\bérotique|\bnaked\b|\bnude\b|\bcondoms?\b|\bpréservatif
+
+# Meurtres, torture, violences physiques
+\bskinned alive|\bécorch|\bmurder|\bmeurtr|\bassassin|\btortur|\bcorpses?\b|\bcadavres?\b|\bbehead|\bdecapit|\bdécapit|\bstrangl|\bétrangl
+\bbeat (?:her|him|his wife|her husband)\b|\bbat sa femme|\bstabb|\bpoignard
 
 # Affirmations politiques ou religieuses contestées
 \balg[eé]ri
@@ -27,6 +32,7 @@
 \ballah\b
 \bjews?\b|\bjuifs?\b|\bjuives?\b|\bjewish\b
 \bnazi
+\btrump\b|\bbiden\b|\bputin\b|\bpoutine\b
 \bhitler
 \bterroris
 \bisra[eë]l
@@ -34,8 +40,8 @@
 \babortion|\bavortement
 
 # Personnages des séries de phrases de faits divers (meurtres, violences)
-\b(?:sami|layla|fadil|dania|salima|rami|ziri|yanni|skura|rima|mennad|baya)\b
+\b(?:sami|layla|fadil|dania|salima|rami|ziri|yanni|skura|rima|mennad|baya|dan|linda|yidir)\b
 
 # Grossièretés
-\bfuck|\bshit|\bbitch|\basshole|\bbastard|\bcunt|\bdick(?:s|head)?\b|\bwhore|\bslut|\bcrap\b|\bdamn
+\bfuck|\bfart(?:s|ed|ing)?\b|\bpéter\b|\bpété\b|\bshit|\bbitch|\basshole|\bbastard|\bcunt|\bdick(?:s|head)?\b|\bwhore|\bslut|\bcrap\b|\bdamn
 \bmerde|\bputain|\bconnard|\bconnasse|\bsalope|\bsalaud|\bbordel|\benculé|\bnique|\bchier\b|\bpute\b

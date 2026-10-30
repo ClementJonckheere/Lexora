@@ -253,6 +253,9 @@ p {
   gap: 6px;
 }
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.32em;
@@ -1554,6 +1557,14 @@ p {
   min-width: 64px;
   text-align: right;
 }
+.focus-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 24px 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-3);
+}
 .session-stage {
   flex: 1;
   display: flex;
@@ -1693,9 +1704,21 @@ p {
   --grade-color: var(--easy);
 }
 .reveal-btn {
-  width: 100%;
-  height: 52px;
-  font-size: 15px;
+  /* Discret : la carte reste le centre de l'attention. */
+  display: flex;
+  min-width: 260px;
+  height: 46px;
+  margin: 0 auto;
+  border-radius: 999px;
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text-2);
+  font-size: 14.5px;
+}
+.reveal-btn:hover {
+  border-color: var(--border-strong);
+  background: transparent;
+  color: var(--text);
 }
 .session-hints {
   display: flex;
@@ -1939,7 +1962,7 @@ p {
   }
 }
 @media (max-width: 860px) {
-  .wordmark,
+  .wordmark-text,
   .topbar .universe-name,
   .topbar .btn .label {
     display: none;
@@ -1976,10 +1999,12 @@ p {
   align-items: center;
   justify-content: center;
   flex: none;
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
-  color: #fff;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  color: var(--text-2);
+  font-family: var(--mono);
+  font-weight: 400;
+  letter-spacing: 0.04em;
   line-height: 1;
 }
 .universe-switcher {
@@ -3309,7 +3334,60 @@ p {
 .xp-scale-row--accent .mono {
   color: var(--gold);
 }
+.title-choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.title-choice .select {
+  width: auto;
+}
+.titles-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+.titles-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.title-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  color: var(--text-3);
+}
+.title-card-name {
+  font-size: 15px;
+}
+.title-card-desc {
+  font-size: 12px;
+  line-height: 1.45;
+}
+.title-card-progress {
+  margin-top: 2px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+.title-card--earned {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text-2);
+}
+.title-card--earned .title-card-name {
+  color: var(--text);
+}
 @media (max-width: 1100px) {
+  .titles-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .rank-row {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
@@ -3319,4 +3397,195 @@ p {
   .hero--horizon .hero-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* Test de placement */
+.placement-offer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.placement-summary {
+  margin-bottom: 16px;
+}
+.placement-intro {
+  max-width: 620px;
+}
+.placement-intro p {
+  margin: 10px 0 20px;
+  line-height: 1.6;
+}
+.placement-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+}
+.placement-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.placement-row-title {
+  font-size: 14.5px;
+}
+.placement-select {
+  width: auto;
+  min-width: 140px;
+}
+.placement-row--mastered .placement-row-title::before,
+.placement-row--consolidate .placement-row-title::before,
+.placement-row--learn .placement-row-title::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+.placement-row--mastered .placement-row-title::before {
+  background: var(--mastered);
+}
+.placement-row--consolidate .placement-row-title::before {
+  background: var(--gold);
+}
+.placement-row--learn .placement-row-title::before {
+  background: var(--border-strong);
+}
+.chip--placement-mastered {
+  color: var(--mastered);
+}
+.chip--placement-consolidate {
+  color: var(--warning-text);
+}
+.lesson-check {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.lesson-check--running {
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
+}
+.lesson-check--running .exercise-sentence {
+  margin: 12px 0 4px;
+}
+.lesson-check--mastered strong {
+  color: var(--mastered);
+}
+
+/* ------------------------------------------------- verbes irréguliers --- */
+.verb-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  column-gap: 24px;
+  border-top: 1px solid var(--border);
+}
+.verb-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.verb-row > span:first-child::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 10px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--border-strong);
+}
+.verb-row--seen > span:first-child::before {
+  background: var(--gold);
+}
+.verb-row--mastered > span:first-child::before {
+  background: var(--mastered);
+}
+.verb-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 20px;
+}
+.exercise-input--ok {
+  border-bottom-color: var(--mastered);
+  color: var(--mastered);
+}
+.exercise-input--ko {
+  border-bottom-color: var(--danger);
+  color: var(--danger);
+}
+.verb-answer {
+  color: var(--mastered);
+}
+.learn-verbs {
+  margin-bottom: 16px;
+}
+.verb-reference {
+  margin-top: 8px;
+}
+.verb-reference > summary {
+  cursor: pointer;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+.ready-collections {
+  margin-top: 32px;
+}
+.ready-collections .collection-card {
+  cursor: default;
+  align-items: flex-start;
+}
+
+/* ---------------------------------------------------------- classement --- */
+.leaderboard {
+  margin-bottom: 20px;
+}
+.leaderboard-name {
+  max-width: 220px;
+}
+.leaderboard-me {
+  margin: 10px 0 6px;
+}
+.leaderboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 28px 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.leaderboard-row--me {
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+  border-radius: 6px;
+}
+.leaderboard-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.leaderboard-pos,
+.leaderboard-xp {
+  font-size: 14px;
 }

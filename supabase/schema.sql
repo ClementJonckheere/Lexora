@@ -226,12 +226,68 @@ create table if not exists public.grammar_answers (
   server_updated_at  bigint not null default 0
 );
 
+-- ------------------------------------------------ progression (v2.20) ---
+-- Durée de saisie des mots ajoutés depuis le formulaire (titre « Archiviste de l'instant »).
+create table if not exists public.note_entries (
+  id                 uuid primary key,
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  universe_id        uuid not null,
+  note_id            uuid not null,
+  duration_ms        integer not null,
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0
+);
+
+-- Temps de lecture : une ligne par ouverture d'un livre (temps actif, pages tournées), pour l'XP de lecture.
+create table if not exists public.reading_sessions (
+  id                 uuid primary key,
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  universe_id        uuid not null,
+  book_key           text not null,
+  started_at         bigint not null,
+  active_ms          integer not null default 0,
+  pages              integer not null default 0,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0
+);
+
+-- Verbes irréguliers : une ligne par réponse (prétérit et participe tapés), pour la répétition espacée de chaque verbe.
+create table if not exists public.verb_answers (
+  id                 uuid primary key,
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  universe_id        uuid not null,
+  verb               text not null,
+  past_given         text not null default '',
+  participle_given   text not null default '',
+  past_ok            smallint not null,
+  participle_ok      smallint not null,
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0
+);
+
+-- Révisions dont la réponse a été tapée (XP identique sur tous les appareils).
+create table if not exists public.typed_answers (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  log_id             uuid not null,
+  universe_id        uuid not null,
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0,
+  primary key (user_id, log_id)
+);
+
 -- ------------------------------------ index, déclencheurs, sécurité (RLS) ---
 do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);
@@ -273,6 +329,51 @@ as $$
 $$;
 revoke all on function public.grammar_reported_items() from public;
 grant execute on function public.grammar_reported_items() to anon, authenticated;
+
+-- ------------------------------------- réponses du placement (v2.24) ---
+-- Une ligne par réponse au test de placement ou à un mini-test de leçon, tirée des réglages synchronisés (clé
+-- « placement ») : de quoi repérer les questions souvent ratées par des gens qui réussissent les autres questions du même
+-- point (analyse par question, par exemple dans Qlik). security_invoker : chacun ne lit que ses propres réponses.
+create or replace view public.placement_answers with (security_invoker = true) as
+select s.user_id, u.key as universe_id, (u.value->>'at')::bigint as answered_at, 'test'::text as source,
+       a->>'q' as question_id, a->>'r' as response
+from public.settings s
+cross join lateral jsonb_each(s.value::jsonb) u
+cross join lateral jsonb_array_elements(coalesce(u.value->'answers', '[]'::jsonb)) a
+where s.key = 'placement' and u.value->>'status' = 'done'
+union all
+select s.user_id, u.key, (c.value->>'at')::bigint, 'lesson-check', a->>'q', a->>'r'
+from public.settings s
+cross join lateral jsonb_each(s.value::jsonb) u
+cross join lateral jsonb_each(coalesce(u.value->'checks', '{}'::jsonb)) c
+cross join lateral jsonb_array_elements(coalesce(c.value->'answers', '[]'::jsonb)) a
+where s.key = 'placement' and u.value->>'status' = 'done';
+revoke all on public.placement_answers from anon;
+grant select on public.placement_answers to authenticated;
+
+-- ------------------------------------------------------- classement (2.33) ---
+-- Une ligne par participant et par langue : pseudo, XP, niveau. Participation volontaire (réglage « leaderboard »).
+-- Tous les comptes connectés lisent le classement ; chacun n'écrit et ne supprime que ses propres lignes.
+create table if not exists public.leaderboard (
+  user_id       uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  language      text not null check (char_length(language) between 2 and 12),
+  display_name  text not null check (char_length(display_name) between 1 and 30),
+  xp            integer not null check (xp >= 0),
+  level         integer not null check (level >= 1),
+  updated_at    timestamptz not null default now(),
+  primary key (user_id, language)
+);
+alter table public.leaderboard enable row level security;
+drop policy if exists "leaderboard_read" on public.leaderboard;
+create policy "leaderboard_read" on public.leaderboard for select to authenticated using (true);
+drop policy if exists "leaderboard_own_rows" on public.leaderboard;
+create policy "leaderboard_own_rows" on public.leaderboard for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "leaderboard_own_update" on public.leaderboard;
+create policy "leaderboard_own_update" on public.leaderboard for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists "leaderboard_own_delete" on public.leaderboard;
+create policy "leaderboard_own_delete" on public.leaderboard for delete to authenticated using (user_id = auth.uid());
+grant select, insert, update, delete on public.leaderboard to authenticated;
+revoke all on public.leaderboard from anon;
 
 -- Recharge le cache de l'API pour qu'elle voie immédiatement les nouvelles colonnes.
 notify pgrst, 'reload schema';

@@ -18,7 +18,7 @@ interface Trap {
   right: string;
 }
 const data = JSON.parse(readFileSync('public/grammar/en/points.json', 'utf8')) as { points: Point[]; traps: Trap[] };
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
+const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 const byId = new Map(data.points.map((p) => [p.id, p]));
 
 function acyclic(edges: (p: Point) => string[]) {

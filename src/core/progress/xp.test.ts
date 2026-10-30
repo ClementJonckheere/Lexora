@@ -77,3 +77,37 @@ describe('XP', () => {
     expect(s.todayFocusShare).toBeCloseTo(15 / 35);
   });
 });
+
+describe('XP de lecture', () => {
+  it('2 XP par minute, 2 heures comptées par jour au plus ; livre fini 50 XP', () => {
+    const s = computeXp(
+      [
+        { kind: 'reading', at: T0, minutes: 90 },
+        { kind: 'reading', at: T0 + 120 * MIN, minutes: 60 }, // 30 minutes au-delà du plafond du jour
+        { kind: 'book-finished', at: T0 + 200 * MIN, bookKey: 'b' },
+      ],
+      T0,
+    );
+    expect(s.bySource.reading).toBe(120 * 2 + 50);
+    expect(s.total).toBe(290);
+  });
+
+  it('la lecture ne compte pas dans les séances de concentration', () => {
+    const s = computeXp([{ kind: 'reading', at: T0, minutes: 30 }, review(T0 + 30 * MIN, 'a')], T0);
+    expect(s.bySource.vocabulary).toBe(2);
+  });
+});
+
+describe('XP des verbes irréguliers', () => {
+  it('4 XP les deux formes justes, 1 XP sinon ; le même verbe le même jour rapporte moitié moins', () => {
+    const s = computeXp(
+      [
+        { kind: 'verb', at: T0, verb: 'go', correct: true },
+        { kind: 'verb', at: T0 + 10_000, verb: 'take', correct: false },
+        { kind: 'verb', at: T0 + 20_000, verb: 'go', correct: true },
+      ],
+      T0,
+    );
+    expect(s.bySource.grammar).toBe(4 + 1 + 2);
+  });
+});

@@ -35,7 +35,7 @@ export interface SourceSentence {
   fr: string;
 }
 
-type Known = (w: string) => boolean;
+export type Known = (w: string) => boolean;
 
 /* --------------------------------------------------------------- verbes --- */
 
@@ -51,6 +51,11 @@ for (const v of verbs) {
   IRREGULAR_BASES.add(v.base);
 }
 BASE_OF.set('was', 'be').set('were', 'be');
+
+/** Verbe irrégulier (liste fournie avec l'application). */
+export function isIrregularBase(base: string): boolean {
+  return IRREGULAR_BASES.has(base);
+}
 
 /** Variantes admises d'une même forme (learnt / learned, dreamt / dreamed, got / gotten) : ramenées à la première. */
 const VARIANT_OF = new Map<string, string>();
@@ -192,7 +197,7 @@ export function presentOf(base: string, subject: string): string {
 }
 
 /** Base d'un présent de 3e personne (« rains » → « rain », « goes » → « go », « studies » → « study »). */
-function baseOfPresent(form: string): string {
+export function baseOfPresent(form: string): string {
   if (form === 'has') return 'have';
   if (form === 'is') return 'be';
   if (form === 'does') return 'do';
@@ -249,7 +254,7 @@ export function isCorrect(ex: Exercise, typed: string): boolean {
 const MAX_LENGTH = 130;
 const MIN_LENGTH = 12;
 
-function usable(s: SourceSentence): boolean {
+export function usable(s: SourceSentence): boolean {
   return s.en.length >= MIN_LENGTH && s.en.length <= MAX_LENGTH && !!s.fr && !/["“”«»]/.test(s.en) && !/\d{3,}/.test(s.en.replace(/\b(1[5-9]|20)\d\d\b/g, ''));
 }
 
@@ -258,13 +263,13 @@ function words(span: string): string[] {
 }
 
 /** Phrase où le motif trouve exactement une correspondance, et sa position. */
-function single(pointId: string, en: string) {
+export function single(pointId: string, en: string) {
   const m = matchSentence(pointId, en.replace(/’/g, "'"));
   return m.length === 1 ? m[0] : null;
 }
 
-type Candidate = Omit<Exercise, 'id' | 'en' | 'fr'>;
-type Builder = (s: SourceSentence, known?: Known) => (Candidate | null)[];
+export type Candidate = Omit<Exercise, 'id' | 'en' | 'fr'>;
+export type Builder = (s: SourceSentence, known?: Known) => (Candidate | null)[];
 
 /** Ordre des choix fixé par la phrase (même ordre à chaque fois, sans biais de position). */
 function shuffle2(a: string, b: string, seed: number): string[] {
@@ -277,7 +282,7 @@ const NOT_VERBS =
   /^(?:i|you|he|she|it|we|they|me|him|her|us|them|the|a|an|this|that|there|here|rather|better|so|to|when|if|and|but|or|what|where|how|why|who|which|in|on|at|for|with|of|from|by|as|up|out|my|your|his|our|their)$/;
 
 /** Mot plausible comme base verbale (pas un adverbe, un pronom, une forme fléchie) ; vérifié par la liste de mots. */
-function plausibleBase(v: string, known?: Known): boolean {
+export function plausibleBase(v: string, known?: Known): boolean {
   if (v === 'be') return true;
   if (NOT_VERBS.test(v) || ADVERBS.test(v) || /(?:ed|ing|ly)$/.test(v)) return false;
   if (BASE_OF.has(v) && BASE_OF.get(v) !== v && !IRREGULAR_BASES.has(v)) return false; // went, taken
@@ -710,7 +715,8 @@ const quantifiers: Builder = (s) => {
   ];
 };
 
-const GI_VERBS = 'stop|stops|stopped|remember|remembers|remembered|forget|forgets|forgot|try|tries|tried|regret|regrets|regretted';
+// try est écarté : try + -ing et try + to sont souvent justes tous les deux, et « essayer de » ne tranche pas.
+const GI_VERBS = 'stop|stops|stopped|remember|remembers|remembered|forget|forgets|forgot|regret|regrets|regretted';
 
 /** Stop / remember / forget / try / regret + -ing ou + to : le sens change, la traduction tranche. */
 const gerundInfinitive: Builder = (s, known) => {
@@ -737,7 +743,9 @@ const gerundInfinitive: Builder = (s, known) => {
 
 const ADJECTIVES =
   /^(?:old|young|big|small|large|little|good|bad|fast|slow|tall|short|strong|weak|rich|poor|warm|cold|hot|cool|long|high|low|easy|hard|early|late|well|smart|brave|quick|close|safe|cheap|loud|clear|deep|wide|thick|thin|heavy|light|dark|bright|fat|sweet|nice|kind|sure|ready|serious|good|tired|scared|excited|interested|bored|worried|surprised|busy|happy|sad|angry|mad|ill|sick|clever|lucky|crazy|lazy|dirty|noisy|healthy|hungry|thirsty|sleepy|pretty|ugly|funny|easy|heavy|expensive|beautiful|difficult|important|dangerous|careful|wonderful|delicious|comfortable|interesting|intelligent|different|patient|polite|honest|stupid|small|fine|great|rude|cruel|naive|mature|wise|famous|popular|full|empty|free|wrong|right|true|real|strange|tough|calm)$/i;
-const isAdjective = (w: string) =>
+/** Adjectif de la liste seule (sans la règle des suffixes, qui attrape aussi des noms : animal, student). */
+export const isListedAdjective = (w: string) => ADJECTIVES.test(w);
+export const isAdjective = (w: string) =>
   ADJECTIVES.test(w) || (/(?:ful|ous|ble|ive|ent|ant|ic|al|less|ish|ly)$/i.test(w) && w.length > 4 && !/^(?:only|family|really|early|holy|ugly)$/i.test(w));
 
 /** Too + adjectif ou adjectif + enough ; so + adjectif ou such (a) + nom. La traduction (trop / assez) tranche. */
@@ -1010,10 +1018,10 @@ const thirdConditional: Builder = (s, known) => {
 
 /* ------------------------------------------------------------ leçons --- */
 
-const firstConditional: Builder = (s, known) => [
-  ...clauseVerb('first-conditional', 'if|unless', 'present')(s, known),
-  ...mainModal('if|unless', 'will')(s, known),
-];
+/** « I'll see if I can… », « Do you know if… » : if = si interrogatif (whether), pas un conditionnel. */
+const IF_WHETHER = /\b(?:see|know|knows|wonder|ask|asked|check|decide|sure|find out|tell me)\s+if\b/i;
+const firstConditional: Builder = (s, known) =>
+  IF_WHETHER.test(s.en) ? [] : [...clauseVerb('first-conditional', 'if|unless', 'present')(s, known), ...mainModal('if|unless', 'will')(s, known)];
 
 /** Le 2e conditionnel exige une traduction au conditionnel : « je l'achèterai » serait un 1er conditionnel. */
 const secondConditional: Builder = (s, known) =>
@@ -1064,6 +1072,22 @@ export function buildExercise(lessonId: string, s: SourceSentence, known?: Known
   const options = builder(s, known).filter((ex): ex is Candidate => !!ex && !!ex.answer && !!(ex.before.trim() || ex.after.trim()));
   if (!options.length) return null;
   return { id: `${lessonId}:${s.id}`, en: s.en, fr: s.fr, ...options[s.id % options.length] };
+}
+
+/**
+ * Propositions dans un ordre fixé par l'exercice (même ordre d'une séance à l'autre) mais sans rapport avec la réponse :
+ * les générateurs du placement donnent la bonne réponse en premier, et « toujours la 1 » ne doit pas suffire.
+ */
+export function shuffledChoices(choices: readonly string[], key: string): string[] {
+  let h = 2166136261;
+  for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 16777619) >>> 0;
+  const out = [...choices];
+  for (let i = out.length - 1; i > 0; i--) {
+    h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0;
+    const j = h % (i + 1);
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
 }
 
 /** Phrase affichée avec le trou. */

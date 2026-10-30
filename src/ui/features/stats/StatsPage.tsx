@@ -5,6 +5,7 @@ import { settingsFor } from '@/core/domain/settings';
 import { formatDate } from '@/core/domain/dates';
 import { computeStats, type Stats } from '@/core/repo/statsRepo';
 import { EmptyState } from '@/ui/components/ui';
+import { Leaderboard } from './Leaderboard';
 
 const pct = (v: number | null) => (v == null ? '-' : `${Math.round(v * 100)} %`);
 const WEEKDAY = new Intl.DateTimeFormat('fr-FR', { weekday: 'short' });
@@ -44,6 +45,8 @@ export function StatsPage() {
           <p className="page-subtitle">Calculées sur vos révisions réelles.</p>
         </div>
       </div>
+
+      <Leaderboard />
 
       <div className="kpis">
         <Kpi label="Expressions" value={stats.totalNotes} hint={`+${stats.newThisWeek} cette semaine`} />

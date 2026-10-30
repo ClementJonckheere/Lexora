@@ -8,6 +8,7 @@ import * as knowledgeRepo from '@/core/repo/knowledgeRepo';
 import type { VocabTestResult } from '@/core/repo/knowledgeRepo';
 import type { Observation } from '@/core/reading/calibration';
 import * as learnRepo from '@/core/repo/learnRepo';
+import * as xpRepo from '@/core/repo/xpRepo';
 import type { GrammarAnswer } from '@/core/learn/progress';
 import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode, Universe } from '@/core/domain/types';
 import * as notesRepo from '@/core/repo/notesRepo';
@@ -48,6 +49,8 @@ export type Route =
   | { name: 'grammar-annotate' }
   | { name: 'learn' }
   | { name: 'lesson'; id: string; review?: boolean }
+  | { name: 'placement'; retake?: boolean }
+  | { name: 'verbs' }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';
@@ -181,7 +184,8 @@ interface AppState {
   renameUniverse(id: string, name: string): Promise<void>;
   deleteUniverse(id: string): Promise<void>;
 
-  saveNote(input: NoteInput, id?: string | null): Promise<string>;
+  /** `entryMs` : durée de saisie d'un nouveau mot dans le formulaire (progression). */
+  saveNote(input: NoteInput, id?: string | null, entryMs?: number): Promise<string>;
   /** Suppression immédiate, annulable depuis la notification. */
   deleteNotes(ids: string[]): Promise<void>;
   restoreNotes(ids: string[]): Promise<void>;
@@ -206,6 +210,8 @@ interface AppState {
   removeBook(key: string): Promise<void>;
   /** Position de lecture : enregistrée sans recharger l'application. */
   saveBookProgress(key: string, chapter: number, block: number, progress: number): Promise<void>;
+  /** Séance de lecture en cours (temps actif, pages tournées), réécrite pendant la lecture ; `done` à la fermeture du livre. */
+  saveReadingSession(session: xpRepo.ReadingSession, done?: boolean): Promise<void>;
   setBookLevel(key: string, estimate: LevelEstimate): Promise<void>;
   /** Marque des mots comme connus (true), inconnus (false) ou retire la marque (null). */
   markWords(words: string[], known: boolean | null): Promise<void>;
@@ -484,7 +490,7 @@ export const useApp = create<AppState>((set, get) => {
 
     /* -------------------------------- Notes ------------------------------- */
 
-    async saveNote(input, id) {
+    async saveNote(input, id, entryMs) {
       const d = db();
       const u = universe();
       let noteId: string;
@@ -495,6 +501,7 @@ export const useApp = create<AppState>((set, get) => {
         noteId = id;
       } else {
         noteId = await notesRepo.createNote(d, input, { universeId: u.id, language: u.language });
+        if (entryMs !== undefined) await xpRepo.recordNoteEntry(d, u.id, noteId, entryMs).catch(() => undefined);
       }
       await afterWrite();
       return noteId;
@@ -597,6 +604,12 @@ export const useApp = create<AppState>((set, get) => {
       await booksRepo.saveProgress(db(), key, chapter, block, progress);
       const now = Date.now();
       set((s) => ({ books: s.books.map((b) => (b.key === key ? { ...b, chapter, block, progress, lastReadAt: now, updatedAt: now } : b)) }));
+      scheduleSync();
+    },
+    async saveReadingSession(session, done = false) {
+      await xpRepo.saveReadingSession(db(), session);
+      // L'XP et les titres se recalculent à la fermeture du livre, pas à chaque enregistrement intermédiaire.
+      if (done) set((s) => ({ revision: s.revision + 1 }));
       scheduleSync();
     },
     async markWords(words, known) {

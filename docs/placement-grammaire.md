@@ -1,6 +1,6 @@
-# Placement grammatical : moteur expérimental et validation
+# Placement grammatical : moteur, banque et validation
 
-Le moteur est implémenté dans `src/core/learn/placement.ts`. Il n'est pas activé dans l'interface et ne modifie ni les données utilisateur, ni le schéma SQLite / Supabase, ni FSRS. La banque d'exercices dédiée A1–C1, l'enregistrement des résultats, leur correction manuelle et les mini-tests de leçon restent à construire.
+**État (2.25).** Le moteur (`src/core/learn/placement.ts`) est actif dans *Apprendre* depuis la 2.22 : test de 40 questions au plus sur les 52 leçons et leurs prérequis (52 points depuis la 2.25, 35 avant), niveau global et modèle de règle superficielle (2.23), résultats corrigeables enregistrés dans les réglages synchronisés (`placement`, par univers), mini-test de leçon pour les points que le test n'a pas tranchés. Les réponses brutes du test et des mini-tests sont conservées (vue Supabase `placement_answers`) pour l'analyse par question. Rien ne touche à FSRS ni à l'historique des leçons. La banque est générée depuis Tatoeba puis filtrée et relue (2.24 : 26 questions écartées sur les 35 points d'alors ; 2.25 : 136 questions des 17 nouveaux points relues, 5 écartées) ; les questions rédigées couvrent les 22 points sans leçon, hors du test actuel. Les sections ci-dessous retracent les étapes ; les chiffres de la 2.25 sont dans la dernière.
 
 ## Modèle et règles
 
@@ -87,3 +87,100 @@ Règles, pour limiter le hasard (5 % en réponse tapée, 1 / n pour un choix) :
 - 8 questions au plus par point, natures de réponse alternées.
 
 État : **168 questions pour 21 points** (13 points sans aucun choix à 2 ; say / tell, questions indirectes et une partie de too / enough et des question tags restent à 2 choix). Les **53 autres points** sont listés dans le fichier (`missing`, avec leur nombre de phrases Tatoeba traduites) : générateurs à écrire pour ceux qui ont assez de phrases, questions rédigées et relues pour les autres. Les taux de chance du moteur restent des hypothèses : une réponse tapée avec indice n'a souvent que deux formes plausibles (rains / will rain), ce qui la rapproche d'un choix ; la calibration sur des réponses réelles le dira.
+
+## Banque réelle, règles superficielles et niveau global (2.23)
+
+**Pourquoi les simulations abstraites ne suffisaient pas.** L'apprenant simulé répondait juste avec une probabilité 1 − 0,1 s'il connaissait le point, et au hasard (1 / propositions, 5 % en tapé) sinon. Avec la vraie banque, seuls le mode et le nombre de propositions changeaient : une banque où une seule forme suffit (toujours sans do, toujours to, pronom au milieu) passait inaperçue.
+
+**Apprenants à règle superficielle** (`behaviour: 'shortcut'`, `src/core/learn/placementSimulation.ts`). Sur un point inconnu, ils appliquent la nature de réponse dominante du point (champ `form` de chaque question) au lieu du hasard, et, sans cette prise, écartent une proposition bizarre (hasard sur une proposition de moins). La mesure qui compte : la part des points **inconnus** classés « acquis » (`falseMasteryRate`).
+
+**Ce que la mesure a révélé.** Avec le moteur de la 2.22, 7 à 13 % des points inconnus des profils A1 et A2 sortaient « acquis » chez ces apprenants, contre moins de 1 % au hasard. Cause principale, dans le modèle et non dans les phrases : réussir toutes les phrases d'une nature et rater les autres paraissait impossible sans connaître le point (5 % de hasard en réponse tapée), d'où un « acquis » que la déduction propageait aux prérequis (second conditionnel faussement acquis → premier conditionnel, will).
+
+**Corrections du moteur.**
+
+- `shortcutShare` (0,5) : pour un point dont les questions ont plusieurs natures de réponse, l'hypothèse « inconnu » mêle le hasard et, pour moitié, une règle unique (une nature réussie, les autres ratées). Ce schéma ne prouve plus rien ; réussir les deux natures, si.
+- Les questions d'un point alternent les natures de réponse (la suivante est d'une nature encore peu posée).
+- `globalLevel` (option, 0 par défaut dans le moteur, 2 dans l'application) : un niveau θ, comme dans les tests adaptatifs classiques, avec P(connu | θ) = logistique(2 × (θ − difficulté)), difficulté 0 pour A1 à 4 pour C1. Calcul bayésien exact sur une grille de θ, chaque réponse comptée une fois. Le niveau oriente le choix des questions et classe les points **jamais posés** à 99 % de confiance (`levelConfidence`), seulement jusqu'au plus haut niveau d'un point acquis en réponses directes (et « à apprendre » à partir du plus bas raté). Un point posé se classe sur ses seules réponses : une première version qui mêlait le niveau aux réponses classait « acquis » des points C1 après deux choix justes par chance.
+- Périmètre de l'application : les 20 leçons et leurs prérequis (35 points), seuls points dont le résultat sert dans Apprendre.
+
+**Résultats** (100 apprenants par profil, rapport : `docs/placement-simulation.json`, conditions `bank-*`) :
+
+| Condition (vraie banque) | Points incertains, profils A1 à B1 | Débutant, B2, C1 | Faux acquis, règle superficielle |
+|---|---|---|---|
+| 74 points, moteur 2.22 (sans règle) | 54 à 71 % | 33 / 63 / 63 % | jusqu'à 13 % |
+| 74 points, règle superficielle | 59 à 76 % | 44 / 66 / 66 % | moins de 0,5 % |
+| 74 points, + niveau global | 47 à 69 % | 24 / 18 / 12 % | moins de 3 % |
+| 35 points (leçons), + niveau global | 28 à 45 % | 6 / 7 / 7 % | moins de 2,5 % |
+
+Le niveau global aide surtout les profils réguliers aux extrêmes ; il ne fait pas de miracle pour un apprenant A1 à B1, ni pour les profils irréguliers (lacunes, dispersés), qui restent incertains plutôt que mal classés. Seuil plus bas (0,95, ou 0,85 sans garde-fou) : beaucoup moins d'incertains mais 15 à 50 % de faux acquis pour ces profils irréguliers ; écarté.
+
+**Un point incertain n'est pas une impasse** : à l'ouverture de sa leçon, un mini-test de 3 questions (natures alternées, même mise à jour bayésienne et même seuil) tranche avant les exercices.
+
+Limites inchangées : profils binaires sans apprentissage, taux d'inattention et de hasard supposés, une seule règle superficielle par point ; la calibration sur des réponses réelles reste à faire.
+
+## Relecture de la banque générée, robustesse et analyse par question (2.24)
+
+**Le test posait d'autres questions que celles relues.** Les 21 points des questions rédigées sont hors du périmètre des 35 points : le test posait 280 questions générées depuis Tatoeba, jamais relues. Leur relecture en a écarté 26 (`public/grammar/en/placement-excluded.json`, avec la raison), surtout des réponses tapées à deux réponses justes : plus-que-parfait et present perfect sans repère (« No one ___ anything », « Mary ___ on time »), present perfect continu avec « all day », prétérit irrégulier où le present perfect est juste aussi, try + -ing / to, if = whether, until + nom, « just now », much adverbe. En réponse tapée, une telle question fait rater une fois sur deux quelqu'un qui connaît le point, quand le modèle suppose 10 % : le point peut sortir « à apprendre » et entraîner ses dépendants.
+
+**Banques stables (2.25).** Chaque génération garde en tête les exercices déjà présents dans les fichiers (`exercises/<leçon>.json`, `placement/<point>.json`) tant qu'ils restent valides ; les nouveaux ne font que compléter. Auparavant, retirer quelques phrases (mots bloqués, signalements) redistribuait tout le tirage : la régénération qui a suivi la 2.24 avait remplacé une partie des questions relues, rétablies en 2.25.
+
+**Filtres systématiques** (`placementBank.ts`, `placementBuilders.ts`, et les générateurs des leçons pour if = whether et try) : repère exigé pour le present perfect, d'antériorité pour le plus-que-parfait (sans wish ni if), for / since / how long pour le present perfect continu, repère passé pour le prétérit ; vraie proposition de temps et pas de question indirecte ; 2e conditionnel avec subordonnée au passé ; was admis à côté de were ; deux questions d'un point ne partagent ni une suite de trois mots ni un tour figé (if I were you, without…).
+
+**Points qui mesuraient autre chose.** must / have to devient *mustn't* contre *don't have to* (la traduction tranche) ; will se mesure contre le calque du présent (« Je t'aide » → *I help you*) et le présent d'habitude contre will ; le présent simple alterne la 3e personne (tapée) et les autres personnes (base ou -s), pour que « toujours -s » ne suffise pas ; présent et prétérit continus : repère anglais (now, Look!, when, while), traduction sans « en train de ».
+
+**Simulation hors des hypothèses du modèle** (`robustness` dans `docs/placement-simulation.json`, réglages de l'application, 60 apprenants par profil). Les apprenants appliquent, sur un point inconnu, une règle que le modèle ne connaît pas (toujours -s, proposition la plus longue, la plus courte comme approximation du calque) ou celle qu'il anticipe (nature dominante), avec une part de raccourci de 0,2 ou 0,8 (le modèle suppose 0,5) ; 15 % des questions peuvent être mal posées (ratées une fois sur deux par qui connaît le point). Résultat sur la banque régénérée par la CI (tout Tatoeba), pire profil : faux acquis de 1,2 à 2,8 % pour toutes les règles et toutes les parts de raccourci (« toujours -s » à 0,8 : 2,6 %, contre 4,5 % avec l'ancienne banque du présent simple, toute à la 3e personne) ; faux « à apprendre » 1,5 % sans questions mal posées et 4,2 à 4,9 % avec ; points incertains jusqu'à 51 % (profil A1), un peu plus qu'avant les filtres, qui retirent des questions tapées : le mini-test de leçon prend le relais. La simulation ne voit pas qu'une question précise est mauvaise : elle ne sait qu'en mesurer le coût moyen.
+
+**Analyse par question, sur de vraies réponses.** C'est elle qui aurait signalé les 26 questions : une question souvent ratée par des gens qui réussissent les autres questions du même point est suspecte. La vue `placement_answers` (une ligne par réponse : utilisateur, univers, date, test ou mini-test, question, réponse) s'y prête directement, par exemple dans Qlik ou en SQL :
+
+```sql
+-- Taux de réussite d'une question chez ceux qui réussissent les autres questions de son point.
+with a as (
+  select user_id, answered_at, question_id, split_part(question_id, ':', 2) as point, response = 'correct' as ok
+  from public.placement_answers
+),
+others as (
+  select x.question_id, x.ok,
+         avg((y.ok)::int) as autres_reussies
+  from a x join a y on y.user_id = x.user_id and y.answered_at = x.answered_at and y.point = x.point and y.question_id <> x.question_id
+  group by x.question_id, x.ok, x.user_id, x.answered_at
+)
+select question_id, count(*) as reponses, avg(ok::int) filter (where autres_reussies >= 0.75) as reussite_chez_les_bons
+from others group by question_id order by reussite_chez_les_bons nulls last;
+```
+
+**Mini-test.** Questions tapées d'abord, puis à 3 propositions, les choix binaires en dernier ; autant de questions (3 à 5) qu'il faut pour que tout réussir au hasard tombe à 1 chance sur 16 (4 sur 4 en choix binaires, alors que 3 sur 3 arrive au hasard une fois sur 8) ; a priori neutre (0,5 au plus) plutôt que la probabilité du test ; « acquis » refusé si le hasard aurait pu suffire.
+
+## Leçons A1 et A2 dans le périmètre (2.25)
+
+**32 leçons A1 et A2** (`public/grammar/en/lessons.json`, texte lisible : [docs/lecons-a1-a2.md](lecons-a1-a2.md), à relire). Leurs exercices viennent des générateurs du placement, appliqués à tout Tatoeba par le workflow Grammaire (banques de 300 exercices au plus). Les questions du placement de ces points restent tirées des petites banques relues (`public/grammar/en/placement/<point>.json`), et les questions écartées à la relecture (`placement-excluded.json`) sont aussi retirées des exercices des leçons, B1 et B2 compris.
+
+**Relecture des 17 points entrés dans le test** (adverbes de manière, articles, can, comparatifs, adverbes de fréquence, going to, have got, impératif, prétérit continu, questions au prétérit, possessifs, génitif, prépositions, should, there is, this / these, indénombrables ; les 15 autres points A1 et A2 y étaient déjà comme prérequis) : 136 questions, 5 écartées (deux prétérits continus où le prétérit simple est juste aussi, une phrase vulgaire, une politique, une de la série de faits divers Dan / Linda), et les remplaçantes relues à leur tour (3 écartées par les règles ci-dessous). Règles ajoutées : le prétérit continu écarte « was being » (passif) ; la liste de mots bloqués couvre aussi la sexualité explicite, les meurtres et la torture, des noms de dirigeants politiques et les personnages des séries de faits divers (Dan, Linda, Yidir).
+
+**Simulation** (52 points, réglages inchangés) :
+
+| Profil | Incertains 2.24 (35 points) | Incertains 2.25 (52 points) | Faux acquis 2.25 |
+|---|---|---|---|
+| Débutant | 4 % | 27 % | 1,7 % |
+| Acquis jusqu'à A1 / A2 / B1 | 51 / 45 / 28 % | 67 / 60 / 38 % | 0,5 / 0,1 / 0,5 % |
+| Acquis jusqu'à B2 / C1 | 7 / 8 % | 5 / 6 % | 0 % |
+| Avancé avec lacunes, dispersés | 43 / 41 % | 61 / 57 % | 0,8 / 2,9 % |
+
+Robustesse (règles inconnues du modèle, parts 0,2 et 0,8, 15 % de questions mal posées) : faux acquis au plus 3,8 % (2,8 % en 2.24), faux « à apprendre » au plus 1,0 % sans questions mal posées et 3,3 % avec.
+
+**Limite assumée.** Avec 40 questions et au moins deux par point, le test tranche directement une vingtaine de points ; les 17 points A1 et A2 ajoutés ont peu de prérequis, la déduction les atteint peu, et le niveau global ne classe pas un point A1 chez un débutant sans une très forte certitude (une grille de θ étendue vers le bas a été essayée : 27 → 24,5 % d'incertains chez le débutant, mais faux acquis doublés chez les profils avancés irréguliers ; écartée). Les points incertains passent par le mini-test de leur leçon (3 à 5 questions). Pour un vrai débutant, « Commencer au début » reste plus simple que le test. Pistes si l'usage montre trop de mini-tests : test en deux temps (A1 et A2 d'abord, puis la suite selon le niveau), ou plus de questions pour les profils A1 et A2.
+
+## Leçons B1 de la 2.29
+
+Six leçons B1 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs) entrent dans le périmètre, qui passe à 58 points. Leurs questions de test restent les 6 questions rédigées de chacun (`placement-written.json`), prioritaires sur la banque générée de la leçon : elles ont été écrites pour le test (natures de réponse variées, distracteurs plausibles), les phrases générées servent aux exercices. Simulation (réglages inchangés) : faux acquis au plus 2,8 % (règles inconnues du modèle, questions mal posées), faux « à apprendre » au plus 3,4 % ; points incertains 24 % (débutant), 63 à 70 % (A1, A2), 44 % (B1), 17 % (B2, C1, contre 5 à 6 % sur 52 points). Avec 40 questions, ces six points de plus sont rarement posés directement chez les profils avancés : le mini-test de leçon prend le relais.
+
+## Leçons B2 de la 2.30
+
+Neuf leçons B2 portent le périmètre à 67 points ; leurs questions de test restent les questions rédigées (be-used-to : celles de la banque relue de used to). Simulation : faux acquis au plus 2,7 %, faux « à apprendre » au plus 2,1 % ; points incertains 21 % (débutant), 56 à 68 % (A1, A2), 52 % (B1), 7 et 6 % (B2, C1). Les points B2 ajoutés rendent au niveau global sa prise sur les profils avancés (17 % d'incertains en 2.29).
+
+## Parcours complet (2.31)
+
+Les 74 points ont leur leçon : le test porte sur tout le parcours. Simulation (réglages inchangés) : faux acquis au plus 4,0 %, contre 2,7 % sur 67 points ; faux « à apprendre » au plus 7,8 %, contre 2,1 %. La hausse vient presque entièrement du profil « avancé avec lacunes », volontairement irrégulier : il connaît le subjonctif et les phrases clivées (C1, sans prérequis) sans connaître le reste. Ces deux points, nouveaux dans le test, sont classés « à apprendre » par le niveau global, qui suppose qu'on maîtrise les niveaux inférieurs. Une garde plus stricte (un échec direct au même niveau ou juste en dessous) n'y change rien : les autres points C1 de ce profil sont ratés directement. Le coût pour l'apprenant est faible : une leçon déjà sue, vite acquise, plutôt qu'une leçon sautée à tort. Les profils réguliers restent sous 1 % de faux « à apprendre ».
+
+## Niveau C2 (2.33)
+
+Cinq points C2 (inversion conditionnelle, passif impersonnel, passé irréel, modaux au passé, whatever / whoever…) portent le parcours à 79 points ; leurs questions de test sont rédigées (6 par point). Avec eux, les faux acquis des profils dispersés montaient à 5,9 % (7,0 % au pire des conditions de robustesse) : presque tous des points A1 déclarés acquis par le niveau global seul (210 cas sur 235 dans un diagnostic sur 150 apprenants). Une garde de voisinage (un point réussi au même niveau ou juste au-dessus) n'y changeait rien ; l'application exige désormais 99,5 % de confiance pour une conclusion du niveau seul (`levelConfidence`, `PLACEMENT_APP_CONFIG`). Résultat, conditions de robustesse : faux acquis au plus 2,5 %, faux « à apprendre » au plus 4,0 % ; en contrepartie, plus de points restent à consolider chez les profils réguliers (premier jeu de conditions : B1 56 → 69 %, B2 23 → 35 %, C1 23 → 34 %, C2 14 → 21 %), tranchés par le mini-test de leçon. Revenir à 0,99 se fait en une ligne si l'usage montre trop de mini-tests.

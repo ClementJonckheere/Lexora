@@ -243,6 +243,79 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_grammar_answers_lesson ON grammar_answers(universe_id, lesson_id, created_at)',
   ],
+}, {
+  version: 8,
+  name: 'progression : durée de saisie des mots ajoutés',
+  statements: [
+    // Une ligne par mot ajouté depuis le formulaire : temps entre l'ouverture et l'enregistrement (titre « Archiviste »).
+    `CREATE TABLE note_entries (
+      id           TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      note_id      TEXT    NOT NULL,
+      duration_ms  INTEGER NOT NULL,
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_note_entries_universe ON note_entries(universe_id, deleted)',
+  ],
+}, {
+  version: 9,
+  name: 'progression : réponses tapées en révision',
+  statements: [
+    // Une ligne par révision dont la réponse a été tapée (toutes fiches), synchronisée : l'XP d'une réponse tapée
+    // est la même sur tous les appareils (review_logs.typed_ms, propre à l'appareil, ne sert qu'à la vitesse).
+    `CREATE TABLE typed_answers (
+      log_id       TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_typed_answers_universe ON typed_answers(universe_id, deleted)',
+  ],
+}, {
+  version: 10,
+  name: 'lecture : temps de lecture',
+  statements: [
+    // Une ligne par ouverture d'un livre, mise à jour pendant la lecture : temps actif (gestes espacés de 5 minutes au
+    // plus) et pages tournées vers l'avant (src/core/reading/readingTime.ts). XP de lecture et titre « Rat de bibliothèque ».
+    `CREATE TABLE reading_sessions (
+      id           TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      book_key     TEXT    NOT NULL,
+      started_at   INTEGER NOT NULL,
+      active_ms    INTEGER NOT NULL DEFAULT 0,
+      pages        INTEGER NOT NULL DEFAULT 0,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_reading_sessions_universe ON reading_sessions(universe_id, deleted)',
+  ],
+}, {
+  version: 11,
+  name: 'apprendre : verbes irréguliers',
+  statements: [
+    // Une ligne par réponse (prétérit et participe tapés) : répétition espacée de chaque verbe, XP, titre « Dompteur
+    // d'irréguliers » (src/core/learn/irregularVerbs.ts). Les réponses tapées sont gardées pour l'analyse des erreurs.
+    `CREATE TABLE verb_answers (
+      id               TEXT PRIMARY KEY,
+      universe_id      TEXT    NOT NULL,
+      verb             TEXT    NOT NULL,
+      past_given       TEXT    NOT NULL DEFAULT '',
+      participle_given TEXT    NOT NULL DEFAULT '',
+      past_ok          INTEGER NOT NULL,
+      participle_ok    INTEGER NOT NULL,
+      created_at       INTEGER NOT NULL,
+      updated_at       INTEGER NOT NULL,
+      deleted          INTEGER NOT NULL DEFAULT 0,
+      dirty            INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_verb_answers_universe ON verb_answers(universe_id, deleted)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

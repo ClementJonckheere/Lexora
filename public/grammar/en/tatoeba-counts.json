@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-10-29T17:12:37.031Z",
+ "generatedAt": "2026-10-30T19:06:02.806Z",
  "sentences": 2039572,
  "withFrench": 336747,
  "minCandidates": 30,
@@ -787,6 +787,61 @@
     "What you don't have is better than what you do have.",
     "We can travel through time. And we do at the remarkable rate of one second per second.",
     "I think it is good that books still exist, but they do make me sleepy."
+   ]
+  },
+  "conditional-inversion": {
+   "total": 238,
+   "withFrench": 56,
+   "samples": [
+    "Had I known your telephone number, I would have called you.",
+    "Had it not been for your raincoat, I would have been drenched to the skin.",
+    "Were it not for air, no creatures could live.",
+    "Were I rich, I would help the poor.",
+    "Had he known what was about to happen, he would have changed his plan."
+   ]
+  },
+  "impersonal-passive": {
+   "total": 3033,
+   "withFrench": 293,
+   "samples": [
+    "It is said that \"Hamlet\" is the most interesting play ever written.",
+    "One hundred and fifty thousand couples are expected to get married in Shanghai in 2006.",
+    "You are supposed to obey the law.",
+    "You are expected to come by 5:00.",
+    "You students are supposed to be diligent."
+   ]
+  },
+  "unreal-past": {
+   "total": 218,
+   "withFrench": 64,
+   "samples": [
+    "It is high time you started a new business.",
+    "It's high time you had a haircut.",
+    "It's high time you got going.",
+    "I would rather you had a day off.",
+    "It's about time you were independent of your parents."
+   ]
+  },
+  "past-modals": {
+   "total": 5611,
+   "withFrench": 657,
+   "samples": [
+    "I shouldn't have logged off.",
+    "I couldn't have done it without you. Thank you.",
+    "You should have listened to me.",
+    "You should have refused such an unfair proposal.",
+    "You should have acted on her advice."
+   ]
+  },
+  "wh-ever": {
+   "total": 3482,
+   "withFrench": 513,
+   "samples": [
+    "Whenever I find something I like, it's too expensive.",
+    "Whatever I do, she says I can do better.",
+    "Do whatever he tells you.",
+    "So annoying... Now I get a headache whenever I use the computer!",
+    "Mathematicians are like French people: whatever you tell them they translate it into their own language and turn it into something totally different."
    ]
   }
  }

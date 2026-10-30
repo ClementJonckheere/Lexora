@@ -164,3 +164,49 @@ describe('entrées invalides', () => {
     expect(() => updatePlacementProbability(0.5, 'correct', 0.1, 0.95)).toThrow();
   });
 });
+
+describe('règle superficielle et niveau global', () => {
+  // Deux natures de réponse alternées (sujet / objet, will / présent…).
+  const formed = (id: string, n = 8): PlacementQuestion[] =>
+    Array.from({ length: n }, (_, i) => ({ id: `${id}:${i}`, targetId: id, mode: 'typed' as const, form: i % 2 ? 'b' : 'a' }));
+
+  it('réussir toutes les phrases d’une nature et rater les autres ne prouve pas qu’on connaît le point', () => {
+    const m = new PlacementModel([target('p')], formed('p'));
+    const rule = answers('p', [true, false, true, false, true, false]);
+    expect(m.estimate(rule)[0].state).not.toBe('mastered');
+    // Sans le modèle de règle, le même schéma passait pour « acquis » (réponses tapées : 5 % de hasard).
+    const naive = new PlacementModel([target('p')], formed('p'), { shortcutShare: 0 });
+    expect(naive.estimate(rule)[0].state).toBe('mastered');
+    // Réussir les deux natures, si.
+    expect(m.estimate(answers('p', [true, true, true]))[0].state).toBe('mastered');
+  });
+
+  it('les questions d’un point alternent les natures de réponse', () => {
+    const m = new PlacementModel([target('p')], [...formed('p').filter((q) => q.form === 'a'), ...formed('p').filter((q) => q.form === 'b')]);
+    const first = m.next([]).question!;
+    const second = m.next(m.answer([], first.id, 'correct')).question!;
+    expect(new Set([first.form, second.form]).size).toBe(2);
+  });
+
+  it('niveau global : classe des points jamais posés loin du niveau, sans dépasser les niveaux confirmés', () => {
+    const levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
+    const targets = levels.flatMap((level) => [0, 1, 2].map((i) => ({ ...target(`${level}-${i}`), level })));
+    const questions = targets.flatMap((t) => bank([t.id]));
+    const m = new PlacementModel(targets, questions, { globalLevel: 2, levelConfidence: 0.99 });
+    // Tout C1 raté, tout A1 et A2 réussi.
+    const a: PlacementAnswer[] = [];
+    for (const t of targets.filter((t) => t.level === 'C1' || t.level === 'A1' || t.level === 'A2'))
+      for (const i of [0, 1]) a.push({ questionId: `${t.id}:${i}`, response: t.level === 'C1' ? 'incorrect' : 'correct' });
+    const e = new Map(m.estimate(a).map((x) => [x.id, x]));
+    expect(e.get('A1-0')!.evidence).toBe('direct');
+    // B2 jamais posé, au-dessus du plus haut niveau acquis (A2) : pas classé « acquis » par le seul niveau.
+    expect(e.get('B2-0')!.state).not.toBe('mastered');
+    // Un point posé se classe sur ses réponses, pas sur le niveau.
+    const lucky = new PlacementModel(targets, targets.flatMap((t) => bank([t.id], 'choice')), { globalLevel: 2 });
+    const strongLevel: PlacementAnswer[] = targets
+      .filter((t) => t.level !== 'C1')
+      .flatMap((t) => [0, 1, 2].map((i) => ({ questionId: `${t.id}:${i}`, response: 'correct' as const })));
+    strongLevel.push({ questionId: 'C1-0:0', response: 'correct' }, { questionId: 'C1-0:1', response: 'correct' });
+    expect(new Map(lucky.estimate(strongLevel).map((x) => [x.id, x])).get('C1-0')!.state).toBe('consolidate');
+  });
+});

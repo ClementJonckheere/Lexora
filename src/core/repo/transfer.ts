@@ -9,6 +9,7 @@ import type { Settings } from '../domain/settings';
 import { noteMastery } from '../srs/queue';
 import { insertNote, type NoteTarget } from './notesRepo';
 import { insertCollection } from './collectionsRepo';
+import { SYNC_TABLES } from '../sync/tables';
 
 /* -------------------------------------------------------------------------- */
 /*  Sauvegarde complète (JSON) : tous les univers, historique compris.        */
@@ -16,8 +17,11 @@ import { insertCollection } from './collectionsRepo';
 
 export const BACKUP_FORMAT = 'lexora-backup';
 
-/** Tables synchronisées, dans l'ordre de dépendance. */
-const TABLES = ['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings'] as const;
+/**
+ * Toutes les tables synchronisées, dans l'ordre de dépendance : mots, fiches et historique, mais aussi livres, mots
+ * connus, test de vocabulaire, réponses de grammaire, durées de saisie et réponses tapées (tout ce qui fait la progression).
+ */
+const TABLES = SYNC_TABLES.map((t) => t.name);
 
 type Row = Record<string, unknown>;
 
@@ -25,11 +29,12 @@ export interface Backup {
   format: typeof BACKUP_FORMAT;
   schemaVersion: number;
   exportedAt: string;
-  tables: Record<(typeof TABLES)[number], Row[]>;
+  /** Une sauvegarde d'une version antérieure n'a pas les tables ajoutées depuis. */
+  tables: Partial<Record<string, Row[]>>;
 }
 
 export async function exportBackup(db: Queryable): Promise<Backup> {
-  const tables = {} as Backup['tables'];
+  const tables: Backup['tables'] = {};
   for (const t of TABLES) {
     const rows = await db.select<Row>(t === 'settings' ? 'SELECT key, value, updated_at FROM settings' : `SELECT * FROM ${t} WHERE deleted = 0`);
     tables[t] = rows.map(({ dirty: _d, deleted: _x, ...r }) => r);
@@ -45,6 +50,7 @@ export function isBackup(data: unknown): data is Backup {
  * Restauration : l'état de la sauvegarde remplace INTÉGRALEMENT les données actuelles.
  * Les lignes actuelles sont supprimées (suppression douce, propagée aux autres appareils),
  * celles de la sauvegarde sont réécrites comme modifications récentes, à synchroniser.
+ * Une table absente de la sauvegarde (version antérieure) garde ses lignes, sauf celles d'un univers qui n'existe plus.
  */
 export async function restoreBackup(db: Database, backup: Backup, now = Date.now()): Promise<void> {
   if (!isBackup(backup)) throw new Error("Ce fichier n'est pas une sauvegarde Lexora.");
@@ -54,13 +60,15 @@ export async function restoreBackup(db: Database, backup: Backup, now = Date.now
   if (backup.schemaVersion > LATEST_VERSION) {
     throw new Error("Sauvegarde créée par une version plus récente de Lexora : mettez l'application à jour.");
   }
+  const present = TABLES.filter((t) => Array.isArray(backup.tables[t]));
+  const absent = TABLES.filter((t) => !present.includes(t));
   await db.transaction(async (tx) => {
-    for (const t of TABLES) {
+    for (const t of present) {
       if (t === 'settings') await tx.execute('DELETE FROM settings');
       else await tx.execute(`UPDATE ${t} SET deleted = 1, updated_at = ?, dirty = 1 WHERE deleted = 0`, [now]);
     }
-    for (const t of TABLES) {
-      for (const row of backup.tables[t] ?? []) {
+    for (const t of present) {
+      for (const row of backup.tables[t]!) {
         const data: Row = { ...row, updated_at: now + 1, dirty: 1 };
         if (t !== 'settings') data.deleted = 0;
         const cols = Object.keys(data);
@@ -70,6 +78,14 @@ export async function restoreBackup(db: Database, backup: Backup, now = Date.now
           cols.map((c) => data[c] as string | number | null),
         );
       }
+    }
+    for (const t of absent) {
+      if (t === 'settings') continue;
+      await tx.execute(
+        `UPDATE ${t} SET deleted = 1, updated_at = ?, dirty = 1
+         WHERE deleted = 0 AND universe_id NOT IN (SELECT id FROM universes WHERE deleted = 0)`,
+        [now],
+      );
     }
   });
 }

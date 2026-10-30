@@ -1,9 +1,10 @@
 // Banque du placement grammatical (public/grammar/en/placement.json), tirée des banques d'exercices des leçons.
 // Exécuté par la CI après la génération des banques (.github/workflows/grammar.yml), ou à la main :
 //   npx vite-node scripts/placement-bank.ts
-// Les points sans leçon (ni banque) sont listés dans le fichier : ils attendent des questions générées ou rédigées.
+// Points A1 et A2 : questions des banques du placement (public/grammar/en/placement, générées par la CI). Les points
+// restants sont listés dans le fichier : ils attendent des questions rédigées.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { placementItems, type PlacementItem } from '../src/core/learn/placementBank';
+import { placementItems, writtenItem, type PlacementItem, type WrittenQuestion } from '../src/core/learn/placementBank';
 import type { Exercise } from '../src/core/learn/exercises';
 
 const DIR = 'public/grammar/en';
@@ -12,16 +13,41 @@ const lessons = JSON.parse(readFileSync(`${DIR}/lessons.json`, 'utf8')).lessons 
 const counts = JSON.parse(readFileSync(`${DIR}/tatoeba-counts.json`, 'utf8')).counts as Record<string, { withFrench: number }>;
 const excludedFile = `${DIR}/exercises/excluded.json`;
 const excluded = new Set<string>(existsSync(excludedFile) ? JSON.parse(readFileSync(excludedFile, 'utf8')).items : []);
+// Questions du placement écartées à la relecture (identifiant de question, pas d'exercice).
+const reviewFile = `${DIR}/placement-excluded.json`;
+const rejected = new Set<string>(existsSync(reviewFile) ? (JSON.parse(readFileSync(reviewFile, 'utf8')).items as { id: string }[]).map((i) => i.id) : []);
 
 const items: PlacementItem[] = [];
 const covered: Record<string, { typed: number; choice2: number; choice3plus: number }> = {};
 /** Points du parcours servis par la banque d'une leçon : la leçon elle-même, et be-used-to (phrases de la leçon used to). */
-const sources = [...lessons.map(({ id }) => ({ target: id, lesson: id })), { target: 'be-used-to', lesson: 'used-to' }];
-for (const { target: id, lesson } of sources) {
-  const file = `${DIR}/exercises/${lesson}.json`;
+const sources = [
+  // Points A1 et A2 : banques des générateurs du placement (placementBuilders.ts), d'abord, même quand le point a une
+  // leçon : ce sont elles qui ont été relues (placement-excluded.json), la banque de la leçon en est un sur-ensemble.
+  ...points.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/placement/${id}.json` })),
+  // be-used-to : questions tirées de la banque relue de used to, même depuis sa propre leçon (2.30).
+  { target: 'be-used-to', lesson: 'used-to', file: `${DIR}/exercises/used-to.json` },
+  ...lessons.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/exercises/${id}.json` })),
+];
+// Questions rédigées (étape 3) : prioritaires sur la banque générée d'une leçon ajoutée ensuite (2.29 : B1), plus variées
+// et faites pour le test ; les phrases générées servent aux exercices de la leçon.
+const written = JSON.parse(readFileSync(`${DIR}/placement-written.json`, 'utf8')).items as WrittenQuestion[];
+for (const p of points) {
+  if (covered[p.id] || existsSync(`${DIR}/placement/${p.id}.json`)) continue;
+  const chosen = written.filter((q) => q.targetId === p.id).map((q, i) => writtenItem(q, i));
+  if (chosen.length < 2) continue;
+  items.push(...chosen);
+  covered[p.id] = {
+    typed: chosen.filter((q) => q.mode === 'typed').length,
+    choice2: chosen.filter((q) => q.mode === 'choice' && q.choices === 2).length,
+    choice3plus: chosen.filter((q) => q.mode === 'choice' && q.choices! >= 3).length,
+  };
+}
+
+for (const { target: id, lesson, file } of sources) {
+  if (covered[id]) continue;
   if (!existsSync(file)) continue;
   const bank = JSON.parse(readFileSync(file, 'utf8')).items as Exercise[];
-  const chosen = placementItems(lesson, bank, excluded, id);
+  const chosen = placementItems(lesson, bank.filter((ex) => !rejected.has(`placement:${id}:${ex.id}`)), excluded, id);
   if (chosen.length < 2) continue; // le moteur pose au moins deux questions par point
   items.push(...chosen);
   covered[id] = {
@@ -47,7 +73,7 @@ writeFileSync(
     {
       version: 1,
       generatedAt: new Date().toISOString(),
-      source: 'Tatoeba (CC BY 2.0 FR), banques des leçons',
+      source: 'Tatoeba (CC BY 2.0 FR) : banques des leçons et du placement ; questions rédigées (placement-written.json)',
       status: 'généré automatiquement, à relire avant activation',
       covered,
       missing,

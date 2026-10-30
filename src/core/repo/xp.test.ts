@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createMemoryDatabase } from '../db/testing';
 import type { GrammarAnswer } from '../learn/progress';
-import { loadXpEvents } from './xpRepo';
+import { loadHistory, loadXpEvents, recordNoteEntry, saveReadingSession } from './xpRepo';
+import { loadVerbAnswers, recordVerbAnswer } from './learnRepo';
 
 const T = new Date(2026, 9, 29, 9, 0).getTime();
 
@@ -28,6 +29,9 @@ async function setup() {
   await log('l1', 'c1', 2500);
   await log('l2', 'c1', null);
   await log('l3', 'c3', 2500);
+  await log('l4', 'c1', null);
+  // Réponse tapée sur un autre appareil (ou sur une fiche nouvelle) : seule la ligne synchronisée en garde la trace.
+  await db.execute(`INSERT INTO typed_answers (log_id, universe_id, created_at, updated_at) VALUES ('l4', 'en', ?, ?)`, [T, T]);
   await db.execute(`INSERT INTO practice_logs (id, note_id, mode, rating, created_at, updated_at) VALUES ('p1', 'n1', 'random', 3, ?, ?)`, [T, T]);
   return db;
 }
@@ -36,7 +40,7 @@ describe('événements d’XP', () => {
   it('révisions, entraînement et mots de l’univers seulement ; réponse tapée et exemple repérés', async () => {
     const events = await loadXpEvents(await setup(), 'en', []);
     const reviews = events.filter((e) => e.kind === 'review');
-    expect(reviews.map((e) => e.kind === 'review' && e.typed)).toEqual([true, false]);
+    expect(reviews.map((e) => e.kind === 'review' && e.typed).sort()).toEqual([false, true, true]);
     expect(reviews.every((e) => e.kind === 'review' && e.elapsedDays === 12)).toBe(true);
     expect(events.filter((e) => e.kind === 'practice')).toHaveLength(1);
     expect(events.filter((e) => e.kind === 'note').map((e) => e.kind === 'note' && e.withExample).sort()).toEqual([false, true]);
@@ -59,5 +63,54 @@ describe('événements d’XP', () => {
     answers.push({ lessonId: 'present-perfect', itemId: 'present-perfect:20', correct: true, reported: false, createdAt: T + 20 * 30_000 });
     const again = await loadXpEvents(await createMemoryDatabase(), 'en', answers);
     expect(again.filter((e) => e.kind === 'lesson-mastered')).toHaveLength(1);
+  });
+});
+
+describe('durée de saisie', () => {
+  it('enregistrée pour un nouveau mot, ignorée au-delà de 10 minutes', async () => {
+    const db = await createMemoryDatabase();
+    await recordNoteEntry(db, 'en', 'n1', 3200, T);
+    await recordNoteEntry(db, 'en', 'n2', 11 * 60_000, T);
+    await recordNoteEntry(db, 'es', 'n3', 2000, T);
+    expect((await loadHistory(db, 'en', [])).entries).toEqual([{ at: T, durationMs: 3200 }]);
+  });
+});
+
+describe('séances de lecture', () => {
+  it('enregistrées puis réécrites ; minutes bornées par les pages ; bonus du livre fini lu une heure', async () => {
+    const db = await createMemoryDatabase();
+    const session = { id: 's1', universeId: 'en', bookKey: 'b1', startedAt: T, activeMs: 10 * 60_000, pages: 1 };
+    await saveReadingSession(db, { ...session, activeMs: 0 }); // rien à écrire
+    expect(await db.select('SELECT id FROM reading_sessions')).toEqual([]);
+    await saveReadingSession(db, session);
+    await saveReadingSession(db, { ...session, activeMs: 40 * 60_000, pages: 20 });
+    await saveReadingSession(db, { id: 's2', universeId: 'en', bookKey: 'b1', startedAt: T + 86_400_000, activeMs: 30 * 60_000, pages: 2 });
+    await db.execute(
+      `INSERT INTO books (book_key, universe_id, title, language, text_url, progress, added_at, last_read_at, updated_at)
+       VALUES ('b1', 'en', 'Livre', 'en', 'x', 0.99, ?, ?, ?)`,
+      [T, T + 86_400_000, T],
+    );
+    const h = await loadHistory(db, 'en', []);
+    expect(h.events.filter((e) => e.kind === 'reading').map((e) => e.kind === 'reading' && e.minutes)).toEqual([40, 10]);
+    expect(h.readingMinutes).toBe(50);
+    expect(h.events.filter((e) => e.kind === 'book-finished')).toHaveLength(0); // 50 minutes : moins d'une heure
+    await saveReadingSession(db, { id: 's3', universeId: 'en', bookKey: 'b1', startedAt: T + 2 * 86_400_000, activeMs: 10 * 60_000, pages: 5 });
+    expect((await loadHistory(db, 'en', [])).events.filter((e) => e.kind === 'book-finished')).toHaveLength(1);
+  });
+});
+
+describe('réponses aux verbes irréguliers', () => {
+  it('enregistrées avec les formes tapées, relues dans l’historique (XP, verbes maîtrisés)', async () => {
+    const db = await createMemoryDatabase();
+    const DAY = 86_400_000;
+    for (const [i, at] of [T, T + DAY, T + 4 * DAY].entries())
+      await recordVerbAnswer(db, 'en', { verb: 'go', at, pastOk: true, participleOk: true, pastGiven: 'went', participleGiven: i ? 'gone' : ' Gone ' });
+    await recordVerbAnswer(db, 'en', { verb: 'take', at: T, pastOk: true, participleOk: false, pastGiven: 'took', participleGiven: 'took' });
+    await recordVerbAnswer(db, 'es', { verb: 'go', at: T, pastOk: true, participleOk: true, pastGiven: 'went', participleGiven: 'gone' });
+    expect(await loadVerbAnswers(db, 'en')).toHaveLength(4);
+    expect(await db.select("SELECT participle_given FROM verb_answers WHERE verb = 'take'")).toEqual([{ participle_given: 'took' }]);
+    const h = await loadHistory(db, 'en', []);
+    expect(h.events.filter((e) => e.kind === 'verb')).toHaveLength(4);
+    expect(h.verbsMastered).toBe(1);
   });
 });

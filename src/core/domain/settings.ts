@@ -33,6 +33,12 @@ export interface Settings {
   clozeFront: boolean;
   /** Ordre des nouveaux mots : les plus fréquents dans la langue d'abord, ou par date d'ajout. */
   newOrder: 'frequency' | 'added';
+  /** Test de placement grammatical, par univers : passé (résultats par point, corrections) ou écarté. */
+  placement: Record<string, PlacementRecord>;
+  /** Titre affiché à côté du rang, par univers (identifiant du titre, ou « none »). */
+  displayedTitles: Record<string, string>;
+  /** Classement (Statistiques) : participation choisie, pseudo affiché aux autres. */
+  leaderboard: { enabled: boolean; name: string };
   /** Version des réglages par défaut appliqués (changements de défaut une seule fois, pour tous). */
   settingsVersion: number;
 
@@ -58,6 +64,70 @@ export interface Settings {
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 
+export type PlacementState = 'mastered' | 'consolidate' | 'learn';
+export type PlacementRecord =
+  | { status: 'skipped'; at: number }
+  | {
+      status: 'done';
+      at: number;
+      /** État estimé de chaque point, avec sa probabilité et la nature de la preuve (testé, déduit, incertain…). */
+      results: { id: string; state: PlacementState; probability: number; evidence: string }[];
+      /** Corrections de l'utilisateur (« je connais déjà », « à revoir »). */
+      overrides: Record<string, PlacementState>;
+      /** Mini-tests passés au début d'une leçon, pour les points que le test n'a pas tranchés. */
+      checks?: Record<string, { at: number; probability: number; state: PlacementState; answers?: PlacementRawAnswer[] }>;
+      /** Réponses brutes du test (question, réponse) : analyse par question une fois de vraies réponses recueillies. */
+      answers?: PlacementRawAnswer[];
+    };
+
+/** Réponse brute : identifiant de la question et réponse (correct, incorrect, unknown). */
+export interface PlacementRawAnswer {
+  q: string;
+  r: 'correct' | 'incorrect' | 'unknown';
+}
+const RESPONSES = new Set(['correct', 'incorrect', 'unknown']);
+const rawAnswers = (raw: unknown): PlacementRawAnswer[] | undefined =>
+  Array.isArray(raw)
+    ? raw.filter((a): a is PlacementRawAnswer => !!a && typeof (a as PlacementRawAnswer).q === 'string' && RESPONSES.has((a as PlacementRawAnswer).r))
+    : undefined;
+
+const PLACEMENT_STATES = new Set<string>(['mastered', 'consolidate', 'learn']);
+function sanitizePlacement(raw: unknown): Record<string, PlacementRecord> {
+  if (!raw || typeof raw !== 'object') return {};
+  const out: Record<string, PlacementRecord> = {};
+  for (const [universe, r] of Object.entries(raw as Record<string, unknown>)) {
+    const rec = r as Partial<{ status: string; at: number; results: unknown; overrides: unknown }>;
+    if (!rec || typeof rec.at !== 'number') continue;
+    if (rec.status === 'skipped') out[universe] = { status: 'skipped', at: rec.at };
+    else if (rec.status === 'done' && Array.isArray(rec.results)) {
+      const results = rec.results.filter(
+        (x): x is { id: string; state: PlacementState; probability: number; evidence: string } =>
+          !!x && typeof x.id === 'string' && PLACEMENT_STATES.has(x.state) && typeof x.probability === 'number' && typeof x.evidence === 'string',
+      );
+      const overrides = Object.fromEntries(
+        Object.entries((rec.overrides && typeof rec.overrides === 'object' ? rec.overrides : {}) as Record<string, unknown>).filter(
+          (e): e is [string, PlacementState] => typeof e[1] === 'string' && PLACEMENT_STATES.has(e[1]),
+        ),
+      );
+      const rawChecks = (rec as { checks?: unknown }).checks;
+      const checks = Object.fromEntries(
+        Object.entries((rawChecks && typeof rawChecks === 'object' ? rawChecks : {}) as Record<string, unknown>).filter(
+          (e): e is [string, { at: number; probability: number; state: PlacementState }] => {
+            const c = e[1] as { at?: unknown; probability?: unknown; state?: unknown } | null;
+            return !!c && typeof c.at === 'number' && typeof c.probability === 'number' && typeof c.state === 'string' && PLACEMENT_STATES.has(c.state);
+          },
+        ).map(([id, c]) => {
+          const answers = rawAnswers((c as { answers?: unknown }).answers);
+          return [id, { at: c.at, probability: c.probability, state: c.state, ...(answers ? { answers } : {}) }];
+        }),
+      );
+      const answers = rawAnswers((rec as { answers?: unknown }).answers);
+      out[universe] = { status: 'done', at: rec.at, results, overrides, ...(Object.keys(checks).length ? { checks } : {}), ...(answers ? { answers } : {}) };
+    }
+  }
+  return out;
+}
+
 /** Réglages liés au matériel : stockés localement, non synchronisés entre appareils. */
 export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut', 'clipboardPrefill', 'closeToTray', 'reminderEnabled', 'reminderTime', 'deeplKey', 'theme'] as const satisfies readonly (keyof Settings)[];
 
@@ -76,6 +146,9 @@ export function settingsUpgrade(settings: Settings): Partial<Settings> | null {
   return patch;
 }
 
+/** Longueur maximale du pseudo du classement. */
+export const LEADERBOARD_NAME_MAX = 30;
+
 export const DEFAULT_SETTINGS: Settings = {
   newPerDay: 10,
   desiredRetention: 0.9,
@@ -92,6 +165,9 @@ export const DEFAULT_SETTINGS: Settings = {
   naturalVoice: true,
   clozeFront: true,
   newOrder: 'frequency',
+  displayedTitles: {},
+  leaderboard: { enabled: false, name: '' },
+  placement: {},
   settingsVersion: 0,
   ttsVoices: {},
   ttsRate: 0.95,
@@ -132,6 +208,15 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.naturalVoice = bool(raw.naturalVoice, s.naturalVoice);
   s.clozeFront = bool(raw.clozeFront, s.clozeFront);
   s.newOrder = raw.newOrder === 'added' ? 'added' : 'frequency';
+  s.placement = sanitizePlacement(raw.placement);
+  s.displayedTitles =
+    raw.displayedTitles && typeof raw.displayedTitles === 'object'
+      ? Object.fromEntries(Object.entries(raw.displayedTitles as Record<string, unknown>).filter((e): e is [string, string] => typeof e[1] === 'string'))
+      : {};
+  {
+    const lb = (raw.leaderboard ?? {}) as Record<string, unknown>;
+    s.leaderboard = { enabled: lb.enabled === true, name: typeof lb.name === 'string' ? lb.name.trim().slice(0, LEADERBOARD_NAME_MAX) : '' };
+  }
   s.settingsVersion = Number.isInteger(raw.settingsVersion) ? (raw.settingsVersion as number) : 0;
   s.clipboardPrefill = bool(raw.clipboardPrefill, s.clipboardPrefill);
   s.closeToTray = bool(raw.closeToTray, s.closeToTray);

@@ -858,6 +858,60 @@
    ],
    "example": "I do like it. She did call.",
    "detect": null
+  },
+  {
+   "id": "conditional-inversion",
+   "level": "C2",
+   "title": "Inversion conditionnelle (Had I known, Were I…, Should you…)",
+   "requires": [
+    "third-conditional",
+    "inversion"
+   ],
+   "after": [],
+   "example": "Had I known, I would have come.",
+   "detect": null
+  },
+  {
+   "id": "impersonal-passive",
+   "level": "C2",
+   "title": "Passif impersonnel (He is said to…, It is believed that…)",
+   "requires": [
+    "passive"
+   ],
+   "after": [],
+   "example": "He is said to be very rich.",
+   "detect": null
+  },
+  {
+   "id": "unreal-past",
+   "level": "C2",
+   "title": "Passé irréel (It's time we went, I'd rather you stayed)",
+   "requires": [
+    "wish"
+   ],
+   "after": [],
+   "example": "It's time we went home.",
+   "detect": null
+  },
+  {
+   "id": "past-modals",
+   "level": "C2",
+   "title": "Modaux au passé : should have, could have, needn't have",
+   "requires": [
+    "deduction-past"
+   ],
+   "after": [],
+   "example": "You should have told me.",
+   "detect": null
+  },
+  {
+   "id": "wh-ever",
+   "level": "C2",
+   "title": "Whatever, whoever, wherever, whenever, however",
+   "requires": [],
+   "after": [],
+   "example": "Whatever you do, don't panic.",
+   "detect": null
   }
  ],
  "traps": [
@@ -1180,6 +1234,22 @@
    "title": "Pas d'inversion dans une question rapportée",
    "wrong": "She asked where did I live.",
    "right": "She asked where I lived."
+  },
+  {
+   "id": "time-present",
+   "point": "unreal-past",
+   "level": "C2",
+   "title": "It's time + prétérit",
+   "wrong": "It's time we go.",
+   "right": "It's time we went."
+  },
+  {
+   "id": "if-inversion",
+   "point": "conditional-inversion",
+   "level": "C2",
+   "title": "Pas de if avec l'inversion",
+   "wrong": "If had I known…",
+   "right": "Had I known… (ou If I had known…)"
   }
  ],
  "collections": [

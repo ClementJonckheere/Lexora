@@ -8,12 +8,15 @@ export function SessionFrame({
   total,
   onQuit,
   badge,
+  footer,
   children,
 }: {
   completed: number;
   total: number;
   onQuit: () => void;
   badge?: ReactNode;
+  /** Pied de page discret (concentration de la séance). */
+  footer?: ReactNode;
   children: ReactNode;
 }) {
   const pct = total ? Math.min(100, (completed / total) * 100) : 0;
@@ -32,6 +35,7 @@ export function SessionFrame({
         </span>
       </div>
       <div className="session-stage">{children}</div>
+      {footer}
     </div>
   );
 }

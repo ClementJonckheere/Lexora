@@ -36,7 +36,8 @@ describe('banque du placement', () => {
 
   it('au plus 8 questions par point, natures alternées, déterministe', () => {
     const bank = Array.from({ length: 30 }, (_, i) =>
-      ex(100 + i, `If it rains number ${i} we will stay at home tonight.`, {
+      // Phrases sans suite de trois mots commune : deux questions d'un point ne répètent pas la même phrase-type.
+      ex(100 + i, `Z${String.fromCharCode(97 + i)}q y${String.fromCharCode(97 + i)}w rains x${String.fromCharCode(97 + i)}v t${String.fromCharCode(97 + i)}u tonight.`, {
         answer: i % 3 ? 'rains' : 'will stay',
         hint: 'rain',
         form: i % 3 ? 'present' : 'will',
@@ -49,5 +50,26 @@ describe('banque du placement', () => {
     expect(placementItems('first-conditional', bank, new Set(items.map((q) => q.id.replace(/^placement:first-conditional:/, ''))))).not.toContainEqual(
       items[0],
     );
+  });
+
+  it('relecture : repères exigés, try écarté, until + nom refusé, was admis à côté de were, débuts de phrase variés', () => {
+    expect(placementItem('present-perfect', ex(1, 'Mary has arrived on time today.', { answer: 'has arrived', hint: 'arrive' }))).toBeNull();
+    expect(placementItem('present-perfect', ex(2, 'Mary has already arrived at work.', { answer: 'has arrived', hint: 'arrive' }))).not.toBeNull();
+    expect(placementItem('perfect-vs-past', ex(3, 'He has come home just now.', { answer: 'has come', choices: ['has come', 'came'] }))).toBeNull();
+    expect(placementItem('past-perfect', ex(4, 'No one had seen anything at all.', { answer: 'had seen', hint: 'see' }))).toBeNull();
+    expect(placementItem('past-perfect', ex(5, 'When we arrived, the film had started.', { answer: 'had started', hint: 'start' }))).not.toBeNull();
+    expect(placementItem('perfect-continuous', ex(6, 'Tom has been watching TV all day long.', { answer: 'has been watching', hint: 'watch' }))).toBeNull();
+    expect(placementItem('gerund-infinitive-meaning', ex(7, 'We tried to cheer him up after that.', { answer: 'to cheer', choices: ['to cheer', 'cheering'] }))).toBeNull();
+    expect(placementItem('first-conditional', ex(8, "I'll see if I can find a map for you.", { answer: 'will see', choices: ['will see', 'see'] }))).toBeNull();
+    expect(placementItem('time-clauses', ex(9, 'We will stay here until the end of it.', { answer: 'will stay', choices: ['will stay', 'stay'] }))).toBeNull();
+    expect(placementItem('time-clauses', ex(10, 'Do you know when it shuts on Sundays?', { answer: 'shuts', choices: ['shuts', 'will shut'] }))).toBeNull();
+    expect(placementItem('countables', ex(11, 'Does it snow much here in winter?', { before: 'Does it snow ', after: ' here in winter?', answer: 'much', choices: ['much', 'many'] }))).toBeNull();
+    const wish = placementItem('wish', ex(12, 'I wish it were that easy for me.', { before: 'I wish it ', after: ' that easy for me.', answer: 'were', hint: 'be' }));
+    expect(wish?.accept).toEqual(['was']);
+    // « If I were you » une seule fois tant que la banque offre d'autres phrases.
+    const ifYou = Array.from({ length: 6 }, (_, i) => ex(200 + i, `If I were you, I would wait for ${'abcdef'[i]}x.`, { answer: 'would wait', hint: 'wait', form: 'would' }));
+    const others = Array.from({ length: 8 }, (_, i) => ex(300 + i, `Q${'abcdefgh'[i]} w${'abcdefgh'[i]} would go if r${'abcdefgh'[i]} came.`, { answer: 'would go', hint: 'go', form: 'would' }));
+    const chosen = placementItems('second-conditional', [...ifYou, ...others]);
+    expect(chosen.filter((q) => Number(q.evidenceId!.split(':')[1]) < 300)).toHaveLength(1);
   });
 });

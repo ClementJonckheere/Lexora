@@ -27,6 +27,8 @@ import { VocabTestPage } from '@/ui/features/reading/VocabTest';
 import { GrammarAnnotatePage } from '@/ui/features/learn/GrammarAnnotate';
 import { LearnPage } from '@/ui/features/learn/LearnPage';
 import { LessonPage } from '@/ui/features/learn/LessonPage';
+import { PlacementPage } from '@/ui/features/learn/PlacementPage';
+import { VerbsPage } from '@/ui/features/learn/VerbsPage';
 import { AccountConflictScreen, FirstSyncScreen, LoginScreen } from './features/account/AuthScreens';
 import { SidebarAccount } from './features/account/SyncIndicator';
 import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/universes/Universes';
@@ -77,15 +79,30 @@ function ThemeToggle() {
 }
 
 /** Barre du haut : langue à gauche, navigation au centre, recherche, fond, compte et ajout à droite. */
+/** Signe de Lexora : un L dont la jambe sert d'horizon, et un astre qui s'y lève. */
+function LogoMark() {
+  return (
+    <svg className="logo-mark" width="20" height="20" viewBox="232 300 580 400" aria-hidden="true">
+      <g fill="none" stroke="currentColor" strokeWidth="46" strokeLinecap="round">
+        <path d="M272 340 V660 H772" />
+        <path d="M422 660 A150 150 0 0 1 722 660" strokeLinecap="butt" />
+      </g>
+    </svg>
+  );
+}
+
 function TopBar() {
   const route = useApp((s) => s.route);
   const { navigate, openEditor, setSearchOpen } = useApp.getState();
   const due = useDueCounts();
-  const current = route.name === 'collection' ? 'collections' : route.name === 'lesson' || route.name === 'grammar-annotate' ? 'learn' : route.name;
+  const current = route.name === 'collection' ? 'collections' : route.name === 'lesson' || route.name === 'placement' || route.name === 'verbs' || route.name === 'grammar-annotate' ? 'learn' : route.name;
   return (
     <header className="topbar">
       <div className="topbar-side">
-        <span className="wordmark">Lexora</span>
+        <span className="wordmark">
+          <LogoMark />
+          <span className="wordmark-text">Lexora</span>
+        </span>
         <UniverseSwitcher />
       </div>
       <nav className="topnav" aria-label="Navigation principale">
@@ -189,6 +206,10 @@ function Page() {
       return <LearnPage />;
     case 'lesson':
       return <LessonPage key={route.id} id={route.id} startReview={route.review} />;
+    case 'placement':
+      return <PlacementPage retake={route.retake} />;
+    case 'verbs':
+      return <VerbsPage />;
     case 'stats':
       return <StatsPage />;
     case 'progress':

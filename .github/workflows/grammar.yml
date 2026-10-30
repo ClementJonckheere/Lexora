@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      ['scripts/grammar-tatoeba.ts', 'scripts/grammar-blocklist.txt', 'src/core/learn/patterns.ts', 'src/core/learn/exercises.ts', 'src/core/learn/placementBank.ts', 'scripts/placement-bank.ts', 'public/grammar/en/points.json', 'public/grammar/en/lessons.json', '.github/workflows/grammar.yml']
+      ['scripts/grammar-tatoeba.ts', 'scripts/grammar-blocklist.txt', 'src/core/learn/patterns.ts', 'src/core/learn/exercises.ts', 'src/core/learn/placementBank.ts', 'src/core/learn/placementBuilders.ts', 'src/core/learn/lessonBuilders.ts', 'scripts/placement-bank.ts', 'public/grammar/en/placement-written.json', 'public/grammar/en/placement-excluded.json', 'public/grammar/en/points.json', 'public/grammar/en/lessons.json', '.github/workflows/grammar.yml']
 
 permissions:
   contents: write
@@ -63,9 +63,11 @@ jobs:
       - run: npx vite-node scripts/grammar-tatoeba.ts tatoeba
       - name: Banque du placement (tirée des banques des leçons)
         run: npx vite-node scripts/placement-bank.ts
+      - name: Contrôles des banques (src/core/learn/bankChecks.ts) avant d'enregistrer
+        run: npx vitest run src/core/learn/bankChecks.test.ts
       - name: Enregistrer les comptes
         run: |
-          git add public/grammar/en/tatoeba-counts.json public/grammar/en/exercises public/grammar/en/placement.json
+          git add public/grammar/en/tatoeba-counts.json public/grammar/en/exercises public/grammar/en/placement public/grammar/en/placement.json
           if git diff --cached --quiet; then echo "Comptes inchangés."; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

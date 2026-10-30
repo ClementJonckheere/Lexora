@@ -196,8 +196,10 @@ describe('révisions', () => {
     const before = n.cards.fr_en!;
     const now = Date.now();
     const out = review(scheduler, before, Rating.Again, now);
-    const logId = await recordReview(db, out.card, out.log, 4200);
+    const logId = await recordReview(db, out.card, out.log, 4200, now, null, en.universeId);
     expect(await countNewIntroduced(db, now - 1000, 'fr_en', en.universeId)).toBe(1);
+    const typedRows = () => db.select<{ n: number }>('SELECT COUNT(*) AS n FROM typed_answers WHERE log_id = ? AND deleted = 0', [logId]);
+    expect((await typedRows())[0].n).toBe(1);
 
     let [m] = await loadNotes(db);
     expect(m.cards.fr_en?.state).toBe(State.Learning);
@@ -206,6 +208,7 @@ describe('révisions', () => {
     [m] = await loadNotes(db);
     expect(m.cards.fr_en).toEqual(before);
     expect(await countNewIntroduced(db, now - 1000, 'fr_en', en.universeId)).toBe(0);
+    expect((await typedRows())[0].n).toBe(0);
   });
 
   it("l'entraînement libre ne modifie pas la planification", async () => {
@@ -310,6 +313,38 @@ describe('import / export', () => {
     expect((await loadUniverses(other)).map((x) => x.name)).toEqual(['Anglais']);
     expect(await other.select('SELECT id FROM review_logs WHERE deleted = 0')).toEqual(await db.select('SELECT id FROM review_logs'));
     expect((await loadSettings(other)).newPerDay).toBe(7);
+  });
+
+  it('sauvegarde : tables de progression comprises (grammaire, livres, mots connus, réponses tapées)', async () => {
+    const T = 1_700_000_000_000;
+    await db.execute(
+      `INSERT INTO grammar_answers (id, universe_id, lesson_id, item_id, correct, created_at, updated_at) VALUES ('g1', ?, 'present-perfect', 'pp:1', 1, ?, ?)`,
+      [en.universeId, T, T],
+    );
+    await db.execute(`INSERT INTO word_marks (mark_key, universe_id, word, updated_at) VALUES (?, ?, 'tackle', ?)`, [`${en.universeId}|tackle`, en.universeId, T]);
+    await db.execute(`INSERT INTO typed_answers (log_id, universe_id, created_at, updated_at) VALUES ('l1', ?, ?, ?)`, [en.universeId, T, T]);
+    const backup = JSON.parse(JSON.stringify(await exportBackup(db)));
+    expect(Object.keys(backup.tables)).toEqual(expect.arrayContaining(['books', 'word_marks', 'vocab_tests', 'grammar_answers', 'note_entries', 'typed_answers']));
+
+    const other = await createMemoryDatabase();
+    await restoreBackup(other, backup);
+    expect(await other.select('SELECT id, lesson_id FROM grammar_answers WHERE deleted = 0')).toEqual([{ id: 'g1', lesson_id: 'present-perfect' }]);
+    expect(await other.select('SELECT word FROM word_marks WHERE deleted = 0')).toEqual([{ word: 'tackle' }]);
+    expect(await other.select('SELECT log_id FROM typed_answers WHERE deleted = 0')).toEqual([{ log_id: 'l1' }]);
+  });
+
+  it('sauvegarde ancienne (sans les tables récentes) : leurs lignes restent, sauf celles d’un univers disparu', async () => {
+    const T = 1_700_000_000_000;
+    const backup = JSON.parse(JSON.stringify(await exportBackup(db)));
+    for (const t of ['books', 'word_marks', 'vocab_tests', 'grammar_answers', 'vocab_observations', 'note_entries', 'typed_answers']) delete backup.tables[t];
+    const es = await createUniverse(db, 'Espagnol', 'es');
+    for (const [id, u] of [['g-en', en.universeId], ['g-es', es]])
+      await db.execute(
+        `INSERT INTO grammar_answers (id, universe_id, lesson_id, item_id, correct, created_at, updated_at) VALUES (?, ?, 'x', 'x:1', 1, ?, ?)`,
+        [id, u, T, T],
+      );
+    await restoreBackup(db, backup);
+    expect(await db.select('SELECT id FROM grammar_answers WHERE deleted = 0')).toEqual([{ id: 'g-en' }]);
   });
 
   it('refuse un fichier qui n’est pas une sauvegarde', async () => {

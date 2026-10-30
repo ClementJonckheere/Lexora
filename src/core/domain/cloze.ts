@@ -104,7 +104,9 @@ function sentenceTokens(sentence: string): SentenceToken[] {
 
 export function clozeKeywords(expression: string, language = 'en'): string[] {
   const ignored = IGNORED[language];
-  return tokenize(expression).filter((t) => !ignored?.has(t));
+  // Anglais : seul le « to » de l'infinitif, en tête, est ignoré ; celui d'une préposition (listen to, married to) est à
+  // retrouver comme le reste de l'expression.
+  return tokenize(expression).filter((t, i) => !ignored?.has(t) || (language === 'en' && t === 'to' && i > 0));
 }
 
 function commonPrefix(a: string, b: string): number {

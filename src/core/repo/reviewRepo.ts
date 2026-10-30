@@ -20,6 +20,8 @@ export async function recordReview(
   durationMs: number,
   now = Date.now(),
   typed: TypedTiming | null = null,
+  /** Univers de la fiche quand la réponse a été tapée (XP d'une réponse tapée, synchronisée). */
+  typedIn: string | null = null,
 ): Promise<string> {
   const id = newId();
   await db.transaction(async (tx) => {
@@ -47,6 +49,9 @@ export async function recordReview(
         typed ? typed.chars : null,
       ],
     );
+    if (typedIn) {
+      await tx.execute('INSERT INTO typed_answers (log_id, universe_id, created_at, updated_at, deleted, dirty) VALUES (?, ?, ?, ?, 0, 1)', [id, typedIn, now, now]);
+    }
   });
   return id;
 }
@@ -56,6 +61,7 @@ export async function undoReview(db: Database, before: CardRecord, logId: string
   await db.transaction(async (tx) => {
     await writeCard(tx, before, now);
     await tx.execute('UPDATE review_logs SET deleted = 1, updated_at = ?, dirty = 1 WHERE id = ?', [now, logId]);
+    await tx.execute('UPDATE typed_answers SET deleted = 1, updated_at = ?, dirty = 1 WHERE log_id = ? AND deleted = 0', [now, logId]);
   });
 }
 

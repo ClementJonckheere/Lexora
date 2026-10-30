@@ -204,6 +204,17 @@ const SOURCES: Record<string, string[] | null> = {
   'emphatic-do': [
     `\\b${SUBJECT}\\s+(?:do|does|did)\\s+(?!(?:not|so|it|this|that|the|a|an|nothing|something|anything|everything|what|me|him|her|us|them|you|my|his|their|our|your|either|too|now|then|well|again|indeed|there|here|all|both|as|when|if|but|and|or)\\b)[a-z]+\\b`,
   ],
+  'conditional-inversion': [`^\\s*(?:had\\s+${SUBJECT}\\s+(?:not\\s+)?${PARTICIPLE}|were\\s+${SUBJECT}\\s+(?:not\\s+)?(?:to\\s+)?[a-z]+|should\\s+${SUBJECT}\\s+(?:not\\s+)?[a-z]+)\\b[^,.!?]{0,60},`],
+  'impersonal-passive': [
+    '\\b(?:is|are|was|were)\\s+(?:said|believed|thought|known|reported|expected|supposed|considered|rumou?red|alleged|claimed)\\s+to\\s+(?:have\\s+|be\\s+)?[a-z]+\\b',
+    '\\bit\\s+(?:is|was)\\s+(?:said|believed|thought|reported|expected|rumou?red|alleged)\\s+that\\b',
+  ],
+  'unreal-past': [
+    `\\bit(?:'s|\\s+is)\\s+(?:high\\s+|about\\s+)?time\\s+${SUBJECT}\\s+(?:${PAST}|were|didn't)\\b`,
+    `\\b(?:'d|would)\\s+rather\\s+${SUBJECT}\\s+(?:${PAST}|were|didn't)\\b`,
+  ],
+  'past-modals': [`\\b(?:should|shouldn't|could|couldn't|needn't|need not)\\s+have\\s+${PARTICIPLE}\\b`],
+  'wh-ever': ['\\b(?:whatever|whoever|wherever|whenever|however\\s+(?:hard|much|many|long|often|fast|good|bad|difficult))\\b'],
 };
 
 const compiled = new Map<string, RegExp[] | null>(

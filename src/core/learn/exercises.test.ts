@@ -397,3 +397,14 @@ describe('deuxième série de leçons (B1, B2)', () => {
     expect(two).toMatchObject({ answer: 'knew', form: 'present-unreal', choices: expect.arrayContaining(['had known']) });
   });
 });
+
+describe('ordre des propositions', () => {
+  it('fixé par l’exercice, et la réponse n’est pas toujours la première', async () => {
+    const { shuffledChoices } = await import('./exercises');
+    expect(shuffledChoices(['a', 'b', 'c'], 'can:1')).toEqual(shuffledChoices(['a', 'b', 'c'], 'can:1'));
+    const first = Array.from({ length: 300 }, (_, i) => shuffledChoices(['ok', 'x', 'y'], `can:${i}`)[0] === 'ok').filter(Boolean).length;
+    expect(first).toBeGreaterThan(70);
+    expect(first).toBeLessThan(130);
+    expect([...shuffledChoices(['ok', 'x', 'y'], 'k')].sort()).toEqual(['ok', 'x', 'y']);
+  });
+});

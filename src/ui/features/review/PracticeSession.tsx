@@ -6,6 +6,7 @@ import { checkListening, type ListeningVerdict } from '@/core/domain/answer';
 import { checkCloze, clozeHint, type ClozeVerdict } from '@/core/domain/cloze';
 import { directionLabel } from '@/core/domain/types';
 import { recordPractice } from '@/core/repo/reviewRepo';
+import { FocusFooter, useFocusMeter } from '@/ui/features/progress/FocusFooter';
 import { buildClozePractice, buildDifficultPractice, buildRandomPractice, type ClozeItem, type PracticeItem } from '@/core/srs/practice';
 import { GRADES, type Grade } from '@/core/srs/scheduler';
 import { SessionQueue } from '@/core/srs/session';
@@ -33,13 +34,16 @@ function Banner() {
 
 function usePracticeLog(mode: PracticeConfig['mode']) {
   const db = useApp((s) => s.db)!;
-  return async (noteId: string, rating: Grade) => {
+  const focus = useFocusMeter();
+  const log = async (noteId: string, rating: Grade) => {
+    focus.add({ kind: 'practice', at: Date.now(), noteId, rating });
     try {
       await recordPractice(db, noteId, mode, rating);
     } catch (err) {
       useApp.getState().toast('error', errorMessage(err));
     }
   };
+  return { log, footer: <FocusFooter state={focus.state} /> };
 }
 
 function PracticeFinished({ config, tally, startedAt }: { config: PracticeConfig; tally: Tally; startedAt: number }) {
@@ -72,7 +76,7 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
   const language = useApp((s) => s.universe?.language ?? 'en');
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate, openEditor } = useApp.getState();
-  const log = usePracticeLog(config.mode);
+  const { log, footer } = usePracticeLog(config.mode);
 
   const [session] = useState(() => {
     const s = useApp.getState();
@@ -134,7 +138,7 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
   if (!item || !note) return null;
 
   return (
-    <SessionFrame completed={session.queue.completed} total={session.queue.total} onQuit={() => navigate({ name: 'review' })} badge={<Banner />}>
+    <SessionFrame completed={session.queue.completed} total={session.queue.total} onQuit={() => navigate({ name: 'review' })} badge={<Banner />} footer={footer}>
       <Flashcard
         note={note}
         direction={item.direction}
@@ -149,7 +153,7 @@ export function FlashPractice({ config }: { config: PracticeConfig }) {
       />
       <div className="session-actions">
         {!revealed ? (
-          <Button variant="primary" className="reveal-btn" onClick={reveal} shortcut="Espace">
+          <Button className="reveal-btn" onClick={reveal} shortcut="Espace">
             Afficher la réponse
           </Button>
         ) : (
@@ -187,7 +191,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
   const language = useApp((s) => s.universe?.language ?? 'en');
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate } = useApp.getState();
-  const log = usePracticeLog('cloze');
+  const { log, footer } = usePracticeLog('cloze');
 
   const [session] = useState(() => ({
     queue: new SessionQueue<ClozeItem>(buildClozePractice(scopedNotes(config), config.limit, useApp.getState().universe?.language ?? 'en')),
@@ -242,7 +246,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
   const ok = verdict === 'exact' || verdict === 'close';
 
   return (
-    <SessionFrame completed={session.queue.completed} total={session.queue.total} onQuit={() => navigate({ name: 'review' })} badge={<Banner />}>
+    <SessionFrame completed={session.queue.completed} total={session.queue.total} onQuit={() => navigate({ name: 'review' })} badge={<Banner />} footer={footer}>
       <div className="card flashcard">
         <div className="flashcard-meta">
           <span>Phrase à trous</span>
@@ -327,7 +331,7 @@ export function ListenPractice({ config }: { config: PracticeConfig }) {
   const language = useApp((s) => s.universe?.language ?? 'en');
   const overlay = useApp((s) => !!s.editor || s.searchOpen || s.bulkOpen || s.shortcutsOpen);
   const { navigate } = useApp.getState();
-  const log = usePracticeLog('listen');
+  const { log, footer } = usePracticeLog('listen');
 
   const [session] = useState(() => ({
     queue: new SessionQueue<PracticeItem>(buildRandomPractice(scopedNotes(config), useApp.getState().settings, config.limit)),
@@ -393,7 +397,7 @@ export function ListenPractice({ config }: { config: PracticeConfig }) {
   const ok = verdict === 'exact' || verdict === 'close' || verdict === 'meaning';
 
   return (
-    <SessionFrame completed={session.queue.completed} total={session.queue.total} onQuit={() => navigate({ name: 'review' })} badge={<Banner />}>
+    <SessionFrame completed={session.queue.completed} total={session.queue.total} onQuit={() => navigate({ name: 'review' })} badge={<Banner />} footer={footer}>
       <div className="card flashcard">
         <div className="flashcard-meta">
           <span>Écoute</span>
