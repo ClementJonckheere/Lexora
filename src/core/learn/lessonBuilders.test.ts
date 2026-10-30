@@ -48,6 +48,8 @@ describe('but : to', () => {
   it('écarte to complément (want to, try to) et l’absence de « pour »', () => {
     expect(shown('purpose-to', 'I went home because I wanted to sleep.', 'Je suis rentré pour dormir.')).toBeNull();
     expect(shown('purpose-to', 'I went out to walk the dog.', 'Je suis sorti promener le chien.')).toBeNull();
+    expect(shown('purpose-to', "We've come too far to turn back now.", 'Nous sommes allés trop loin pour faire demi-tour maintenant.')).toBeNull();
+    expect(shown('purpose-to', 'It took four hours to get the truck out.', 'Ça a pris quatre heures pour sortir le camion.')).toBeNull();
   });
 });
 

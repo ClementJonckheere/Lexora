@@ -43,5 +43,5 @@
 \b(?:sami|layla|fadil|dania|salima|rami|ziri|yanni|skura|rima|mennad|baya|dan|linda|yidir)\b
 
 # Grossièretés
-\bfuck|\bshit|\bbitch|\basshole|\bbastard|\bcunt|\bdick(?:s|head)?\b|\bwhore|\bslut|\bcrap\b|\bdamn
+\bfuck|\bfart(?:s|ed|ing)?\b|\bpéter\b|\bpété\b|\bshit|\bbitch|\basshole|\bbastard|\bcunt|\bdick(?:s|head)?\b|\bwhore|\bslut|\bcrap\b|\bdamn
 \bmerde|\bputain|\bconnard|\bconnasse|\bsalope|\bsalaud|\bbordel|\benculé|\bnique|\bchier\b|\bpute\b

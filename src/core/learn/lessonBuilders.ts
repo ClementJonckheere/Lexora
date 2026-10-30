@@ -96,7 +96,7 @@ const subjectQuestions: Builder = (s, known) => {
 /** Verbes suivis d'un infinitif complément (want to, try to…) : là, to n'exprime pas le but. */
 const TO_COMPLEMENT =
   /\b(?:want|wants|wanted|need|needs|needed|like|likes|liked|love|loves|loved|hate|hates|hated|prefer|try|tries|tried|decide|decided|hope|hoped|plan|planned|promise|promised|refuse|refused|agree|agreed|forget|forgot|remember|remembered|learn|learned|learnt|seem|seems|seemed|have|has|had|going|used|able|ought|about|begin|began|start|started|continue|manage|managed|afford|expect|expected|would|'d|how|what|where|when|whether|ask|asked|tell|told|allow|allowed|enough|too|first|last|only|time|way|chance|right|easy|hard|difficult|nice|glad|happy|sorry|sure|likely|ready|free)\s+(?:(?:not|me|you|him|her|us|them)\s+)?to\s+[a-z]+\s*$/i;
-const PURPOSE_VERBS = /\b(?:went|go|goes|came|come|comes|called|stopped|left|ran|hurried|stayed|saved|worked|work|works|studied|study|got up|woke up|sat down|opened|closed|used|use|uses|bought|buy|sold|borrowed|took|wrote|phoned|rang|returned|moved|visited|travelled|traveled)\b/i;
+const PURPOSE_VERBS = /\b(?:went|go|goes|came|come|comes|called|stopped|left|ran|hurried|stayed|saved|worked|work|works|studied|study|got up|woke up|sat down|opened|closed|used|use|uses|bought|buy|sold|borrowed|wrote|phoned|rang|returned|moved|visited|travelled|traveled)\b/i;
 /** But : to + base, contre « for » (calque de « pour ») ; la traduction dit « pour » + infinitif. */
 const FR_POUR = /\bpour\s+(?:(?:ne\s+pas|le|la|les|l'|lui|leur|me|te|se|nous|vous|en|y)\s+)*[a-zàâçéèêëîïôûù']+(?:er|ir|re|oir)\b/i;
 const purposeTo: Builder = (s, known) => {
@@ -108,6 +108,8 @@ const purposeTo: Builder = (s, known) => {
   const verb = m[1];
   const head = s.en.slice(0, m.index);
   if (TO_COMPLEMENT.test(`${head}to ${verb}`)) return [];
+  // « too far to », « enough time to », « it took four hours to », « 24 hours left to » : to juste, mais pas un but.
+  if (/\b(?:too|enough|took|takes|take|taking|left|time|hours|minutes|days|years|money|way|chance|reason)\b/i.test(head.split(/\s+/).slice(-5).join(' '))) return [];
   // Un verbe de mouvement ou d'action avant le but, à six mots au plus.
   if (!PURPOSE_VERBS.test(head.split(/\s+/).slice(-7).join(' '))) return [];
   return [blank(s, m.index!, `to ${verb}`, `to ${verb}`, { choices: [`to ${verb}`, `for ${verb}`, `for to ${verb}`], form: 'purpose' })];
