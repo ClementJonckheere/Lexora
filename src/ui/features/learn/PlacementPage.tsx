@@ -19,7 +19,7 @@ import { Button, Kbd } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { loadPlacementItems, useGrammarData, type GrammarPoint } from './grammarData';
 
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
+const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 /** Test de placement : au plus 40 questions, puis l'état de chaque point du parcours, corrigeable. */
 export function PlacementPage({ retake = false }: { retake?: boolean }) {

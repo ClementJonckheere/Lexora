@@ -457,6 +457,99 @@ const simpleVsContinuous: Builder = (s, known) => {
 };
 const AUX_WORDS = /^(?:am|is|are|was|were|has|have|had|do|does|did|can|could|will|would|shall|should|may|might|must|don't|doesn't|can't|won't)$/;
 
+/* =============================================================== C2 (2.33) === */
+
+/** Inversion conditionnelle en tête : Had I known, Were I…, Should you… (sans if), contre « If had I » et l'ordre normal. */
+const conditionalInversion: Builder = (s, known) => {
+  const m = /^(Had|Were|Should)\s+(I|you|he|she|it|we|they|[A-Z][a-z]+)\s+(not\s+)?([a-z]+)\b[^,]*,/.exec(s.en);
+  if (!m) return [];
+  const [, aux, subject, , next] = m;
+  // Had + participe (3e conditionnel) ; Were + complément ou to ; Should + base : la conséquence porte un would, will ou un impératif.
+  if (aux === 'Had' && !isParticiple(next, known)) return [];
+  // plausibleBase écarte les mots en -ed : need, feed, succeed sont pourtant des bases.
+  if (aux === 'Should' && !plausibleBase(next, known) && !/eed$/.test(next)) return [];
+  if (aux !== 'Should' && !/\b(?:would|'d|could|might)\b/.test(s.en)) return [];
+  const span = `${aux} ${subject}`;
+  const others: Record<string, string[]> = {
+    Had: [`If had ${subject}`, `Have ${subject}`],
+    Were: [`If were ${subject}`, `Are ${subject}`],
+    Should: [`If should ${subject}`, `Would ${subject}`],
+  };
+  return [blank(s, 0, span, span, { choices: [span, ...others[aux]], form: aux.toLowerCase() })];
+};
+
+/**
+ * Passif impersonnel : be said / believed / thought… to + base (état présent) ou to have + participe (fait passé). La
+ * traduction tranche : « il serait riche », « on dit qu'il est » / « il aurait quitté », « on dit qu'il a quitté ».
+ */
+const REPORTING_PP = 'said|believed|thought|known|reported|expected|supposed|considered|rumoured|rumored|alleged|understood|claimed';
+const impersonalPassive: Builder = (s, known) => {
+  const m = only(new RegExp(`\\b(?:is|are|was|were)\\s+(?:${REPORTING_PP})\\s+to\\s+(have\\s+)?([a-z]+)\\b`), s.en);
+  if (!m) return [];
+  const [, have, word] = m;
+  const at = m.index + m[0].indexOf(' to ') + 1;
+  if (have) {
+    const base = baseOf(word, known);
+    if (!base || !isParticiple(word, known) || base === word) return [];
+    const span = `to have ${word}`;
+    return [blank(s, at, span, span, { choices: [span, `to ${base}`, `having ${word}`], form: 'past' })];
+  }
+  if (!plausibleBase(word, known) || word === 'have') return [];
+  const span = `to ${word}`;
+  if (FR_COND_PAST.test(s.fr)) return [];
+  return [blank(s, at, span, span, { choices: [span, `to have ${participleOf(word, known)}`, ingOf(word)], form: 'present' })];
+};
+
+/** Passé irréel : it's (high / about) time + sujet + prétérit, would rather + sujet + prétérit ; contre le présent. */
+const unrealPast: Builder = (s, known) => {
+  const m = only(/\b(?:it's|it is|It's|It is)\s+(?:high\s+|about\s+)?time\s+(I|you|he|she|we|they)\s+([a-z]+)\b|\b(?:'d|would)\s+rather\s+(you|he|she|we|they)\s+([a-z']+)\b/, s.en);
+  if (!m) return [];
+  const subject = m[1] ?? m[3];
+  const verb = m[2] ?? m[4];
+  const at = m.index + m[0].length - verb.length;
+  if (verb === "didn't") return [blank(s, at, verb, verb, { choices: ["didn't", "don't", "won't"], form: 'negative' })];
+  if (verb === 'were' || verb === 'was') return [blank(s, at, verb, verb, { choices: [verb, presentOf('be', subject)], form: 'be' })];
+  const base = baseOf(verb, known);
+  if (!base || base === 'be' || !pastForms(base, known).includes(verb) || !plausibleBase(base, known)) return [];
+  return [blank(s, at, verb, verb, { choices: [verb, presentOf(base, subject)], form: 'past' })];
+};
+
+/** Modaux au passé : should have (reproche), could have (possibilité manquée), needn't have (inutile) ; la traduction tranche. */
+const FR_SHOULD = /(?<![a-zà-ÿ])(?:aurais|aurait|aurions|auriez|auraient)\s+(?:pas\s+|jamais\s+)?dû(?![a-zà-ÿ])/i;
+const FR_COULD = /(?<![a-zà-ÿ])(?:aurais|aurait|aurions|auriez|auraient)\s+(?:pas\s+|très bien\s+|facilement\s+)?pu(?![a-zà-ÿ])/i;
+const FR_NEEDLESS = /\bpas\s+(?:eu\s+)?besoin\b|\binutile\b|\bpas\s+la\s+peine\b|\bn'?étai(?:s|t|ent)\s+pas\s+obligé/i;
+const pastModals: Builder = (s, known) => {
+  const m = only(/\b(should|shouldn't|could|needn't|need not)\s+have\s+([a-z]+)\b/, s.en);
+  if (!m) return [];
+  const [, modal, part] = m;
+  if (!isParticiple(part, known)) return [];
+  const kind = /^should/.test(modal) ? 'should' : modal === 'could' ? 'could' : 'needless';
+  const fr = { should: FR_SHOULD.test(s.fr), could: FR_COULD.test(s.fr), needless: FR_NEEDLESS.test(s.fr) };
+  if (!fr[kind] || Object.values(fr).filter(Boolean).length !== 1) return [];
+  const span = `${modal} have`;
+  const neg = /n't|not/.test(modal);
+  const choices = kind === 'should' ? [span, neg ? "couldn't have" : 'could have', "needn't have"] : kind === 'could' ? [span, 'should have', "needn't have"] : [span, 'should have', 'could have'];
+  return [blank(s, m.index, span, span, { choices, form: kind })];
+};
+
+/** Whatever, whoever, wherever, whenever, however : la traduction donne le mot (quoi que, qui que, où que…). */
+const EVER: [string, RegExp][] = [
+  ['whatever', /\bquoi\s+qu|\btout\s+ce\s+qu|\bn'importe\s+quoi\b|\bpeu\s+importe\s+ce\s+qu/i],
+  ['whoever', /\bqui\s+que\b|\bquiconque\b|\bn'importe\s+qui\b|\bcelui\s+qui\b/i],
+  ['wherever', /\boù\s+que\b|\bpartout\s+où\b|\bn'importe\s+où\b/i],
+  ['whenever', /\bchaque\s+fois\s+que\b|\btoutes\s+les\s+fois\s+que\b|\bn'importe\s+quand\b|\bdès\s+que\s+tu\s+(?:veux|voudras)\b/i],
+];
+const whEver: Builder = (s) => {
+  const m = only(/\b(Whatever|whatever|Whoever|whoever|Wherever|wherever|Whenever|whenever)\b/, s.en);
+  if (!m) return [];
+  const word = m[1].toLowerCase();
+  const cues = EVER.filter(([, re]) => re.test(s.fr)).map(([w]) => w);
+  if (cues.length !== 1 || cues[0] !== word) return [];
+  const atStart = m.index === 0;
+  const choices = EVER.map(([w]) => cap(w, atStart));
+  return [blank(s, m.index, m[1], m[1], { choices, form: word })];
+};
+
 export const LESSON_BUILDERS: Record<string, Builder> = {
   'reported-statements': reportedStatements,
   'subject-questions': subjectQuestions,
@@ -480,6 +573,11 @@ export const LESSON_BUILDERS: Record<string, Builder> = {
   'emphatic-do': emphaticDo,
   adjectives,
   'simple-vs-continuous': simpleVsContinuous,
+  'conditional-inversion': conditionalInversion,
+  'impersonal-passive': impersonalPassive,
+  'unreal-past': unrealPast,
+  'past-modals': pastModals,
+  'wh-ever': whEver,
 };
 
 /** Exercice d'une leçon B1 ajoutée en 2.29, ou null si la phrase ne s'y prête pas. */

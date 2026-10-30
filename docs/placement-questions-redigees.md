@@ -1,6 +1,6 @@
 # Placement : questions rédigées (à relire)
 
-Questions écrites pour les 21 points sans leçon ni générateur, revues après la première relecture : natures de réponse alternées dans les points à alternative (sujet ou objet, to ou for, base ou to, séparable ou inséparable…), distracteurs plausibles pour un francophone avec une seule faute chacun (2 propositions quand il n’y a que 2 erreurs vraisemblables), traductions naturelles qui ne dictent pas la forme. Pour chacune : la phrase à trous, la bonne réponse en gras, la nature de la réponse entre crochets, puis les propositions (ou le verbe en indice) et la traduction. Fichier source : `public/grammar/en/placement-written.json`.
+Questions écrites pour les 21 points sans leçon ni générateur, et pour les 5 points C2 ajoutés en 2.33, revues après la première relecture : natures de réponse alternées dans les points à alternative (sujet ou objet, to ou for, base ou to, séparable ou inséparable…), distracteurs plausibles pour un francophone avec une seule faute chacun (2 propositions quand il n’y a que 2 erreurs vraisemblables), traductions naturelles qui ne dictent pas la forme. Pour chacune : la phrase à trous, la bonne réponse en gras, la nature de la réponse entre crochets, puis les propositions (ou le verbe en indice) et la traduction. Fichier source : `public/grammar/en/placement-written.json`.
 
 ## A1 · Adjectif : place et invariabilité (`adjectives`)
 
@@ -332,3 +332,78 @@ Questions écrites pour les 21 points sans leçon ni générateur, revues après
   propositions : **do understand** / do understood · *Je comprends bien votre problème.*
 - He **does know** the answer; he is just shy. [does]  
   propositions : **does know** / does knows · *Il connaît bien la réponse ; il est juste timide.*
+
+## C2 · Inversion conditionnelle (Had I known, Were I…, Should you…) (`conditional-inversion`)
+
+- **Had I known**, I would have called you. [had]  
+  propositions : **Had I known** / If had I known / Have I known · *Si j'avais su, je t'aurais appelé.*
+- **Were I** you, I would take the job. [were]  
+  propositions : **Were I** / If were I / Am I · *Si j'étais toi, j'accepterais le poste.*
+- **Should you** need help, just ask. [should]  
+  propositions : **Should you** / If should you / Would you · *Si jamais tu as besoin d'aide, demande.*
+- **Had it not** been for her, we would have lost. [had]  
+  propositions : **Had it not** / Hadn't it / If had it not · *Sans elle, nous aurions perdu.*
+- Were she to find out, she **would be** furious. [were]  
+  propositions : **would be** / will be / is · *Si elle venait à l'apprendre, elle serait furieuse.*
+- Should the problem persist, **contact** our support team. [should]  
+  propositions : **contact** / you would contact / to contact · *Si le problème persiste, contactez notre assistance.*
+
+## C2 · Passif impersonnel (He is said to…, It is believed that…) (`impersonal-passive`)
+
+- He is said **to be** very rich. [present]  
+  propositions : **to be** / being / that he is · *On dit qu'il est très riche.*
+- She is believed **to have left** the country last year. [past]  
+  propositions : **to have left** / to leave / having left · *Elle aurait quitté le pays l'année dernière.*
+- It **is thought** that the fire started in the kitchen. [it]  
+  propositions : **is thought** / thinks / is thinking · *On pense que l'incendie a commencé dans la cuisine.*
+- The thieves are thought **to be hiding** in the forest. [continuous]  
+  propositions : **to be hiding** / to hide / hiding · *Les voleurs se cacheraient dans la forêt.*
+- The painting **is known** to be a fake. [present]  
+  propositions : **is known** / knows / is knowing · *On sait que le tableau est un faux.*
+- The king is reported **to have died** in 1450. [past]  
+  propositions : **to have died** / to die / to be died · *Le roi serait mort en 1450.*
+
+## C2 · Passé irréel (It's time we went, I'd rather you stayed) (`unreal-past`)
+
+- It's time we **went** home. [past]  
+  verbe en indice : go · *Il est temps que nous rentrions.*
+- I'd rather you **stayed** here tonight. [past]  
+  propositions : **stayed** / stay / will stay · *Je préférerais que tu restes ici ce soir.*
+- I'd rather you **didn't** tell anyone. [negative]  
+  propositions : **didn't** / don't / won't · *Je préférerais que tu ne le dises à personne.*
+- It's high time you **found** a job. [past]  
+  propositions : **found** / find / to find · *Il serait grand temps que tu trouves un travail.*
+- He talks as if he **knew** everything. [past]  
+  propositions : **knew** / knows / has known · *Il parle comme s'il savait tout.*
+- I'd rather **stay** at home tonight. [same-subject]  
+  propositions : **stay** / stayed / to stay · *Je préférerais rester à la maison ce soir.*
+
+## C2 · Modaux au passé : should have, could have, needn't have (`past-modals`)
+
+- You **should have told** me. [should]  
+  propositions : **should have told** / should told / should have tell · *Tu aurais dû me le dire.*
+- You **could have been** killed! [could]  
+  propositions : **could have been** / should have been / needn't have been · *Tu aurais pu être tué !*
+- You **needn't have bought** flowers, but thank you. [needless]  
+  propositions : **needn't have bought** / should have bought / could have bought · *Tu n'avais pas besoin d'acheter des fleurs, mais merci.*
+- I **shouldn't have said** that. I'm sorry. [should]  
+  propositions : **shouldn't have said** / couldn't have said / shouldn't said · *Je n'aurais pas dû dire ça. Je suis désolé.*
+- We **could have won** if we had played better. [could]  
+  propositions : **could have won** / should have won / could won · *Nous aurions pu gagner si nous avions mieux joué.*
+- She **should have** left earlier; she missed the train. [should]  
+  propositions : **should have** / should has / should had · *Elle aurait dû partir plus tôt ; elle a raté le train.*
+
+## C2 · Whatever, whoever, wherever, whenever, however (`wh-ever`)
+
+- **Whatever** you do, don't panic. [whatever]  
+  propositions : **Whatever** / Whoever / Wherever / Whenever · *Quoi que tu fasses, ne panique pas.*
+- I'll follow you **wherever** you go. [wherever]  
+  propositions : whatever / whoever / **wherever** / whenever · *Je te suivrai où que tu ailles.*
+- **Whoever** calls, tell them I'm out. [whoever]  
+  propositions : Whatever / **Whoever** / Wherever / Whenever · *Qui que ce soit qui appelle, dis que je suis sorti.*
+- Come and see us **whenever** you like. [whenever]  
+  propositions : whatever / whoever / wherever / **whenever** · *Viens nous voir quand tu veux.*
+- **However** hard I try, I can't remember her name. [however]  
+  propositions : **However** / Whatever / Although / Whenever · *J'ai beau essayer, je n'arrive pas à me souvenir de son nom.*
+- Whatever **happens**, I'll be there. [verb]  
+  propositions : **happens** / will happen / happen · *Quoi qu'il arrive, je serai là.*

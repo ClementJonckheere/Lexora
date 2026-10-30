@@ -1,7 +1,7 @@
 {
   "version": 1,
   "language": "en",
-  "status": "Leçons B1 et B2 : les 10 premières relues, les 10 suivantes (present perfect continu au 3e conditionnel) rédigées, à relire. Leçons A1 et A2 (32) rédigées, à relire. Leçons B1 de la 2.29 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs) rédigées, à relire. Leçons B2 de la 2.30 (9) rédigées, à relire. Leçons C1 et A2 de la 2.31 (7) rédigées, à relire.",
+  "status": "Leçons B1 et B2 : les 10 premières relues, les 10 suivantes (present perfect continu au 3e conditionnel) rédigées, à relire. Leçons A1 et A2 (32) rédigées, à relire. Leçons B1 de la 2.29 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs) rédigées, à relire. Leçons B2 de la 2.30 (9) rédigées, à relire. Leçons C1 et A2 de la 2.31 (7) rédigées, à relire. Leçons C2 de la 2.33 (5) rédigées, à relire.",
   "lessons": [
     {
       "id": "be",
@@ -1625,6 +1625,113 @@
         { "en": "I do hope you can come.", "fr": "J'espère vraiment que tu pourras venir." },
         { "en": "Do sit down, please.", "fr": "Asseyez-vous donc, je vous en prie." },
         { "en": "She did say she would help.", "fr": "Elle a bien dit qu'elle aiderait." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "conditional-inversion",
+      "summary": "Dans un registre soutenu, if disparaît et l'auxiliaire passe en tête : Had I known (si j'avais su), Were I you (si j'étais toi), Should you need help (si jamais tu as besoin d'aide).",
+      "rules": [
+        "Had + sujet + participe = If + sujet + had + participe (3e conditionnel) : Had I known, I would have come.",
+        "Were + sujet = If + sujet + were (2e conditionnel) : Were I you, I would accept. Were he to resign, … (s'il venait à démissionner).",
+        "Should + sujet + base = if + sujet + présent, avec une nuance d'éventualité (« si jamais ») : Should you need anything, call me.",
+        "If disparaît : If had I known est faux. Les deux tournures sont justes : Had I known ou If I had known.",
+        "Négation : l'auxiliaire en tête, puis not après le sujet. Had I not seen it, I wouldn't have believed it. Jamais Hadn't I seen…",
+        "Registre écrit ou formel (lettres, contrats, discours) ; à l'oral, la tournure en if reste la plus courante."
+      ],
+      "examples": [
+        { "en": "Had I known, I would have come earlier.", "fr": "Si j'avais su, je serais venu plus tôt." },
+        { "en": "Were I you, I would accept the offer.", "fr": "Si j'étais toi, j'accepterais l'offre." },
+        { "en": "Should you need anything, please call me.", "fr": "Si jamais vous avez besoin de quoi que ce soit, appelez-moi." },
+        { "en": "Had it not been for your help, we would have failed.", "fr": "Sans votre aide, nous aurions échoué." },
+        { "en": "Were she to find out, she would be furious.", "fr": "Si elle venait à l'apprendre, elle serait furieuse." },
+        { "en": "Should the problem persist, contact our support team.", "fr": "Si le problème persiste, contactez notre assistance." }
+      ],
+      "traps": ["if-inversion"]
+    },
+    {
+      "id": "impersonal-passive",
+      "summary": "Rapporter une opinion sans dire qui la tient : He is said to be rich (on dit qu'il est riche), It is believed that… ; to have + participe pour un fait passé.",
+      "rules": [
+        "Deux constructions : It is said that he is rich, ou He is said to be rich. Le sens est le même.",
+        "Verbes courants : say, believe, think, know, report, expect, consider, suppose, allege, rumour.",
+        "Fait présent ou général : to + base. She is believed to live in Rome (on pense qu'elle vit à Rome).",
+        "Fait passé : to have + participe. He is said to have left the country (il aurait quitté le pays, on dit qu'il a quitté le pays).",
+        "Action en cours : to be + -ing. They are thought to be hiding in the forest.",
+        "C'est l'équivalent du « on dit que » et du conditionnel journalistique français : « il serait riche », « il aurait fui »."
+      ],
+      "examples": [
+        { "en": "He is said to be very rich.", "fr": "On dit qu'il est très riche." },
+        { "en": "She is believed to have left the country.", "fr": "Elle aurait quitté le pays." },
+        { "en": "It is thought that the fire started in the kitchen.", "fr": "On pense que l'incendie a commencé dans la cuisine." },
+        { "en": "The painting is known to be a fake.", "fr": "On sait que le tableau est un faux." },
+        { "en": "They are reported to be hiding in the mountains.", "fr": "Ils se cacheraient dans les montagnes." },
+        { "en": "The building was supposed to be finished last year.", "fr": "Le bâtiment devait être terminé l'année dernière." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "unreal-past",
+      "summary": "Après it's time, would rather (+ autre sujet), as if, le prétérit ne parle pas du passé : il marque l'irréel. It's time we went. I'd rather you stayed.",
+      "rules": [
+        "It's time + sujet + prétérit : il est temps que… It's time we went home. It's high time you found a job (il serait grand temps).",
+        "It's time + to + base quand il n'y a pas d'autre sujet : It's time to go.",
+        "Would rather + autre sujet + prétérit : je préférerais que… I'd rather you stayed. I'd rather you didn't smoke here.",
+        "Would rather + base quand le sujet est le même : I'd rather stay (je préférerais rester).",
+        "As if / as though + prétérit pour un comparatif irréel : He talks as if he knew everything (comme s'il savait tout). Avec be : were (as if he were the boss).",
+        "Comme après wish et dans le 2e conditionnel, le présent serait faux : It's time we go, I'd rather you stay sont fautifs en anglais soigné."
+      ],
+      "examples": [
+        { "en": "It's time we went home.", "fr": "Il est temps que nous rentrions." },
+        { "en": "It's high time you found a job.", "fr": "Il serait grand temps que tu trouves un travail." },
+        { "en": "I'd rather you stayed here tonight.", "fr": "Je préférerais que tu restes ici ce soir." },
+        { "en": "I'd rather you didn't tell anyone.", "fr": "Je préférerais que tu ne le dises à personne." },
+        { "en": "He talks as if he knew everything.", "fr": "Il parle comme s'il savait tout." },
+        { "en": "I'd rather stay at home.", "fr": "Je préférerais rester à la maison (même sujet : la base)." }
+      ],
+      "traps": ["time-present"]
+    },
+    {
+      "id": "past-modals",
+      "summary": "Modal + have + participe pour juger le passé : should have (reproche, « aurait dû »), could have (possibilité manquée, « aurait pu »), needn't have (fait inutilement).",
+      "rules": [
+        "Should have + participe : ce qu'il aurait fallu faire, un reproche ou un regret. You should have told me (tu aurais dû me le dire).",
+        "Shouldn't have + participe : ce qu'il ne fallait pas faire. I shouldn't have said that (je n'aurais pas dû dire ça).",
+        "Could have + participe : une possibilité qui ne s'est pas réalisée. You could have been killed (tu aurais pu être tué).",
+        "Needn't have + participe : on l'a fait, mais c'était inutile. You needn't have bought flowers (tu n'avais pas besoin d'acheter des fleurs).",
+        "Didn't need to + base : ce n'était pas nécessaire, sans dire si on l'a fait. I didn't need to wait (je n'ai pas eu besoin d'attendre).",
+        "La traduction donne la nuance : « aurait dû » → should have ; « aurait pu » → could have ; « pas la peine », « inutile » → needn't have.",
+        "Have ne change jamais : she should have, jamais she should has ni she should had."
+      ],
+      "examples": [
+        { "en": "You should have told me.", "fr": "Tu aurais dû me le dire." },
+        { "en": "I shouldn't have said that.", "fr": "Je n'aurais pas dû dire ça." },
+        { "en": "You could have been killed!", "fr": "Tu aurais pu être tué !" },
+        { "en": "You needn't have bought flowers.", "fr": "Tu n'avais pas besoin d'acheter des fleurs." },
+        { "en": "We could have won the match.", "fr": "Nous aurions pu gagner le match." },
+        { "en": "I didn't need to wait long.", "fr": "Je n'ai pas eu besoin d'attendre longtemps." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "wh-ever",
+      "summary": "Whatever, whoever, wherever, whenever, however : « quoi que », « qui que », « où que », « chaque fois que », « si… que ».",
+      "rules": [
+        "Whatever = quoi que, tout ce que, n'importe quoi : Whatever you do, don't panic. Take whatever you want.",
+        "Whoever = qui que, quiconque, celui qui : Whoever calls, tell them I'm out.",
+        "Wherever = où que, partout où : I'll follow you wherever you go.",
+        "Whenever = chaque fois que, quand tu veux : Come whenever you like. Whenever I see her, she smiles.",
+        "However + adjectif ou adverbe = si… que, peu importe à quel point : However hard I try, I can't do it.",
+        "Après eux, l'indicatif anglais (présent ou passé), jamais de will pour le futur : Whatever happens, I'll be there.",
+        "Le français emploie le subjonctif (quoi que tu fasses) ; l'anglais n'en a pas besoin."
+      ],
+      "examples": [
+        { "en": "Whatever you do, don't panic.", "fr": "Quoi que tu fasses, ne panique pas." },
+        { "en": "Whoever wins, we'll celebrate.", "fr": "Qui que ce soit qui gagne, nous ferons la fête." },
+        { "en": "I'll follow you wherever you go.", "fr": "Je te suivrai où que tu ailles." },
+        { "en": "Come and see us whenever you like.", "fr": "Viens nous voir quand tu veux." },
+        { "en": "However hard I try, I can't remember her name.", "fr": "J'ai beau essayer, je n'arrive pas à me souvenir de son nom." },
+        { "en": "Take whatever you need.", "fr": "Prends tout ce dont tu as besoin." }
       ],
       "traps": []
     }

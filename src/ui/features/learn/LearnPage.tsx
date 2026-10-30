@@ -13,7 +13,7 @@ import { loadVerbAnswers } from '@/core/repo/learnRepo';
 /** « Plus tard » : la proposition du test revient à la prochaine ouverture de l'application. */
 let placementLater = false;
 
-const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1'];
+const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 /** Barre de progression d'une leçon : bonnes réponses parmi les 20 dernières (objectif 18). */
 export function LessonBar({ progress, large = false }: { progress: LessonProgress; large?: boolean }) {
@@ -152,7 +152,7 @@ export function LearnPage() {
             {mastered} leçon{mastered > 1 ? 's' : ''} acquise{mastered > 1 ? 's' : ''} sur {lessons.length}
           </strong>
           <span className="muted small">
-            Parcours complet : {data.points.length} points de A1 à C1
+            Parcours complet : {data.points.length} points de A1 à C2
             {lessons.length < data.points.length ? ', les autres leçons arrivent au fur et à mesure' : ''}
           </span>
         </div>
@@ -285,7 +285,7 @@ export function LearnPage() {
 
       {lessons.length < data.points.length && (
         <details className="card card-pad learn-later">
-          <summary>Le parcours complet : {data.points.length - lessons.length} autres leçons à venir, de A1 à C1</summary>
+          <summary>Le parcours complet : {data.points.length - lessons.length} autres leçons à venir, de A1 à C2</summary>
           {LEVELS.map((level) => {
             const later = data.points.filter((p) => p.level === level && !available.has(p.id));
             return later.length ? (

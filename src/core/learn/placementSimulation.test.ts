@@ -11,9 +11,9 @@ const questions = (mode: 'typed' | 'choice'): PlacementQuestion[] => targets.fla
 })));
 const noise = { slip: 0.1, typedChance: 0.05, unknownShare: 0.35 };
 
-describe('simulation permanente du placement sur les 74 points', () => {
+describe('simulation permanente du placement sur les 79 points', () => {
   it('la vérité respecte requires et contient des acquis qui ne respectent pas after', () => {
-    expect(targets).toHaveLength(74);
+    expect(targets).toHaveLength(79);
     for (const p of profiles) {
       const truth = p.knowledge(placementRng(93));
       for (const t of targets) if (truth[t.id]) expect(t.requires.every((id) => truth[id])).toBe(true);

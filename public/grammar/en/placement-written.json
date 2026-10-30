@@ -1678,6 +1678,427 @@
    "fr": "Elle a décidé de changer de travail.",
    "hint": "change",
    "form": "infinitive"
+  },
+  {
+   "id": "written:conditional-inversion:1",
+   "targetId": "conditional-inversion",
+   "before": "",
+   "answer": "Had I known",
+   "after": ", I would have called you.",
+   "fr": "Si j'avais su, je t'aurais appelé.",
+   "options": [
+    "Had I known",
+    "If had I known",
+    "Have I known"
+   ],
+   "form": "had"
+  },
+  {
+   "id": "written:conditional-inversion:2",
+   "targetId": "conditional-inversion",
+   "before": "",
+   "answer": "Were I",
+   "after": " you, I would take the job.",
+   "fr": "Si j'étais toi, j'accepterais le poste.",
+   "options": [
+    "Were I",
+    "If were I",
+    "Am I"
+   ],
+   "form": "were"
+  },
+  {
+   "id": "written:conditional-inversion:3",
+   "targetId": "conditional-inversion",
+   "before": "",
+   "answer": "Should you",
+   "after": " need help, just ask.",
+   "fr": "Si jamais tu as besoin d'aide, demande.",
+   "options": [
+    "Should you",
+    "If should you",
+    "Would you"
+   ],
+   "form": "should"
+  },
+  {
+   "id": "written:conditional-inversion:4",
+   "targetId": "conditional-inversion",
+   "before": "",
+   "answer": "Had it not",
+   "after": " been for her, we would have lost.",
+   "fr": "Sans elle, nous aurions perdu.",
+   "options": [
+    "Had it not",
+    "Hadn't it",
+    "If had it not"
+   ],
+   "form": "had"
+  },
+  {
+   "id": "written:conditional-inversion:5",
+   "targetId": "conditional-inversion",
+   "before": "Were she to find out, she ",
+   "answer": "would be",
+   "after": " furious.",
+   "fr": "Si elle venait à l'apprendre, elle serait furieuse.",
+   "options": [
+    "would be",
+    "will be",
+    "is"
+   ],
+   "form": "were"
+  },
+  {
+   "id": "written:conditional-inversion:6",
+   "targetId": "conditional-inversion",
+   "before": "Should the problem persist, ",
+   "answer": "contact",
+   "after": " our support team.",
+   "fr": "Si le problème persiste, contactez notre assistance.",
+   "options": [
+    "contact",
+    "you would contact",
+    "to contact"
+   ],
+   "form": "should"
+  },
+  {
+   "id": "written:impersonal-passive:1",
+   "targetId": "impersonal-passive",
+   "before": "He is said ",
+   "answer": "to be",
+   "after": " very rich.",
+   "fr": "On dit qu'il est très riche.",
+   "options": [
+    "to be",
+    "being",
+    "that he is"
+   ],
+   "form": "present"
+  },
+  {
+   "id": "written:impersonal-passive:2",
+   "targetId": "impersonal-passive",
+   "before": "She is believed ",
+   "answer": "to have left",
+   "after": " the country last year.",
+   "fr": "Elle aurait quitté le pays l'année dernière.",
+   "options": [
+    "to have left",
+    "to leave",
+    "having left"
+   ],
+   "form": "past"
+  },
+  {
+   "id": "written:impersonal-passive:3",
+   "targetId": "impersonal-passive",
+   "before": "It ",
+   "answer": "is thought",
+   "after": " that the fire started in the kitchen.",
+   "fr": "On pense que l'incendie a commencé dans la cuisine.",
+   "options": [
+    "is thought",
+    "thinks",
+    "is thinking"
+   ],
+   "form": "it"
+  },
+  {
+   "id": "written:impersonal-passive:4",
+   "targetId": "impersonal-passive",
+   "before": "The thieves are thought ",
+   "answer": "to be hiding",
+   "after": " in the forest.",
+   "fr": "Les voleurs se cacheraient dans la forêt.",
+   "options": [
+    "to be hiding",
+    "to hide",
+    "hiding"
+   ],
+   "form": "continuous"
+  },
+  {
+   "id": "written:impersonal-passive:5",
+   "targetId": "impersonal-passive",
+   "before": "The painting ",
+   "answer": "is known",
+   "after": " to be a fake.",
+   "fr": "On sait que le tableau est un faux.",
+   "options": [
+    "is known",
+    "knows",
+    "is knowing"
+   ],
+   "form": "present"
+  },
+  {
+   "id": "written:impersonal-passive:6",
+   "targetId": "impersonal-passive",
+   "before": "The king is reported ",
+   "answer": "to have died",
+   "after": " in 1450.",
+   "fr": "Le roi serait mort en 1450.",
+   "options": [
+    "to have died",
+    "to die",
+    "to be died"
+   ],
+   "form": "past"
+  },
+  {
+   "id": "written:unreal-past:1",
+   "targetId": "unreal-past",
+   "before": "It's time we ",
+   "answer": "went",
+   "after": " home.",
+   "fr": "Il est temps que nous rentrions.",
+   "hint": "go",
+   "form": "past"
+  },
+  {
+   "id": "written:unreal-past:2",
+   "targetId": "unreal-past",
+   "before": "I'd rather you ",
+   "answer": "stayed",
+   "after": " here tonight.",
+   "fr": "Je préférerais que tu restes ici ce soir.",
+   "options": [
+    "stayed",
+    "stay",
+    "will stay"
+   ],
+   "form": "past"
+  },
+  {
+   "id": "written:unreal-past:3",
+   "targetId": "unreal-past",
+   "before": "I'd rather you ",
+   "answer": "didn't",
+   "after": " tell anyone.",
+   "fr": "Je préférerais que tu ne le dises à personne.",
+   "options": [
+    "didn't",
+    "don't",
+    "won't"
+   ],
+   "form": "negative"
+  },
+  {
+   "id": "written:unreal-past:4",
+   "targetId": "unreal-past",
+   "before": "It's high time you ",
+   "answer": "found",
+   "after": " a job.",
+   "fr": "Il serait grand temps que tu trouves un travail.",
+   "options": [
+    "found",
+    "find",
+    "to find"
+   ],
+   "form": "past"
+  },
+  {
+   "id": "written:unreal-past:5",
+   "targetId": "unreal-past",
+   "before": "He talks as if he ",
+   "answer": "knew",
+   "after": " everything.",
+   "fr": "Il parle comme s'il savait tout.",
+   "options": [
+    "knew",
+    "knows",
+    "has known"
+   ],
+   "form": "past"
+  },
+  {
+   "id": "written:unreal-past:6",
+   "targetId": "unreal-past",
+   "before": "I'd rather ",
+   "answer": "stay",
+   "after": " at home tonight.",
+   "fr": "Je préférerais rester à la maison ce soir.",
+   "options": [
+    "stay",
+    "stayed",
+    "to stay"
+   ],
+   "form": "same-subject"
+  },
+  {
+   "id": "written:past-modals:1",
+   "targetId": "past-modals",
+   "before": "You ",
+   "answer": "should have told",
+   "after": " me.",
+   "fr": "Tu aurais dû me le dire.",
+   "options": [
+    "should have told",
+    "should told",
+    "should have tell"
+   ],
+   "form": "should"
+  },
+  {
+   "id": "written:past-modals:2",
+   "targetId": "past-modals",
+   "before": "You ",
+   "answer": "could have been",
+   "after": " killed!",
+   "fr": "Tu aurais pu être tué !",
+   "options": [
+    "could have been",
+    "should have been",
+    "needn't have been"
+   ],
+   "form": "could"
+  },
+  {
+   "id": "written:past-modals:3",
+   "targetId": "past-modals",
+   "before": "You ",
+   "answer": "needn't have bought",
+   "after": " flowers, but thank you.",
+   "fr": "Tu n'avais pas besoin d'acheter des fleurs, mais merci.",
+   "options": [
+    "needn't have bought",
+    "should have bought",
+    "could have bought"
+   ],
+   "form": "needless"
+  },
+  {
+   "id": "written:past-modals:4",
+   "targetId": "past-modals",
+   "before": "I ",
+   "answer": "shouldn't have said",
+   "after": " that. I'm sorry.",
+   "fr": "Je n'aurais pas dû dire ça. Je suis désolé.",
+   "options": [
+    "shouldn't have said",
+    "couldn't have said",
+    "shouldn't said"
+   ],
+   "form": "should"
+  },
+  {
+   "id": "written:past-modals:5",
+   "targetId": "past-modals",
+   "before": "We ",
+   "answer": "could have won",
+   "after": " if we had played better.",
+   "fr": "Nous aurions pu gagner si nous avions mieux joué.",
+   "options": [
+    "could have won",
+    "should have won",
+    "could won"
+   ],
+   "form": "could"
+  },
+  {
+   "id": "written:past-modals:6",
+   "targetId": "past-modals",
+   "before": "She ",
+   "answer": "should have",
+   "after": " left earlier; she missed the train.",
+   "fr": "Elle aurait dû partir plus tôt ; elle a raté le train.",
+   "options": [
+    "should have",
+    "should has",
+    "should had"
+   ],
+   "form": "should"
+  },
+  {
+   "id": "written:wh-ever:1",
+   "targetId": "wh-ever",
+   "before": "",
+   "answer": "Whatever",
+   "after": " you do, don't panic.",
+   "fr": "Quoi que tu fasses, ne panique pas.",
+   "options": [
+    "Whatever",
+    "Whoever",
+    "Wherever",
+    "Whenever"
+   ],
+   "form": "whatever"
+  },
+  {
+   "id": "written:wh-ever:2",
+   "targetId": "wh-ever",
+   "before": "I'll follow you ",
+   "answer": "wherever",
+   "after": " you go.",
+   "fr": "Je te suivrai où que tu ailles.",
+   "options": [
+    "whatever",
+    "whoever",
+    "wherever",
+    "whenever"
+   ],
+   "form": "wherever"
+  },
+  {
+   "id": "written:wh-ever:3",
+   "targetId": "wh-ever",
+   "before": "",
+   "answer": "Whoever",
+   "after": " calls, tell them I'm out.",
+   "fr": "Qui que ce soit qui appelle, dis que je suis sorti.",
+   "options": [
+    "Whatever",
+    "Whoever",
+    "Wherever",
+    "Whenever"
+   ],
+   "form": "whoever"
+  },
+  {
+   "id": "written:wh-ever:4",
+   "targetId": "wh-ever",
+   "before": "Come and see us ",
+   "answer": "whenever",
+   "after": " you like.",
+   "fr": "Viens nous voir quand tu veux.",
+   "options": [
+    "whatever",
+    "whoever",
+    "wherever",
+    "whenever"
+   ],
+   "form": "whenever"
+  },
+  {
+   "id": "written:wh-ever:5",
+   "targetId": "wh-ever",
+   "before": "",
+   "answer": "However",
+   "after": " hard I try, I can't remember her name.",
+   "fr": "J'ai beau essayer, je n'arrive pas à me souvenir de son nom.",
+   "options": [
+    "However",
+    "Whatever",
+    "Although",
+    "Whenever"
+   ],
+   "form": "however"
+  },
+  {
+   "id": "written:wh-ever:6",
+   "targetId": "wh-ever",
+   "before": "Whatever ",
+   "answer": "happens",
+   "after": ", I'll be there.",
+   "fr": "Quoi qu'il arrive, je serai là.",
+   "options": [
+    "happens",
+    "will happen",
+    "happen"
+   ],
+   "form": "verb"
   }
  ]
 }

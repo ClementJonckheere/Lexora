@@ -127,8 +127,10 @@ export function evidenceLabel(evidence: string): string {
  * Réglages du test dans l'application, retenus d'après la simulation (docs/placement-simulation.json) : le niveau global
  * (pente 2, conclusions sans question à 99 % de confiance, bornées par les niveaux confirmés) classe seul les points
  * loin du niveau ; le modèle de règle superficielle (par défaut) empêche une forme unique de passer pour un acquis.
+ * levelConfidence 0,995 (2.33, avec le C2) : les conclusions du niveau seul exigent plus de certitude ; les faux acquis
+ * des profils irréguliers passent de 5,9 à 2,2 %, au prix de plus de points à consolider (mini-tests de leçon).
  */
-export const PLACEMENT_APP_CONFIG = { globalLevel: 2 } as const;
+export const PLACEMENT_APP_CONFIG = { globalLevel: 2, levelConfidence: 0.995 } as const;
 
 /**
  * Points testés : les leçons existantes et leurs prérequis stricts (fermeture de `requires`). Ce sont les seuls dont le

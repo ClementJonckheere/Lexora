@@ -85,7 +85,7 @@ function knownWithPrerequisites(targets: readonly PlacementTarget[], initial: Se
 }
 
 export function referencePlacementProfiles(targets: readonly PlacementTarget[]): PlacementProfile[] {
-  const levels = ['A1', 'A2', 'B1', 'B2', 'C1'];
+  const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
   return [
     { name: 'Débutant', knowledge: () => knownWithPrerequisites(targets, new Set()) },
     ...levels.map((level, rank) => ({

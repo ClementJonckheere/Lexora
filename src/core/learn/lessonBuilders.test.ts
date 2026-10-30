@@ -182,3 +182,43 @@ describe('C1 et A2', () => {
     expect(shown('simple-vs-continuous', 'How often do you usually take a bath?', 'Tu prends un bain combien de fois ?')).toBeNull();
   });
 });
+
+describe('C2', () => {
+  it('inversion conditionnelle', () => {
+    expect(shown('conditional-inversion', 'Had I known, I would have come earlier.', 'Si j’avais su, je serais venu plus tôt.')).toBe(
+      '[Had I {Had I | If had I | Have I}] known, I would have come earlier.',
+    );
+    expect(shown('conditional-inversion', 'Should you need anything, call me.', 'Si tu as besoin de quoi que ce soit, appelle-moi.')).toBe(
+      '[Should you {Should you | If should you | Would you}] need anything, call me.',
+    );
+    expect(shown('conditional-inversion', 'Had you seen it, you know.', 'Tu l’avais vu, tu sais.')).toBeNull();
+  });
+  it('passif impersonnel', () => {
+    expect(shown('impersonal-passive', 'He is said to have left the country.', 'Il aurait quitté le pays.')).toBe(
+      'He is said [to have left {to have left | to leave | having left}] the country.',
+    );
+    expect(shown('impersonal-passive', 'She is believed to be very rich.', 'On la dit très riche.')).toBe('She is believed [to be {to be | to have been | being}] very rich.');
+  });
+  it('passé irréel', () => {
+    expect(shown('unreal-past', "It's time we went home.", 'Il est temps que nous rentrions.')).toBe("It's time we [went {went | go}] home.");
+    expect(shown('unreal-past', "I'd rather you didn't smoke here.", 'Je préférerais que tu ne fumes pas ici.')).toBe(
+      "I'd rather you [didn't {didn't | don't | won't}] smoke here.",
+    );
+    expect(shown('unreal-past', "It's time to go home.", 'Il est temps de rentrer.')).toBeNull();
+  });
+  it('modaux au passé : la traduction donne la nuance', () => {
+    expect(shown('past-modals', 'You should have told me.', 'Tu aurais dû me le dire.')).toBe("You [should have {should have | could have | needn't have}] told me.");
+    expect(shown('past-modals', 'You could have been killed.', 'Tu aurais pu être tué.')).toBe("You [could have {could have | should have | needn't have}] been killed.");
+    expect(shown('past-modals', "You needn't have bought it.", "Tu n'avais pas besoin de l'acheter.")).toBe(
+      "You [needn't have {needn't have | should have | could have}] bought it.",
+    );
+  });
+  it('whatever, whoever, wherever, whenever', () => {
+    expect(shown('wh-ever', "Whatever you do, don't panic.", 'Quoi que tu fasses, ne panique pas.')).toBe(
+      "[Whatever {Whatever | Whoever | Wherever | Whenever}] you do, don't panic.",
+    );
+    expect(shown('wh-ever', 'I will follow you wherever you go.', 'Je te suivrai où que tu ailles.')).toBe(
+      'I will follow you [wherever {whatever | whoever | wherever | whenever}] you go.',
+    );
+  });
+});
