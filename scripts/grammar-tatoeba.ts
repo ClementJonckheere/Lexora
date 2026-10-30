@@ -78,6 +78,7 @@ writeFileSync(
 const BANK_SIZE = 300;
 /** Une même réponse (« said », « for »…) ne dépasse pas cette part de la banque : variété des exercices. */
 const MAX_SAME_ANSWER = 0.2;
+const MAX_FORM_SHARE = 0.6;
 const freq = readFileSync('public/reading/freq/en.txt', 'utf8')
   .split('\n')
   .map((w) => w.trim())
@@ -167,6 +168,16 @@ function makeBank(
         break;
       }
     }
+  // Aucune nature de réponse au-delà de 60 % de la banque (contrôle de bankChecks.ts) : répondre toujours pareil ne
+  // doit pas suffire. Les derniers exercices de la nature dominante sont retirés.
+  for (;;) {
+    const counts = new Map<string, number>();
+    for (const ex of items) counts.set(ex.form ?? '', (counts.get(ex.form ?? '') ?? 0) + 1);
+    if (counts.size < 2) break;
+    const [top, n] = [...counts].sort((a, b) => b[1] - a[1])[0];
+    if (n <= MAX_FORM_SHARE * items.length) break;
+    items.splice(items.map((ex) => ex.form ?? '').lastIndexOf(top), 1);
+  }
   const forms = [...byForm.keys()].filter(Boolean);
   const share = forms.map((f) => `${f} ${items.filter((ex) => ex.form === f).length}`).join(', ');
   const reused = items.filter((ex) => rank.has(ex.id)).length;

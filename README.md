@@ -13,7 +13,7 @@ Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, 
 
 La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
 
-**État documenté : version 2.31.0.** Le parcours grammatical comporte 74 points de A1 à C1 et 40 pièges francophones ; les 74 points ont leur leçon et leurs exercices depuis la 2.31 (34 en A1 et A2, 26 en B1, 9 en B2 et 5 en C1 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
+**État documenté : version 2.32.0.** Le parcours grammatical comporte 74 points de A1 à C1 et 40 pièges francophones ; les 74 points ont leur leçon et leurs exercices depuis la 2.31 (34 en A1 et A2, 26 en B1, 9 en B2 et 5 en C1 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -123,7 +123,7 @@ Le même code SQL tourne dans les trois environnements. Dans l'application, c'es
 
 ## 5. Modèle de données
 
-Le schéma SQLite est en **version 11** (`PRAGMA user_version`), indépendamment de la version 2.31.0 de l'application. Les **16 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
+Le schéma SQLite est en **version 11** (`PRAGMA user_version`), indépendamment de la version 2.32.0 de l'application. Les **16 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
 
 | Table | Clé locale | Principales données |
 |---|---|---|
@@ -197,7 +197,7 @@ Thème clair, fond blanc cassé, indigo comme couleur d'action, gris très clair
 ### À valider ou corriger sur l'existant
 
 - **Contenu grammatical** : les 10 premières leçons B1 ont été relues ; les 10 suivantes, du present perfect continu au 3e conditionnel, et les 32 leçons A1 et A2 (2.25) restent à relire. Grille : règle juste, exemple net, traduction exacte, piège couvert par une règle et exercices cohérents.
-- **Qualité des banques** : les tests couvrent des cas du générateur, mais les contrôles systématiques sur toutes les banques livrées restent à ajouter en CI : aucune forme au-delà de 60 % des bonnes réponses dans une leçon à choix ; aucun repère passé incompatible avec un present perfect (hors emploi après `since`) ; futur français cohérent avec une réponse `will` ; trou sur le verbe dans les exercices verbaux ; distracteurs accordés et correctement orthographiés ; aucun mot de `scripts/grammar-blocklist.txt`.
+- **Qualité des banques** (2.32) : contrôles systématiques de toutes les banques livrées (`src/core/learn/bankChecks.ts`), lancés par `npm test` et par le workflow Grammaire avant d'enregistrer une régénération : le trou rempli redonne la phrase, la réponse figure parmi des propositions distinctes, aucun mot de `scripts/grammar-blocklist.txt`, aucune nature de réponse au-delà de 60 % d'une leçon (plafond appliqué aussi à la génération : présent simple ou continu, wish, have got, conditionnels, prétérit ou present perfect en ont été rééquilibrés), aucun repère passé avec un present perfect (hors since et autre proposition au passé) ; avertissements pour une banque de moins de 20 exercices et une réponse will sans futur dans la traduction.
 - **Signalements** : le chemin existe dans le code, mais le parcours complet reste à valider depuis Lexora Windows connecté : signaler une phrase, synchroniser, contrôler `grammar_answers` et `grammar_reported_items` dans Supabase, relancer le workflow Grammaire, puis contrôler l'exclusion de l'exercice. Un appel réussi à la fonction Supabase ne valide pas à lui seul ce parcours.
 
 ### Les six chantiers de développement
@@ -225,7 +225,7 @@ Les chantiers suivants restent **indisponibles dans l'interface** :
 
 ### Option A : récupérer l'installateur
 
-La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.31.0_x64-setup.exe`.
+La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.32.0_x64-setup.exe`.
 
 Le workflow GitHub Actions `CI & installateur Windows` lance les tests puis construit l'installateur à chaque push sur `main` ou `claude/**`, à chaque tag `v*`, pour les PR vers `main`, et sur demande depuis l'onglet *Actions* → *Run workflow*. Pour essayer une construction non publiée : **Actions → exécution réussie de la branche voulue → artefact lexora-windows**.
 

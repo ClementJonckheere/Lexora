@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-10-30T17:14:17.540Z",
+ "generatedAt": "2026-10-30T18:03:59.177Z",
  "source": "Tatoeba (CC BY 2.0 FR) : banques des leçons et du placement ; questions rédigées (placement-written.json)",
  "status": "généré automatiquement, à relire avant activation",
  "covered": {
@@ -9728,14 +9728,14 @@
    "hint": "be"
   },
   {
-   "id": "placement:wish:wish:308282",
+   "id": "placement:wish:wish:2544350",
    "targetId": "wish",
-   "evidenceId": "tatoeba:308282",
-   "before": "I wish she ",
-   "after": " alive now.",
-   "fr": "Si seulement elle était encore en vie...",
+   "evidenceId": "tatoeba:2544350",
+   "before": "I wish it ",
+   "after": " that simple.",
+   "fr": "Je souhaiterais que ce soit aussi facile.",
    "answer": "were",
-   "source": "tatoeba:308282",
+   "source": "tatoeba:2544350",
    "status": "généré",
    "form": "past",
    "mode": "typed",
@@ -9759,21 +9759,18 @@
    "hint": "tell"
   },
   {
-   "id": "placement:wish:wish:8819589",
+   "id": "placement:wish:wish:1887631",
    "targetId": "wish",
-   "evidenceId": "tatoeba:8819589",
-   "before": "If only it ",
-   "after": " that simple.",
-   "fr": "Si seulement c'était aussi simple.",
-   "answer": "was",
-   "source": "tatoeba:8819589",
+   "evidenceId": "tatoeba:1887631",
+   "before": "I really wish I ",
+   "after": " how to do that.",
+   "fr": "J'aimerais vraiment savoir faire ça.",
+   "answer": "knew",
+   "source": "tatoeba:1887631",
    "status": "généré",
    "form": "past",
    "mode": "typed",
-   "hint": "be",
-   "accept": [
-    "were"
-   ]
+   "hint": "know"
   },
   {
    "id": "placement:wish:wish:5172827",
@@ -9790,18 +9787,21 @@
    "hint": "make"
   },
   {
-   "id": "placement:wish:wish:2288905",
+   "id": "placement:wish:wish:5172831",
    "targetId": "wish",
-   "evidenceId": "tatoeba:2288905",
-   "before": "Don't you wish you ",
-   "after": " here?",
-   "fr": "N'aimeriez-vous pas vivre ici ?",
-   "answer": "lived",
-   "source": "tatoeba:2288905",
+   "evidenceId": "tatoeba:5172831",
+   "before": "I wish that Tom ",
+   "after": " here to help us.",
+   "fr": "J'aimerais que Tom soit là pour nous aider.",
+   "answer": "was",
+   "source": "tatoeba:5172831",
    "status": "généré",
    "form": "past",
    "mode": "typed",
-   "hint": "live"
+   "hint": "be",
+   "accept": [
+    "were"
+   ]
   },
   {
    "id": "placement:third-conditional:third-conditional:6871098",

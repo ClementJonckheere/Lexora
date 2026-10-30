@@ -290,12 +290,12 @@ const reportedQuestions: Builder = (s, known) => {
 const futureContinuous: Builder = (s, known) => {
   const m = only(/\b(will|'ll|won't)\s+be\s+([a-z]+ing)\b/, s.en);
   if (!m) return [];
-  const [, aux, ing] = m;
+  const ing = m[2];
   const base = baseOfIng(ing, known);
   if (!base || base === 'be' || base === 'go' && /going\s+to\b/.test(s.en) || !plausibleBase(base, known)) return [];
   const span = `be ${ing}`;
   const at = m.index + m[0].length - span.length;
-  return [blank(s, at, span, span, { choices: [span, ing, `be ${base}`], form: aux === "won't" ? 'negative' : 'affirmative' })];
+  return [blank(s, at, span, span, { choices: [span, ing, `be ${base}`], form: 'continuous' })];
 };
 
 /** Futur antérieur : will have + participe, contre will has et will have + base. */
@@ -333,7 +333,8 @@ const inversion: Builder = (s, known) => {
   const m = /^(have|has|had|do|does|did|was|were|is|are|am|can|could|will|would|should|shall|must|may|might)\s+(I|you|he|she|it|we|they|[A-Z][a-z]+)\s+([a-z]+)\b/.exec(s.en.slice(at));
   if (!m) return [];
   const [, aux, subject, verb] = m;
-  const form = /^Not only/.test(head[1]) ? 'not-only' : /^Only/.test(head[1]) ? 'only' : 'negative';
+  // Une seule nature : la réponse est toujours l'ordre inversé, quel que soit l'adverbe.
+  const form = 'inversion';
   if (/^(?:do|does|did)$/.test(aux)) {
     // Ordre normal : pas d'auxiliaire, le verbe fléchi (« Rarely we see », « Not only he broke »).
     if (!plausibleBase(verb, known) || /^(?:lie|lay)$/.test(verb)) return [];
@@ -421,7 +422,7 @@ const adjectives: Builder = (s) => {
   // news, series, means… : singuliers malgré le -s.
   const plural = /[^s]s$/.test(noun) && !/^(?:news|series|means|species|physics|maths|politics|economics)$/.test(noun) && /\b(?:some|two|three|many|these|those)\s/.test(whole);
   const choices = plural ? [span, `${noun} ${adj}`, `${adj}s ${noun}`] : [span, `${noun} ${adj}`];
-  return [blank(s, at, span, span, { choices, form: plural ? 'plural' : 'singular' })];
+  return [blank(s, at, span, span, { choices, form: 'adjective' })];
 };
 
 /** Présent simple ou continu : un repère anglais tranche (now, Look! → continu ; usually, every day → simple). */

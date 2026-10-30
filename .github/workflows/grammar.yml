@@ -63,6 +63,8 @@ jobs:
       - run: npx vite-node scripts/grammar-tatoeba.ts tatoeba
       - name: Banque du placement (tirée des banques des leçons)
         run: npx vite-node scripts/placement-bank.ts
+      - name: Contrôles des banques (src/core/learn/bankChecks.ts) avant d'enregistrer
+        run: npx vitest run src/core/learn/bankChecks.test.ts
       - name: Enregistrer les comptes
         run: |
           git add public/grammar/en/tatoeba-counts.json public/grammar/en/exercises public/grammar/en/placement public/grammar/en/placement.json
