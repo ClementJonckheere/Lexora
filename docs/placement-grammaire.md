@@ -176,3 +176,7 @@ Six leçons B1 (discours rapporté, questions sur le sujet, but avec to, prépos
 ## Leçons B2 de la 2.30
 
 Neuf leçons B2 portent le périmètre à 67 points ; leurs questions de test restent les questions rédigées (be-used-to : celles de la banque relue de used to). Simulation : faux acquis au plus 2,7 %, faux « à apprendre » au plus 2,1 % ; points incertains 21 % (débutant), 56 à 68 % (A1, A2), 52 % (B1), 7 et 6 % (B2, C1). Les points B2 ajoutés rendent au niveau global sa prise sur les profils avancés (17 % d'incertains en 2.29).
+
+## Parcours complet (2.31)
+
+Les 74 points ont leur leçon : le test porte sur tout le parcours. Simulation (réglages inchangés) : faux acquis au plus 4,0 %, contre 2,7 % sur 67 points ; faux « à apprendre » au plus 7,8 %, contre 2,1 %. La hausse vient presque entièrement du profil « avancé avec lacunes », volontairement irrégulier : il connaît le subjonctif et les phrases clivées (C1, sans prérequis) sans connaître le reste. Ces deux points, nouveaux dans le test, sont classés « à apprendre » par le niveau global, qui suppose qu'on maîtrise les niveaux inférieurs. Une garde plus stricte (un échec direct au même niveau ou juste en dessous) n'y change rien : les autres points C1 de ce profil sont ratés directement. Le coût pour l'apprenant est faible : une leçon déjà sue, vite acquise, plutôt qu'une leçon sautée à tort. Les profils réguliers restent sous 1 % de faux « à apprendre ».

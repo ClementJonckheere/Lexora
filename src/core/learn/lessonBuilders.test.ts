@@ -136,3 +136,46 @@ describe('B2', () => {
     expect(shown('be-used-to', 'I am used to getting up early.', 'J’ai l’habitude de me lever tôt.')).toBe('I am used to [getting {getting | get | to get}] up early.');
   });
 });
+
+describe('C1 et A2', () => {
+  it('inversion après un adverbe négatif', () => {
+    expect(shown('inversion', 'Never have I seen such a beautiful sunset.', "Je n'ai jamais vu un si beau coucher de soleil.")).toBe(
+      'Never [have I {have I | I have}] seen such a beautiful sunset.',
+    );
+    expect(shown('inversion', 'Rarely do we see such talent.', 'Nous voyons rarement un tel talent.')).toBe('Rarely [do we see {do we see | we see}] such talent.');
+    expect(shown('inversion', 'Not only did he break the window, he also lied.', 'Non seulement il a cassé la vitre, mais il a aussi menti.')).toBe(
+      'Not only [did he break {did he break | he broke}] the window, he also lied.',
+    );
+  });
+  it('phrase clivée, proposition participiale', () => {
+    expect(shown('cleft-sentences', 'What I need is a long holiday.', "Ce dont j'ai besoin, c'est de longues vacances.")).toBe('[What {What | That | Which}] I need is a long holiday.');
+    expect(shown('participle-clauses', 'Having finished her work, she went home.', 'Après avoir fini son travail, elle est rentrée.')).toBe(
+      '[Having finished {Having finished | Have finished | Had finished}] her work, she went home.',
+    );
+    expect(shown('participle-clauses', 'Built in 1890, the house needs a lot of work.', 'Construite en 1890, la maison demande beaucoup de travaux.')).toBe(
+      '[Built {Built | Building | Build}] in 1890, the house needs a lot of work.',
+    );
+  });
+  it('subjonctif, do d’insistance', () => {
+    expect(shown('subjunctive', 'I suggest that he be told the truth.', 'Je suggère qu’on lui dise la vérité.')).toBe('I suggest that he [be {be | is}] told the truth.');
+    expect(shown('subjunctive', 'She insisted that Tom leave at once.', 'Elle a insisté pour que Tom parte immédiatement.')).toBe('She insisted that Tom [leave {leave | leaves}] at once.');
+    expect(shown('emphatic-do', 'I did call you, but you were out.', "Je t'ai bien appelé, mais tu étais sorti.")).toBe('I [did call {did call | did called}] you, but you were out.');
+    expect(shown('emphatic-do', 'Do sit down, please.', 'Asseyez-vous donc, je vous en prie.')).toBe('[Do sit {Do sit | Do sitting | Do to sit}] down, please.');
+    expect(shown('emphatic-do', 'Where do you live?', 'Où habites-tu ?')).toBeNull();
+  });
+  it('adjectif avant le nom et invariable', () => {
+    expect(shown('adjectives', 'She bought a beautiful dress for the party.', 'Elle a acheté une belle robe pour la fête.')).toBe(
+      'She bought a [beautiful dress {beautiful dress | dress beautiful}] for the party.',
+    );
+    expect(shown('adjectives', 'We have many different ideas.', 'Nous avons beaucoup d’idées différentes.')).toBe(
+      'We have many [different ideas {different ideas | ideas different | differents ideas}].',
+    );
+    expect(shown('adjectives', 'He is a student.', 'Il est étudiant.')).toBeNull();
+  });
+  it('présent simple ou continu, selon le repère', () => {
+    expect(shown('simple-vs-continuous', 'Be quiet, the baby is sleeping now.', 'Silence, le bébé dort.')).toBeNull(); // sujet nom : pas couvert
+    expect(shown('simple-vs-continuous', 'Look, it is raining again.', 'Regarde, il pleut encore.')).toBe('Look, it [is raining {is raining | rains}] again.');
+    expect(shown('simple-vs-continuous', 'She usually walks to work.', 'Elle va généralement au travail à pied.')).toBe('She usually [walks {walks | is walking}] to work.');
+    expect(shown('simple-vs-continuous', 'I usually walked to work.', 'J’allais à pied au travail.')).toBeNull();
+  });
+});

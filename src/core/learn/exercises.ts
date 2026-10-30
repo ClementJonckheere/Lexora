@@ -743,6 +743,8 @@ const gerundInfinitive: Builder = (s, known) => {
 
 const ADJECTIVES =
   /^(?:old|young|big|small|large|little|good|bad|fast|slow|tall|short|strong|weak|rich|poor|warm|cold|hot|cool|long|high|low|easy|hard|early|late|well|smart|brave|quick|close|safe|cheap|loud|clear|deep|wide|thick|thin|heavy|light|dark|bright|fat|sweet|nice|kind|sure|ready|serious|good|tired|scared|excited|interested|bored|worried|surprised|busy|happy|sad|angry|mad|ill|sick|clever|lucky|crazy|lazy|dirty|noisy|healthy|hungry|thirsty|sleepy|pretty|ugly|funny|easy|heavy|expensive|beautiful|difficult|important|dangerous|careful|wonderful|delicious|comfortable|interesting|intelligent|different|patient|polite|honest|stupid|small|fine|great|rude|cruel|naive|mature|wise|famous|popular|full|empty|free|wrong|right|true|real|strange|tough|calm)$/i;
+/** Adjectif de la liste seule (sans la règle des suffixes, qui attrape aussi des noms : animal, student). */
+export const isListedAdjective = (w: string) => ADJECTIVES.test(w);
 export const isAdjective = (w: string) =>
   ADJECTIVES.test(w) || (/(?:ful|ous|ble|ive|ent|ant|ic|al|less|ish|ly)$/i.test(w) && w.length > 4 && !/^(?:only|family|really|early|holy|ugly)$/i.test(w));
 

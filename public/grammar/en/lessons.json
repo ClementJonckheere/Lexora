@@ -1,7 +1,7 @@
 {
   "version": 1,
   "language": "en",
-  "status": "Leçons B1 et B2 : les 10 premières relues, les 10 suivantes (present perfect continu au 3e conditionnel) rédigées, à relire. Leçons A1 et A2 (32) rédigées, à relire. Leçons B1 de la 2.29 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs) rédigées, à relire. Leçons B2 de la 2.30 (9) rédigées, à relire.",
+  "status": "Leçons B1 et B2 : les 10 premières relues, les 10 suivantes (present perfect continu au 3e conditionnel) rédigées, à relire. Leçons A1 et A2 (32) rédigées, à relire. Leçons B1 de la 2.29 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs) rédigées, à relire. Leçons B2 de la 2.30 (9) rédigées, à relire. Leçons C1 et A2 de la 2.31 (7) rédigées, à relire.",
   "lessons": [
     {
       "id": "be",
@@ -1476,6 +1476,157 @@
         { "en": "I used to smoke, but I stopped.", "fr": "Avant, je fumais, mais j'ai arrêté (used to + base)." }
       ],
       "traps": ["be-used-to-ing"]
+    },
+    {
+      "id": "adjectives",
+      "summary": "L'adjectif anglais se place avant le nom et ne s'accorde jamais : a red car, different ideas.",
+      "rules": [
+        "Avant le nom : a red car, an old house, a beautiful day. Jamais après, comme en français (a car red).",
+        "Invariable : pas de -s au pluriel ni de féminin. different ideas, two old houses, a tall woman (jamais differents ideas).",
+        "Après be, seem, look, feel, become, il reste invariable : The houses are old. She looks tired.",
+        "Plusieurs adjectifs : l'opinion d'abord, puis la taille, l'âge, la couleur, l'origine. a nice little old French restaurant.",
+        "Un adjectif ne se met pas seul au pluriel pour désigner des personnes, sauf the rich, the poor, the young (les riches, les pauvres, les jeunes) : sinon, ajoutez people (young people).",
+        "Un nom peut servir d'adjectif devant un autre nom, lui aussi invariable : a car park, a ten-year-old boy (jamais ten-years-old)."
+      ],
+      "examples": [
+        { "en": "She bought a beautiful dress.", "fr": "Elle a acheté une belle robe." },
+        { "en": "We have many different ideas.", "fr": "Nous avons beaucoup d'idées différentes." },
+        { "en": "They live in an old house.", "fr": "Ils habitent dans une vieille maison." },
+        { "en": "The streets were empty.", "fr": "Les rues étaient vides." },
+        { "en": "He drives a big black car.", "fr": "Il conduit une grosse voiture noire." },
+        { "en": "Young people often prefer cities.", "fr": "Les jeunes préfèrent souvent les villes." },
+        { "en": "She has a ten-year-old son.", "fr": "Elle a un fils de dix ans." }
+      ],
+      "traps": ["adjective-order"]
+    },
+    {
+      "id": "simple-vs-continuous",
+      "summary": "Présent simple pour une habitude ou une vérité, présent continu pour ce qui se passe maintenant ou en ce moment ; les verbes d'état restent au simple.",
+      "rules": [
+        "Présent simple : habitude, fréquence, vérité générale. I usually walk to work. Water boils at 100 degrees.",
+        "Présent continu : action en cours au moment où l'on parle, ou situation temporaire. Today I'm driving. I'm living with friends this month.",
+        "Les repères tranchent : usually, always, often, never, every day, on Mondays → simple ; now, right now, at the moment, Look!, Listen!, this week → continu.",
+        "Le français n'a qu'un présent (« je travaille ») : c'est le contexte anglais qui choisit la forme.",
+        "Verbes d'état (know, like, love, want, need, believe, understand, belong, seem) : au simple, même maintenant. I know the answer, jamais I'm knowing.",
+        "Certains changent de sens : I think (= je pense que, opinion) / I'm thinking (= je réfléchis) ; I have a car / I'm having lunch.",
+        "Always + continu exprime un agacement : He's always complaining (il passe son temps à se plaindre)."
+      ],
+      "examples": [
+        { "en": "I usually walk, but today I'm driving.", "fr": "D'habitude je marche, mais aujourd'hui je prends la voiture." },
+        { "en": "Look, it's raining again.", "fr": "Regarde, il pleut encore." },
+        { "en": "She works in a bank.", "fr": "Elle travaille dans une banque." },
+        { "en": "She's working from home this week.", "fr": "Elle travaille de chez elle cette semaine." },
+        { "en": "I know what you mean.", "fr": "Je vois ce que tu veux dire (verbe d'état : simple)." },
+        { "en": "What are you thinking about?", "fr": "À quoi penses-tu ?" },
+        { "en": "He's always losing his keys.", "fr": "Il passe son temps à perdre ses clés." }
+      ],
+      "traps": ["state-verbs-continuous"]
+    },
+    {
+      "id": "inversion",
+      "summary": "Après un adverbe négatif ou restrictif en tête de phrase (Never, Rarely, Not only, Only then…), l'ordre devient celui d'une question : Never have I seen…",
+      "rules": [
+        "Adverbe en tête, puis auxiliaire + sujet, comme dans une question : Never have I seen such a mess. Rarely do we meet.",
+        "Sans auxiliaire, do / does / did apparaît, et le verbe revient à la base : Rarely do we see such talent. Not only did he lie, he also stole.",
+        "Adverbes concernés : never, rarely, seldom, hardly (… when), scarcely, no sooner (… than), little, not only (… but also), only then, only when, under no circumstances, at no time, nowhere.",
+        "Avec only when, only after, only if : l'inversion vient après la subordonnée. Only when he left did I understand.",
+        "Registre soutenu ou écrit : à l'oral, on dit plutôt I have never seen such a mess.",
+        "Little + inversion = « ne pas se douter » : Little did he know that… (il était loin de se douter que…)."
+      ],
+      "examples": [
+        { "en": "Never have I seen such a beautiful sunset.", "fr": "Je n'ai jamais vu un aussi beau coucher de soleil." },
+        { "en": "Rarely do we see such talent.", "fr": "On voit rarement un tel talent." },
+        { "en": "Not only did he lie, he also stole money.", "fr": "Non seulement il a menti, mais en plus il a volé de l'argent." },
+        { "en": "No sooner had I arrived than the phone rang.", "fr": "J'étais à peine arrivé que le téléphone a sonné." },
+        { "en": "Under no circumstances should you open this door.", "fr": "Vous ne devez ouvrir cette porte sous aucun prétexte." },
+        { "en": "Little did she know what was waiting for her.", "fr": "Elle était loin de se douter de ce qui l'attendait." },
+        { "en": "Only when he left did I understand.", "fr": "Ce n'est qu'après son départ que j'ai compris." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "cleft-sentences",
+      "summary": "Mettre un élément en relief : What I need is a holiday (ce dont j'ai besoin, c'est…), It was Tom who called (c'est Tom qui…).",
+      "rules": [
+        "What + sujet + verbe + is / was + élément mis en relief : What I need is a holiday. What she said was true.",
+        "What signifie ici « ce que », « ce dont » : jamais That ni Which en tête (That I need is… est faux).",
+        "It is / It was + élément + who / that : It was Tom who called (pas Mary). It's the price that worries me.",
+        "All (= la seule chose) se construit pareil : All I want is some peace (tout ce que je veux, c'est…).",
+        "Pour un verbe mis en relief : What he did was (to) leave without a word.",
+        "Le français dit « c'est… qui », « ce que… c'est » : la structure anglaise est très proche, seul What remplace « ce que »."
+      ],
+      "examples": [
+        { "en": "What I need is a long holiday.", "fr": "Ce dont j'ai besoin, c'est de longues vacances." },
+        { "en": "What she said was true.", "fr": "Ce qu'elle a dit était vrai." },
+        { "en": "It was Tom who called, not Mary.", "fr": "C'est Tom qui a appelé, pas Mary." },
+        { "en": "It's the price that worries me.", "fr": "C'est le prix qui m'inquiète." },
+        { "en": "All I want is some peace and quiet.", "fr": "Tout ce que je veux, c'est un peu de calme." },
+        { "en": "What he did was leave without a word.", "fr": "Ce qu'il a fait, c'est partir sans un mot." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "participle-clauses",
+      "summary": "Une proposition au participe remplace une subordonnée : Having finished, she left (après avoir fini) ; Built in 1890, the house… (construite en 1890).",
+      "rules": [
+        "Having + participe passé : une action terminée avant l'autre. Having finished her work, she went home (après avoir fini son travail).",
+        "Participe passé seul : sens passif. Built in 1890, the house needs repairs (la maison, construite en 1890, …).",
+        "Participe présent (-ing) : action simultanée ou cause. Feeling tired, he went to bed (comme il se sentait fatigué).",
+        "Le sujet sous-entendu doit être celui de la principale : Having finished, she left (c'est elle qui a fini). « Having finished, the bus left » voudrait dire que le bus a fini.",
+        "Jamais Have finished ni Had finished en tête : la forme est Having + participe.",
+        "Registre plutôt écrit ; à l'oral, on dit After she had finished, she left."
+      ],
+      "examples": [
+        { "en": "Having finished her work, she went home.", "fr": "Après avoir fini son travail, elle est rentrée." },
+        { "en": "Built in 1890, the house needs a lot of work.", "fr": "Construite en 1890, la maison demande beaucoup de travaux." },
+        { "en": "Feeling tired, he went to bed early.", "fr": "Comme il se sentait fatigué, il s'est couché tôt." },
+        { "en": "Having lost his keys, he couldn't get in.", "fr": "Ayant perdu ses clés, il ne pouvait pas entrer." },
+        { "en": "Written in simple English, the book is easy to read.", "fr": "Écrit dans un anglais simple, le livre se lit facilement." },
+        { "en": "Not knowing what to say, I kept quiet.", "fr": "Ne sachant pas quoi dire, je me suis tu." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "subjunctive",
+      "summary": "Après suggest, insist, recommend, demand… that (et it is essential / important that), le verbe reste à la base pour toutes les personnes : I suggest that he be told.",
+      "rules": [
+        "Forme : la base verbale, sans -s ni temps. I suggest that he go. She insisted that Tom leave. It's essential that she be informed.",
+        "Be reste be à toutes les personnes : that he be, that they be (jamais that he is).",
+        "Négation : not + base, sans do. They recommended that he not drive.",
+        "Verbes et expressions : suggest, insist, recommend, demand, propose, require, request, urge ; it is essential, important, vital, necessary that.",
+        "Le temps du verbe principal ne change rien : She insisted that he leave (pas left).",
+        "En anglais britannique courant, should + base est aussi possible : I suggest that he should go. Le français utilise son propre subjonctif (« je suggère qu'il parte »)."
+      ],
+      "examples": [
+        { "en": "I suggest that he be told the truth.", "fr": "Je suggère qu'on lui dise la vérité." },
+        { "en": "She insisted that Tom leave at once.", "fr": "Elle a insisté pour que Tom parte immédiatement." },
+        { "en": "It is essential that she arrive on time.", "fr": "Il est indispensable qu'elle arrive à l'heure." },
+        { "en": "The doctor recommended that he not drive for a week.", "fr": "Le médecin lui a recommandé de ne pas conduire pendant une semaine." },
+        { "en": "They demanded that the manager apologise.", "fr": "Ils ont exigé que le directeur présente des excuses." },
+        { "en": "I suggest that he should see a doctor.", "fr": "Je suggère qu'il voie un médecin (should : anglais britannique)." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "emphatic-do",
+      "summary": "Do, does ou did devant la base verbale pour insister : I do like it (j'aime vraiment ça), She did call (elle a bien appelé).",
+      "rules": [
+        "Forme : do / does / did + base verbale, dans une phrase affirmative. I do like it. He does work hard. She did call.",
+        "Le verbe reste à la base : did call, jamais did called ; does work, jamais does works.",
+        "Emploi : contredire ou confirmer. « You didn't call. » « I did call, but you were out. » (j'ai bien appelé).",
+        "Pour insister sur un sentiment : I do hope you'll come (j'espère vraiment que tu viendras).",
+        "À l'impératif, do rend l'invitation plus chaleureuse : Do come in! Do sit down.",
+        "À l'oral, do est accentué ; le français dit « bien », « vraiment », « si » (si, j'ai appelé)."
+      ],
+      "examples": [
+        { "en": "I do like your new haircut.", "fr": "J'aime vraiment ta nouvelle coupe." },
+        { "en": "I did call you, but you were out.", "fr": "Je t'ai bien appelé, mais tu étais sorti." },
+        { "en": "He does work hard, even if it doesn't show.", "fr": "Il travaille vraiment dur, même si ça ne se voit pas." },
+        { "en": "I do hope you can come.", "fr": "J'espère vraiment que tu pourras venir." },
+        { "en": "Do sit down, please.", "fr": "Asseyez-vous donc, je vous en prie." },
+        { "en": "She did say she would help.", "fr": "Elle a bien dit qu'elle aiderait." }
+      ],
+      "traps": []
     }
   ]
 }

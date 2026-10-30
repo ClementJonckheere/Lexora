@@ -20,7 +20,10 @@ export function LessonBar({ progress, large = false }: { progress: LessonProgres
   const pct = Math.round(progress.ratio * 100);
   const target = (MASTERY_TARGET / MASTERY_WINDOW) * 100;
   return (
-    <div className={`lesson-bar ${large ? 'lesson-bar--large' : ''} ${progress.state === 'mastered' ? 'lesson-bar--done' : ''}`} aria-label={`${progress.correct} bonnes réponses sur les ${MASTERY_WINDOW} dernières`}>
+    <div
+      className={`lesson-bar ${large ? 'lesson-bar--large' : ''} ${progress.state === 'mastered' ? 'lesson-bar--done' : ''}`}
+      aria-label={`${progress.correct} bonnes réponses sur les ${MASTERY_WINDOW} dernières`}
+    >
       <span className="lesson-bar-fill" style={{ width: `${pct}%` }} />
       <span className="lesson-bar-target" style={{ left: `${target}%` }} title={`Objectif : ${MASTERY_TARGET} sur ${MASTERY_WINDOW}`} />
     </div>
@@ -80,15 +83,26 @@ export function LearnPage() {
 
   const dueLessons = lessons.filter((p) => reviews.due.includes(p.id));
   const done = placement?.status === 'done' ? placement : null;
-  const suggested = done ? suggestedLesson(done, lessons.map((p) => p.id), (id) => progressOf(id).state === 'mastered') : null;
+  const suggested = done
+    ? suggestedLesson(
+        done,
+        lessons.map((p) => p.id),
+        (id) => progressOf(id).state === 'mastered',
+      )
+    : null;
   const suggestedPoint = lessons.find((p) => p.id === suggested);
-  const skip = () => universe && void useApp.getState().updateSettings({ placement: { ...placementAll, [universe.id]: { status: 'skipped', at: Date.now() } } });
+  const skip = () =>
+    universe && void useApp.getState().updateSettings({ placement: { ...placementAll, [universe.id]: { status: 'skipped', at: Date.now() } } });
 
   const card = (p: GrammarPoint) => {
     const prog = progressOf(p.id);
     const review = reviews.of(p.id);
     return (
-      <button key={p.id} className={`lesson-card lesson-card--${prog.state} ${review.due ? 'lesson-card--due' : ''}`} onClick={() => navigate({ name: 'lesson', id: p.id })}>
+      <button
+        key={p.id}
+        className={`lesson-card lesson-card--${prog.state} ${review.due ? 'lesson-card--due' : ''}`}
+        onClick={() => navigate({ name: 'lesson', id: p.id })}
+      >
         <span className="row row--between">
           <span className="chip">{p.level}</span>
           {review.due ? (
@@ -101,7 +115,9 @@ export function LearnPage() {
             done &&
             prog.state === 'new' &&
             pointState(done, p.id) &&
-            pointState(done, p.id) !== 'learn' && <span className={`chip chip--placement-${pointState(done, p.id)}`}>{STATE_LABEL[pointState(done, p.id)!]} au test</span>
+            pointState(done, p.id) !== 'learn' && (
+              <span className={`chip chip--placement-${pointState(done, p.id)}`}>{STATE_LABEL[pointState(done, p.id)!]} au test</span>
+            )
           )}
         </span>
         <strong className="lesson-card-title">{p.title}</strong>
@@ -124,8 +140,8 @@ export function LearnPage() {
           <h1 className="page-title">Apprendre</h1>
           <p className="page-subtitle">
             Grammaire anglaise : une explication courte avec plusieurs exemples, puis des exercices sur de vraies phrases, tirées au hasard. Une leçon est
-            acquise à {MASTERY_TARGET} bonnes réponses sur les {MASTERY_WINDOW} dernières, puis revient en révision à intervalles croissants (3 jours,
-            une semaine, deux semaines…).
+            acquise à {MASTERY_TARGET} bonnes réponses sur les {MASTERY_WINDOW} dernières, puis revient en révision à intervalles croissants (3 jours, une
+            semaine, deux semaines…).
           </p>
         </div>
       </div>
@@ -135,7 +151,10 @@ export function LearnPage() {
           <strong>
             {mastered} leçon{mastered > 1 ? 's' : ''} acquise{mastered > 1 ? 's' : ''} sur {lessons.length}
           </strong>
-          <span className="muted small">Parcours complet : {data.points.length} points de A1 à C1, les autres leçons arrivent au fur et à mesure</span>
+          <span className="muted small">
+            Parcours complet : {data.points.length} points de A1 à C1
+            {lessons.length < data.points.length ? ', les autres leçons arrivent au fur et à mesure' : ''}
+          </span>
         </div>
         <div className="lesson-bar lesson-bar--large">
           <span className="lesson-bar-fill" style={{ width: `${lessons.length ? (mastered / lessons.length) * 100 : 0}%` }} />
@@ -147,8 +166,8 @@ export function LearnPage() {
           <div>
             <strong>Où en êtes-vous en grammaire ?</strong>
             <p className="muted small" style={{ margin: '4px 0 0' }}>
-              Un test de 40 questions au plus (10 à 15 minutes) situe votre niveau sur les leçons disponibles et ce qu'elles supposent de connaître, et
-              vous dit par quelle leçon commencer. Vous pourrez le refaire et corriger ses résultats.
+              Un test de 40 questions au plus (10 à 15 minutes) situe votre niveau sur les leçons disponibles et ce qu'elles supposent de connaître, et vous dit
+              par quelle leçon commencer. Vous pourrez le refaire et corriger ses résultats.
             </p>
           </div>
           <div className="row">
@@ -243,7 +262,8 @@ export function LearnPage() {
           </div>
           {dueLessons.length > 1 && (
             <p className="small" style={{ margin: '10px 0 0' }}>
-              Ensuite : {dueLessons.slice(1).map((p, i) => (
+              Ensuite :{' '}
+              {dueLessons.slice(1).map((p, i) => (
                 <span key={p.id}>
                   {i > 0 && ' · '}
                   <button className="link small" onClick={() => navigate({ name: 'lesson', id: p.id, review: true })}>
@@ -263,19 +283,19 @@ export function LearnPage() {
         </section>
       ))}
 
-      <details className="card card-pad learn-later">
-        <summary>
-          Le parcours complet : {data.points.length - lessons.length} autres leçons à venir, de A1 à C1
-        </summary>
-        {LEVELS.map((level) => {
-          const later = data.points.filter((p) => p.level === level && !available.has(p.id));
-          return later.length ? (
-            <p key={level} className="small" style={{ margin: '10px 0 0' }}>
-              <strong>{level}</strong> <span className="muted">· {later.map((p) => p.title).join(' · ')}</span>
-            </p>
-          ) : null;
-        })}
-      </details>
+      {lessons.length < data.points.length && (
+        <details className="card card-pad learn-later">
+          <summary>Le parcours complet : {data.points.length - lessons.length} autres leçons à venir, de A1 à C1</summary>
+          {LEVELS.map((level) => {
+            const later = data.points.filter((p) => p.level === level && !available.has(p.id));
+            return later.length ? (
+              <p key={level} className="small" style={{ margin: '10px 0 0' }}>
+                <strong>{level}</strong> <span className="muted">· {later.map((p) => p.title).join(' · ')}</span>
+              </p>
+            ) : null;
+          })}
+        </details>
+      )}
 
       <p className="muted small" style={{ marginTop: 24 }}>
         Outil avancé :{' '}

@@ -1,4 +1,4 @@
-import { baseOf, baseOfIng, baseOfPresent, ingOf, isAdjective, participleOf, pastForms, plausibleBase, presentOf, usable, type Builder, type Candidate, type Exercise, type Known, type SourceSentence } from './exercises';
+import { baseOf, baseOfIng, baseOfPresent, ingOf, isAdjective, isListedAdjective, participleOf, pastForms, plausibleBase, presentOf, usable, type Builder, type Candidate, type Exercise, type Known, type SourceSentence } from './exercises';
 import { blank, cap, only } from './placementBuilders';
 
 /**
@@ -321,6 +321,137 @@ const beUsedTo: Builder = (s, known) => {
   return [blank(s, at, ing, ing, { choices: [ing, base, `to ${base}`], form: 'ing' })];
 };
 
+/* ========================================================== C1, A2 (2.31) === */
+
+/** Inversion après un adverbe négatif ou restrictif en tête : Never have I seen…, Rarely do we…, Not only did he… */
+const INVERSION_HEAD = /^(Never|Rarely|Seldom|Hardly|Scarcely|Little|Not only|No sooner|Nowhere|Only then|Only when|Only after|Only by|Only if|Only later|Under no circumstances|At no time|In no way|On no account)\s+/;
+const inversion: Builder = (s, known) => {
+  const head = INVERSION_HEAD.exec(s.en);
+  if (!head) return [];
+  const at = head[0].length;
+  // Inversion directe seulement (« Only when he arrived did we… » la place après la subordonnée).
+  const m = /^(have|has|had|do|does|did|was|were|is|are|am|can|could|will|would|should|shall|must|may|might)\s+(I|you|he|she|it|we|they|[A-Z][a-z]+)\s+([a-z]+)\b/.exec(s.en.slice(at));
+  if (!m) return [];
+  const [, aux, subject, verb] = m;
+  const form = /^Not only/.test(head[1]) ? 'not-only' : /^Only/.test(head[1]) ? 'only' : 'negative';
+  if (/^(?:do|does|did)$/.test(aux)) {
+    // Ordre normal : pas d'auxiliaire, le verbe fléchi (« Rarely we see », « Not only he broke »).
+    if (!plausibleBase(verb, known) || /^(?:lie|lay)$/.test(verb)) return [];
+    const natural = `${subject} ${aux === 'did' ? pastForms(verb, known)[0] : presentOf(verb, subject)}`;
+    const span = `${aux} ${subject} ${verb}`;
+    return [blank(s, at, span, span, { choices: [span, natural], form })];
+  }
+  const span = `${aux} ${subject}`;
+  return [blank(s, at, span, span, { choices: [span, `${subject} ${aux}`], form })];
+};
+
+/** Phrase clivée en What : What I need is…, contre That et Which, impossibles en tête. */
+const cleftSentences: Builder = (s) => {
+  const m = /^What\s+(?:I|you|he|she|we|they|[A-Z][a-z]+)\s+(?:really\s+|actually\s+)?[a-z']+(?:\s+[a-z']+){0,3}\s+(?:is|was)\b/.exec(s.en);
+  if (!m || /\?\s*$/.test(s.en)) return [];
+  return [blank(s, 0, 'What', 'What', { choices: ['What', 'That', 'Which'], form: 'what' })];
+};
+
+/** Proposition participiale en tête : Having + participe (Having finished, she left) ou participe passé (Built in 1890, …). */
+const participleClauses: Builder = (s, known) => {
+  const having = /^Having\s+(?:been\s+)?([a-z]+)\b[^,]*,/.exec(s.en);
+  if (having) {
+    const part = having[1];
+    if (!isParticiple(part, known)) return [];
+    const span = /^Having\s+been\s+/.test(s.en) ? `Having been ${part}` : `Having ${part}`;
+    const tail = span.slice('Having '.length);
+    return [blank(s, 0, span, span, { choices: [span, `Have ${tail}`, `Had ${tail}`], form: 'having' })];
+  }
+  const past = /^([A-Z][a-z]+)\s+(?:by|in|with|from|on|at|for|into|under|over|during|after)\b[^,]*,\s+(?:the|a|an|this|that|his|her|my|our|their|it|he|she|they|we|I)\b/.exec(s.en);
+  if (!past) return [];
+  const word = past[1].toLowerCase();
+  const base = baseOf(word, known);
+  if (!base || base === word || !isParticiple(word, known) || /^(?:based|compared|according)$/.test(word)) return [];
+  const answer = past[1];
+  return [blank(s, 0, answer, answer, { choices: [answer, cap(ingOf(base), true), cap(base, true)], form: 'past' })];
+};
+
+/** Subjonctif après suggest, insist, recommend… that : la base pour toutes les personnes (that he go, that she be). */
+const MANDATIVE = /\b(?:suggest|suggests|suggested|insist|insists|insisted|recommend|recommends|recommended|demand|demands|demanded|propose|proposes|proposed|require|requires|required|request|requested|ask|asked|urge|urged|essential|important|vital|necessary|imperative)\s+that\s+/;
+const subjunctive: Builder = (s, known) => {
+  const m = MANDATIVE.exec(s.en);
+  if (!m) return [];
+  const rest = s.en.slice(m.index + m[0].length);
+  const c = /^(he|she|it|[A-Z][a-z]+|the\s+[a-z]+|his\s+[a-z]+|her\s+[a-z]+)\s+(not\s+)?([a-z]+)\b/.exec(rest);
+  if (!c) return [];
+  const verb = c[3];
+  if (!plausibleBase(verb, known) || /^(?:should|would|will|can|could|must|may|might)$/.test(verb)) return [];
+  const other = verb === 'be' ? 'is' : presentOf(verb, 'he');
+  if (other === verb) return [];
+  const at = m.index + m[0].length + c[0].length - verb.length;
+  return [blank(s, at, verb, verb, { choices: [verb, other], form: c[2] ? 'negative' : verb === 'be' ? 'be' : 'verb' })];
+};
+
+/** Do d'insistance : do / does / did + base (I do like it, She did call), contre la forme fléchie après l'auxiliaire. */
+const emphaticDo: Builder = (s, known) => {
+  if (/\?\s*$/.test(s.en)) return [];
+  const imperative = /^(Do)\s+([a-z]+)\b/.exec(s.en);
+  if (imperative && plausibleBase(imperative[2], known) && !/^(?:not|you|we|they|it|so|this|that)$/.test(imperative[2])) {
+    const span = `Do ${imperative[2]}`;
+    return [blank(s, 0, span, span, { choices: [span, `Do ${ingOf(imperative[2])}`, `Do to ${imperative[2]}`], form: 'imperative' })];
+  }
+  const m = only(/\b(I|you|we|they|he|she|it|[A-Z][a-z]+)\s+(?:really\s+)?(do|does|did)\s+([a-z]+)\b/, s.en);
+  if (!m) return [];
+  const [, , aux, verb] = m;
+  if (!plausibleBase(verb, known) || /^(?:not|so|it|that|this|the|a|an|my|your|his|her|our|their|what|nothing|anything|something|everything|well|too)$/.test(verb)) return [];
+  const wrong = aux === 'did' ? pastForms(verb, known)[0] : aux === 'does' ? presentOf(verb, 'he') : pastForms(verb, known)[0];
+  if (wrong === verb) return [];
+  const span = `${aux} ${verb}`;
+  const at = m.index + m[0].length - span.length;
+  return [blank(s, at, span, span, { choices: [span, `${aux} ${wrong}`], form: aux })];
+};
+
+/** Adjectif : avant le nom, invariable (a red car, different ideas), contre « car red » et « differents ». */
+const DET = '(?:a|an|the|some|two|three|many|these|those|my|your|his|her|our|their|this|that|very)';
+const NOT_NOUN = /^(?:of|to|more|less|than|as|and|or|enough|with|for|in|on|at|about|from|one|ones|bit|lot|deal|while|way|kind|sort|number|amount|thing|things|is|are|was|were|be)$/;
+const AMBIGUOUS_ADJ = /^(?:well|close|fine|light|right|free|sure|ready|ill|mad|kind|wrong|true|real|full|empty|late|early|fast|hard|long|high|low|short|cool|dark|deep|wide|clear|safe)$/;
+const adjectives: Builder = (s) => {
+  const m = only(new RegExp(`\\b${DET}\\s+([a-z]+)\\s+([a-z]{3,})\\b(?=\\s*(?:[.,!?;]|$|\\s+(?:is|are|was|were|in|on|at|for|with|and|to|from|that|who|which|I|you|he|she|we|they)\\b))`), s.en);
+  if (!m) return [];
+  const [whole, adj, noun] = m;
+  if (!isListedAdjective(adj) || AMBIGUOUS_ADJ.test(adj) || NOT_NOUN.test(noun) || isListedAdjective(noun) || /(?:ly|ing|ed)$/.test(noun)) return [];
+  const span = `${adj} ${noun}`;
+  const at = m.index + whole.length - span.length;
+  const plural = /[^s]s$/.test(noun) && /\b(?:some|two|three|many|these|those)\s/.test(whole);
+  const choices = plural ? [span, `${noun} ${adj}`, `${adj}s ${noun}`] : [span, `${noun} ${adj}`];
+  return [blank(s, at, span, span, { choices, form: plural ? 'plural' : 'singular' })];
+};
+
+/** Présent simple ou continu : un repère anglais tranche (now, Look! → continu ; usually, every day → simple). */
+const NOW = /\b(?:now|right now|at the moment|currently|at present|Look|Listen)\b/;
+const HABIT = /\b(?:usually|always|often|never|sometimes|rarely|seldom|every\s+(?:day|morning|evening|night|week|month|year|summer|winter|weekend|Sunday|Monday|Saturday)|on\s+(?:Mondays|Sundays|Saturdays|weekends)|once\s+a|twice\s+a)\b/;
+const NOT_PRESENT = /\b(?:will|would|was|were|did|had|yesterday|ago|tomorrow|last|next|tonight|going to|been|since|for\s+\w+\s+(?:years|months|weeks|days))\b/;
+const simpleVsContinuous: Builder = (s, known) => {
+  if (NOT_PRESENT.test(s.en)) return [];
+  const now = NOW.test(s.en);
+  const habit = HABIT.test(s.en);
+  if (now === habit) return [];
+  if (now) {
+    const m = only(/\b(I|[Yy]ou|[Hh]e|[Ss]he|[Ii]t|[Ww]e|[Tt]hey)\s+(am|is|are)\s+([a-z]+ing)\b/, s.en);
+    if (!m) return [];
+    const base = baseOfIng(m[3], known);
+    if (!base || base === 'be' || !plausibleBase(base, known)) return [];
+    const span = `${m[2]} ${m[3]}`;
+    const at = m.index + m[0].length - span.length;
+    return [blank(s, at, span, span, { choices: [span, presentOf(base, m[1].toLowerCase())], form: 'continuous' })];
+  }
+  const m = only(/\b(I|[Yy]ou|[Hh]e|[Ss]he|[Ii]t|[Ww]e|[Tt]hey)\s+(?:usually\s+|always\s+|often\s+|never\s+|sometimes\s+|rarely\s+)?([a-z]+)\b/, s.en);
+  if (!m) return [];
+  const subject = m[1] === 'I' ? 'I' : m[1].toLowerCase();
+  const verb = m[2];
+  const base = /^(?:he|she|it)$/.test(subject) ? baseOfPresent(verb) : verb;
+  if (presentOf(base, subject) !== verb || !plausibleBase(base, known) || /^(?:be|have|do|can|will|must|should)$/.test(base) || AUX_WORDS.test(verb)) return [];
+  const be = presentOf('be', subject);
+  const at = m.index + m[0].length - verb.length;
+  return [blank(s, at, verb, verb, { choices: [verb, `${be} ${ingOf(base)}`], form: 'simple' })];
+};
+const AUX_WORDS = /^(?:am|is|are|was|were|has|have|had|do|does|did|can|could|will|would|shall|should|may|might|must|don't|doesn't|can't|won't)$/;
+
 export const LESSON_BUILDERS: Record<string, Builder> = {
   'reported-statements': reportedStatements,
   'subject-questions': subjectQuestions,
@@ -337,6 +468,13 @@ export const LESSON_BUILDERS: Record<string, Builder> = {
   'future-continuous': futureContinuous,
   'future-perfect': futurePerfect,
   'be-used-to': beUsedTo,
+  inversion,
+  'cleft-sentences': cleftSentences,
+  'participle-clauses': participleClauses,
+  subjunctive,
+  'emphatic-do': emphaticDo,
+  adjectives,
+  'simple-vs-continuous': simpleVsContinuous,
 };
 
 /** Exercice d'une leçon B1 ajoutée en 2.29, ou null si la phrase ne s'y prête pas. */
