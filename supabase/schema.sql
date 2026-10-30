@@ -351,5 +351,29 @@ where s.key = 'placement' and u.value->>'status' = 'done';
 revoke all on public.placement_answers from anon;
 grant select on public.placement_answers to authenticated;
 
+-- ------------------------------------------------------- classement (2.33) ---
+-- Une ligne par participant et par langue : pseudo, XP, niveau. Participation volontaire (réglage « leaderboard »).
+-- Tous les comptes connectés lisent le classement ; chacun n'écrit et ne supprime que ses propres lignes.
+create table if not exists public.leaderboard (
+  user_id       uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  language      text not null check (char_length(language) between 2 and 12),
+  display_name  text not null check (char_length(display_name) between 1 and 30),
+  xp            integer not null check (xp >= 0),
+  level         integer not null check (level >= 1),
+  updated_at    timestamptz not null default now(),
+  primary key (user_id, language)
+);
+alter table public.leaderboard enable row level security;
+drop policy if exists "leaderboard_read" on public.leaderboard;
+create policy "leaderboard_read" on public.leaderboard for select to authenticated using (true);
+drop policy if exists "leaderboard_own_rows" on public.leaderboard;
+create policy "leaderboard_own_rows" on public.leaderboard for insert to authenticated with check (user_id = auth.uid());
+drop policy if exists "leaderboard_own_update" on public.leaderboard;
+create policy "leaderboard_own_update" on public.leaderboard for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+drop policy if exists "leaderboard_own_delete" on public.leaderboard;
+create policy "leaderboard_own_delete" on public.leaderboard for delete to authenticated using (user_id = auth.uid());
+grant select, insert, update, delete on public.leaderboard to authenticated;
+revoke all on public.leaderboard from anon;
+
 -- Recharge le cache de l'API pour qu'elle voie immédiatement les nouvelles colonnes.
 notify pgrst, 'reload schema';

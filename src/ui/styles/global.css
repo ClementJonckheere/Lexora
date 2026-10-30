@@ -3551,3 +3551,41 @@ p {
   cursor: default;
   align-items: flex-start;
 }
+
+/* ---------------------------------------------------------- classement --- */
+.leaderboard {
+  margin-bottom: 20px;
+}
+.leaderboard-name {
+  max-width: 220px;
+}
+.leaderboard-me {
+  margin: 10px 0 6px;
+}
+.leaderboard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border);
+}
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 28px 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.leaderboard-row--me {
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+  border-radius: 6px;
+}
+.leaderboard-who {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.leaderboard-pos,
+.leaderboard-xp {
+  font-size: 14px;
+}

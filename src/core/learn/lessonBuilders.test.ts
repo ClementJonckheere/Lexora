@@ -220,5 +220,8 @@ describe('C2', () => {
     expect(shown('wh-ever', 'I will follow you wherever you go.', 'Je te suivrai où que tu ailles.')).toBe(
       'I will follow you [wherever {whatever | whoever | wherever | whenever}] you go.',
     );
+    expect(shown('wh-ever', "My advice is simple: Whatever you do, don't panic.", 'Mon conseil est simple : quoi que tu fasses, ne panique pas.')).toBe(
+      "My advice is simple: [Whatever {Whatever | Whoever | Wherever | Whenever}] you do, don't panic.",
+    );
   });
 });

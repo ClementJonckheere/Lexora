@@ -37,6 +37,8 @@ export interface Settings {
   placement: Record<string, PlacementRecord>;
   /** Titre affiché à côté du rang, par univers (identifiant du titre, ou « none »). */
   displayedTitles: Record<string, string>;
+  /** Classement (Statistiques) : participation choisie, pseudo affiché aux autres. */
+  leaderboard: { enabled: boolean; name: string };
   /** Version des réglages par défaut appliqués (changements de défaut une seule fois, pour tous). */
   settingsVersion: number;
 
@@ -144,6 +146,9 @@ export function settingsUpgrade(settings: Settings): Partial<Settings> | null {
   return patch;
 }
 
+/** Longueur maximale du pseudo du classement. */
+export const LEADERBOARD_NAME_MAX = 30;
+
 export const DEFAULT_SETTINGS: Settings = {
   newPerDay: 10,
   desiredRetention: 0.9,
@@ -161,6 +166,7 @@ export const DEFAULT_SETTINGS: Settings = {
   clozeFront: true,
   newOrder: 'frequency',
   displayedTitles: {},
+  leaderboard: { enabled: false, name: '' },
   placement: {},
   settingsVersion: 0,
   ttsVoices: {},
@@ -207,6 +213,10 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
     raw.displayedTitles && typeof raw.displayedTitles === 'object'
       ? Object.fromEntries(Object.entries(raw.displayedTitles as Record<string, unknown>).filter((e): e is [string, string] => typeof e[1] === 'string'))
       : {};
+  {
+    const lb = (raw.leaderboard ?? {}) as Record<string, unknown>;
+    s.leaderboard = { enabled: lb.enabled === true, name: typeof lb.name === 'string' ? lb.name.trim().slice(0, LEADERBOARD_NAME_MAX) : '' };
+  }
   s.settingsVersion = Number.isInteger(raw.settingsVersion) ? (raw.settingsVersion as number) : 0;
   s.clipboardPrefill = bool(raw.clipboardPrefill, s.clipboardPrefill);
   s.closeToTray = bool(raw.closeToTray, s.closeToTray);

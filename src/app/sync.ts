@@ -64,6 +64,8 @@ export function runSync(opts: { manual?: boolean } = {}): Promise<void> {
         await useApp.getState().refresh();
       }
       if (opts.manual) useApp.getState().toast('success', 'Synchronisé');
+      // Classement (si l'on y participe) : XP publiée après une synchronisation réussie, toutes les 5 minutes au plus.
+      void import('./leaderboard').then((m) => m.publishMyScores()).catch(() => undefined);
     } catch (err) {
       const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
       setStatus({ state: offline ? 'offline' : 'error', error: errorMessage(err) });

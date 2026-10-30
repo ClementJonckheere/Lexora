@@ -545,8 +545,9 @@ const whEver: Builder = (s) => {
   const word = m[1].toLowerCase();
   const cues = EVER.filter(([, re]) => re.test(s.fr)).map(([w]) => w);
   if (cues.length !== 1 || cues[0] !== word) return [];
-  const atStart = m.index === 0;
-  const choices = EVER.map(([w]) => cap(w, atStart));
+  // La casse suit celle de la phrase (« Whatever » en tête, ou après deux-points).
+  const upper = /^[A-Z]/.test(m[1]);
+  const choices = EVER.map(([w]) => cap(w, upper));
   return [blank(s, m.index, m[1], m[1], { choices, form: word })];
 };
 
