@@ -172,3 +172,7 @@ Robustesse (règles inconnues du modèle, parts 0,2 et 0,8, 15 % de questions ma
 ## Leçons B1 de la 2.29
 
 Six leçons B1 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs) entrent dans le périmètre, qui passe à 58 points. Leurs questions de test restent les 6 questions rédigées de chacun (`placement-written.json`), prioritaires sur la banque générée de la leçon : elles ont été écrites pour le test (natures de réponse variées, distracteurs plausibles), les phrases générées servent aux exercices. Simulation (réglages inchangés) : faux acquis au plus 2,8 % (règles inconnues du modèle, questions mal posées), faux « à apprendre » au plus 3,4 % ; points incertains 24 % (débutant), 63 à 70 % (A1, A2), 44 % (B1), 17 % (B2, C1, contre 5 à 6 % sur 52 points). Avec 40 questions, ces six points de plus sont rarement posés directement chez les profils avancés : le mini-test de leçon prend le relais.
+
+## Leçons B2 de la 2.30
+
+Neuf leçons B2 portent le périmètre à 67 points ; leurs questions de test restent les questions rédigées (be-used-to : celles de la banque relue de used to). Simulation : faux acquis au plus 2,7 %, faux « à apprendre » au plus 2,1 % ; points incertains 21 % (débutant), 56 à 68 % (A1, A2), 52 % (B1), 7 et 6 % (B2, C1). Les points B2 ajoutés rendent au niveau global sa prise sur les profils avancés (17 % d'incertains en 2.29).

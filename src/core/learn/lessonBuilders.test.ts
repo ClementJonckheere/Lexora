@@ -88,3 +88,49 @@ describe('phrasal verbs', () => {
     expect(shown('phrasal-verbs', 'Put it on the table.', 'Pose-le sur la table.')).toBeNull();
   });
 });
+
+describe('B2', () => {
+  it('conditionnels : would ou would have selon la traduction (mixtes compris)', () => {
+    expect(shown('mixed-conditionals', 'If I had studied harder, I would be a doctor now.', 'Si j’avais étudié davantage, je serais médecin aujourd’hui.')).toBe(
+      'If I had studied harder, I [would be {would be | would have been}] a doctor now.',
+    );
+    expect(shown('mixed-conditionals', 'If you had asked me, I would have helped you.', 'Si tu me l’avais demandé, je t’aurais aidé.')).toBe(
+      'If you had asked me, I [would have helped {would have helped | would help}] you.',
+    );
+    expect(shown('mixed-conditionals', 'I would be happy to help.', 'Je serais ravi d’aider.')).toBeNull();
+  });
+  it('passif avec modal, have something done', () => {
+    expect(shown('passive-modals', 'This work must be finished today.', 'Ce travail doit être fini aujourd’hui.')).toBe('This work must [be finished {be finished | been finished | finish}] today.');
+    expect(shown('have-something-done', 'I had my car repaired last week.', 'J’ai fait réparer ma voiture la semaine dernière.')).toBe(
+      'I had my car [repaired {repaired | repair | repairing}] last week.',
+    );
+    expect(shown('have-something-done', 'She has a son named Tom.', 'Elle a un fils qui s’appelle Tom.')).toBeNull();
+  });
+  it('relatives explicatives : who, which, whose, jamais that', () => {
+    expect(shown('relatives-non-defining', 'My brother, who lives in Paris, is a chef.', 'Mon frère, qui vit à Paris, est chef.')).toBe(
+      'My brother, [who {who | which | that}] lives in Paris, is a chef.',
+    );
+    expect(shown('relatives-non-defining', 'The car, which was very old, broke down.', 'La voiture, qui était très vieille, est tombée en panne.')).toBe(
+      'The car, [which {which | who | that}] was very old, broke down.',
+    );
+  });
+  it('déduction au passé : la traduction donne la nuance', () => {
+    expect(shown('deduction-past', 'He must have missed the train.', 'Il a dû rater le train.')).toBe("He [must have {must have | can't have | might have}] missed the train.");
+    expect(shown('deduction-past', 'She might have forgotten.', 'Elle a peut-être oublié.')).toBe("She [might have {might have | must have | can't have}] forgotten.");
+    expect(shown('deduction-past', 'He must have missed the train.', 'Il a peut-être dû rater le train.')).toBeNull();
+  });
+  it('questions et ordres rapportés', () => {
+    expect(shown('reported-questions', 'She asked me where I lived.', 'Elle m’a demandé où j’habitais.')).toBe('She asked me where [I lived {I lived | did I live}].');
+    expect(shown('reported-questions', 'He asked if she was ready.', 'Il a demandé si elle était prête.')).toBe('He asked if [she was {she was | was she}] ready.');
+    expect(shown('reported-questions', 'The doctor told me to rest.', 'Le médecin m’a dit de me reposer.')).toBe('The doctor told me [to rest {to rest | rest | resting}].');
+  });
+  it('futur continu, futur antérieur, be used to', () => {
+    expect(shown('future-continuous', 'This time tomorrow I will be working at home.', 'Demain à la même heure, je travaillerai chez moi.')).toBe(
+      'This time tomorrow I will [be working {be working | working | be work}] at home.',
+    );
+    expect(shown('future-perfect', 'I will have finished the report by six.', 'J’aurai fini le rapport à six heures.')).toBe(
+      'I will [have finished {have finished | has finished | have finish}] the report by six.',
+    );
+    expect(shown('be-used-to', 'I am used to getting up early.', 'J’ai l’habitude de me lever tôt.')).toBe('I am used to [getting {getting | get | to get}] up early.');
+  });
+});

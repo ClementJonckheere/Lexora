@@ -178,6 +178,148 @@ const phrasalVerbs: Builder = (s, known) => {
   return [blank(s, m.index, span, span, { choices: [span, `${verb} ${particle} ${pronoun}`], form: 'pronoun' })];
 };
 
+/* ================================================================ B2 (2.30) === */
+
+/** Conditionnel passé dans la traduction (« aurait fait », « serait venu ») : il exclut le conditionnel présent. */
+const FR_COND_PAST = /(?<![a-zà-ÿ])(?:aurais|aurait|aurions|auriez|auraient|serais|serait|serions|seriez|seraient)\s+(?:(?:pas|jamais|déjà|bien|tout|vraiment)\s+)?[a-zàâçéèêëîïôûù]+(?:é|ée|és|ées|i|ie|is|it|u|ue|us|ert|erte|ort|eint|aint)(?![a-zà-ÿ])/i;
+
+/**
+ * Conditionnels (2e, 3e et mixtes) : would + base ou would have + participe dans la conséquence. La traduction tranche
+ * (« je serais » / « j'aurais été ») ; c'est le choix que demande le conditionnel mixte (If I had studied, I would be…).
+ */
+const conditionalResult: Builder = (s, known) => {
+  if (!/\bif\b/i.test(s.en)) return [];
+  const m = only(/\b(would|wouldn't|would not)\s+(?:(have)\s+([a-z]+)|([a-z]+))\b/, s.en);
+  if (!m) return [];
+  const [whole, modal, have, part, bare] = m;
+  const frPast = FR_COND_PAST.test(s.fr);
+  const frPresent = FR_CONDITIONAL.test(s.fr) && !frPast;
+  if (have) {
+    const base = baseOf(part, known);
+    if (!base || !isParticiple(part, known) || !frPast) return [];
+    const other = `${modal} ${base}`;
+    return [blank(s, m.index, whole, whole, { choices: [whole, other], form: 'would-have' })];
+  }
+  if (!plausibleBase(bare, known) || /^(?:have|like|rather|be able)$/.test(bare) || !frPresent) return [];
+  const other = `${modal} have ${participleOf(bare, known)}`;
+  return [blank(s, m.index, whole, whole, { choices: [whole, other], form: 'would' })];
+};
+
+/** Passif avec un modal : modal + be + participe (must be done), contre been done et la base active. */
+const MODALS = 'can|can\'t|cannot|could|couldn\'t|must|mustn\'t|should|shouldn\'t|may|might|will|won\'t|would|has to|have to|had to';
+const passiveModals: Builder = (s, known) => {
+  const m = only(new RegExp(`\\b(?:${MODALS})\\s+(?:not\\s+)?be\\s+([a-z]+)\\b`), s.en);
+  if (!m) return [];
+  const part = m[1];
+  const base = baseOf(part, known);
+  if (!base || !isParticiple(part, known) || base === part) return [];
+  const span = `be ${part}`;
+  const at = m.index + m[0].length - span.length;
+  return [blank(s, at, span, span, { choices: [span, `been ${part}`, base], form: 'be-done' })];
+};
+
+/** Have / get something done : le participe après le complément (had my car repaired), contre la base et -ing. */
+const haveDone: Builder = (s, known) => {
+  const m = only(/\b(?:have|has|had|having|get|gets|got|getting)\s+(?:my|your|his|her|our|their|the|a|an|this|that)\s+([a-z]+)\s+([a-z]+)\b/, s.en);
+  if (!m) return [];
+  const [, noun, part] = m;
+  const base = baseOf(part, known);
+  // « a son named Tom », « a friend called Ann », « the house left to him » : pas une tâche confiée à quelqu'un.
+  if (!base || !isParticiple(part, known) || base === part || /(?:ing|ed)$/.test(noun) || /^(?:named|called|left|located|based|known|born|used|involved|concerned)$/.test(part)) return [];
+  const at = m.index + m[0].length - part.length;
+  return [blank(s, at, part, part, { choices: [part, base, ingOf(base)], form: 'done' })];
+};
+
+/** Relative explicative (entre virgules) : who pour une personne, which pour une chose, whose ; jamais that. */
+const relativesNonDefining: Builder = (s) => {
+  const m = only(/,\s+(who|which|whose)\b/, s.en);
+  if (!m) return [];
+  const word = m[1];
+  const at = m.index + m[0].length - word.length;
+  const choices = word === 'whose' ? ['whose', 'who', 'which'] : [word, word === 'who' ? 'which' : 'who', 'that'];
+  return [blank(s, at, word, word, { choices, form: word })];
+};
+
+/** Déduction au passé : must have / can't have / might have + participe, la traduction donne le degré de certitude. */
+const FR_MUST = /(?<![a-zà-ÿ])(?:ai|as|a|avons|avez|ont)\s+dû(?![a-zà-ÿ])|\bdoi(?:s|t|vent)\s+(?:avoir|être)\b|\bsûrement\b|\bcertainement\b/i;
+const FR_CANT = /\b(?:n'(?:ai|as|a|avons|avez|ont)\s+pas\s+pu|ne\s+peu(?:x|t|vent)\s+pas\s+avoir|impossible)\b/i;
+const FR_MIGHT = /\bpeut-être\b|\bpourrai(?:s|t|ent)\s+avoir\b|\bil\s+se\s+peut\b/i;
+const deductionPast: Builder = (s, known) => {
+  const m = only(/\b(must|can't|couldn't|might|may)\s+have\s+([a-z]+)\b/, s.en);
+  if (!m) return [];
+  const [, modal, part] = m;
+  if (!isParticiple(part, known)) return [];
+  const kind = modal === 'must' ? 'must' : /n't$/.test(modal) ? 'cant' : 'might';
+  const fr = { must: FR_MUST.test(s.fr), cant: FR_CANT.test(s.fr), might: FR_MIGHT.test(s.fr) };
+  // Une seule nuance dans la traduction, celle de la phrase anglaise.
+  if (!fr[kind] || Object.values(fr).filter(Boolean).length !== 1) return [];
+  const span = `${modal} have`;
+  const others = { must: ['must have', "can't have", 'might have'], cant: [`${modal} have`, 'must have', 'might have'], might: [`${modal} have`, 'must have', "can't have"] }[kind];
+  return [blank(s, m.index, span, span, { choices: others, form: kind })];
+};
+
+/** Question rapportée : ordre de l'affirmation (where I lived, if she was), contre l'inversion ; ordre rapporté : to + base. */
+const reportedQuestions: Builder = (s, known) => {
+  const order = only(/\b(?:told|asked|ordered|begged|reminded|warned)\s+(?:me|him|her|us|them|[A-Z][a-z]+)\s+(not\s+)?to\s+([a-z]+)\b/, s.en);
+  if (order) {
+    const verb = order[2];
+    if (!plausibleBase(verb, known)) return [];
+    const span = `${order[1] ?? ''}to ${verb}`;
+    const at = order.index + order[0].length - span.length;
+    const neg = order[1] ? 'not ' : '';
+    return [blank(s, at, span, span, { choices: [span, `${neg}${verb}`, `${neg}${ingOf(verb)}`], form: 'order' })];
+  }
+  const q = only(new RegExp(`\\b(?:asked|wondered|wanted to know)\\s+(?:(?:me|him|her|us|them|[A-Z][a-z]+)\\s+)?(where|what|when|why|how|who|if|whether)\\s+(${SUBJECTS}|[A-Z][a-z]+)\\s+([a-z']+)\\b`), s.en);
+  if (!q) return [];
+  const [, wh, subject, verb] = q;
+  if (wh === 'who' && !/^(?:I|you|he|she|it|we|they)$/.test(subject)) return [];
+  const span = `${subject} ${verb}`;
+  const at = q.index + q[0].length - span.length;
+  let inverted: string | null = null;
+  if (/^(?:was|were|could|would|had|should|might)$/.test(verb)) inverted = `${verb} ${subject}`;
+  else {
+    const base = baseOf(verb, known);
+    if (base && base !== 'be' && pastForms(base, known).includes(verb) && plausibleBase(base, known)) inverted = `did ${subject} ${base}`;
+  }
+  if (!inverted) return [];
+  return [blank(s, at, span, span, { choices: [span, inverted], form: 'question' })];
+};
+
+/** Futur continu : will be + -ing, contre will + -ing et will be + base (formes fausses). */
+const futureContinuous: Builder = (s, known) => {
+  const m = only(/\b(will|'ll|won't)\s+be\s+([a-z]+ing)\b/, s.en);
+  if (!m) return [];
+  const [, aux, ing] = m;
+  const base = baseOfIng(ing, known);
+  if (!base || base === 'be' || base === 'go' && /going\s+to\b/.test(s.en) || !plausibleBase(base, known)) return [];
+  const span = `be ${ing}`;
+  const at = m.index + m[0].length - span.length;
+  return [blank(s, at, span, span, { choices: [span, ing, `be ${base}`], form: aux === "won't" ? 'negative' : 'affirmative' })];
+};
+
+/** Futur antérieur : will have + participe, contre will has et will have + base. */
+const futurePerfect: Builder = (s, known) => {
+  const m = only(/\b(will|'ll|won't)\s+have\s+([a-z]+)\b/, s.en);
+  if (!m) return [];
+  const part = m[2];
+  const base = baseOf(part, known);
+  if (!base || !isParticiple(part, known) || base === part) return [];
+  const span = `have ${part}`;
+  const at = m.index + m[0].length - span.length;
+  return [blank(s, at, span, span, { choices: [span, `has ${part}`, `have ${base}`], form: 'perfect' })];
+};
+
+/** Be / get used to + -ing : le verbe en -ing (habitude), contre la base et to + base. */
+const beUsedTo: Builder = (s, known) => {
+  const m = only(/\b(?:am|is|are|was|were|be|been|being|get|gets|got|getting|'m|'re|'s)\s+(?:not\s+|never\s+|already\s+)?used\s+to\s+([a-z]+ing)\b/, s.en);
+  if (!m) return [];
+  const ing = m[1];
+  const base = baseOfIng(ing, known);
+  if (!base || base === 'be' || !plausibleBase(base, known)) return [];
+  const at = m.index + m[0].length - ing.length;
+  return [blank(s, at, ing, ing, { choices: [ing, base, `to ${base}`], form: 'ing' })];
+};
+
 export const LESSON_BUILDERS: Record<string, Builder> = {
   'reported-statements': reportedStatements,
   'subject-questions': subjectQuestions,
@@ -185,6 +327,15 @@ export const LESSON_BUILDERS: Record<string, Builder> = {
   'preposition-ing': prepositionIng,
   'make-let': makeLet,
   'phrasal-verbs': phrasalVerbs,
+  'mixed-conditionals': conditionalResult,
+  'passive-modals': passiveModals,
+  'have-something-done': haveDone,
+  'relatives-non-defining': relativesNonDefining,
+  'deduction-past': deductionPast,
+  'reported-questions': reportedQuestions,
+  'future-continuous': futureContinuous,
+  'future-perfect': futurePerfect,
+  'be-used-to': beUsedTo,
 };
 
 /** Exercice d'une leçon B1 ajoutée en 2.29, ou null si la phrase ne s'y prête pas. */

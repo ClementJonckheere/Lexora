@@ -1,7 +1,7 @@
 {
   "version": 1,
   "language": "en",
-  "status": "Leçons B1 et B2 : les 10 premières relues, les 10 suivantes (present perfect continu au 3e conditionnel) rédigées, à relire. Leçons A1 et A2 (32) rédigées, à relire. Leçons B1 de la 2.29 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs) rédigées, à relire.",
+  "status": "Leçons B1 et B2 : les 10 premières relues, les 10 suivantes (present perfect continu au 3e conditionnel) rédigées, à relire. Leçons A1 et A2 (32) rédigées, à relire. Leçons B1 de la 2.29 (discours rapporté, questions sur le sujet, but avec to, préposition + -ing, make / let, phrasal verbs) rédigées, à relire. Leçons B2 de la 2.30 (9) rédigées, à relire.",
   "lessons": [
     {
       "id": "be",
@@ -1285,6 +1285,197 @@
         { "en": "Who looks after them?", "fr": "Qui s'occupe d'eux ? (look after : préposition, le pronom reste après)" }
       ],
       "traps": ["phrasal-pronoun"]
+    },
+    {
+      "id": "mixed-conditionals",
+      "summary": "Mêler les temps d'un conditionnel : une condition passée et une conséquence présente (If I had studied, I would be a doctor now), ou l'inverse.",
+      "rules": [
+        "Rappel : 2e conditionnel (présent irréel) : If + prétérit, would + base. 3e conditionnel (passé irréel) : If + had + participe, would have + participe.",
+        "Conditionnel mixte 1 : condition passée, conséquence présente. If I had studied medicine, I would be a doctor now (j'aurais étudié… je serais).",
+        "Conditionnel mixte 2 : condition présente, conséquence passée. If I spoke Spanish, I would have understood him (si je parlais… j'aurais compris).",
+        "Chaque moitié prend le temps de son époque : la condition regarde son moment, la conséquence le sien.",
+        "La traduction guide la conséquence : « je serais », « il saurait » (conditionnel présent) → would + base ; « j'aurais été », « il aurait su » (conditionnel passé) → would have + participe.",
+        "Jamais would dans la condition : If I had known, pas If I would have known."
+      ],
+      "examples": [
+        { "en": "If I had studied medicine, I would be a doctor now.", "fr": "Si j'avais fait médecine, je serais médecin aujourd'hui." },
+        { "en": "If she had taken the job, she would live in London now.", "fr": "Si elle avait accepté ce poste, elle vivrait à Londres maintenant." },
+        { "en": "If I spoke Spanish, I would have understood him.", "fr": "Si je parlais espagnol, je l'aurais compris." },
+        { "en": "If he weren't so shy, he would have asked her out.", "fr": "S'il n'était pas si timide, il l'aurait invitée à sortir." },
+        { "en": "If you had told me, I would have helped you.", "fr": "Si tu me l'avais dit, je t'aurais aidé (3e conditionnel)." },
+        { "en": "If I had more time, I would learn Japanese.", "fr": "Si j'avais plus de temps, j'apprendrais le japonais (2e conditionnel)." }
+      ],
+      "traps": ["if-would"]
+    },
+    {
+      "id": "passive-modals",
+      "summary": "Le passif après un modal : modal + be + participe passé (It must be done, It can't be fixed).",
+      "rules": [
+        "Forme : modal (can, could, must, should, may, might, will, would) + be + participe passé. The report must be finished today.",
+        "Be reste à la base après un modal : must be done, jamais must been done ni must is done.",
+        "Même chose après have to, need to, ought to : It has to be signed. It needs to be checked.",
+        "Au passé (déduction ou reproche) : modal + have been + participe. It should have been done yesterday. He might have been hurt.",
+        "Le passif sert quand l'auteur de l'action importe peu : The tickets can be bought online (« on peut acheter les billets en ligne »).",
+        "Le « on » français se traduit souvent ainsi : on doit le réparer → it must be repaired."
+      ],
+      "examples": [
+        { "en": "This work must be finished today.", "fr": "Ce travail doit être fini aujourd'hui." },
+        { "en": "The tickets can be bought online.", "fr": "On peut acheter les billets en ligne." },
+        { "en": "This problem can't be solved easily.", "fr": "Ce problème ne peut pas se résoudre facilement." },
+        { "en": "The windows should be cleaned.", "fr": "Il faudrait nettoyer les fenêtres." },
+        { "en": "The results will be published next week.", "fr": "Les résultats seront publiés la semaine prochaine." },
+        { "en": "The form has to be signed by your parents.", "fr": "Le formulaire doit être signé par tes parents." },
+        { "en": "It should have been done yesterday.", "fr": "Ça aurait dû être fait hier." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "have-something-done",
+      "summary": "Have (ou get) + objet + participe passé : faire faire quelque chose par quelqu'un d'autre (I had my hair cut).",
+      "rules": [
+        "Forme : have + objet + participe passé. I had my hair cut (je me suis fait couper les cheveux : par un coiffeur).",
+        "Le participe vient après l'objet : I had my car repaired, pas I had repaired my car (qui veut dire : j'ai réparé ma voiture moi-même).",
+        "Have se conjugue à tous les temps : I'm having my house painted. We'll have the kitchen cleaned. She has her nails done every week.",
+        "Get + objet + participe a le même sens, plus familier : I need to get my phone fixed.",
+        "Pour un événement subi, la même forme : He had his bike stolen (on lui a volé son vélo).",
+        "Le français dit « faire » + infinitif (faire réparer, faire couper) : c'est le participe anglais qui correspond, jamais la base (had my car repair)."
+      ],
+      "examples": [
+        { "en": "I had my hair cut yesterday.", "fr": "Je me suis fait couper les cheveux hier." },
+        { "en": "We're having our house painted.", "fr": "Nous faisons repeindre notre maison." },
+        { "en": "She had her car repaired last week.", "fr": "Elle a fait réparer sa voiture la semaine dernière." },
+        { "en": "You should get your eyes tested.", "fr": "Tu devrais te faire contrôler la vue." },
+        { "en": "He had his bike stolen.", "fr": "On lui a volé son vélo." },
+        { "en": "I repaired my car myself.", "fr": "J'ai réparé ma voiture moi-même (pas de have something done)." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "relatives-non-defining",
+      "summary": "La relative explicative, entre virgules, ajoute une information : who pour une personne, which pour une chose, whose pour la possession ; jamais that.",
+      "rules": [
+        "Elle se met entre virgules et peut s'enlever sans changer de qui l'on parle : My brother, who lives in Paris, is a chef (j'ai un seul frère).",
+        "Who pour une personne, which pour une chose ou un animal, whose pour « dont » + possession : My neighbour, whose dog barks all night, …",
+        "Jamais that après une virgule : The car, which was old, broke down (pas , that was old).",
+        "On ne peut pas omettre le pronom : My sister, who I love, … et non My sister, I love, …",
+        "Which peut reprendre toute la proposition : He passed the exam, which surprised everyone (ce qui a surpris tout le monde).",
+        "Comparez avec la relative déterminative (sans virgules), qui dit de qui l'on parle : My brother who lives in Paris (j'en ai d'autres)."
+      ],
+      "examples": [
+        { "en": "My brother, who lives in Paris, is a chef.", "fr": "Mon frère, qui vit à Paris, est chef cuisinier." },
+        { "en": "The car, which was very old, broke down.", "fr": "La voiture, qui était très vieille, est tombée en panne." },
+        { "en": "Our neighbour, whose dog barks all night, is very nice.", "fr": "Notre voisin, dont le chien aboie toute la nuit, est très gentil." },
+        { "en": "He passed the exam, which surprised everyone.", "fr": "Il a réussi l'examen, ce qui a surpris tout le monde." },
+        { "en": "London, which is the capital, is very expensive.", "fr": "Londres, qui est la capitale, est très chère." },
+        { "en": "My mother, who is a teacher, speaks four languages.", "fr": "Ma mère, qui est professeure, parle quatre langues." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "deduction-past",
+      "summary": "Déduire ce qui s'est passé : must have (c'est sûrement ça), can't have (impossible), might have (peut-être) + participe passé.",
+      "rules": [
+        "Forme : modal + have + participe passé. He must have missed the train.",
+        "Must have : presque certain (« il a dû rater le train », « il a sûrement raté »).",
+        "Can't have ou couldn't have : impossible (« il n'a pas pu le faire », « ça ne peut pas être lui »).",
+        "Might have, may have, could have : possible (« il a peut-être oublié », « il se peut qu'il ait oublié »).",
+        "Le contraire de must have est can't have, jamais mustn't have.",
+        "La traduction donne le degré de certitude : « a dû » → must have ; « n'a pas pu » → can't have ; « peut-être » → might have.",
+        "Après le modal, have ne change jamais : she must have, jamais she must has."
+      ],
+      "examples": [
+        { "en": "He must have missed the train.", "fr": "Il a dû rater le train." },
+        { "en": "She can't have finished already.", "fr": "Elle ne peut pas avoir déjà fini." },
+        { "en": "They might have forgotten.", "fr": "Ils ont peut-être oublié." },
+        { "en": "You must have been tired.", "fr": "Tu devais être fatigué." },
+        { "en": "He couldn't have seen us, it was too dark.", "fr": "Il n'a pas pu nous voir, il faisait trop sombre." },
+        { "en": "I may have left my keys at work.", "fr": "J'ai peut-être laissé mes clés au travail." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "reported-questions",
+      "summary": "Rapporter une question ou un ordre : asked where I lived (sans inversion, sans do), told me to wait.",
+      "rules": [
+        "Question rapportée : l'ordre redevient celui d'une affirmation, sans do ni inversion. « Where do you live? » → She asked where I lived.",
+        "Les temps reculent comme pour les affirmations : « Are you ready? » → He asked if I was ready.",
+        "Question fermée (oui / non) : if ou whether. She asked if I was hungry.",
+        "Pas de point d'interrogation à la fin : la phrase est une affirmation.",
+        "Ordre ou demande rapportés : tell / ask + personne + to + base. « Wait! » → He told me to wait. « Please help me » → She asked me to help her.",
+        "Ordre négatif : not to + base. « Don't touch it! » → She told me not to touch it."
+      ],
+      "examples": [
+        { "en": "She asked me where I lived.", "fr": "Elle m'a demandé où j'habitais." },
+        { "en": "He asked if I was ready.", "fr": "Il m'a demandé si j'étais prêt." },
+        { "en": "They asked what time the train left.", "fr": "Ils ont demandé à quelle heure partait le train." },
+        { "en": "I wondered why she had left.", "fr": "Je me demandais pourquoi elle était partie." },
+        { "en": "The doctor told me to rest.", "fr": "Le médecin m'a dit de me reposer." },
+        { "en": "She told us not to make any noise.", "fr": "Elle nous a dit de ne pas faire de bruit." }
+      ],
+      "traps": ["reported-question-inversion"]
+    },
+    {
+      "id": "future-continuous",
+      "summary": "Will be + -ing : une action en cours à un moment du futur (This time tomorrow I'll be flying).",
+      "rules": [
+        "Forme : will be + verbe en -ing. I'll be working. Négation : won't be working. Question : Will you be working?",
+        "Emploi : action en train de se dérouler à un moment futur précis. At 8 tomorrow, I'll be having dinner.",
+        "Marqueurs fréquents : this time tomorrow, this time next week, at 10 o'clock tomorrow, when you arrive.",
+        "Pour un programme qui suit son cours : I'll be seeing her tomorrow anyway (je la vois demain de toute façon).",
+        "Question polie sur les projets : Will you be using the car tonight? (moins direct que Will you use…?).",
+        "Be ne disparaît pas et le verbe prend -ing : will be working, jamais will working ni will be work."
+      ],
+      "examples": [
+        { "en": "This time tomorrow I'll be flying to Rome.", "fr": "Demain à la même heure, je serai dans l'avion pour Rome." },
+        { "en": "At eight o'clock I'll be having dinner.", "fr": "À huit heures, je serai en train de dîner." },
+        { "en": "Don't call at nine, we'll be watching the match.", "fr": "N'appelle pas à neuf heures, nous regarderons le match." },
+        { "en": "Will you be using the car tonight?", "fr": "Tu auras besoin de la voiture ce soir ?" },
+        { "en": "When you arrive, I'll be waiting at the station.", "fr": "Quand tu arriveras, je t'attendrai à la gare." },
+        { "en": "She won't be working next week.", "fr": "Elle ne travaillera pas la semaine prochaine." }
+      ],
+      "traps": []
+    },
+    {
+      "id": "future-perfect",
+      "summary": "Will have + participe passé : une action qui sera terminée avant un moment du futur (I'll have finished by six).",
+      "rules": [
+        "Forme : will have + participe passé, à toutes les personnes. I'll have finished. She will have left.",
+        "Have ne change pas après will : she will have, jamais she will has.",
+        "Emploi : ce qui sera accompli au plus tard à un moment futur, souvent avec by (by six, by next year, by the time you arrive).",
+        "C'est le futur antérieur français : « j'aurai fini », « elle sera partie ».",
+        "Dans la subordonnée (when, by the time, as soon as), pas de will : présent ou present perfect. By the time you arrive (pas will arrive), we will have eaten. Call me when you have finished.",
+        "Négation : won't have + participe. I won't have finished by Monday."
+      ],
+      "examples": [
+        { "en": "I'll have finished the report by six.", "fr": "J'aurai fini le rapport à six heures." },
+        { "en": "By next year, she will have graduated.", "fr": "L'année prochaine, elle aura eu son diplôme." },
+        { "en": "By the time you arrive, we will have eaten.", "fr": "Quand tu arriveras, nous aurons mangé." },
+        { "en": "They won't have finished the bridge by June.", "fr": "Ils n'auront pas terminé le pont en juin." },
+        { "en": "In ten years, I will have paid off the loan.", "fr": "Dans dix ans, j'aurai remboursé le prêt." },
+        { "en": "Will you have read it by Monday?", "fr": "Tu l'auras lu d'ici lundi ?" }
+      ],
+      "traps": []
+    },
+    {
+      "id": "be-used-to",
+      "summary": "Be used to + -ing (ou un nom) : être habitué à. Get used to : s'habituer. À ne pas confondre avec used to + base (habitude passée).",
+      "rules": [
+        "Be used to + -ing ou nom : avoir l'habitude, trouver normal. I'm used to getting up early. She is used to the cold.",
+        "Get used to : s'habituer (le changement). You'll soon get used to driving on the left.",
+        "To est ici une préposition : le verbe qui suit prend -ing, jamais la base. I'm used to work est faux : I'm used to working.",
+        "Be et get se conjuguent : I was used to it, I'm getting used to it, I've never got used to it.",
+        "À distinguer de used to + base (habitude passée, révolue) : I used to smoke (je fumais avant).",
+        "La traduction aide : « j'ai l'habitude de », « je suis habitué à » → be used to ; « je m'habitue à » → get used to ; « avant, je… » → used to."
+      ],
+      "examples": [
+        { "en": "I'm used to getting up early.", "fr": "J'ai l'habitude de me lever tôt." },
+        { "en": "She isn't used to the noise yet.", "fr": "Elle n'est pas encore habituée au bruit." },
+        { "en": "You'll get used to working at night.", "fr": "Tu t'habitueras à travailler la nuit." },
+        { "en": "I'm getting used to my new job.", "fr": "Je m'habitue à mon nouveau travail." },
+        { "en": "He was used to living alone.", "fr": "Il avait l'habitude de vivre seul." },
+        { "en": "I used to smoke, but I stopped.", "fr": "Avant, je fumais, mais j'ai arrêté (used to + base)." }
+      ],
+      "traps": ["be-used-to-ing"]
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
  "version": 1,
- "generatedAt": "2026-10-30T15:59:17.529Z",
+ "generatedAt": "2026-10-30T16:20:40.829Z",
  "source": "Tatoeba (CC BY 2.0 FR) : banques des leçons et du placement ; questions rédigées (placement-written.json)",
  "status": "généré automatiquement, à relire avant activation",
  "covered": {
@@ -269,6 +269,11 @@
    "choice2": 0,
    "choice3plus": 8
   },
+  "be-used-to": {
+   "typed": 0,
+   "choice2": 0,
+   "choice3plus": 8
+  },
   "present-perfect": {
    "typed": 8,
    "choice2": 0,
@@ -368,11 +373,6 @@
    "typed": 8,
    "choice2": 0,
    "choice3plus": 0
-  },
-  "be-used-to": {
-   "typed": 0,
-   "choice2": 0,
-   "choice3plus": 8
   }
  },
  "missing": [],
@@ -7197,6 +7197,158 @@
    ]
   },
   {
+   "id": "placement:be-used-to:used-to:1429061",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:1429061",
+   "before": "I'm ",
+   "after": " alone.",
+   "fr": "Je suis habituée à manger seule.",
+   "answer": "used to eating",
+   "source": "tatoeba:1429061",
+   "status": "généré",
+   "form": "be-used-to",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "use to eating",
+    "used to eating",
+    "used to eat"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:12246044",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:12246044",
+   "before": "Get ",
+   "after": " patient.",
+   "fr": "Habituez-vous à la patience.",
+   "answer": "used to being",
+   "source": "tatoeba:12246044",
+   "status": "généré",
+   "form": "be-used-to",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "use to being",
+    "used to be",
+    "used to being"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:6110303",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:6110303",
+   "before": "I'm not ",
+   "after": " this.",
+   "fr": "Je ne suis pas habitué à faire ça.",
+   "answer": "used to doing",
+   "source": "tatoeba:6110303",
+   "status": "généré",
+   "form": "be-used-to",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "use to doing",
+    "used to doing",
+    "used to do"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:13860233",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:13860233",
+   "before": "They are ",
+   "after": " it.",
+   "fr": "Ils sont habitués à y jouer.",
+   "answer": "used to playing",
+   "source": "tatoeba:13860233",
+   "status": "généré",
+   "form": "be-used-to",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "use to playing",
+    "used to playing",
+    "used to play"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:312562",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:312562",
+   "before": "She is ",
+   "after": " alone.",
+   "fr": "Elle est habituée à vivre seule.",
+   "answer": "used to living",
+   "source": "tatoeba:312562",
+   "status": "généré",
+   "form": "be-used-to",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to living",
+    "use to living",
+    "used to live"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:6293821",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:6293821",
+   "before": "We're ",
+   "after": " shoes.",
+   "fr": "On a l'habitude de porter des chaussures.",
+   "answer": "used to wearing",
+   "source": "tatoeba:6293821",
+   "status": "généré",
+   "form": "be-used-to",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to wear",
+    "use to wearing",
+    "used to wearing"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:324025",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:324025",
+   "before": "I am ",
+   "after": " up late.",
+   "fr": "Je suis habitué à me coucher très tard.",
+   "answer": "used to sitting",
+   "source": "tatoeba:324025",
+   "status": "généré",
+   "form": "be-used-to",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to sit",
+    "use to sitting",
+    "used to sitting"
+   ]
+  },
+  {
+   "id": "placement:be-used-to:used-to:1312857",
+   "targetId": "be-used-to",
+   "evidenceId": "tatoeba:1312857",
+   "before": "She's ",
+   "after": " up early.",
+   "fr": "Elle est habituée à se lever tôt.",
+   "answer": "used to getting",
+   "source": "tatoeba:1312857",
+   "status": "généré",
+   "form": "be-used-to",
+   "mode": "choice",
+   "choices": 3,
+   "options": [
+    "used to getting",
+    "used to get",
+    "use to getting"
+   ]
+  },
+  {
    "id": "placement:present-perfect:present-perfect:24489",
    "targetId": "present-perfect",
    "evidenceId": "tatoeba:24489",
@@ -9762,158 +9914,6 @@
    "form": "past-unreal",
    "mode": "typed",
    "hint": "have"
-  },
-  {
-   "id": "placement:be-used-to:used-to:1429061",
-   "targetId": "be-used-to",
-   "evidenceId": "tatoeba:1429061",
-   "before": "I'm ",
-   "after": " alone.",
-   "fr": "Je suis habituée à manger seule.",
-   "answer": "used to eating",
-   "source": "tatoeba:1429061",
-   "status": "généré",
-   "form": "be-used-to",
-   "mode": "choice",
-   "choices": 3,
-   "options": [
-    "use to eating",
-    "used to eating",
-    "used to eat"
-   ]
-  },
-  {
-   "id": "placement:be-used-to:used-to:12246044",
-   "targetId": "be-used-to",
-   "evidenceId": "tatoeba:12246044",
-   "before": "Get ",
-   "after": " patient.",
-   "fr": "Habituez-vous à la patience.",
-   "answer": "used to being",
-   "source": "tatoeba:12246044",
-   "status": "généré",
-   "form": "be-used-to",
-   "mode": "choice",
-   "choices": 3,
-   "options": [
-    "use to being",
-    "used to be",
-    "used to being"
-   ]
-  },
-  {
-   "id": "placement:be-used-to:used-to:6110303",
-   "targetId": "be-used-to",
-   "evidenceId": "tatoeba:6110303",
-   "before": "I'm not ",
-   "after": " this.",
-   "fr": "Je ne suis pas habitué à faire ça.",
-   "answer": "used to doing",
-   "source": "tatoeba:6110303",
-   "status": "généré",
-   "form": "be-used-to",
-   "mode": "choice",
-   "choices": 3,
-   "options": [
-    "use to doing",
-    "used to doing",
-    "used to do"
-   ]
-  },
-  {
-   "id": "placement:be-used-to:used-to:13860233",
-   "targetId": "be-used-to",
-   "evidenceId": "tatoeba:13860233",
-   "before": "They are ",
-   "after": " it.",
-   "fr": "Ils sont habitués à y jouer.",
-   "answer": "used to playing",
-   "source": "tatoeba:13860233",
-   "status": "généré",
-   "form": "be-used-to",
-   "mode": "choice",
-   "choices": 3,
-   "options": [
-    "use to playing",
-    "used to playing",
-    "used to play"
-   ]
-  },
-  {
-   "id": "placement:be-used-to:used-to:312562",
-   "targetId": "be-used-to",
-   "evidenceId": "tatoeba:312562",
-   "before": "She is ",
-   "after": " alone.",
-   "fr": "Elle est habituée à vivre seule.",
-   "answer": "used to living",
-   "source": "tatoeba:312562",
-   "status": "généré",
-   "form": "be-used-to",
-   "mode": "choice",
-   "choices": 3,
-   "options": [
-    "used to living",
-    "use to living",
-    "used to live"
-   ]
-  },
-  {
-   "id": "placement:be-used-to:used-to:6293821",
-   "targetId": "be-used-to",
-   "evidenceId": "tatoeba:6293821",
-   "before": "We're ",
-   "after": " shoes.",
-   "fr": "On a l'habitude de porter des chaussures.",
-   "answer": "used to wearing",
-   "source": "tatoeba:6293821",
-   "status": "généré",
-   "form": "be-used-to",
-   "mode": "choice",
-   "choices": 3,
-   "options": [
-    "used to wear",
-    "use to wearing",
-    "used to wearing"
-   ]
-  },
-  {
-   "id": "placement:be-used-to:used-to:324025",
-   "targetId": "be-used-to",
-   "evidenceId": "tatoeba:324025",
-   "before": "I am ",
-   "after": " up late.",
-   "fr": "Je suis habitué à me coucher très tard.",
-   "answer": "used to sitting",
-   "source": "tatoeba:324025",
-   "status": "généré",
-   "form": "be-used-to",
-   "mode": "choice",
-   "choices": 3,
-   "options": [
-    "used to sit",
-    "use to sitting",
-    "used to sitting"
-   ]
-  },
-  {
-   "id": "placement:be-used-to:used-to:1312857",
-   "targetId": "be-used-to",
-   "evidenceId": "tatoeba:1312857",
-   "before": "She's ",
-   "after": " up early.",
-   "fr": "Elle est habituée à se lever tôt.",
-   "answer": "used to getting",
-   "source": "tatoeba:1312857",
-   "status": "généré",
-   "form": "be-used-to",
-   "mode": "choice",
-   "choices": 3,
-   "options": [
-    "used to getting",
-    "used to get",
-    "use to getting"
-   ]
   }
  ]
 }
