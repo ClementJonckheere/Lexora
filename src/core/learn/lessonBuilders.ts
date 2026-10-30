@@ -407,8 +407,9 @@ const emphaticDo: Builder = (s, known) => {
 };
 
 /** Adjectif : avant le nom, invariable (a red car, different ideas), contre « car red » et « differents ». */
-const DET = '(?:a|an|the|some|two|three|many|these|those|my|your|his|her|our|their|this|that|very)';
-const NOT_NOUN = /^(?:of|to|more|less|than|as|and|or|enough|with|for|in|on|at|about|from|one|ones|bit|lot|deal|while|way|kind|sort|number|amount|thing|things|is|are|was|were|be)$/;
+const DET = '(?:a|an|the|some|two|three|many|these|those|my|your|his|her|our|their|this|that)';
+const NOT_NOUN =
+  /^(?:of|to|more|less|than|as|and|or|enough|with|for|in|on|at|about|from|one|ones|bit|lot|deal|while|way|kind|sort|number|amount|thing|things|is|are|was|were|be|when|where|if|because|then|now|today|earlier|later|better|worse|too|so)$/;
 const AMBIGUOUS_ADJ = /^(?:well|close|fine|light|right|free|sure|ready|ill|mad|kind|wrong|true|real|full|empty|late|early|fast|hard|long|high|low|short|cool|dark|deep|wide|clear|safe)$/;
 const adjectives: Builder = (s) => {
   const m = only(new RegExp(`\\b${DET}\\s+([a-z]+)\\s+([a-z]{3,})\\b(?=\\s*(?:[.,!?;]|$|\\s+(?:is|are|was|were|in|on|at|for|with|and|to|from|that|who|which|I|you|he|she|we|they)\\b))`), s.en);
@@ -417,7 +418,8 @@ const adjectives: Builder = (s) => {
   if (!isListedAdjective(adj) || AMBIGUOUS_ADJ.test(adj) || NOT_NOUN.test(noun) || isListedAdjective(noun) || /(?:ly|ing|ed)$/.test(noun)) return [];
   const span = `${adj} ${noun}`;
   const at = m.index + whole.length - span.length;
-  const plural = /[^s]s$/.test(noun) && /\b(?:some|two|three|many|these|those)\s/.test(whole);
+  // news, series, means… : singuliers malgré le -s.
+  const plural = /[^s]s$/.test(noun) && !/^(?:news|series|means|species|physics|maths|politics|economics)$/.test(noun) && /\b(?:some|two|three|many|these|those)\s/.test(whole);
   const choices = plural ? [span, `${noun} ${adj}`, `${adj}s ${noun}`] : [span, `${noun} ${adj}`];
   return [blank(s, at, span, span, { choices, form: plural ? 'plural' : 'singular' })];
 };
@@ -444,6 +446,8 @@ const simpleVsContinuous: Builder = (s, known) => {
   if (!m) return [];
   const subject = m[1] === 'I' ? 'I' : m[1].toLowerCase();
   const verb = m[2];
+  // « do you take » : la base après un auxiliaire, où « are taking » serait faux pour une autre raison.
+  if (/\b(?:do|does|did|to|can|will|would|should|must|may|might|could)\s+$/i.test(s.en.slice(0, m.index + (m[0].length - m[0].trimStart().length)))) return [];
   const base = /^(?:he|she|it)$/.test(subject) ? baseOfPresent(verb) : verb;
   if (presentOf(base, subject) !== verb || !plausibleBase(base, known) || /^(?:be|have|do|can|will|must|should)$/.test(base) || AUX_WORDS.test(verb)) return [];
   const be = presentOf('be', subject);

@@ -18,7 +18,7 @@
 \bma(?:ke|kes|de|king) love\b|\bfai\w* l'amour|\bbuttocks?\b|\bcul\b(?!-de-sac)|\bcunnilingus|\bfellat|\bblow ?jobs?\b|\bpénis\b|\bpenis\b|\bvagin|\berotic|\bérotique|\bnaked\b|\bnude\b|\bcondoms?\b|\bpréservatif
 
 # Meurtres, torture, violences physiques
-\bmurder|\bmeurtr|\bassassin|\btortur|\bcorpses?\b|\bcadavres?\b|\bbehead|\bdecapit|\bdécapit|\bstrangl|\bétrangl
+\bskinned alive|\bécorch|\bmurder|\bmeurtr|\bassassin|\btortur|\bcorpses?\b|\bcadavres?\b|\bbehead|\bdecapit|\bdécapit|\bstrangl|\bétrangl
 \bbeat (?:her|him|his wife|her husband)\b|\bbat sa femme|\bstabb|\bpoignard
 
 # Affirmations politiques ou religieuses contestées

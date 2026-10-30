@@ -171,11 +171,14 @@ describe('C1 et A2', () => {
       'We have many [different ideas {different ideas | ideas different | differents ideas}].',
     );
     expect(shown('adjectives', 'He is a student.', 'Il est étudiant.')).toBeNull();
+    expect(shown('adjectives', 'Had you come a little earlier, you could have met her.', 'Si vous étiez arrivé un peu plus tôt, vous l’auriez vue.')).toBeNull();
+    expect(shown('adjectives', 'I have some good news for you.', 'J’ai de bonnes nouvelles pour toi.')).toBe('I have some [good news {good news | news good}] for you.');
   });
   it('présent simple ou continu, selon le repère', () => {
     expect(shown('simple-vs-continuous', 'Be quiet, the baby is sleeping now.', 'Silence, le bébé dort.')).toBeNull(); // sujet nom : pas couvert
     expect(shown('simple-vs-continuous', 'Look, it is raining again.', 'Regarde, il pleut encore.')).toBe('Look, it [is raining {is raining | rains}] again.');
     expect(shown('simple-vs-continuous', 'She usually walks to work.', 'Elle va généralement au travail à pied.')).toBe('She usually [walks {walks | is walking}] to work.');
     expect(shown('simple-vs-continuous', 'I usually walked to work.', 'J’allais à pied au travail.')).toBeNull();
+    expect(shown('simple-vs-continuous', 'How often do you usually take a bath?', 'Tu prends un bain combien de fois ?')).toBeNull();
   });
 });
