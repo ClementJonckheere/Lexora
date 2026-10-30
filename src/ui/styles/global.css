@@ -3544,3 +3544,10 @@ p {
   font-weight: 500;
   margin-bottom: 8px;
 }
+.ready-collections {
+  margin-top: 32px;
+}
+.ready-collections .collection-card {
+  cursor: default;
+  align-items: flex-start;
+}

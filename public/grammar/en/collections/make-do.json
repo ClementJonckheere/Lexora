@@ -1,0 +1,290 @@
+{
+ "version": 1,
+ "status": "rédigé, à relire",
+ "id": "make-do",
+ "title": "Make ou do",
+ "description": "Collocations courantes : make pour créer, produire ou provoquer (make a mistake), do pour une tâche ou une activité (do homework). Une liste à mémoriser, pas une règle.",
+ "notes": [
+  {
+   "expression": "To make a mistake",
+   "translation": "Faire une erreur",
+   "examples": [
+    "I made a mistake in the first exercise."
+   ]
+  },
+  {
+   "expression": "To make a decision",
+   "translation": "Prendre une décision",
+   "examples": [
+    "We need to make a decision before Friday."
+   ]
+  },
+  {
+   "expression": "To make a choice",
+   "translation": "Faire un choix",
+   "examples": [
+    "It was hard to make a choice between the two flats."
+   ]
+  },
+  {
+   "expression": "To make progress",
+   "translation": "Faire des progrès",
+   "examples": [
+    "She has made a lot of progress in English."
+   ]
+  },
+  {
+   "expression": "To make money",
+   "translation": "Gagner de l'argent",
+   "examples": [
+    "He makes money by selling old books."
+   ]
+  },
+  {
+   "expression": "To make a phone call",
+   "translation": "Passer un coup de fil",
+   "examples": [
+    "Can I make a phone call from here?"
+   ]
+  },
+  {
+   "expression": "To make an effort",
+   "translation": "Faire un effort",
+   "examples": [
+    "You should make an effort to arrive on time."
+   ]
+  },
+  {
+   "expression": "To make a noise",
+   "translation": "Faire du bruit",
+   "examples": [
+    "Please don't make a noise, the baby is asleep."
+   ]
+  },
+  {
+   "expression": "To make friends",
+   "translation": "Se faire des amis",
+   "examples": [
+    "He made friends quickly at his new school."
+   ]
+  },
+  {
+   "expression": "To make a plan",
+   "translation": "Faire un projet, établir un plan",
+   "examples": [
+    "Let's make a plan for the weekend."
+   ]
+  },
+  {
+   "expression": "To make an appointment",
+   "translation": "Prendre rendez-vous",
+   "examples": [
+    "I made an appointment with the dentist."
+   ]
+  },
+  {
+   "expression": "To make a suggestion",
+   "translation": "Faire une suggestion",
+   "examples": [
+    "Can I make a suggestion?"
+   ]
+  },
+  {
+   "expression": "To make a mess",
+   "translation": "Mettre le désordre",
+   "examples": [
+    "The children made a mess in the kitchen."
+   ]
+  },
+  {
+   "expression": "To make a list",
+   "translation": "Faire une liste",
+   "examples": [
+    "I always make a list before I go shopping."
+   ]
+  },
+  {
+   "expression": "To make a promise",
+   "translation": "Faire une promesse",
+   "examples": [
+    "He made a promise to his mother."
+   ]
+  },
+  {
+   "expression": "To make an excuse",
+   "translation": "Trouver une excuse",
+   "examples": [
+    "She made an excuse and left early."
+   ]
+  },
+  {
+   "expression": "To make a complaint",
+   "translation": "Porter plainte, faire une réclamation",
+   "examples": [
+    "We made a complaint about the noise."
+   ]
+  },
+  {
+   "expression": "To make the bed",
+   "translation": "Faire le lit",
+   "examples": [
+    "I make the bed every morning."
+   ]
+  },
+  {
+   "expression": "To make dinner",
+   "translation": "Préparer le dîner",
+   "examples": [
+    "Who is making dinner tonight?"
+   ]
+  },
+  {
+   "expression": "To make a difference",
+   "translation": "Changer les choses, faire la différence",
+   "examples": [
+    "A small gift can make a difference."
+   ]
+  },
+  {
+   "expression": "To make sure",
+   "translation": "S'assurer, vérifier",
+   "examples": [
+    "Make sure you lock the door."
+   ]
+  },
+  {
+   "expression": "To make up your mind",
+   "translation": "Se décider",
+   "examples": [
+    "I can't make up my mind about the job."
+   ]
+  },
+  {
+   "expression": "To do homework",
+   "translation": "Faire ses devoirs",
+   "examples": [
+    "I do my homework after dinner."
+   ],
+   "comment": "Do : tâches, travail, activités. Make : créer, produire, provoquer."
+  },
+  {
+   "expression": "To do the shopping",
+   "translation": "Faire les courses",
+   "examples": [
+    "We usually do the shopping on Saturday."
+   ]
+  },
+  {
+   "expression": "To do the housework",
+   "translation": "Faire le ménage",
+   "examples": [
+    "He does the housework while she cooks."
+   ]
+  },
+  {
+   "expression": "To do the washing-up",
+   "translation": "Faire la vaisselle",
+   "examples": [
+    "It's your turn to do the washing-up."
+   ]
+  },
+  {
+   "expression": "To do the dishes",
+   "translation": "Faire la vaisselle",
+   "examples": [
+    "Can you do the dishes tonight?"
+   ]
+  },
+  {
+   "expression": "To do the laundry",
+   "translation": "Faire la lessive",
+   "examples": [
+    "I did the laundry this morning."
+   ]
+  },
+  {
+   "expression": "To do an exercise",
+   "translation": "Faire un exercice",
+   "examples": [
+    "Do the exercise on page ten."
+   ]
+  },
+  {
+   "expression": "To do business",
+   "translation": "Faire des affaires",
+   "examples": [
+    "They do business with companies in Asia."
+   ]
+  },
+  {
+   "expression": "To do your best",
+   "translation": "Faire de son mieux",
+   "examples": [
+    "Don't worry, just do your best."
+   ]
+  },
+  {
+   "expression": "To do a favour",
+   "translation": "Rendre service",
+   "examples": [
+    "Could you do me a favour?"
+   ]
+  },
+  {
+   "expression": "To do research",
+   "translation": "Faire des recherches",
+   "examples": [
+    "She is doing research on climate change."
+   ]
+  },
+  {
+   "expression": "To do a job",
+   "translation": "Faire un travail",
+   "examples": [
+    "He did a great job on the garden."
+   ]
+  },
+  {
+   "expression": "To do sport",
+   "translation": "Faire du sport",
+   "examples": [
+    "I try to do sport three times a week."
+   ]
+  },
+  {
+   "expression": "To do damage",
+   "translation": "Faire des dégâts",
+   "examples": [
+    "The storm did a lot of damage."
+   ]
+  },
+  {
+   "expression": "To do harm",
+   "translation": "Faire du mal, nuire",
+   "examples": [
+    "A little rest won't do you any harm."
+   ]
+  },
+  {
+   "expression": "To do the cooking",
+   "translation": "Faire la cuisine",
+   "examples": [
+    "My father does the cooking at home."
+   ]
+  },
+  {
+   "expression": "To do a course",
+   "translation": "Suivre une formation",
+   "examples": [
+    "I'm doing a course in photography."
+   ]
+  },
+  {
+   "expression": "To do nothing",
+   "translation": "Ne rien faire",
+   "examples": [
+    "We did nothing all weekend."
+   ]
+  }
+ ]
+}

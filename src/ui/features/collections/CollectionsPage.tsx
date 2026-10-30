@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { ArrowLeft, FolderPlus, Layers, Pencil, Plus, Trash2, Zap } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowLeft, Download, FolderPlus, Layers, Pencil, Plus, Trash2, Zap } from 'lucide-react';
 import { attempt, errorMessage, useApp } from '@/app/store';
 import type { Collection } from '@/core/domain/types';
 import { noteMastery } from '@/core/srs/queue';
@@ -7,6 +7,9 @@ import { Button, EmptyState, Field, Modal } from '@/ui/components/ui';
 import { confirm } from '@/ui/components/Confirm';
 import { LibraryPage } from '@/ui/features/library/LibraryPage';
 import { useDueCounts } from '@/ui/features/review/ReviewPage';
+import { describeReport, importCandidates } from '@/app/dataActions';
+import { expressionKey } from '@/core/domain/text';
+import { READY_COLLECTIONS, readyCandidates, type ReadyCollection } from '@/core/learn/readyCollections';
 
 const SUGGESTIONS = ['Business English', 'Everyday Expressions', 'Phrasal Verbs', 'Vocabulary from Movies', 'Advanced Vocabulary'];
 
@@ -75,6 +78,7 @@ export function CollectionsPage() {
           })}
         </div>
       )}
+      <ReadyCollections />
       {editing && <CollectionDialog collection={editing === 'new' ? null : editing} onClose={() => setEditing(null)} />}
     </div>
   );
@@ -285,5 +289,76 @@ function AddExistingDialog({ collectionId, onClose }: { collectionId: string; on
         </div>
       </div>
     </Modal>
+  );
+}
+
+/** Collections prêtes à importer (univers Anglais) : make ou do, verbes et adjectifs à préposition. */
+function ReadyCollections() {
+  const language = useApp((s) => s.universe?.language);
+  const notes = useApp((s) => s.notes);
+  const [list, setList] = useState<ReadyCollection[] | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (language !== 'en') return;
+    let alive = true;
+    void Promise.all(
+      READY_COLLECTIONS.map((id) =>
+        fetch(`/grammar/en/collections/${id}.json`)
+          .then((r) => (r.ok ? (r.json() as Promise<ReadyCollection>) : null))
+          .catch(() => null),
+      ),
+    ).then((all) => alive && setList(all.filter((c): c is ReadyCollection => !!c)));
+    return () => {
+      alive = false;
+    };
+  }, [language]);
+
+  const keys = useMemo(() => new Set(notes.map((n) => n.expressionKey)), [notes]);
+  if (language !== 'en' || !list?.length) return null;
+
+  const add = async (c: ReadyCollection, missing: number) => {
+    const ok = await confirm({
+      title: `Importer « ${c.title} » ?`,
+      message: `${missing} expression${missing > 1 ? 's' : ''} rejoindront votre bibliothèque, dans la collection « ${c.title} », chacune avec ses deux fiches de révision. Les nouvelles fiches arrivent au rythme de vos nouveaux mots par jour ; celles que vous avez déjà ne sont pas dupliquées.`,
+      confirmLabel: 'Importer',
+    });
+    if (!ok) return;
+    setBusy(c.id);
+    try {
+      const report = await importCandidates(readyCandidates(c));
+      useApp.getState().toast('success', describeReport(report));
+    } catch (err) {
+      useApp.getState().toast('error', errorMessage(err));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <section className="ready-collections">
+      <h2 className="section-title">Prêtes à importer</h2>
+      <div className="collection-grid">
+        {list.map((c) => {
+          const missing = c.notes.filter((n) => !keys.has(expressionKey(n.expression, 'en'))).length;
+          return (
+            <div key={c.id} className="card collection-card">
+              <div className="collection-name">{c.title}</div>
+              <p className="muted small">{c.description}</p>
+              <span className="muted small">
+                {c.notes.length} expressions avec un exemple{missing < c.notes.length ? ` · ${c.notes.length - missing} déjà dans votre bibliothèque` : ''}
+              </span>
+              {missing > 0 ? (
+                <Button size="sm" onClick={() => void add(c, missing)} disabled={busy !== null}>
+                  <Download size={14} /> {missing === c.notes.length ? 'Importer' : `Ajouter les ${missing} manquantes`}
+                </Button>
+              ) : (
+                <span className="small chip--placement-mastered">Déjà importée</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
