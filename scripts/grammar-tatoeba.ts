@@ -117,8 +117,24 @@ mkdirSync('public/grammar/en/exercises', { recursive: true });
 const translated = english.filter((s) => frenchText.has(frenchOf.get(s.id) ?? -1));
 const kept = translated.filter((s) => !blocked(s.text) && !blocked(frenchText.get(frenchOf.get(s.id)!)!));
 console.log(`${translated.length - kept.length} phrases traduites écartées par la liste de mots bloqués`);
-/** Banque équilibrée d'un générateur : tour à tour dans chaque nature de réponse, une même réponse plafonnée. */
-function makeBank(label: string, build: (s: { id: number; en: string; fr: string }) => Exercise | null, size: number, skip?: Set<string>): Exercise[] {
+/** Identifiants des exercices du fichier existant, dans leur ordre (banque stable d'une génération à l'autre). */
+function previousIds(file: string): string[] {
+  return existsSync(file) ? (JSON.parse(readFileSync(file, 'utf8')).items as { id: string }[]).map((ex) => ex.id) : [];
+}
+
+/**
+ * Banque équilibrée d'un générateur : tour à tour dans chaque nature de réponse, une même réponse plafonnée.
+ * Stable : les exercices déjà présents (`previous`) restent en tête tant que le générateur les produit encore et qu'ils
+ * ne sont ni bloqués ni exclus ; les nouveaux, tirés au hasard, complètent. Sans cela, retirer quelques phrases (liste de
+ * mots bloqués, signalements) redistribuait tout le tirage et remplaçait les questions déjà relues.
+ */
+function makeBank(
+  label: string,
+  build: (s: { id: number; en: string; fr: string }) => Exercise | null,
+  size: number,
+  previous: readonly string[],
+  skip?: Set<string>,
+): Exercise[] {
   const all: Exercise[] = [];
   for (const s of kept) {
     const ex = build({ id: s.id, en: s.text, fr: frenchText.get(frenchOf.get(s.id)!)! });
@@ -128,6 +144,8 @@ function makeBank(label: string, build: (s: { id: number; en: string; fr: string
     const j = Math.floor(rng() * (i + 1));
     [all[i], all[j]] = [all[j], all[i]];
   }
+  const rank = new Map(previous.map((id, i) => [id, i]));
+  all.sort((a, b) => (rank.get(a.id) ?? Infinity) - (rank.get(b.id) ?? Infinity));
   // Tour à tour dans chaque nature de réponse (will / présent…), pour une banque aussi équilibrée que possible.
   const byForm = new Map<string, Exercise[]>();
   for (const ex of all) byForm.set(ex.form ?? '', [...(byForm.get(ex.form ?? '') ?? []), ex]);
@@ -150,7 +168,10 @@ function makeBank(label: string, build: (s: { id: number; en: string; fr: string
     }
   const forms = [...byForm.keys()].filter(Boolean);
   const share = forms.map((f) => `${f} ${items.filter((ex) => ex.form === f).length}`).join(', ');
-  console.log(`${label.padEnd(32)} ${String(all.length).padStart(6)} exercices possibles, ${items.length} gardés${share ? ` (${share})` : ''}`);
+  const reused = items.filter((ex) => rank.has(ex.id)).length;
+  console.log(
+    `${label.padEnd(32)} ${String(all.length).padStart(6)} exercices possibles, ${items.length} gardés dont ${reused} de la génération précédente${share ? ` (${share})` : ''}`,
+  );
   // Échantillon dans le journal, pour la relecture : 6 exercices par nature de réponse.
   for (const f of forms.length ? forms : ['']) {
     const sample = items.filter((ex) => (ex.form ?? '') === f).slice(0, 6);
@@ -166,7 +187,7 @@ const bankSizes: Record<string, number> = {};
 for (const { id } of lessons) {
   // Leçons A1 et A2 : mêmes générateurs que les questions du placement (placementBuilders.ts), banque plus grande.
   const build = id in PLACEMENT_BUILDERS ? buildPlacementExercise : buildExercise;
-  const items = makeBank(`leçon ${id}`, (s) => build(id, s, known), BANK_SIZE, rejected);
+  const items = makeBank(`leçon ${id}`, (s) => build(id, s, known), BANK_SIZE, previousIds(`public/grammar/en/exercises/${id}.json`), rejected);
   bankSizes[id] = items.length;
   if (items.length < MIN_CANDIDATES) console.log(`::warning::Leçon ${id} : seulement ${items.length} exercices`);
   writeFileSync(
@@ -183,7 +204,7 @@ const PLACEMENT_BANK_SIZE = 60;
 mkdirSync('public/grammar/en/placement', { recursive: true });
 const placementSizes: Record<string, number> = {};
 for (const id of Object.keys(PLACEMENT_BUILDERS)) {
-  const items = makeBank(`placement ${id}`, (s) => buildPlacementExercise(id, s, known), PLACEMENT_BANK_SIZE);
+  const items = makeBank(`placement ${id}`, (s) => buildPlacementExercise(id, s, known), PLACEMENT_BANK_SIZE, previousIds(`public/grammar/en/placement/${id}.json`));
   placementSizes[id] = items.length;
   if (items.length < 8) console.log(`::warning::Placement ${id} : seulement ${items.length} questions possibles`);
   writeFileSync(
