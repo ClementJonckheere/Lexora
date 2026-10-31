@@ -13,7 +13,7 @@ Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, 
 
 La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
 
-**État documenté : version 2.34.0.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
+**État documenté : version 2.35.0.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -123,7 +123,7 @@ Le même code SQL tourne dans les trois environnements. Dans l'application, c'es
 
 ## 5. Modèle de données
 
-Le schéma SQLite est en **version 11** (`PRAGMA user_version`), indépendamment de la version 2.34.0 de l'application. Les **16 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
+Le schéma SQLite est en **version 11** (`PRAGMA user_version`), indépendamment de la version 2.35.0 de l'application. Les **16 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
 
 | Table | Clé locale | Principales données |
 |---|---|---|
@@ -225,7 +225,7 @@ Les chantiers suivants restent **indisponibles dans l'interface** :
 
 ### Option A : récupérer l'installateur
 
-La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.34.0_x64-setup.exe`.
+La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.35.0_x64-setup.exe`.
 
 Le workflow GitHub Actions `CI & installateur Windows` lance les tests puis construit l'installateur à chaque push sur `main` ou `claude/**`, à chaque tag `v*`, pour les PR vers `main`, et sur demande depuis l'onglet *Actions* → *Run workflow*. Pour essayer une construction non publiée : **Actions → exécution réussie de la branche voulue → artefact lexora-windows**.
 
@@ -291,6 +291,11 @@ Version web installable (2.34), sans licence ni boutique : la même application,
 
 - **iPhone** : ouvrir l'adresse dans **Safari** → bouton *Partager* → *Sur l'écran d'accueil*. Lexora s'ouvre alors en plein écran, avec son icône. Connexion : « Recevoir un code par e-mail » (plus sûr que Google dans une web app iPhone).
 - **Android** : ouvrir l'adresse dans **Chrome** → menu ⋮ → *Installer l'application* (ou *Ajouter à l'écran d'accueil*).
+
+Sur le téléphone (2.35) :
+
+- **Lecture** : toucher un mot le choisit et ouvre en bas de l'écran la barre *Ajouter* (traduction, écoute, « Je connais »), sans le menu *Copier* du téléphone ; toucher un second mot de la même phrase prend toute l'expression entre les deux ; toucher le choix l'annule. Un appui long garde la sélection habituelle. On tourne les pages en glissant le doigt ou avec les flèches ; le pied de page se réduit à la page, au chapitre et à l'avancement.
+- **Navigation** : sept onglets en bas ; les *Statistiques* (et le classement) sont dans *Paramètres*, onglet *Statistiques*.
 
 Lectures de livres, exemples Tatoeba, traductions et dictionnaire passent par la fonction Supabase `proxy` (ces sites refusent les appels directs d'une page web) : il faut être connecté.
 

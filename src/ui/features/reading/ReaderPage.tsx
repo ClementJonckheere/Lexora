@@ -27,8 +27,10 @@ const PAPERS: { value: Paper; label: string }[] = [
   { value: 'white', label: 'Blanc' },
   { value: 'night', label: 'Nuit' },
 ];
-/** Marges de la page : intérieure, haut (titre courant), bas (numéro de page). */
+/** Marges de la page : intérieure (réduite sur un téléphone), haut (titre courant), bas (numéro de page). */
 const PAD_X = 40;
+const PAD_X_NARROW = 20;
+const NARROW = 560;
 const PAD_TOP = 56;
 const PAD_BOTTOM = 48;
 /** En dessous de cette largeur, une seule page à la fois. */
@@ -219,9 +221,10 @@ function Reader({
   }, [selectedWord, ranks, testDone, language]);
 
   const twoPages = size.w >= TWO_PAGES_MIN;
-  const flowW = Math.max(0, size.w - 2 * PAD_X);
+  const padX = size.w < NARROW ? PAD_X_NARROW : PAD_X;
+  const flowW = Math.max(0, size.w - 2 * padX);
   const flowH = Math.max(0, size.h - PAD_TOP - PAD_BOTTOM);
-  const gap = 2 * PAD_X;
+  const gap = 2 * padX;
   const columns = twoPages ? 2 : 1;
   const colW = (flowW - gap * (columns - 1)) / columns;
   const step = flowW + gap; // décalage d'une double page à la suivante
@@ -387,6 +390,25 @@ function Reader({
     else prev();
   };
 
+  // Téléphone : glisser le doigt vers la gauche ou la droite tourne la page (pas pendant une sélection).
+  const swipe = useRef<{ x: number; y: number; at: number } | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    swipe.current = e.touches.length === 1 ? { x: t.clientX, y: t.clientY, at: Date.now() } : null;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const s = swipe.current;
+    swipe.current = null;
+    const t = e.changedTouches[0];
+    if (!s || !t || Date.now() - s.at > 600) return;
+    const dx = t.clientX - s.x;
+    const dy = t.clientY - s.y;
+    const selection = window.getSelection();
+    if (Math.abs(dx) < 50 || Math.abs(dx) < 1.5 * Math.abs(dy) || (selection && !selection.isCollapsed)) return;
+    if (dx < 0) next();
+    else prev();
+  };
+
   const ch = chapters[chapter];
   const heading = splitChapterTitle(ch.title);
   const runningLeft = heading.label || title;
@@ -413,7 +435,8 @@ function Reader({
           </button>
           {analysis && toLearn > 0 && (
             <button className="reader-pill" onClick={() => setWordsOpen(true)} title="Mots à connaître pour ce chapitre (M)">
-              <GraduationCap size={15} /> Mots du chapitre<span className="reader-pill-count">{toLearn}</span>
+              <GraduationCap size={15} /> <span className="reader-pill-label">Mots du chapitre</span>
+              <span className="reader-pill-count">{toLearn}</span>
             </button>
           )}
           {chapters.length > 1 && (
@@ -421,7 +444,7 @@ function Reader({
               <List size={18} />
             </button>
           )}
-          <button className="reader-icon" onClick={() => void toggleFullscreen()} title={full ? 'Quitter le plein écran (F)' : 'Plein écran (F)'}>
+          <button className="reader-icon reader-icon--fullscreen" onClick={() => void toggleFullscreen()} title={full ? 'Quitter le plein écran (F)' : 'Plein écran (F)'}>
             {full ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
           </button>
           <button className="reader-icon" onClick={onClose} title="Fermer le livre (Échap)">
@@ -430,7 +453,7 @@ function Reader({
         </div>
       </header>
 
-      <div className="reader-desk">
+      <div className="reader-desk" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <div className={`reader-spread ${twoPages ? 'reader-spread--two' : ''}`} ref={stageRef}>
           {pageNumbers.map((n, i) => (
             <div key={i} className="reader-page" style={{ left: `${(i * 100) / columns}%`, width: `${100 / columns}%` }}>
@@ -438,7 +461,7 @@ function Reader({
               <div className="reader-page-no">{n ?? ''}</div>
             </div>
           ))}
-          <div className="reader-clip" style={{ left: PAD_X, top: PAD_TOP, width: flowW, height: flowH }}>
+          <div className="reader-clip" style={{ left: padX, top: PAD_TOP, width: flowW, height: flowH }}>
             <div
               ref={flowRef}
               className="reader-flow"
@@ -491,8 +514,8 @@ function Reader({
       </div>
 
       <footer className="reader-nav">
-        <button className="reader-pill reader-pill--lg" onClick={prev} disabled={atStart}>
-          <ChevronLeft size={18} /> Précédent
+        <button className="reader-pill reader-pill--lg reader-turn" onClick={prev} disabled={atStart} aria-label="Page précédente">
+          <ChevronLeft size={18} /> <span className="reader-turn-label">Précédent</span>
         </button>
         <div className="reader-pos">
           <span>
@@ -500,14 +523,18 @@ function Reader({
           </span>
           <small>
             {chapterNo && `Chapitre ${chapterNo} · `}
-            {progress} % du livre
-            {highlight && knownInChapter > 0 && ` · ${knownInChapter} de vos mots dans ce chapitre`}
-            {analysis && ` · environ ${Math.round(analysis.coverage * 100)} % de mots connus`}
-            {reading.minutes > 0 && ` · ${reading.minutes} min de lecture`}
+            {progress} %
+            {/* Détails masqués sur un téléphone, faute de place. */}
+            <span className="reader-pos-extra">
+              {' du livre'}
+              {highlight && knownInChapter > 0 && ` · ${knownInChapter} de vos mots dans ce chapitre`}
+              {analysis && ` · environ ${Math.round(analysis.coverage * 100)} % de mots connus`}
+              {reading.minutes > 0 && ` · ${reading.minutes} min de lecture`}
+            </span>
           </small>
         </div>
-        <button className="reader-pill reader-pill--lg" onClick={next} disabled={atEnd}>
-          Suivant <ChevronRight size={18} />
+        <button className="reader-pill reader-pill--lg reader-turn" onClick={next} disabled={atEnd} aria-label="Page suivante">
+          <span className="reader-turn-label">Suivant</span> <ChevronRight size={18} />
         </button>
       </footer>
       <div className="reader-options">

@@ -3671,8 +3671,48 @@ p {
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
   }
   .reader-hint,
-  .reader-options {
+  .reader-options,
+  .reader-title span,
+  .reader-pill-label,
+  .reader-icon--fullscreen,
+  .reader-turn-label,
+  .reader-pos-extra {
     display: none;
+  }
+  /* Lecteur : en-tête et pied réduits à l'essentiel, flèches seules pour tourner les pages. */
+  .reader-bar {
+    gap: 8px;
+    padding-left: 12px;
+    padding-right: 8px;
+  }
+  .reader-tools {
+    gap: 4px;
+  }
+  .reader-pill,
+  .reader-icon {
+    min-width: 38px;
+    padding: 0 8px;
+  }
+  .reader-desk {
+    padding: 8px 6px;
+  }
+  .reader-running {
+    padding: 0 20px;
+  }
+  /* Pas de bords cliquables : le navigateur y attirerait les touchers du début et de la fin des lignes.
+     On tourne les pages en glissant le doigt, ou avec les flèches. */
+  .reader-edge {
+    display: none;
+  }
+  .reader-nav {
+    padding: 6px 10px;
+  }
+  .reader-turn {
+    width: 52px;
+    padding: 0;
+  }
+  .reader-pos {
+    font-size: 14px;
   }
   /* Messages au-dessus de la barre d'onglets. */
   .toasts {
@@ -3718,4 +3758,52 @@ p {
   .session-hints {
     display: none;
   }
+  /* Bulle du mot touché : en bas de l'écran, au-dessus des flèches, hors de portée du menu du téléphone. */
+  .reader-bubble,
+  .reader-bubble--below {
+    position: fixed;
+    left: 10px !important;
+    right: 10px;
+    top: auto !important;
+    bottom: calc(64px + env(safe-area-inset-bottom));
+    transform: none;
+    max-width: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px;
+  }
+  .reader-bubble-translation {
+    flex-basis: 100%;
+    max-width: none;
+    white-space: normal;
+    text-align: center;
+    padding: 2px 4px 6px;
+  }
+  .reader-bubble-btn {
+    min-height: 40px;
+  }
+  .reader-flow {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+.reader-bubble-hint {
+  flex-basis: 100%;
+  order: 10;
+  padding: 4px 4px 0;
+  text-align: center;
+  font-size: 12px;
+  color: #a8a29e;
+}
+::highlight(lexora-tap) {
+  background-color: rgb(99 102 241 / 0.32);
+}
+/* Réglages et statistiques réunis sous Paramètres, sur un téléphone seulement. */
+.phone-tabs {
+  margin-bottom: 14px;
+}
+.phone-tabs .segmented {
+  width: 100%;
+}
+.phone-tabs .segmented button {
+  flex: 1;
 }

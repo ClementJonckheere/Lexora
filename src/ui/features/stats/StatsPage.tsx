@@ -6,6 +6,7 @@ import { formatDate } from '@/core/domain/dates';
 import { computeStats, type Stats } from '@/core/repo/statsRepo';
 import { EmptyState } from '@/ui/components/ui';
 import { Leaderboard } from './Leaderboard';
+import { PhoneSettingsTabs } from '@/ui/features/settings/PhoneSettingsTabs';
 
 const pct = (v: number | null) => (v == null ? '-' : `${Math.round(v * 100)} %`);
 const WEEKDAY = new Intl.DateTimeFormat('fr-FR', { weekday: 'short' });
@@ -31,7 +32,12 @@ export function StatsPage() {
   }, [db, notes, settings, scheduler, revision, universe]);
 
   if (error) return <div className="page"><EmptyState title="Statistiques indisponibles">{error}</EmptyState></div>;
-  if (!stats) return <div className="page" />;
+  if (!stats)
+    return (
+      <div className="page">
+        <PhoneSettingsTabs current="stats" />
+      </div>
+    );
 
   const maxReviews = Math.max(1, ...stats.activity.map((a) => a.reviews));
   const total30 = stats.activity.reduce((s, a) => s + a.reviews, 0);
@@ -39,6 +45,7 @@ export function StatsPage() {
 
   return (
     <div className="page">
+      <PhoneSettingsTabs current="stats" />
       <div className="page-header">
         <div>
           <h1 className="page-title">Statistiques</h1>
