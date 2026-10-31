@@ -62,7 +62,8 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
 
   const key = Deno.env.get('AZURE_SPEECH_KEY')?.trim();
-  const region = Deno.env.get('AZURE_SPEECH_REGION')?.trim().toLowerCase();
+  // « West Europe » (nom affiché dans Azure) vaut « westeurope ».
+  const region = Deno.env.get('AZURE_SPEECH_REGION')?.replace(/\s+/g, '').toLowerCase();
   if (!key || !region) return json({ error: 'not_configured' }, 503);
 
   // Utilisateur réellement connecté (la clé publique « anon » seule ne suffit pas).
