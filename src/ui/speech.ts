@@ -5,6 +5,7 @@ import { speak, speakableText } from '@/core/platform/speech';
 import { playUrl } from '@/core/platform/audio';
 import { findRecording } from '@/core/dictionary/wiktionary';
 import { naturalVoiceUrl, VoiceUnavailable } from '@/core/speech/natural';
+import { isTauri } from '@/core/platform/env';
 
 /** Au-delà, on n'attend plus l'enregistrement : voix de synthèse. */
 const RECORDING_WAIT_MS = 2500;
@@ -46,7 +47,7 @@ function naturalFor(text: string, language: string): Promise<string | null> {
   return naturalVoiceUrl(language === 'en' ? speakableText(text) : text, lang).catch((err) => {
     if (err instanceof VoiceUnavailable && !err.silent && !naturalWarned) {
       naturalWarned = true;
-      useApp.getState().toast('error', `Voix naturelle : ${err.message}. Voix de Windows utilisée.`);
+      useApp.getState().toast('error', `Voix naturelle : ${err.message}. ${isTauri() ? 'Voix de Windows' : "Voix de l'appareil"} utilisée.`);
     }
     return null;
   });

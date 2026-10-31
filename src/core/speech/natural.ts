@@ -24,7 +24,17 @@ async function invoke(body: Record<string, unknown>): Promise<unknown> {
   if (!authConfigured || Date.now() < unavailableUntil) throw new VoiceUnavailable('Voix naturelle indisponible.', true);
   const { data, error } = await supabase().functions.invoke('speak', { body });
   if (!error) return data;
-  const status = Number((error as { context?: { status?: number } }).context?.status ?? 0);
+  const context = (error as { context?: { status?: number; json?: () => Promise<unknown> } }).context;
+  const status = Number(context?.status ?? 0);
+  // 502 : Azure a refusé ; la fonction précise son code (401 : clé ou région, 400 : texte refusé…).
+  if (status === 502) {
+    const azure = Number(((await context?.json?.().catch(() => null)) as { status?: number } | null)?.status ?? 0);
+    if (azure === 401 || azure === 403) {
+      unavailableUntil = Date.now() + RETRY_AFTER_MS;
+      throw new VoiceUnavailable('clé Azure refusée : vérifiez AZURE_SPEECH_KEY et AZURE_SPEECH_REGION dans Supabase (Edge Functions → Secrets)');
+    }
+    throw new VoiceUnavailable(azure ? `Azure a répondu par une erreur (${azure})` : 'Azure injoignable depuis le serveur');
+  }
   // 404 : fonction non déployée ; 503 : clé non configurée ; 401/403 : compte non autorisé.
   if ([0, 401, 403, 404, 503].includes(status)) unavailableUntil = Date.now() + RETRY_AFTER_MS;
   if (status === 429) throw new VoiceUnavailable('quota de la voix naturelle atteint');
