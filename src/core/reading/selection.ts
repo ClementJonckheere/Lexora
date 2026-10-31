@@ -138,3 +138,24 @@ export function sourceNote(title: string, author: string, chapterTitle: string):
   const where = chapterTitle ? `, ${chapterDisplay(chapterTitle).replace(/\.$/, '').trim()}` : '';
   return `Lu dans « ${title} »${author ? ` (${author})` : ''}${where}.`;
 }
+
+const WORD_CHAR = /[\p{L}\p{M}\p{N}'’-]/u;
+
+/**
+ * Mot touché dans un paragraphe (début et fin, en caractères), apostrophes et traits d'union compris (« don't »,
+ * « well-known ») mais pas en bordure. `at` peut tomber juste après le mot (position du curseur).
+ */
+export function wordAt(text: string, at: number): [number, number] | null {
+  let i = at;
+  if (!WORD_CHAR.test(text[i] ?? '')) {
+    if (!WORD_CHAR.test(text[i - 1] ?? '')) return null;
+    i--;
+  }
+  let start = i;
+  let end = i + 1;
+  while (start > 0 && WORD_CHAR.test(text[start - 1])) start--;
+  while (end < text.length && WORD_CHAR.test(text[end])) end++;
+  while (start < end && /['’-]/.test(text[start])) start++;
+  while (end > start && /['’-]/.test(text[end - 1])) end--;
+  return start < end ? [start, end] : null;
+}

@@ -33,6 +33,8 @@ import { AccountConflictScreen, FirstSyncScreen, LoginScreen } from './features/
 import { SidebarAccount } from './features/account/SyncIndicator';
 import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/universes/Universes';
 
+import { PHONE_QUERY, useMediaQuery } from './hooks/useMediaQuery';
+
 const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string }[] = [
   { route: 'home', label: 'Accueil', icon: Home, key: '1' },
   { route: 'library', label: 'Bibliothèque', icon: BookOpen, key: '2' },
@@ -95,7 +97,17 @@ function TopBar() {
   const route = useApp((s) => s.route);
   const { navigate, openEditor, setSearchOpen } = useApp.getState();
   const due = useDueCounts();
-  const current = route.name === 'collection' ? 'collections' : route.name === 'lesson' || route.name === 'placement' || route.name === 'verbs' || route.name === 'grammar-annotate' ? 'learn' : route.name;
+  // Téléphone : sept onglets au plus ; les statistiques passent sous Paramètres.
+  const phone = useMediaQuery(PHONE_QUERY);
+  const nav = phone ? NAV.filter((n) => n.route !== 'stats') : NAV;
+  const current =
+    route.name === 'collection'
+      ? 'collections'
+      : route.name === 'lesson' || route.name === 'placement' || route.name === 'verbs' || route.name === 'grammar-annotate'
+        ? 'learn'
+        : phone && route.name === 'stats'
+          ? 'settings'
+          : route.name;
   return (
     <header className="topbar">
       <div className="topbar-side">
@@ -106,7 +118,7 @@ function TopBar() {
         <UniverseSwitcher />
       </div>
       <nav className="topnav" aria-label="Navigation principale">
-        {NAV.map(({ route: r, label, icon: Icon, key }) => (
+        {nav.map(({ route: r, label, icon: Icon, key }) => (
           <button
             key={r}
             className={`topnav-item ${current === r ? 'topnav-item--active' : ''}`}

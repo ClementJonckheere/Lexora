@@ -16,6 +16,7 @@ import { deeplUsage } from '@/core/translate/translate';
 import { sharedDeeplUsage } from '@/core/translate/shared';
 import { checkNaturalVoice } from '@/core/speech/natural';
 import { authConfigured } from '@/core/platform/auth';
+import { PhoneSettingsTabs } from './PhoneSettingsTabs';
 
 function Setting({ title, desc, children }: { title: string; desc?: ReactNode; children: ReactNode }) {
   return (
@@ -74,6 +75,7 @@ export function SettingsPage() {
 
   return (
     <div className="page">
+      <PhoneSettingsTabs current="settings" />
       <div className="page-header">
         <div>
           <h1 className="page-title">Paramètres</h1>

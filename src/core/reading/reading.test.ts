@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { decodeText, isHeading, parseGutenberg, progressAt, splitChapterTitle, stripBoilerplate } from './gutenberg';
 import { catalogUrl, displayName, parseCatalogPage, shortTitle, textFormat, type GutendexPage } from './gutendex';
 import { estimateLevel, ranksFromList, sampleForLevel, withinLevel } from './level';
-import { cleanSelection, sentenceAround, sourceNote, startsSentence } from './selection';
+import { cleanSelection, sentenceAround, sourceNote, startsSentence, wordAt } from './selection';
 import { opdsUrl, parseOpds } from './opds';
 import { matchesSearch, pageAfter } from './catalog';
 import { buildKnownIndex, findKnown, segments } from './known';
@@ -274,5 +274,24 @@ describe('mots connus dans le livre', () => {
       ['大学生', 'b'],
       ['学生', 'a'],
     ]);
+  });
+});
+
+describe('wordAt', () => {
+  const text = "“Don't go,” said the well-known man.";
+  const word = (at: number) => {
+    const r = wordAt(text, at);
+    return r && text.slice(r[0], r[1]);
+  };
+  it('prend le mot touché, apostrophe et trait d’union compris', () => {
+    expect(word(text.indexOf('Don') + 1)).toBe("Don't");
+    expect(word(text.indexOf('well') + 6)).toBe('well-known');
+  });
+  it('accepte la position juste après le mot', () => {
+    expect(word(text.indexOf('man') + 3)).toBe('man');
+  });
+  it('ignore la ponctuation et les espaces', () => {
+    expect(wordAt('a , b', 2)).toBeNull();
+    expect(word(0)).toBeNull();
   });
 });
