@@ -94,17 +94,29 @@ Deno.serve(async (req) => {
   // <lang> n'est accepté que par les voix multilingues.
   const inner = voice === MULTILINGUAL ? `<lang xml:lang="${lang}">${escapeXml(text)}</lang>` : escapeXml(text);
   const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${lang}"><voice name="${voice}">${inner}</voice></speak>`;
-  const r = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
-    method: 'POST',
-    headers: {
-      'Ocp-Apim-Subscription-Key': key,
-      'Content-Type': 'application/ssml+xml',
-      'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3',
-      'User-Agent': 'Lexora',
-    },
-    body: ssml,
-  });
-  if (!r.ok) return json({ error: 'azure', status: r.status }, r.status === 429 ? 429 : 502);
+  const synthesize = () =>
+    fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+      method: 'POST',
+      headers: {
+        'Ocp-Apim-Subscription-Key': key,
+        'Content-Type': 'application/ssml+xml',
+        'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3',
+        'User-Agent': 'Lexora',
+      },
+      body: ssml,
+    }).catch(() => null);
+  // Une seconde tentative si Azure ne répond pas ou répond par une erreur passagère (5xx).
+  let r = await synthesize();
+  if (!r || r.status >= 500) r = await synthesize();
+  if (!r) {
+    console.error('Azure injoignable', region);
+    return json({ error: 'azure', status: 0 }, 502);
+  }
+  if (!r.ok) {
+    // Visible dans Supabase : Edge Functions → speak → Logs.
+    console.error('Azure', r.status, (await r.text().catch(() => '')).slice(0, 300), { region, voice, lang, length: text.length });
+    return json({ error: 'azure', status: r.status }, r.status === 429 ? 429 : 502);
+  }
   // octet-stream : supabase-js le rend tel quel (Blob) au lieu de le lire comme du texte.
   return new Response(await r.arrayBuffer(), { headers: { ...CORS, 'Content-Type': 'application/octet-stream', 'Cache-Control': 'no-store' } });
 });

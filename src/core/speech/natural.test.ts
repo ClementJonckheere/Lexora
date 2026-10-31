@@ -35,4 +35,16 @@ describe('naturalVoiceUrl', () => {
     expect(err.silent).toBe(true);
     expect(err.message).toMatch(/injoignable/);
   });
+
+  it("erreur d'Azure : son code est repris dans le message", async () => {
+    vi.resetModules();
+    const fresh = await import('./natural');
+    const reply = (azure: number) => ({ data: null, error: { context: { status: 502, json: async () => ({ error: 'azure', status: azure }) } } });
+    invoke.mockResolvedValueOnce(reply(400));
+    expect((await fresh.naturalVoiceUrl('fail', 'en-US').catch((e) => e)).message).toMatch(/\(400\)/);
+    invoke.mockResolvedValueOnce(reply(401));
+    const err = await fresh.naturalVoiceUrl('fail again', 'en-US').catch((e) => e);
+    expect(err.message).toMatch(/AZURE_SPEECH_KEY/);
+    expect(err.silent).toBe(false);
+  });
 });
