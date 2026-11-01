@@ -316,6 +316,20 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_verb_answers_universe ON verb_answers(universe_id, deleted)',
   ],
+}, {
+  version: 12,
+  name: 'série : boucliers',
+  statements: [
+    // Un jour manqué couvert par un bouclier (src/core/progress/streak.ts) : la série continue. Toutes langues
+    // confondues, comme la série ; la clé est le jour (AAAA-MM-JJ), le même sur tous les appareils.
+    `CREATE TABLE streak_shields (
+      day         TEXT PRIMARY KEY,
+      used_at     INTEGER NOT NULL,
+      updated_at  INTEGER NOT NULL,
+      deleted     INTEGER NOT NULL DEFAULT 0,
+      dirty       INTEGER NOT NULL DEFAULT 1
+    )`,
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createMemoryDatabase } from '../db/testing';
-import { estimateMinutes, loadDailyProgress } from './progressRepo';
+import { estimateMinutes, loadDailyProgress, spendStreakShields } from './progressRepo';
+import { dayKey } from '../domain/dates';
 
 const DAY = 86_400_000;
 
@@ -32,5 +33,12 @@ describe('progression quotidienne', () => {
     expect((await loadDailyProgress(db, 4, now)).medianDurationMs).toBe(6000);
     expect(estimateMinutes(10, 2, 6000)).toBe(1);
     expect(estimateMinutes(30, 10, 10_000)).toBe(8);
+  });
+  it('bouclier gagné après 6 jours, utilisé pour couvrir un jour manqué', async () => {
+    const db = await withLogs(Array.from({ length: 6 }, (_, i) => now - (i + 2) * DAY));
+    const before = await loadDailyProgress(db, 4, now);
+    expect(before).toMatchObject({ streakDays: 0, shields: 1, lostStreak: 6, missedDays: [dayKey(now - DAY)] });
+    await spendStreakShields(db, before.missedDays, now);
+    expect(await loadDailyProgress(db, 4, now)).toMatchObject({ streakDays: 6, streakAtRisk: true, shields: 0, missedDays: [] });
   });
 });

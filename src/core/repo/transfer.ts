@@ -80,7 +80,7 @@ export async function restoreBackup(db: Database, backup: Backup, now = Date.now
       }
     }
     for (const t of absent) {
-      if (t === 'settings') continue;
+      if (t === 'settings' || SYNC_TABLES.find((s) => s.name === t)?.global) continue;
       await tx.execute(
         `UPDATE ${t} SET deleted = 1, updated_at = ?, dirty = 1
          WHERE deleted = 0 AND universe_id NOT IN (SELECT id FROM universes WHERE deleted = 0)`,

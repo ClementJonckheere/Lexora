@@ -7,6 +7,7 @@ import { computeStats, type Stats } from '@/core/repo/statsRepo';
 import { EmptyState } from '@/ui/components/ui';
 import { Leaderboard } from './Leaderboard';
 import { PhoneSettingsTabs } from '@/ui/features/settings/PhoneSettingsTabs';
+import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
 
 const pct = (v: number | null) => (v == null ? '-' : `${Math.round(v * 100)} %`);
 const WEEKDAY = new Intl.DateTimeFormat('fr-FR', { weekday: 'short' });
@@ -21,6 +22,8 @@ export function StatsPage() {
   const universe = useApp((s) => s.universe);
   const { showNote } = useApp.getState();
   const [stats, setStats] = useState<Stats | null>(null);
+  // Même série que la flamme (toutes langues, boucliers compris).
+  const progress = useDailyProgress();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -69,7 +72,11 @@ export function StatsPage() {
           hint={stats.retention30d.sample ? `sur ${stats.retention30d.sample} révisions espacées` : 'pas encore de données'}
         />
         <Kpi label="Mémorisation estimée" value={pct(stats.estimatedRecall)} hint="probabilité moyenne de rappel aujourd'hui" />
-        <Kpi label="Série" value={`${stats.streakDays} j`} hint={`${stats.reviewsToday} révisions aujourd'hui`} />
+        <Kpi
+          label="Série"
+          value={`${progress.streakDays} j`}
+          hint={`${progress.shields} bouclier${progress.shields > 1 ? 's' : ''} · ${stats.reviewsToday} révisions aujourd'hui`}
+        />
       </div>
 
       <section className="card card-pad" style={{ marginBottom: 16 }}>

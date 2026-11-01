@@ -29,6 +29,7 @@ import { readPref, writePref } from '@/ui/prefs';
 import type { AvailableUpdate } from '@/core/platform/desktop';
 import type { ReviewScope } from '@/core/srs/scope';
 import { runSync, scheduleSync, startSyncLoop, stopSyncLoop } from './sync';
+import { spendStreakShields } from '@/core/repo/progressRepo';
 
 export type SessionConfig =
   | ({ kind: 'scheduled'; limit: number | null; direction?: Direction | null } & ReviewScope)
@@ -217,6 +218,8 @@ interface AppState {
   setBookLevel(key: string, estimate: LevelEstimate): Promise<void>;
   /** Marque des mots comme connus (true), inconnus (false) ou retire la marque (null). */
   markWords(words: string[], known: boolean | null): Promise<void>;
+  /** Couvre des jours manqués avec des boucliers : la série continue. */
+  spendShields(days: string[]): Promise<void>;
   saveVocabTest(result: VocabTestResult): Promise<void>;
   /** Enregistre des signaux de lecture (décisions, sélections, mots rencontrés). */
   observe(list: Observation[]): Promise<void>;
@@ -631,6 +634,10 @@ export const useApp = create<AppState>((set, get) => {
       // L'XP et les titres se recalculent à la fermeture du livre, pas à chaque enregistrement intermédiaire.
       if (done) set((s) => ({ revision: s.revision + 1 }));
       scheduleSync();
+    },
+    async spendShields(days) {
+      await spendStreakShields(db(), days);
+      await afterWrite();
     },
     async markWords(words, known) {
       const u = get().universe;

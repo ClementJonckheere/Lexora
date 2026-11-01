@@ -13,6 +13,7 @@ import { estimateMinutes } from '@/core/repo/progressRepo';
 import { GettingStarted, ResumeReading } from './Widgets';
 import { RankBadge } from '@/ui/features/progress/ProgressPage';
 import { useProgress } from '@/ui/features/progress/useXp';
+import { ShieldOffer } from '@/ui/features/progress/StreakFlame';
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -128,6 +129,7 @@ export function HomePage() {
             <span>{plural(notes.length, 'expression', 'expressions')}</span>
           </div>
         </div>
+        <ShieldOffer progress={progress} />
         <UniversesOverview />
       </section>
 

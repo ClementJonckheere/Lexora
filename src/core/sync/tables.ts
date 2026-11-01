@@ -15,6 +15,8 @@ export interface SyncTable {
    * elle est ignorée (les données restent sur l'appareil) au lieu de bloquer toute la synchronisation.
    */
   optional?: boolean;
+  /** Table sans univers (série, toutes langues confondues). */
+  global?: boolean;
 }
 
 const SYNC = ['updated_at', 'deleted'];
@@ -97,6 +99,7 @@ export const SYNC_TABLES: SyncTable[] = [
     columns: ['id', 'universe_id', 'verb', 'past_given', 'participle_given', 'past_ok', 'participle_ok', 'created_at', ...SYNC],
     optional: true,
   },
+  { name: 'streak_shields', key: 'day', columns: ['day', 'used_at', ...SYNC], optional: true, global: true },
 ];
 
 export type RemoteRow = Record<string, unknown> & { server_updated_at?: number };

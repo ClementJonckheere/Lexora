@@ -34,6 +34,8 @@ import { SidebarAccount } from './features/account/SyncIndicator';
 import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/universes/Universes';
 
 import { PHONE_QUERY, useMediaQuery } from './hooks/useMediaQuery';
+import { StreakFlame } from './features/progress/StreakFlame';
+import { usePushSync } from './hooks/usePushSync';
 
 const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string }[] = [
   { route: 'home', label: 'Accueil', icon: Home, key: '1' },
@@ -97,6 +99,7 @@ function TopBar() {
   const route = useApp((s) => s.route);
   const { navigate, openEditor, setSearchOpen } = useApp.getState();
   const due = useDueCounts();
+  usePushSync();
   // Téléphone : sept onglets au plus ; les statistiques passent sous Paramètres.
   const phone = useMediaQuery(PHONE_QUERY);
   const nav = phone ? NAV.filter((n) => n.route !== 'stats') : NAV;
@@ -115,6 +118,7 @@ function TopBar() {
           <LogoMark />
           <span className="wordmark-text">Lexora</span>
         </span>
+        <StreakFlame />
         <UniverseSwitcher />
       </div>
       <nav className="topnav" aria-label="Navigation principale">

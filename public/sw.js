@@ -73,3 +73,31 @@ self.addEventListener('fetch', (event) => {
     }),
   );
 });
+
+// Rappels (Web Push, fonction Supabase « reminders ») : notification, puis ouverture de Lexora au toucher.
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : '' };
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Lexora', {
+      body: data.body || "C'est l'heure de réviser.",
+      icon: './icons/icon-192.png',
+      badge: './icons/icon-192.png',
+      tag: 'lexora-reminder',
+    }),
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      const open = list.find((c) => c.url.startsWith(scope.href));
+      return open ? open.focus() : self.clients.openWindow(scope.href);
+    }),
+  );
+});
