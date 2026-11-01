@@ -52,10 +52,12 @@ export interface Settings {
   clipboardPrefill: boolean;
   /** Fermer la fenêtre la masque dans la zone de notification (l'application reste active). */
   closeToTray: boolean;
-  /** Rappel quotidien (notification Windows) s'il reste des révisions. */
+  /** Rappel quotidien (notification Windows, ou du téléphone) pour garder la série et réviser. */
   reminderEnabled: boolean;
-  /** Heure du rappel, « HH:MM ». */
+  /** Heure du rappel, « HH:MM » (si l'heure habituelle n'est pas choisie ou pas encore connue). */
   reminderTime: string;
+  /** Rappel à l'heure où vous révisez le plus souvent (src/core/progress/reminder.ts). */
+  reminderAuto: boolean;
   /** Clé d'API DeepL (facultative) : traduction plus fiable, avec le contexte de la phrase. */
   deeplKey: string;
   /** Fond de l'interface : clair, sombre, ou celui de Windows. */
@@ -129,7 +131,7 @@ function sanitizePlacement(raw: unknown): Record<string, PlacementRecord> {
 }
 
 /** Réglages liés au matériel : stockés localement, non synchronisés entre appareils. */
-export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut', 'clipboardPrefill', 'closeToTray', 'reminderEnabled', 'reminderTime', 'deeplKey', 'theme'] as const satisfies readonly (keyof Settings)[];
+export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut', 'clipboardPrefill', 'closeToTray', 'reminderEnabled', 'reminderTime', 'reminderAuto', 'deeplKey', 'theme'] as const satisfies readonly (keyof Settings)[];
 
 /** Version actuelle des réglages par défaut (voir `settingsUpgrade`). */
 export const SETTINGS_VERSION = 2;
@@ -176,6 +178,7 @@ export const DEFAULT_SETTINGS: Settings = {
   closeToTray: true,
   reminderEnabled: true,
   reminderTime: '19:00',
+  reminderAuto: true,
   deeplKey: '',
   theme: 'system',
 };
@@ -222,6 +225,7 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.closeToTray = bool(raw.closeToTray, s.closeToTray);
   s.reminderEnabled = bool(raw.reminderEnabled, s.reminderEnabled);
   s.reminderTime = typeof raw.reminderTime === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(raw.reminderTime) ? raw.reminderTime : s.reminderTime;
+  s.reminderAuto = bool(raw.reminderAuto, s.reminderAuto);
   s.deeplKey = typeof raw.deeplKey === 'string' ? raw.deeplKey.trim() : s.deeplKey;
   s.theme = raw.theme === 'light' || raw.theme === 'dark' ? raw.theme : 'system';
   return s;

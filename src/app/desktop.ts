@@ -4,6 +4,8 @@ import { settingsFor } from '@/core/domain/settings';
 import { checkForUpdate, notify, onTrayAction, setCloseToTray, setTrayTooltip } from '@/core/platform/desktop';
 import { countDue } from '@/core/srs/queue';
 import { readPref, writePref } from '@/ui/prefs';
+import { loadDailyProgress, type DailyProgress } from '@/core/repo/progressRepo';
+import { reminderHour, reminderText } from '@/core/progress/reminder';
 
 /**
  * Intégration au bureau, active tant que l'application tourne (y compris masquée) :
@@ -26,25 +28,42 @@ export function dueByUniverse(): { name: string; total: number }[] {
   }));
 }
 
-function reminderMessage(): string | null {
-  const parts = dueByUniverse().filter((d) => d.total > 0);
-  const total = parts.reduce((a, d) => a + d.total, 0);
-  if (!total) return null;
-  const detail = parts.length > 1 ? ` (${parts.map((d) => `${d.name} ${d.total}`).join(', ')})` : '';
-  return `${total} fiche${total > 1 ? 's' : ''} à réviser${detail}. Quelques minutes suffisent.`;
+/** Progression (série, heure habituelle), relue au plus toutes les 10 minutes ou après une modification. */
+let progressCache: { at: number; revision: number; progress: DailyProgress } | null = null;
+async function currentProgress(): Promise<DailyProgress | null> {
+  const { db, settings, revision } = useApp.getState();
+  if (!db) return null;
+  if (progressCache && progressCache.revision === revision && Date.now() - progressCache.at < 10 * 60_000) return progressCache.progress;
+  const progress = await loadDailyProgress(db, settings.dayStartHour);
+  progressCache = { at: Date.now(), revision, progress };
+  return progress;
 }
 
-/** Rappel une fois par jour, à partir de l'heure choisie, s'il reste des révisions. */
+/**
+ * Rappel une fois par jour, à partir de l'heure où vous révisez le plus souvent (ou de l'heure choisie) : série à
+ * garder, série à sauver avec un bouclier, ou révisions en attente.
+ */
 async function maybeRemind(now = new Date()) {
   const { settings } = useApp.getState();
   if (!settings.reminderEnabled) return;
-  const [h, m] = settings.reminderTime.split(':').map(Number);
-  if (now.getHours() * 60 + now.getMinutes() < h * 60 + m) return;
+  const progress = await currentProgress().catch(() => null);
+  if (!progress) return;
+  const { hour, minute } = reminderHour(settings.reminderTime, settings.reminderAuto, progress.usualHour);
+  if (now.getHours() * 60 + now.getMinutes() < hour * 60 + minute) return;
   const today = dayKey(now.getTime());
   if (readPref<string>('reminder.lastDay', '') === today) return;
-  const message = reminderMessage();
+  const parts = dueByUniverse().filter((d) => d.total > 0);
+  const due = parts.reduce((a, d) => a + d.total, 0);
+  const text = reminderText({
+    streak: progress.streakDays,
+    atRisk: progress.streakAtRisk,
+    doneToday: progress.reviewsToday > 0,
+    repairable: progress.missedDays.length && progress.shields >= progress.missedDays.length ? progress.missedDays.length : 0,
+    due,
+    dueDetail: parts.length > 1 ? ` (${parts.map((d) => `${d.name} ${d.total}`).join(', ')})` : '',
+  });
   writePref('reminder.lastDay', today);
-  if (message) await notify("C'est l'heure de réviser", message);
+  if (text) await notify(text.title, text.body);
 }
 
 async function refreshTooltip() {

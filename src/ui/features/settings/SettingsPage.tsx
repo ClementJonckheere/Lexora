@@ -17,6 +17,9 @@ import { sharedDeeplUsage } from '@/core/translate/shared';
 import { checkNaturalVoice } from '@/core/speech/natural';
 import { authConfigured } from '@/core/platform/auth';
 import { PhoneSettingsTabs } from './PhoneSettingsTabs';
+import { currentPush, disablePush, enablePush, pushSupported } from '@/core/platform/push';
+import { reminderHour } from '@/core/progress/reminder';
+import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
 
 function Setting({ title, desc, children }: { title: string; desc?: ReactNode; children: ReactNode }) {
   return (
@@ -263,6 +266,7 @@ export function SettingsPage() {
           </Setting>
         </section>
 
+        <ReminderSection />
         <DesktopSection />
 
         <section className="card settings-section">
@@ -387,6 +391,82 @@ function OptionalNumberInput({ value, placeholder, onCommit }: { value: number |
 }
 
 /** Intégration à Windows : démarrage, zone de notification, rappel, mises à jour. */
+/** Rappel quotidien : notification Windows, ou du téléphone (Web Push), à l'heure habituelle ou choisie. */
+function ReminderSection() {
+  const settings = useApp((s) => s.settings);
+  const user = useApp((s) => s.auth.user);
+  const progress = useDailyProgress();
+  const desktop = isTauri();
+  const [pushOn, setPushOn] = useState<boolean | null>(null);
+  const [busy, setBusy] = useState(false);
+  const save = (patch: Partial<Settings>) => attempt(() => useApp.getState().updateSettings(patch), 'Réglage enregistré');
+  const { hour, minute } = reminderHour(settings.reminderTime, settings.reminderAuto, progress.usualHour);
+  const at = `${hour} h${minute ? String(minute).padStart(2, '0') : ''}`;
+
+  useEffect(() => {
+    if (!desktop) void currentPush().then((sub) => setPushOn(!!sub)).catch(() => setPushOn(false));
+  }, [desktop]);
+
+  const togglePush = (on: boolean) => {
+    setBusy(true);
+    void attempt(async () => {
+      if (on) await enablePush({ hour, minute, dayStartHour: settings.dayStartHour });
+      else await disablePush();
+      setPushOn(on);
+    }, on ? `Rappel activé sur cet appareil, vers ${at}` : 'Rappel désactivé sur cet appareil').finally(() => setBusy(false));
+  };
+
+  const enabled = desktop ? settings.reminderEnabled : !!pushOn;
+  let unavailable = '';
+  if (!desktop && !pushSupported()) unavailable = "Ce navigateur ne reçoit pas de notifications. Sur iPhone : ajoutez Lexora à l'écran d'accueil (Safari, Partager), puis ouvrez-la depuis l'icône.";
+  else if (!desktop && !user) unavailable = 'Connectez-vous pour recevoir les rappels sur ce téléphone.';
+
+  return (
+    <section className="card settings-section">
+      <div className="card-header">
+        <h2 className="card-title">Rappels</h2>
+      </div>
+      <Setting
+        title="Rappel quotidien"
+        desc={
+          unavailable ||
+          (desktop
+            ? "Notification Windows une fois par jour : série à garder (ou à sauver avec un bouclier), révisions en attente."
+            : "Notification sur cet appareil, même Lexora fermée, si vous n'avez pas encore révisé aujourd'hui (tous appareils confondus).")
+        }
+      >
+        <Switch
+          label="Rappel quotidien"
+          checked={enabled}
+          onChange={(v) => (desktop ? void save({ reminderEnabled: v }) : busy || unavailable ? undefined : togglePush(v))}
+        />
+      </Setting>
+      <Setting
+        title="Heure du rappel"
+        desc={
+          settings.reminderAuto
+            ? progress.usualHour !== null
+              ? `À l'heure où vous révisez le plus souvent : vers ${progress.usualHour} h (30 derniers jours). Elle suit vos habitudes.`
+              : `Votre heure habituelle sera connue après quelques jours de révisions ; en attendant, ${settings.reminderTime.replace(':', ' h ')}.`
+            : 'Heure fixe, choisie ici.'
+        }
+      >
+        <div className="row">
+          <input
+            className="input"
+            type="time"
+            style={{ width: 110 }}
+            value={settings.reminderTime}
+            disabled={!enabled || (settings.reminderAuto && progress.usualHour !== null)}
+            onChange={(e) => e.target.value && void save({ reminderTime: e.target.value })}
+          />
+          <Switch label="Heure habituelle" checked={settings.reminderAuto} onChange={(v) => void save({ reminderAuto: v })} />
+        </div>
+      </Setting>
+    </section>
+  );
+}
+
 function DesktopSection() {
   const settings = useApp((s) => s.settings);
   const update = useApp((s) => s.update);
@@ -421,19 +501,6 @@ function DesktopSection() {
       </Setting>
       <Setting title="Fermer la fenêtre = réduire dans la zone de notification" desc="Lexora reste actif près de l'horloge. Pour quitter : clic droit sur l'icône → Quitter.">
         <Switch label="Réduire à la fermeture" checked={settings.closeToTray} onChange={(v) => void save({ closeToTray: v })} />
-      </Setting>
-      <Setting title="Rappel quotidien" desc="Notification Windows à l'heure choisie, seulement s'il reste des révisions (une fois par jour).">
-        <div className="row">
-          <input
-            className="input"
-            type="time"
-            style={{ width: 110 }}
-            value={settings.reminderTime}
-            disabled={!settings.reminderEnabled}
-            onChange={(e) => e.target.value && void save({ reminderTime: e.target.value })}
-          />
-          <Switch label="Rappel quotidien" checked={settings.reminderEnabled} onChange={(v) => void save({ reminderEnabled: v })} />
-        </div>
       </Setting>
       <Setting
         title="Mises à jour"

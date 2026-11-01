@@ -270,6 +270,17 @@ create table if not exists public.verb_answers (
   server_updated_at  bigint not null default 0
 );
 
+-- Série : jours manqués couverts par un bouclier (toutes langues confondues).
+create table if not exists public.streak_shields (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  day                text not null check (day ~ '^\d{4}-\d{2}-\d{2}$'),
+  used_at            bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0,
+  primary key (user_id, day)
+);
+
 -- Révisions dont la réponse a été tapée (XP identique sur tous les appareils).
 create table if not exists public.typed_answers (
   user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
@@ -287,7 +298,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers', 'streak_shields'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);
@@ -374,6 +385,28 @@ drop policy if exists "leaderboard_own_delete" on public.leaderboard;
 create policy "leaderboard_own_delete" on public.leaderboard for delete to authenticated using (user_id = auth.uid());
 grant select, insert, update, delete on public.leaderboard to authenticated;
 revoke all on public.leaderboard from anon;
+
+-- ------------------------------------------------- rappels sur le téléphone (2.36) ---
+-- Un abonnement Web Push par appareil (version web installée) : heure du rappel dans le fuseau de l'appareil.
+-- La fonction « reminders » (supabase/functions/reminders) les lit avec la clé serveur et note le dernier envoi.
+create table if not exists public.push_subscriptions (
+  endpoint        text primary key,
+  user_id         uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  p256dh          text not null,
+  auth            text not null,
+  time_zone       text not null default 'Europe/Paris',
+  hour            smallint not null check (hour between 0 and 23),
+  minute          smallint not null default 0 check (minute between 0 and 59),
+  day_start_hour  smallint not null default 4 check (day_start_hour between 0 and 23),
+  last_sent_day   text,
+  updated_at      timestamptz not null default now()
+);
+create index if not exists push_subscriptions_user_idx on public.push_subscriptions (user_id);
+alter table public.push_subscriptions enable row level security;
+drop policy if exists "push_own_rows" on public.push_subscriptions;
+create policy "push_own_rows" on public.push_subscriptions for all to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
+grant select, insert, update, delete on public.push_subscriptions to authenticated;
+revoke all on public.push_subscriptions from anon;
 
 -- Recharge le cache de l'API pour qu'elle voie immédiatement les nouvelles colonnes.
 notify pgrst, 'reload schema';

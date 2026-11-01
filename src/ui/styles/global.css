@@ -3797,6 +3797,89 @@ p {
 ::highlight(lexora-tap) {
   background-color: rgb(99 102 241 / 0.32);
 }
+/* Série : petite flamme en haut à gauche, boucliers. */
+.streak {
+  position: relative;
+}
+.streak-flame {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 10px 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-3);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.streak-flame:hover {
+  background: var(--surface-2);
+}
+.streak-flame--lit,
+.streak-icon--lit {
+  color: #ea580c;
+}
+.streak-flame--lit svg {
+  fill: #fb923c;
+}
+.streak-alert {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  padding: 1px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+}
+.topbar .streak-popover {
+  right: auto;
+  width: 290px;
+  padding: 14px;
+  cursor: default;
+}
+.streak-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.streak-head p {
+  margin: 2px 0 0;
+}
+.streak-shields {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-weight: 500;
+}
+.streak-shields .small {
+  grid-column: 2;
+  font-weight: 400;
+}
+.shield-offer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+}
+.shield-offer p {
+  margin: 0;
+  flex: 1 1 180px;
+}
+
 /* Réglages et statistiques réunis sous Paramètres, sur un téléphone seulement. */
 .phone-tabs {
   margin-bottom: 14px;

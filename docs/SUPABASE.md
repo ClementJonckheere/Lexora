@@ -165,4 +165,34 @@ Lexora existe aussi en version web, publiée sur GitHub Pages (`https://<compte>
 3. **Relais pour les livres, exemples et dictionnaire** : Project Gutenberg, Gutendex, Tatoeba, MyMemory, DeepL et le Wiktionnaire refusent les requêtes directes depuis une page web. Déployer la fonction `proxy` (`supabase/functions/proxy`) : *Edge Functions → Deploy a new function → Via Editor*, nom `proxy`, coller le contenu de `supabase/functions/proxy/index.ts`, *Deploy*. Elle n'accepte que ces domaines et les utilisateurs connectés (`ALLOWED_EMAILS`, s'il est défini pour la traduction, s'applique aussi). En ligne de commande : `supabase functions deploy proxy`.
 4. **Connexion par code (iPhone)** : dans une web app installée sur iPhone, la page Google s'ouvre dans une feuille Safari et la session peut y rester. L'écran de connexion propose donc aussi « Recevoir un code par e-mail ». Pour que l'e-mail contienne le code, *Authentication → Emails → Magic Link* : ajouter au modèle `<p>Votre code Lexora : <strong>{{ .Token }}</strong></p>`. Seuls les comptes existants (une première connexion avec Google, même adresse) peuvent se connecter ainsi.
 
+### Rappels sur le téléphone (2.36, facultatif)
+
+Sur Windows, le rappel quotidien est une notification locale (Lexora tourne dans la zone de notification). Sur le téléphone, la page est fermée la plupart du temps : le rappel vient du serveur (Web Push), envoyé par la fonction `reminders` à l'heure du rappel de chaque appareil, seulement si aucune révision n'est enregistrée ce jour-là (tous appareils confondus). Sur iPhone, il faut iOS 16.4 ou plus récent et Lexora ajoutée à l'écran d'accueil. Mise en place, une fois :
+
+1. **Table** : relancer `supabase/schema.sql` (table `push_subscriptions`, et `streak_shields` pour les boucliers).
+2. **Fonction** : *Edge Functions → Deploy a new function → Via Editor*, nom `reminders`, coller `supabase/functions/reminders/index.ts`, *Deploy*. Puis, dans les détails de la fonction, **désactiver** *Verify JWT* (*Enforce JWT verification*) : la tâche planifiée l'appelle sans compte, avec un secret à la place.
+3. **Secrets** (*Edge Functions → Secrets*) :
+   - `VAPID_PUBLIC_KEY` = la clé publique écrite dans `src/core/platform/push.ts` (`VAPID_PUBLIC_KEY`) ;
+   - `VAPID_PRIVATE_KEY` = la clé privée de cette paire (donnée à part, jamais dans le dépôt) ;
+   - `CRON_SECRET` = une longue phrase de passe inventée (elle protège l'appel de la fonction) ;
+   - facultatif : `VAPID_SUBJECT` = `mailto:votre@adresse`.
+4. **Tâche planifiée** (*SQL Editor*), en remplaçant `VOTRE_ID` (identifiant du projet, dans l'adresse `https://VOTRE_ID.supabase.co`) et `VOTRE_SECRET` (le `CRON_SECRET`) :
+
+   ```sql
+   create extension if not exists pg_cron;
+   create extension if not exists pg_net;
+   select cron.schedule('lexora-reminders', '*/15 * * * *', $$
+     select net.http_post(
+       url := 'https://VOTRE_ID.supabase.co/functions/v1/reminders',
+       headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', 'VOTRE_SECRET'),
+       body := '{}'::jsonb
+     );
+   $$);
+   ```
+
+   Pour l'arrêter : `select cron.unschedule('lexora-reminders');`.
+5. **Sur le téléphone** : *Paramètres → Rappels → Rappel quotidien*, puis accepter les notifications. L'heure suit vos habitudes (« Heure habituelle ») ou celle choisie.
+
+Vérification : *Edge Functions → reminders → Logs* (un appel tous les quarts d'heure, `sent` = rappels envoyés).
+
 Ce qui change par rapport à Windows : pas de zone de notification, de démarrage avec Windows, de raccourci global ni de mise à jour par installateur (la version web se met à jour toute seule) ; les données locales sont dans le navigateur (IndexedDB), protégées du nettoyage automatique quand c'est possible et de toute façon synchronisées.
