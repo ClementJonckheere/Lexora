@@ -10,7 +10,7 @@ import { speakText } from '@/ui/speech';
 import { languageInfo } from '@/core/domain/languages';
 import { Button, Segmented, Switch } from '@/ui/components/ui';
 import { AccountSection } from '@/ui/features/account/AccountSection';
-import { checkUpdates } from '@/app/desktop';
+import { checkUpdates, installUpdate } from '@/app/desktop';
 import { getAutostart, openExternal, setAutostart } from '@/core/platform/desktop';
 import { deeplUsage } from '@/core/translate/translate';
 import { sharedDeeplUsage } from '@/core/translate/shared';
@@ -541,6 +541,7 @@ function ReminderSection() {
 function DesktopSection() {
   const settings = useApp((s) => s.settings);
   const update = useApp((s) => s.update);
+  const updateProgress = useApp((s) => s.updateProgress);
   const [autostart, setAutostartState] = useState<boolean | null>(null);
   const [info, setInfo] = useState<AppInfo | null>(null);
   const [checking, setChecking] = useState(false);
@@ -575,17 +576,35 @@ function DesktopSection() {
       </Setting>
       <Setting
         title="Mises à jour"
-        desc={update ? `Version ${update.version} disponible : utilisez le bouton « Installer » en bas de la barre latérale.` : `Version installée : ${info?.version ?? '…'}. Les mises à jour sont vérifiées automatiquement.`}
+        desc={
+          updateProgress !== undefined
+            ? `Installation de la version ${update?.version ?? ''}… ${updateProgress != null ? `${updateProgress} %` : ''} Lexora va redémarrer.`
+            : update
+              ? `Version ${update.version} disponible (installée : ${info?.version ?? '…'}).`
+              : `Version installée : ${info?.version ?? '…'}. Les mises à jour sont vérifiées au démarrage puis toutes les 6 heures.`
+        }
       >
-        <Button
-          disabled={checking}
-          onClick={() => {
-            setChecking(true);
-            void checkUpdates(true).finally(() => setChecking(false));
-          }}
-        >
-          {checking ? 'Vérification…' : 'Rechercher'}
-        </Button>
+        {update ? (
+          <Button variant="primary" disabled={updateProgress !== undefined} onClick={() => void installUpdate(update)}>
+            <Download size={15} /> {updateProgress !== undefined ? 'Installation…' : `Installer la version ${update.version}`}
+          </Button>
+        ) : (
+          <Button
+            disabled={checking}
+            onClick={() => {
+              setChecking(true);
+              void checkUpdates(true).finally(() => setChecking(false));
+            }}
+          >
+            {checking ? 'Vérification…' : 'Rechercher'}
+          </Button>
+        )}
+      </Setting>
+      <Setting
+        title="Mises à jour automatiques"
+        desc="Au démarrage de Lexora, une nouvelle version se télécharge et s'installe d'elle-même, puis l'application redémarre (quelques secondes). Désactivé : le bouton « Installer » reste disponible ici et en haut de l'écran."
+      >
+        <Switch label="Mises à jour automatiques" checked={settings.autoUpdate} onChange={(v) => void save({ autoUpdate: v })} />
       </Setting>
     </section>
   );

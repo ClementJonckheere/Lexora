@@ -63,6 +63,8 @@ export interface Settings {
   reminderTime: string;
   /** Rappel à l'heure où vous révisez le plus souvent (src/core/progress/reminder.ts). */
   reminderAuto: boolean;
+  /** Au démarrage de l'application Windows, une nouvelle version s'installe d'elle-même (puis Lexora redémarre). */
+  autoUpdate: boolean;
   /** Clé d'API DeepL (facultative) : traduction plus fiable, avec le contexte de la phrase. */
   deeplKey: string;
   /** Fond de l'interface : clair, sombre, ou celui de Windows. */
@@ -161,7 +163,7 @@ function sanitizePlacement(raw: unknown): Record<string, PlacementRecord> {
 }
 
 /** Réglages liés au matériel : stockés localement, non synchronisés entre appareils. */
-export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut', 'clipboardPrefill', 'closeToTray', 'reminderEnabled', 'reminderTime', 'reminderAuto', 'deeplKey', 'theme'] as const satisfies readonly (keyof Settings)[];
+export const DEVICE_KEYS = ['ttsVoices', 'ttsRate', 'globalShortcut', 'clipboardPrefill', 'closeToTray', 'reminderEnabled', 'reminderTime', 'reminderAuto', 'autoUpdate', 'deeplKey', 'theme'] as const satisfies readonly (keyof Settings)[];
 
 /** Version actuelle des réglages par défaut (voir `settingsUpgrade`). */
 export const SETTINGS_VERSION = 2;
@@ -210,6 +212,7 @@ export const DEFAULT_SETTINGS: Settings = {
   reminderEnabled: true,
   reminderTime: '19:00',
   reminderAuto: true,
+  autoUpdate: true,
   deeplKey: '',
   theme: 'system',
 };
@@ -258,6 +261,7 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.reminderEnabled = bool(raw.reminderEnabled, s.reminderEnabled);
   s.reminderTime = typeof raw.reminderTime === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(raw.reminderTime) ? raw.reminderTime : s.reminderTime;
   s.reminderAuto = bool(raw.reminderAuto, s.reminderAuto);
+  s.autoUpdate = bool(raw.autoUpdate, s.autoUpdate);
   s.deeplKey = typeof raw.deeplKey === 'string' ? raw.deeplKey.trim() : s.deeplKey;
   s.theme = raw.theme === 'light' || raw.theme === 'dark' ? raw.theme : 'system';
   return s;
