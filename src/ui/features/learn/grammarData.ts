@@ -68,11 +68,15 @@ export function loadGrammarData(): Promise<GrammarData | null> {
 const banks = new Map<string, Promise<Exercise[]>>();
 
 /** Banque d'exercices d'une leçon (vide tant que la CI ne l'a pas préparée). */
+let written: Promise<Record<string, Exercise[]>> | null = null;
+
+/** Exercices de la leçon : ceux rédigés à la main (points rares) d'abord, puis la banque tirée de Tatoeba. */
 export function loadExercises(lessonId: string): Promise<Exercise[]> {
   let p = banks.get(lessonId);
   if (!p) {
-    p = json<{ items: Exercise[] }>(assetUrl(`grammar/en/exercises/${encodeURIComponent(lessonId)}.json`)).then((d) =>
-      (d?.items ?? []).map((ex) => (ex.choices ? { ...ex, choices: shuffledChoices(ex.choices, ex.id) } : ex)),
+    written ??= json<{ lessons: Record<string, Exercise[]> }>(assetUrl('grammar/en/exercises-written.json')).then((d) => d?.lessons ?? {});
+    p = Promise.all([written, json<{ items: Exercise[] }>(assetUrl(`grammar/en/exercises/${encodeURIComponent(lessonId)}.json`))]).then(([w, d]) =>
+      [...(w[lessonId] ?? []), ...(d?.items ?? [])].map((ex) => (ex.choices ? { ...ex, choices: shuffledChoices(ex.choices, ex.id) } : ex)),
     );
     banks.set(lessonId, p);
   }

@@ -3,13 +3,12 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import type { PlacementState } from '@/core/domain/settings';
 import { isCorrect } from '@/core/learn/exercises';
-import { DEFAULT_PLACEMENT_CONFIG, PlacementModel, type PlacementAnswer, type PlacementResponse } from '@/core/learn/placement';
+import { DEFAULT_PLACEMENT_CONFIG, type PlacementAnswer, type PlacementResponse } from '@/core/learn/placement';
 import type { PlacementItem } from '@/core/learn/placementBank';
 import {
+  appPlacementModel,
   evidenceLabel,
-  PLACEMENT_APP_CONFIG,
   placementRecord,
-  placementScope,
   placementSummary,
   pointState,
   STATE_LABEL,
@@ -18,13 +17,14 @@ import {
 import { Button, Kbd } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
 import { loadPlacementItems, useGrammarData, type GrammarPoint } from './grammarData';
+import { usePlacement } from '@/ui/hooks/usePlacement';
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 /** Test de placement : au plus 40 questions, puis l'état de chaque point du parcours, corrigeable. */
 export function PlacementPage({ retake = false }: { retake?: boolean }) {
   const universe = useApp((s) => s.universe);
-  const record = useApp((s) => (universe ? s.settings.placement[universe.id] : undefined));
+  const record = usePlacement();
   const [testing, setTesting] = useState(retake || record?.status !== 'done');
   if (!universe) return null;
   return testing || record?.status !== 'done' ? <PlacementTest onDone={() => setTesting(false)} /> : <PlacementResults record={record} onRetake={() => setTesting(true)} />;
@@ -48,10 +48,7 @@ function PlacementTest({ onDone }: { onDone: () => void }) {
   const model = useMemo(() => {
     if (!data || !items?.length) return null;
     // Leçons existantes et leurs prérequis ; les autres points n'ont pas encore de leçon où servir le résultat.
-    const scope = placementScope(data.points, data.lessons.map((l) => l.id));
-    const ids = new Set(scope.map((p) => p.id));
-    const targets = scope.map((p) => ({ id: p.id, kind: 'point' as const, requires: (p.requires ?? []).filter((r) => ids.has(r)), level: p.level }));
-    return new PlacementModel(targets, items.filter((q) => ids.has(q.targetId)), PLACEMENT_APP_CONFIG);
+    return appPlacementModel(data.points, data.lessons.map((l) => l.id), items);
   }, [data, items]);
   const byId = useMemo(() => new Map((items ?? []).map((q) => [q.id, q])), [items]);
   const decision = model && started ? model.next(answers) : null;
@@ -217,17 +214,14 @@ function PlacementTest({ onDone }: { onDone: () => void }) {
 function PlacementResults({ record, onRetake }: { record: DoneRecord; onRetake: () => void }) {
   const data = useGrammarData();
   const universe = useApp((s) => s.universe)!;
-  const placement = useApp((s) => s.settings.placement);
-  const { navigate, updateSettings } = useApp.getState();
+  const { navigate, savePlacementMark, toast } = useApp.getState();
   const summary = placementSummary(record);
   const results = new Map(record.results.map((r) => [r.id, r]));
 
   const correct = (id: string, state: PlacementState) => {
     const estimated = results.get(id)?.state;
-    const overrides = { ...record.overrides };
-    if (state === estimated) delete overrides[id];
-    else overrides[id] = state;
-    void updateSettings({ placement: { ...placement, [universe.id]: { ...record, overrides } } });
+    // Une ligne par point : une correction faite sur un autre appareil n'est pas effacée.
+    void savePlacementMark(universe.id, { kind: 'override', pointId: id, data: state === estimated ? null : state }).catch((err) => toast('error', errorMessage(err)));
   };
 
   const row = (p: GrammarPoint) => {

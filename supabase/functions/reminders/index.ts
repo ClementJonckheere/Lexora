@@ -2,7 +2,8 @@
 //
 // Appelée chaque quart d'heure par une tâche planifiée (pg_cron, docs/SUPABASE.md « Rappels sur le téléphone »),
 // avec l'en-tête x-cron-secret. Pour chaque abonnement (table push_subscriptions) dont l'heure de rappel tombe
-// dans l'heure en cours (fuseau de l'appareil), et qui n'a pas encore reçu de rappel aujourd'hui : si aucune
+// dans l'heure en cours (fuseau de l'appareil), et qui n'a pas encore reçu de rappel aujourd'hui (un envoi en échec
+// est retenté au passage suivant, dans cette heure) : si aucune
 // révision n'est enregistrée aujourd'hui (tous appareils, table review_logs), envoie « N jours d'affilée » ou
 // « C'est l'heure de réviser ».
 //
@@ -68,8 +69,12 @@ Deno.serve(async (req) => {
     ]);
     const active = new Set((logs ?? []).map((l: { reviewed_at: number }) => studyDay(Number(l.reviewed_at), sub)));
     const covered = new Set((shields ?? []).map((s: { day: string }) => s.day));
-    await db.from('push_subscriptions').update({ last_sent_day: today }).eq('endpoint', sub.endpoint);
-    if (active.has(today)) continue;
+    // Déjà révisé aujourd'hui : rien à envoyer, plus rien à vérifier avant demain.
+    const markSent = () => db.from('push_subscriptions').update({ last_sent_day: today }).eq('endpoint', sub.endpoint);
+    if (active.has(today)) {
+      await markSent();
+      continue;
+    }
     let streak = 0;
     for (let t = now - DAY; ; t -= DAY) {
       const day = studyDay(t, sub);
@@ -83,6 +88,9 @@ Deno.serve(async (req) => {
         : { title: "C'est l'heure de réviser", body: 'Quelques minutes suffisent pour avancer.' };
     try {
       await webpush.sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, JSON.stringify(payload), { TTL: 3600 });
+      // Noté seulement une fois envoyé : une erreur passagère est retentée au passage suivant (toutes les 15 minutes,
+      // tant qu'on reste dans l'heure du rappel).
+      await markSent();
       sent++;
     } catch (err) {
       const status = (err as { statusCode?: number }).statusCode;

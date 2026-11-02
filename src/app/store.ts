@@ -30,6 +30,8 @@ import type { AvailableUpdate } from '@/core/platform/desktop';
 import type { ReviewScope } from '@/core/srs/scope';
 import { runSync, scheduleSync, startSyncLoop, stopSyncLoop } from './sync';
 import { spendStreakShields } from '@/core/repo/progressRepo';
+import { loadPlacementMarks, savePlacementMark } from '@/core/repo/placementRepo';
+import type { PlacementMark } from '@/core/learn/placementResults';
 
 export type SessionConfig =
   | ({ kind: 'scheduled'; limit: number | null; direction?: Direction | null } & ReviewScope)
@@ -140,6 +142,8 @@ interface AppState {
   vocabTest: VocabTestResult | null;
   /** Mots marqués « connu » / « inconnu » dans l'univers courant. */
   wordMarks: Map<string, boolean>;
+  /** Corrections du placement de l'univers courant (point par point, synchronisées sans écrasement). */
+  placementMarks: PlacementMark[];
   /** Observations en lisant (recalage du test de vocabulaire) dans l'univers courant. */
   vocabObservations: Observation[];
   /** Réponses aux exercices de grammaire (onglet Apprendre) dans l'univers courant. */
@@ -218,6 +222,8 @@ interface AppState {
   setBookLevel(key: string, estimate: LevelEstimate): Promise<void>;
   /** Marque des mots comme connus (true), inconnus (false) ou retire la marque (null). */
   markWords(words: string[], known: boolean | null): Promise<void>;
+  /** Corrige un point du placement (état choisi, ou mini-test de leçon) sans toucher aux autres. */
+  savePlacementMark(universeId: string, mark: Omit<PlacementMark, 'at'>): Promise<void>;
   /** Couvre des jours manqués avec des boucliers : la série continue. */
   spendShields(days: string[]): Promise<void>;
   saveVocabTest(result: VocabTestResult): Promise<void>;
@@ -295,6 +301,7 @@ export const useApp = create<AppState>((set, get) => {
     bookLevels: new Map(),
     vocabTest: null,
     wordMarks: new Map(),
+    placementMarks: [],
     vocabObservations: [],
     grammarAnswers: [],
 
@@ -358,6 +365,7 @@ export const useApp = create<AppState>((set, get) => {
             marks: await knowledgeRepo.loadMarks(d, current.id),
             observations: await knowledgeRepo.loadObservations(d, current.id),
             grammar: await learnRepo.loadGrammarAnswers(d, current.id),
+            placement: await loadPlacementMarks(d, current.id),
           }
         : null;
       if (current && get().frequencyRanks?.language !== current.language) {
@@ -380,6 +388,7 @@ export const useApp = create<AppState>((set, get) => {
         bookLevels,
         vocabTest: knowledge?.test ?? null,
         wordMarks: knowledge?.marks ?? new Map(),
+        placementMarks: knowledge?.placement ?? [],
         vocabObservations: knowledge?.observations ?? [],
         grammarAnswers: knowledge?.grammar ?? [],
         revision: s.revision + 1,
@@ -634,6 +643,10 @@ export const useApp = create<AppState>((set, get) => {
       // L'XP et les titres se recalculent à la fermeture du livre, pas à chaque enregistrement intermédiaire.
       if (done) set((s) => ({ revision: s.revision + 1 }));
       scheduleSync();
+    },
+    async savePlacementMark(universeId, mark) {
+      await savePlacementMark(db(), universeId, mark);
+      await afterWrite();
     },
     async spendShields(days) {
       await spendStreakShields(db(), days);

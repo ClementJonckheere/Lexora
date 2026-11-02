@@ -330,6 +330,25 @@ MIGRATIONS.push(MIGRATION_V2, {
       dirty       INTEGER NOT NULL DEFAULT 1
     )`,
   ],
+}, {
+  version: 13,
+  name: 'placement : corrections point par point',
+  statements: [
+    // Corrections du placement (« je connais déjà », mini-tests de leçon), une ligne par point : deux appareils qui
+    // corrigent deux points différents ne s'écrasent plus (le résultat du test reste dans les réglages).
+    // mark_key = universe_id|kind|point_id ; data : JSON (état, ou null pour une correction retirée ; résultat du mini-test).
+    `CREATE TABLE placement_marks (
+      mark_key     TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      kind         TEXT    NOT NULL,
+      point_id     TEXT    NOT NULL,
+      data         TEXT    NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_placement_marks_universe ON placement_marks(universe_id, deleted)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

@@ -19,9 +19,9 @@
   "truth": "Les profils respectent requires mais peuvent ne pas respecter after. Ils sont binaires, sans apprentissage pendant le test.",
   "sourceHashes": {
     "public/grammar/en/points.json": "64683fe457b8a720c06c261dba921685441c772364c032446ad59f88eea3a0fe",
-    "public/grammar/en/placement.json": "ccfa4aaeb9597133944aa407f1e1ab5047ec23654e9853d923e1420717e2a260",
+    "public/grammar/en/placement.json": "7fd55a5e5084765615cdeca98d52b589461e9b83ba9e9778471be90b5eaa1f71",
     "src/core/learn/placement.ts": "227f2ed49eeea88ce6d7dd34f3816bf3da64223e564c128c35945662b14086f8",
-    "src/core/learn/placementSimulation.ts": "775ca33a02e789ddaedac626e81bd211dc177f3e3101b7edda0d5da7290ab0fa"
+    "src/core/learn/placementSimulation.ts": "e04522bd4e0cd6c4c7af9cef68f67fe45a1d551c4ebc9a23447a4a6dd7463711"
   },
   "conditions": [
     {
@@ -44,6 +44,10 @@
           "forcedErrorRate": 0.31183544303797467,
           "falseMasteryRate": 0.0015822784810126582,
           "falseLearnRate": 0,
+          "falseMasteryByEvidence": {
+            "direct": 0.0010126582278481013,
+            "requires": 0.000569620253164557
+          },
           "brier": 0.07936224232303234,
           "stops": {
             "complete": 0,
@@ -62,6 +66,10 @@
           "forcedErrorRate": 0.3556962025316456,
           "falseMasteryRate": 0.0013934426229508198,
           "falseLearnRate": 0.0022222222222222222,
+          "falseMasteryByEvidence": {
+            "direct": 0.0009836065573770492,
+            "requires": 0.0004098360655737705
+          },
           "brier": 0.134747184834912,
           "stops": {
             "complete": 0,
@@ -80,6 +88,10 @@
           "forcedErrorRate": 0.43854430379746834,
           "falseMasteryRate": 0.0036666666666666666,
           "falseLearnRate": 0.0004411764705882353,
+          "falseMasteryByEvidence": {
+            "requires": 0.0026666666666666666,
+            "direct": 0.001
+          },
           "brier": 0.18849890068637537,
           "stops": {
             "complete": 0,
@@ -98,6 +110,9 @@
           "forcedErrorRate": 0.15563291139240507,
           "falseMasteryRate": 0.0004761904761904762,
           "falseLearnRate": 0.002672413793103448,
+          "falseMasteryByEvidence": {
+            "direct": 0.0004761904761904762
+          },
           "brier": 0.17572056030265498,
           "stops": {
             "complete": 0,
@@ -116,6 +131,10 @@
           "forcedErrorRate": 0.09626582278481012,
           "falseMasteryRate": 0.0015,
           "falseLearnRate": 0.0014492753623188406,
+          "falseMasteryByEvidence": {
+            "requires": 0.0005,
+            "direct": 0.001
+          },
           "brier": 0.13709187570465892,
           "stops": {
             "complete": 0,
@@ -134,6 +153,9 @@
           "forcedErrorRate": 0.03259493670886076,
           "falseMasteryRate": 0.001,
           "falseLearnRate": 0.0008108108108108108,
+          "falseMasteryByEvidence": {
+            "direct": 0.001
+          },
           "brier": 0.13688010629183958,
           "stops": {
             "complete": 0,
@@ -152,6 +174,7 @@
           "forcedErrorRate": 0.0035443037974683543,
           "falseMasteryRate": 0,
           "falseLearnRate": 0.0034177215189873417,
+          "falseMasteryByEvidence": {},
           "brier": 0.12559435482969175,
           "stops": {
             "complete": 0,
@@ -170,6 +193,10 @@
           "forcedErrorRate": 0.46050632911392403,
           "falseMasteryRate": 0.0016101694915254237,
           "falseLearnRate": 0.00125,
+          "falseMasteryByEvidence": {
+            "requires": 0.0007627118644067797,
+            "direct": 0.000847457627118644
+          },
           "brier": 0.1419576901371647,
           "stops": {
             "complete": 0,
@@ -188,6 +215,10 @@
           "forcedErrorRate": 0.37481012658227847,
           "falseMasteryRate": 0.0019551616266944736,
           "falseLearnRate": 0.0033218503937007876,
+          "falseMasteryByEvidence": {
+            "direct": 0.0009124087591240876,
+            "requires": 0.0010427528675703858
+          },
           "brier": 0.15388033487469044,
           "stops": {
             "complete": 0,
@@ -217,6 +248,9 @@
           "forcedErrorRate": 0.4968987341772152,
           "falseMasteryRate": 0.010886075949367089,
           "falseLearnRate": 0,
+          "falseMasteryByEvidence": {
+            "direct": 0.010886075949367089
+          },
           "brier": 0.13078494835869334,
           "stops": {
             "complete": 0,
@@ -235,6 +269,9 @@
           "forcedErrorRate": 0.5212658227848102,
           "falseMasteryRate": 0.005573770491803279,
           "falseLearnRate": 0.010555555555555556,
+          "falseMasteryByEvidence": {
+            "direct": 0.005573770491803279
+          },
           "brier": 0.17576105314039367,
           "stops": {
             "complete": 0,
@@ -253,6 +290,9 @@
           "forcedErrorRate": 0.5,
           "falseMasteryRate": 0.0038888888888888888,
           "falseLearnRate": 0.003970588235294117,
+          "falseMasteryByEvidence": {
+            "direct": 0.0038888888888888888
+          },
           "brier": 0.21336075432025928,
           "stops": {
             "complete": 0,
@@ -271,6 +311,7 @@
           "forcedErrorRate": 0.27341772151898736,
           "falseMasteryRate": 0,
           "falseLearnRate": 0.005258620689655173,
+          "falseMasteryByEvidence": {},
           "brier": 0.22800213543054906,
           "stops": {
             "complete": 0,
@@ -289,6 +330,7 @@
           "forcedErrorRate": 0.13563291139240508,
           "falseMasteryRate": 0,
           "falseLearnRate": 0.006159420289855073,
+          "falseMasteryByEvidence": {},
           "brier": 0.22855341369964763,
           "stops": {
             "complete": 0,
@@ -307,6 +349,7 @@
           "forcedErrorRate": 0.07310126582278481,
           "falseMasteryRate": 0,
           "falseLearnRate": 0.00554054054054054,
+          "falseMasteryByEvidence": {},
           "brier": 0.22889616492553486,
           "stops": {
             "complete": 0,
@@ -325,6 +368,7 @@
           "forcedErrorRate": 0.008037974683544304,
           "falseMasteryRate": 0,
           "falseLearnRate": 0.0034177215189873417,
+          "falseMasteryByEvidence": {},
           "brier": 0.22761952559817486,
           "stops": {
             "complete": 0,
@@ -343,6 +387,9 @@
           "forcedErrorRate": 0.6647468354430379,
           "falseMasteryRate": 0.0030508474576271187,
           "falseLearnRate": 0.0115,
+          "falseMasteryByEvidence": {
+            "direct": 0.0030508474576271187
+          },
           "brier": 0.21169712681981548,
           "stops": {
             "complete": 0,
@@ -361,6 +408,9 @@
           "forcedErrorRate": 0.48348101265822785,
           "falseMasteryRate": 0.0009124087591240876,
           "falseLearnRate": 0.01218011811023622,
+          "falseMasteryByEvidence": {
+            "direct": 0.0009124087591240876
+          },
           "brier": 0.22766965828252675,
           "stops": {
             "complete": 0,
@@ -390,6 +440,10 @@
           "forcedErrorRate": 0.3888607594936709,
           "falseMasteryRate": 0.014620253164556962,
           "falseLearnRate": 0,
+          "falseMasteryByEvidence": {
+            "requires": 0.00740506329113924,
+            "direct": 0.007215189873417721
+          },
           "brier": 0.10879516965874059,
           "stops": {
             "complete": 0,
@@ -408,6 +462,10 @@
           "forcedErrorRate": 0.4158860759493671,
           "falseMasteryRate": 0.015245901639344262,
           "falseLearnRate": 0.011944444444444445,
+          "falseMasteryByEvidence": {
+            "requires": 0.00860655737704918,
+            "direct": 0.006639344262295082
+          },
           "brier": 0.15909005273515436,
           "stops": {
             "complete": 0,
@@ -426,6 +484,10 @@
           "forcedErrorRate": 0.455506329113924,
           "falseMasteryRate": 0.019666666666666666,
           "falseLearnRate": 0.012205882352941176,
+          "falseMasteryByEvidence": {
+            "requires": 0.014444444444444444,
+            "direct": 0.005222222222222222
+          },
           "brier": 0.20647138690773562,
           "stops": {
             "complete": 0,
@@ -444,6 +506,10 @@
           "forcedErrorRate": 0.17854430379746836,
           "falseMasteryRate": 0.017380952380952382,
           "falseLearnRate": 0.010603448275862069,
+          "falseMasteryByEvidence": {
+            "direct": 0.010476190476190476,
+            "requires": 0.006904761904761905
+          },
           "brier": 0.1938061005030313,
           "stops": {
             "complete": 0,
@@ -462,6 +528,10 @@
           "forcedErrorRate": 0.11170886075949367,
           "falseMasteryRate": 0.015,
           "falseLearnRate": 0.013695652173913043,
+          "falseMasteryByEvidence": {
+            "requires": 0.005,
+            "direct": 0.01
+          },
           "brier": 0.16187013783686302,
           "stops": {
             "complete": 0,
@@ -480,6 +550,9 @@
           "forcedErrorRate": 0.05246835443037975,
           "falseMasteryRate": 0.009,
           "falseLearnRate": 0.01756756756756757,
+          "falseMasteryByEvidence": {
+            "direct": 0.009
+          },
           "brier": 0.16452018460745838,
           "stops": {
             "complete": 0,
@@ -498,6 +571,7 @@
           "forcedErrorRate": 0.016329113924050634,
           "falseMasteryRate": 0,
           "falseLearnRate": 0.01607594936708861,
+          "falseMasteryByEvidence": {},
           "brier": 0.14825617567073632,
           "stops": {
             "complete": 0,
@@ -516,6 +590,10 @@
           "forcedErrorRate": 0.5133544303797468,
           "falseMasteryRate": 0.013135593220338982,
           "falseLearnRate": 0.0095,
+          "falseMasteryByEvidence": {
+            "requires": 0.006271186440677966,
+            "direct": 0.006864406779661017
+          },
           "brier": 0.16613756965902532,
           "stops": {
             "complete": 0,
@@ -534,6 +612,10 @@
           "forcedErrorRate": 0.4026582278481013,
           "falseMasteryRate": 0.010948905109489052,
           "falseLearnRate": 0.012672244094488189,
+          "falseMasteryByEvidence": {
+            "direct": 0.005995828988529718,
+            "requires": 0.004953076120959333
+          },
           "brier": 0.1736983783859427,
           "stops": {
             "complete": 0,
@@ -567,6 +649,10 @@
             "forcedErrorRate": 0.3329113924050633,
             "falseMasteryRate": 0.004303797468354431,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.004050632911392405,
+              "requires": 0.00025316455696202533
+            },
             "brier": 0.0861066772001889,
             "stops": {
               "complete": 0,
@@ -585,6 +671,9 @@
             "forcedErrorRate": 0.3608860759493671,
             "falseMasteryRate": 0.0004918032786885246,
             "falseLearnRate": 0.002777777777777778,
+            "falseMasteryByEvidence": {
+              "direct": 0.0004918032786885246
+            },
             "brier": 0.1313385591422616,
             "stops": {
               "complete": 0,
@@ -603,6 +692,10 @@
             "forcedErrorRate": 0.42278481012658226,
             "falseMasteryRate": 0.0008888888888888889,
             "falseLearnRate": 0.001176470588235294,
+            "falseMasteryByEvidence": {
+              "requires": 0.0006666666666666666,
+              "direct": 0.00022222222222222223
+            },
             "brier": 0.18691069806471897,
             "stops": {
               "complete": 0,
@@ -621,6 +714,10 @@
             "forcedErrorRate": 0.19455696202531644,
             "falseMasteryRate": 0.0019047619047619048,
             "falseLearnRate": 0.002413793103448276,
+            "falseMasteryByEvidence": {
+              "requires": 0.0009523809523809524,
+              "direct": 0.0009523809523809524
+            },
             "brier": 0.18424575997109854,
             "stops": {
               "complete": 0,
@@ -639,6 +736,7 @@
             "forcedErrorRate": 0.119873417721519,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.0027536231884057972,
+            "falseMasteryByEvidence": {},
             "brier": 0.1730693765540397,
             "stops": {
               "complete": 0,
@@ -657,6 +755,9 @@
             "forcedErrorRate": 0.056455696202531644,
             "falseMasteryRate": 0.004,
             "falseLearnRate": 0.003243243243243243,
+            "falseMasteryByEvidence": {
+              "direct": 0.004
+            },
             "brier": 0.17322153847299188,
             "stops": {
               "complete": 0,
@@ -675,6 +776,7 @@
             "forcedErrorRate": 0.007721518987341772,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.006582278481012658,
+            "falseMasteryByEvidence": {},
             "brier": 0.1755576592448592,
             "stops": {
               "complete": 0,
@@ -693,6 +795,10 @@
             "forcedErrorRate": 0.5775949367088608,
             "falseMasteryRate": 0.002711864406779661,
             "falseLearnRate": 0.0025,
+            "falseMasteryByEvidence": {
+              "requires": 0.000847457627118644,
+              "direct": 0.001864406779661017
+            },
             "brier": 0.1700017385096349,
             "stops": {
               "complete": 0,
@@ -711,6 +817,9 @@
             "forcedErrorRate": 0.3807594936708861,
             "falseMasteryRate": 0.0005219206680584551,
             "falseLearnRate": 0.002704031465093412,
+            "falseMasteryByEvidence": {
+              "direct": 0.0005219206680584551
+            },
             "brier": 0.17133227945637355,
             "stops": {
               "complete": 0,
@@ -738,6 +847,10 @@
             "forcedErrorRate": 0.4362025316455696,
             "falseMasteryRate": 0.0037974683544303796,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "requires": 0.0005063291139240507,
+              "direct": 0.003291139240506329
+            },
             "brier": 0.1123757587818375,
             "stops": {
               "complete": 0,
@@ -756,6 +869,10 @@
             "forcedErrorRate": 0.4011392405063291,
             "falseMasteryRate": 0.0009836065573770492,
             "falseLearnRate": 0.0022222222222222222,
+            "falseMasteryByEvidence": {
+              "requires": 0.0001639344262295082,
+              "direct": 0.000819672131147541
+            },
             "brier": 0.14296969888568475,
             "stops": {
               "complete": 0,
@@ -774,6 +891,10 @@
             "forcedErrorRate": 0.44316455696202534,
             "falseMasteryRate": 0.0024444444444444444,
             "falseLearnRate": 0.0008823529411764706,
+            "falseMasteryByEvidence": {
+              "requires": 0.0017777777777777779,
+              "direct": 0.0006666666666666666
+            },
             "brier": 0.19655559010096404,
             "stops": {
               "complete": 0,
@@ -792,6 +913,9 @@
             "forcedErrorRate": 0.1949367088607595,
             "falseMasteryRate": 0.0004761904761904762,
             "falseLearnRate": 0.0029310344827586207,
+            "falseMasteryByEvidence": {
+              "direct": 0.0004761904761904762
+            },
             "brier": 0.1888476599240369,
             "stops": {
               "complete": 0,
@@ -810,6 +934,9 @@
             "forcedErrorRate": 0.11936708860759494,
             "falseMasteryRate": 0.007,
             "falseLearnRate": 0.002898550724637681,
+            "falseMasteryByEvidence": {
+              "direct": 0.007
+            },
             "brier": 0.17368672793591594,
             "stops": {
               "complete": 0,
@@ -828,6 +955,9 @@
             "forcedErrorRate": 0.05493670886075949,
             "falseMasteryRate": 0.012,
             "falseLearnRate": 0.002027027027027027,
+            "falseMasteryByEvidence": {
+              "direct": 0.012
+            },
             "brier": 0.17356366995557573,
             "stops": {
               "complete": 0,
@@ -846,6 +976,7 @@
             "forcedErrorRate": 0.007721518987341772,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.006582278481012658,
+            "falseMasteryByEvidence": {},
             "brier": 0.1755576592448592,
             "stops": {
               "complete": 0,
@@ -864,6 +995,10 @@
             "forcedErrorRate": 0.5910126582278481,
             "falseMasteryRate": 0.00288135593220339,
             "falseLearnRate": 0.001,
+            "falseMasteryByEvidence": {
+              "direct": 0.0023728813559322033,
+              "requires": 0.0005084745762711864
+            },
             "brier": 0.1744386643811237,
             "stops": {
               "complete": 0,
@@ -882,6 +1017,9 @@
             "forcedErrorRate": 0.39772151898734176,
             "falseMasteryRate": 0.0026096033402922755,
             "falseLearnRate": 0.002704031465093412,
+            "falseMasteryByEvidence": {
+              "direct": 0.0026096033402922755
+            },
             "brier": 0.1787475214619281,
             "stops": {
               "complete": 0,
@@ -909,6 +1047,10 @@
             "forcedErrorRate": 0.013291139240506329,
             "falseMasteryRate": 0.008607594936708861,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.008481012658227849,
+              "requires": 0.00012658227848101267
+            },
             "brier": 0.01061546097913304,
             "stops": {
               "complete": 0,
@@ -927,6 +1069,9 @@
             "forcedErrorRate": 0.009240506329113924,
             "falseMasteryRate": 0.003934426229508197,
             "falseLearnRate": 0.0005555555555555556,
+            "falseMasteryByEvidence": {
+              "direct": 0.003934426229508197
+            },
             "brier": 0.04632509294027988,
             "stops": {
               "complete": 0,
@@ -945,6 +1090,9 @@
             "forcedErrorRate": 0.005316455696202532,
             "falseMasteryRate": 0.003777777777777778,
             "falseLearnRate": 0.0017647058823529412,
+            "falseMasteryByEvidence": {
+              "direct": 0.003777777777777778
+            },
             "brier": 0.03453336832535596,
             "stops": {
               "complete": 0,
@@ -963,6 +1111,9 @@
             "forcedErrorRate": 0.007721518987341772,
             "falseMasteryRate": 0.004761904761904762,
             "falseLearnRate": 0.0034482758620689655,
+            "falseMasteryByEvidence": {
+              "direct": 0.004761904761904762
+            },
             "brier": 0.03479594392739475,
             "stops": {
               "complete": 0,
@@ -981,6 +1132,9 @@
             "forcedErrorRate": 0.07012658227848101,
             "falseMasteryRate": 0.002,
             "falseLearnRate": 0.00391304347826087,
+            "falseMasteryByEvidence": {
+              "direct": 0.002
+            },
             "brier": 0.04297966294363349,
             "stops": {
               "complete": 0,
@@ -999,6 +1153,7 @@
             "forcedErrorRate": 0.014683544303797468,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004324324324324324,
+            "falseMasteryByEvidence": {},
             "brier": 0.01947608137179608,
             "stops": {
               "complete": 0,
@@ -1017,6 +1172,7 @@
             "forcedErrorRate": 0.013164556962025316,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004810126582278481,
+            "falseMasteryByEvidence": {},
             "brier": 0.014850477599796293,
             "stops": {
               "complete": 0,
@@ -1035,6 +1191,10 @@
             "forcedErrorRate": 0.35012658227848104,
             "falseMasteryRate": 0.006610169491525424,
             "falseLearnRate": 0.062,
+            "falseMasteryByEvidence": {
+              "direct": 0.006440677966101695,
+              "requires": 0.00016949152542372882
+            },
             "brier": 0.26732425541082205,
             "stops": {
               "complete": 0,
@@ -1053,6 +1213,10 @@
             "forcedErrorRate": 0.3448101265822785,
             "falseMasteryRate": 0.042275574112734866,
             "falseLearnRate": 0.04793510324483776,
+            "falseMasteryByEvidence": {
+              "level": 0.038622129436325675,
+              "direct": 0.0036534446764091857
+            },
             "brier": 0.26622215040317576,
             "stops": {
               "complete": 0,
@@ -1080,6 +1244,9 @@
             "forcedErrorRate": 0.017468354430379748,
             "falseMasteryRate": 0.01240506329113924,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.01240506329113924
+            },
             "brier": 0.013674672563575973,
             "stops": {
               "complete": 0,
@@ -1098,6 +1265,9 @@
             "forcedErrorRate": 0.007088607594936709,
             "falseMasteryRate": 0.003278688524590164,
             "falseLearnRate": 0.0005555555555555556,
+            "falseMasteryByEvidence": {
+              "direct": 0.003278688524590164
+            },
             "brier": 0.04637441815702861,
             "stops": {
               "complete": 0,
@@ -1116,6 +1286,9 @@
             "forcedErrorRate": 0.0021518987341772153,
             "falseMasteryRate": 0.0013333333333333333,
             "falseLearnRate": 0.001176470588235294,
+            "falseMasteryByEvidence": {
+              "direct": 0.0013333333333333333
+            },
             "brier": 0.0337513570723126,
             "stops": {
               "complete": 0,
@@ -1134,6 +1307,9 @@
             "forcedErrorRate": 0.005063291139240506,
             "falseMasteryRate": 0.0004761904761904762,
             "falseLearnRate": 0.003103448275862069,
+            "falseMasteryByEvidence": {
+              "direct": 0.0004761904761904762
+            },
             "brier": 0.03369819765198645,
             "stops": {
               "complete": 0,
@@ -1152,6 +1328,9 @@
             "forcedErrorRate": 0.07113924050632911,
             "falseMasteryRate": 0.005,
             "falseLearnRate": 0.0053623188405797105,
+            "falseMasteryByEvidence": {
+              "direct": 0.005
+            },
             "brier": 0.04659628747552704,
             "stops": {
               "complete": 0,
@@ -1170,6 +1349,9 @@
             "forcedErrorRate": 0.01708860759493671,
             "falseMasteryRate": 0.004,
             "falseLearnRate": 0.004054054054054054,
+            "falseMasteryByEvidence": {
+              "direct": 0.004
+            },
             "brier": 0.020787245198782684,
             "stops": {
               "complete": 0,
@@ -1188,6 +1370,7 @@
             "forcedErrorRate": 0.013164556962025316,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004810126582278481,
+            "falseMasteryByEvidence": {},
             "brier": 0.014850477599796293,
             "stops": {
               "complete": 0,
@@ -1206,6 +1389,11 @@
             "forcedErrorRate": 0.3720253164556962,
             "falseMasteryRate": 0.012711864406779662,
             "falseLearnRate": 0.0405,
+            "falseMasteryByEvidence": {
+              "level": 0.008983050847457628,
+              "direct": 0.003559322033898305,
+              "requires": 0.00016949152542372882
+            },
             "brier": 0.28557143783528155,
             "stops": {
               "complete": 0,
@@ -1224,6 +1412,10 @@
             "forcedErrorRate": 0.3492405063291139,
             "falseMasteryRate": 0.050626304801670144,
             "falseLearnRate": 0.040806293018682396,
+            "falseMasteryByEvidence": {
+              "level": 0.04488517745302714,
+              "direct": 0.005741127348643006
+            },
             "brier": 0.2706246366455193,
             "stops": {
               "complete": 0,
@@ -1251,6 +1443,10 @@
             "forcedErrorRate": 0.3329113924050633,
             "falseMasteryRate": 0.004303797468354431,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.004050632911392405,
+              "requires": 0.00025316455696202533
+            },
             "brier": 0.0861066772001889,
             "stops": {
               "complete": 0,
@@ -1269,6 +1465,9 @@
             "forcedErrorRate": 0.3608860759493671,
             "falseMasteryRate": 0.0004918032786885246,
             "falseLearnRate": 0.002777777777777778,
+            "falseMasteryByEvidence": {
+              "direct": 0.0004918032786885246
+            },
             "brier": 0.1313385591422616,
             "stops": {
               "complete": 0,
@@ -1287,6 +1486,10 @@
             "forcedErrorRate": 0.42278481012658226,
             "falseMasteryRate": 0.0008888888888888889,
             "falseLearnRate": 0.001176470588235294,
+            "falseMasteryByEvidence": {
+              "requires": 0.0006666666666666666,
+              "direct": 0.00022222222222222223
+            },
             "brier": 0.18691069806471897,
             "stops": {
               "complete": 0,
@@ -1305,6 +1508,10 @@
             "forcedErrorRate": 0.19455696202531644,
             "falseMasteryRate": 0.0019047619047619048,
             "falseLearnRate": 0.002413793103448276,
+            "falseMasteryByEvidence": {
+              "requires": 0.0009523809523809524,
+              "direct": 0.0009523809523809524
+            },
             "brier": 0.18424575997109854,
             "stops": {
               "complete": 0,
@@ -1323,6 +1530,7 @@
             "forcedErrorRate": 0.119873417721519,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.0027536231884057972,
+            "falseMasteryByEvidence": {},
             "brier": 0.1730693765540397,
             "stops": {
               "complete": 0,
@@ -1341,6 +1549,9 @@
             "forcedErrorRate": 0.056455696202531644,
             "falseMasteryRate": 0.004,
             "falseLearnRate": 0.003243243243243243,
+            "falseMasteryByEvidence": {
+              "direct": 0.004
+            },
             "brier": 0.17322153847299188,
             "stops": {
               "complete": 0,
@@ -1359,6 +1570,7 @@
             "forcedErrorRate": 0.007721518987341772,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.006582278481012658,
+            "falseMasteryByEvidence": {},
             "brier": 0.1755576592448592,
             "stops": {
               "complete": 0,
@@ -1377,6 +1589,10 @@
             "forcedErrorRate": 0.5775949367088608,
             "falseMasteryRate": 0.002711864406779661,
             "falseLearnRate": 0.0025,
+            "falseMasteryByEvidence": {
+              "requires": 0.000847457627118644,
+              "direct": 0.001864406779661017
+            },
             "brier": 0.1700017385096349,
             "stops": {
               "complete": 0,
@@ -1395,6 +1611,9 @@
             "forcedErrorRate": 0.3807594936708861,
             "falseMasteryRate": 0.0005219206680584551,
             "falseLearnRate": 0.002704031465093412,
+            "falseMasteryByEvidence": {
+              "direct": 0.0005219206680584551
+            },
             "brier": 0.17133227945637355,
             "stops": {
               "complete": 0,
@@ -1422,6 +1641,10 @@
             "forcedErrorRate": 0.4362025316455696,
             "falseMasteryRate": 0.0037974683544303796,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "requires": 0.0005063291139240507,
+              "direct": 0.003291139240506329
+            },
             "brier": 0.1123757587818375,
             "stops": {
               "complete": 0,
@@ -1440,6 +1663,10 @@
             "forcedErrorRate": 0.4011392405063291,
             "falseMasteryRate": 0.0009836065573770492,
             "falseLearnRate": 0.0022222222222222222,
+            "falseMasteryByEvidence": {
+              "requires": 0.0001639344262295082,
+              "direct": 0.000819672131147541
+            },
             "brier": 0.14296969888568475,
             "stops": {
               "complete": 0,
@@ -1458,6 +1685,10 @@
             "forcedErrorRate": 0.44316455696202534,
             "falseMasteryRate": 0.0024444444444444444,
             "falseLearnRate": 0.0008823529411764706,
+            "falseMasteryByEvidence": {
+              "requires": 0.0017777777777777779,
+              "direct": 0.0006666666666666666
+            },
             "brier": 0.19655559010096404,
             "stops": {
               "complete": 0,
@@ -1476,6 +1707,9 @@
             "forcedErrorRate": 0.1949367088607595,
             "falseMasteryRate": 0.0004761904761904762,
             "falseLearnRate": 0.0029310344827586207,
+            "falseMasteryByEvidence": {
+              "direct": 0.0004761904761904762
+            },
             "brier": 0.1888476599240369,
             "stops": {
               "complete": 0,
@@ -1494,6 +1728,9 @@
             "forcedErrorRate": 0.11936708860759494,
             "falseMasteryRate": 0.007,
             "falseLearnRate": 0.002898550724637681,
+            "falseMasteryByEvidence": {
+              "direct": 0.007
+            },
             "brier": 0.17368672793591594,
             "stops": {
               "complete": 0,
@@ -1512,6 +1749,9 @@
             "forcedErrorRate": 0.05493670886075949,
             "falseMasteryRate": 0.012,
             "falseLearnRate": 0.002027027027027027,
+            "falseMasteryByEvidence": {
+              "direct": 0.012
+            },
             "brier": 0.17356366995557573,
             "stops": {
               "complete": 0,
@@ -1530,6 +1770,7 @@
             "forcedErrorRate": 0.007721518987341772,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.006582278481012658,
+            "falseMasteryByEvidence": {},
             "brier": 0.1755576592448592,
             "stops": {
               "complete": 0,
@@ -1548,6 +1789,10 @@
             "forcedErrorRate": 0.5910126582278481,
             "falseMasteryRate": 0.00288135593220339,
             "falseLearnRate": 0.001,
+            "falseMasteryByEvidence": {
+              "direct": 0.0023728813559322033,
+              "requires": 0.0005084745762711864
+            },
             "brier": 0.1744386643811237,
             "stops": {
               "complete": 0,
@@ -1566,6 +1811,9 @@
             "forcedErrorRate": 0.39772151898734176,
             "falseMasteryRate": 0.0026096033402922755,
             "falseLearnRate": 0.002704031465093412,
+            "falseMasteryByEvidence": {
+              "direct": 0.0026096033402922755
+            },
             "brier": 0.1787475214619281,
             "stops": {
               "complete": 0,
@@ -1593,6 +1841,10 @@
             "forcedErrorRate": 0.013291139240506329,
             "falseMasteryRate": 0.008607594936708861,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.008481012658227849,
+              "requires": 0.00012658227848101267
+            },
             "brier": 0.01061546097913304,
             "stops": {
               "complete": 0,
@@ -1611,6 +1863,9 @@
             "forcedErrorRate": 0.009240506329113924,
             "falseMasteryRate": 0.003934426229508197,
             "falseLearnRate": 0.0005555555555555556,
+            "falseMasteryByEvidence": {
+              "direct": 0.003934426229508197
+            },
             "brier": 0.04632509294027988,
             "stops": {
               "complete": 0,
@@ -1629,6 +1884,9 @@
             "forcedErrorRate": 0.005316455696202532,
             "falseMasteryRate": 0.003777777777777778,
             "falseLearnRate": 0.0017647058823529412,
+            "falseMasteryByEvidence": {
+              "direct": 0.003777777777777778
+            },
             "brier": 0.03453336832535596,
             "stops": {
               "complete": 0,
@@ -1647,6 +1905,9 @@
             "forcedErrorRate": 0.007721518987341772,
             "falseMasteryRate": 0.004761904761904762,
             "falseLearnRate": 0.0034482758620689655,
+            "falseMasteryByEvidence": {
+              "direct": 0.004761904761904762
+            },
             "brier": 0.03479594392739475,
             "stops": {
               "complete": 0,
@@ -1665,6 +1926,9 @@
             "forcedErrorRate": 0.07012658227848101,
             "falseMasteryRate": 0.002,
             "falseLearnRate": 0.00391304347826087,
+            "falseMasteryByEvidence": {
+              "direct": 0.002
+            },
             "brier": 0.04297966294363349,
             "stops": {
               "complete": 0,
@@ -1683,6 +1947,7 @@
             "forcedErrorRate": 0.014683544303797468,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004324324324324324,
+            "falseMasteryByEvidence": {},
             "brier": 0.01947608137179608,
             "stops": {
               "complete": 0,
@@ -1701,6 +1966,7 @@
             "forcedErrorRate": 0.013164556962025316,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004810126582278481,
+            "falseMasteryByEvidence": {},
             "brier": 0.014850477599796293,
             "stops": {
               "complete": 0,
@@ -1719,6 +1985,10 @@
             "forcedErrorRate": 0.35012658227848104,
             "falseMasteryRate": 0.006610169491525424,
             "falseLearnRate": 0.062,
+            "falseMasteryByEvidence": {
+              "direct": 0.006440677966101695,
+              "requires": 0.00016949152542372882
+            },
             "brier": 0.26732425541082205,
             "stops": {
               "complete": 0,
@@ -1737,6 +2007,10 @@
             "forcedErrorRate": 0.3448101265822785,
             "falseMasteryRate": 0.042275574112734866,
             "falseLearnRate": 0.04793510324483776,
+            "falseMasteryByEvidence": {
+              "level": 0.038622129436325675,
+              "direct": 0.0036534446764091857
+            },
             "brier": 0.26622215040317576,
             "stops": {
               "complete": 0,
@@ -1764,6 +2038,9 @@
             "forcedErrorRate": 0.017468354430379748,
             "falseMasteryRate": 0.01240506329113924,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.01240506329113924
+            },
             "brier": 0.013674672563575973,
             "stops": {
               "complete": 0,
@@ -1782,6 +2059,9 @@
             "forcedErrorRate": 0.007088607594936709,
             "falseMasteryRate": 0.003278688524590164,
             "falseLearnRate": 0.0005555555555555556,
+            "falseMasteryByEvidence": {
+              "direct": 0.003278688524590164
+            },
             "brier": 0.04637441815702861,
             "stops": {
               "complete": 0,
@@ -1800,6 +2080,9 @@
             "forcedErrorRate": 0.0021518987341772153,
             "falseMasteryRate": 0.0013333333333333333,
             "falseLearnRate": 0.001176470588235294,
+            "falseMasteryByEvidence": {
+              "direct": 0.0013333333333333333
+            },
             "brier": 0.0337513570723126,
             "stops": {
               "complete": 0,
@@ -1818,6 +2101,9 @@
             "forcedErrorRate": 0.005063291139240506,
             "falseMasteryRate": 0.0004761904761904762,
             "falseLearnRate": 0.003103448275862069,
+            "falseMasteryByEvidence": {
+              "direct": 0.0004761904761904762
+            },
             "brier": 0.03369819765198645,
             "stops": {
               "complete": 0,
@@ -1836,6 +2122,9 @@
             "forcedErrorRate": 0.07113924050632911,
             "falseMasteryRate": 0.005,
             "falseLearnRate": 0.0053623188405797105,
+            "falseMasteryByEvidence": {
+              "direct": 0.005
+            },
             "brier": 0.04659628747552704,
             "stops": {
               "complete": 0,
@@ -1854,6 +2143,9 @@
             "forcedErrorRate": 0.01708860759493671,
             "falseMasteryRate": 0.004,
             "falseLearnRate": 0.004054054054054054,
+            "falseMasteryByEvidence": {
+              "direct": 0.004
+            },
             "brier": 0.020787245198782684,
             "stops": {
               "complete": 0,
@@ -1872,6 +2164,7 @@
             "forcedErrorRate": 0.013164556962025316,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004810126582278481,
+            "falseMasteryByEvidence": {},
             "brier": 0.014850477599796293,
             "stops": {
               "complete": 0,
@@ -1890,6 +2183,11 @@
             "forcedErrorRate": 0.3720253164556962,
             "falseMasteryRate": 0.012711864406779662,
             "falseLearnRate": 0.0405,
+            "falseMasteryByEvidence": {
+              "level": 0.008983050847457628,
+              "direct": 0.003559322033898305,
+              "requires": 0.00016949152542372882
+            },
             "brier": 0.28557143783528155,
             "stops": {
               "complete": 0,
@@ -1908,6 +2206,10 @@
             "forcedErrorRate": 0.3492405063291139,
             "falseMasteryRate": 0.050626304801670144,
             "falseLearnRate": 0.040806293018682396,
+            "falseMasteryByEvidence": {
+              "level": 0.04488517745302714,
+              "direct": 0.005741127348643006
+            },
             "brier": 0.2706246366455193,
             "stops": {
               "complete": 0,
@@ -1943,6 +2245,10 @@
             "forcedErrorRate": 0.015189873417721518,
             "falseMasteryRate": 0.009915611814345991,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.009704641350210971,
+              "requires": 0.0002109704641350211
+            },
             "brier": 0.011899516642572643,
             "stops": {
               "complete": 0,
@@ -1961,6 +2267,9 @@
             "forcedErrorRate": 0.008860759493670886,
             "falseMasteryRate": 0.004918032786885246,
             "falseLearnRate": 0.000925925925925926,
+            "falseMasteryByEvidence": {
+              "direct": 0.004918032786885246
+            },
             "brier": 0.045310468388376775,
             "stops": {
               "complete": 0,
@@ -1979,6 +2288,9 @@
             "forcedErrorRate": 0.005485232067510549,
             "falseMasteryRate": 0.004814814814814815,
             "falseLearnRate": 0.0014705882352941176,
+            "falseMasteryByEvidence": {
+              "direct": 0.004814814814814815
+            },
             "brier": 0.03533916494023582,
             "stops": {
               "complete": 0,
@@ -1990,13 +2302,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.81666666666667,
-            "classifiedRate": 0.3143459915611814,
-            "classifiedErrorRate": 0.01476510067114094,
+            "classifiedRate": 0.2978902953586498,
+            "classifiedErrorRate": 0.015580736543909348,
             "misclassifiedAllRate": 0.004641350210970464,
-            "uncertainRate": 0.6856540084388185,
+            "uncertainRate": 0.7021097046413503,
             "forcedErrorRate": 0.010337552742616034,
             "falseMasteryRate": 0.007936507936507936,
             "falseLearnRate": 0.0034482758620689655,
+            "falseMasteryByEvidence": {
+              "direct": 0.007936507936507936
+            },
             "brier": 0.03633145060271698,
             "stops": {
               "complete": 0,
@@ -2008,13 +2323,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.666666666666664,
-            "classifiedRate": 0.6516877637130801,
-            "classifiedErrorRate": 0.00712204596956944,
+            "classifiedRate": 0.32151898734177214,
+            "classifiedErrorRate": 0.014435695538057743,
             "misclassifiedAllRate": 0.004641350210970464,
-            "uncertainRate": 0.3483122362869199,
+            "uncertainRate": 0.6784810126582279,
             "forcedErrorRate": 0.0719409282700422,
             "falseMasteryRate": 0.0033333333333333335,
             "falseLearnRate": 0.004830917874396135,
+            "falseMasteryByEvidence": {
+              "direct": 0.0033333333333333335
+            },
             "brier": 0.045318698814102554,
             "stops": {
               "complete": 0,
@@ -2026,13 +2344,16 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.733333333333334,
-            "classifiedRate": 0.6605485232067511,
-            "classifiedErrorRate": 0.006068348770360907,
+            "classifiedRate": 0.3261603375527426,
+            "classifiedErrorRate": 0.012289780077619664,
             "misclassifiedAllRate": 0.004008438818565401,
-            "uncertainRate": 0.33945147679324894,
+            "uncertainRate": 0.6738396624472573,
             "forcedErrorRate": 0.014556962025316455,
             "falseMasteryRate": 0.0033333333333333335,
             "falseLearnRate": 0.004054054054054054,
+            "falseMasteryByEvidence": {
+              "direct": 0.0033333333333333335
+            },
             "brier": 0.021340269189934973,
             "stops": {
               "complete": 0,
@@ -2044,13 +2365,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.789662447257384,
-            "classifiedErrorRate": 0.0056104728827144,
+            "classifiedRate": 0.33459915611814345,
+            "classifiedErrorRate": 0.013240857503152586,
             "misclassifiedAllRate": 0.004430379746835443,
-            "uncertainRate": 0.210337552742616,
+            "uncertainRate": 0.6654008438818566,
             "forcedErrorRate": 0.016877637130801686,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004430379746835443,
+            "falseMasteryByEvidence": {},
             "brier": 0.019485018202764177,
             "stops": {
               "complete": 0,
@@ -2069,6 +2391,9 @@
             "forcedErrorRate": 0.3510548523206751,
             "falseMasteryRate": 0.005649717514124294,
             "falseLearnRate": 0.016666666666666666,
+            "falseMasteryByEvidence": {
+              "direct": 0.005649717514124294
+            },
             "brier": 0.27193139061447946,
             "stops": {
               "complete": 0,
@@ -2080,14 +2405,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.95,
-            "classifiedRate": 0.3367088607594937,
-            "classifiedErrorRate": 0.07205513784461152,
-            "misclassifiedAllRate": 0.024261603375527425,
-            "uncertainRate": 0.6632911392405063,
+            "classifiedRate": 0.31940928270042196,
+            "classifiedErrorRate": 0.047556142668428,
+            "misclassifiedAllRate": 0.015189873417721518,
+            "uncertainRate": 0.680590717299578,
             "forcedErrorRate": 0.35295358649789027,
-            "falseMasteryRate": 0.021795989537925022,
+            "falseMasteryRate": 0.003051438535309503,
             "falseLearnRate": 0.026573998364677023,
+            "falseMasteryByEvidence": {
+              "direct": 0.003051438535309503
+            },
             "brier": 0.27347060988619,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.916666666666664,
+            "classifiedRate": 0.3468354430379747,
+            "classifiedErrorRate": 0.012773722627737226,
+            "misclassifiedAllRate": 0.004430379746835443,
+            "uncertainRate": 0.6531645569620252,
+            "forcedErrorRate": 0.18945147679324895,
+            "falseMasteryRate": 0.006206896551724138,
+            "falseLearnRate": 0.00364741641337386,
+            "falseMasteryByEvidence": {
+              "direct": 0.006206896551724138
+            },
+            "brier": 0.12810941325572736,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.86666666666667,
+            "classifiedRate": 0.29831223628691983,
+            "classifiedErrorRate": 0.016973125884016973,
+            "misclassifiedAllRate": 0.005063291139240506,
+            "uncertainRate": 0.7016877637130802,
+            "forcedErrorRate": 0.03481012658227848,
+            "falseMasteryRate": 0.0052677787532923615,
+            "falseLearnRate": 0.004998611496806442,
+            "falseMasteryByEvidence": {
+              "direct": 0.0052677787532923615
+            },
+            "brier": 0.05676914895241821,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.88333333333333,
+            "classifiedRate": 0.4487341772151899,
+            "classifiedErrorRate": 0.010343206393982134,
+            "misclassifiedAllRate": 0.004641350210970464,
+            "uncertainRate": 0.5512658227848102,
+            "forcedErrorRate": 0.15632911392405063,
+            "falseMasteryRate": 0.005362686988427886,
+            "falseLearnRate": 0.002506265664160401,
+            "falseMasteryByEvidence": {
+              "direct": 0.005362686988427886
+            },
+            "brier": 0.10285838934171536,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -2112,6 +2503,10 @@
             "forcedErrorRate": 0.015189873417721518,
             "falseMasteryRate": 0.009915611814345991,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.009704641350210971,
+              "requires": 0.0002109704641350211
+            },
             "brier": 0.011899516642572643,
             "stops": {
               "complete": 0,
@@ -2130,6 +2525,9 @@
             "forcedErrorRate": 0.010970464135021098,
             "falseMasteryRate": 0.005191256830601093,
             "falseLearnRate": 0.004629629629629629,
+            "falseMasteryByEvidence": {
+              "direct": 0.005191256830601093
+            },
             "brier": 0.04651222823956191,
             "stops": {
               "complete": 0,
@@ -2148,6 +2546,9 @@
             "forcedErrorRate": 0.00590717299578059,
             "falseMasteryRate": 0.0025925925925925925,
             "falseLearnRate": 0.00392156862745098,
+            "falseMasteryByEvidence": {
+              "direct": 0.0025925925925925925
+            },
             "brier": 0.036007546975034166,
             "stops": {
               "complete": 0,
@@ -2159,13 +2560,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.78333333333333,
-            "classifiedRate": 0.3029535864978903,
-            "classifiedErrorRate": 0.019498607242339833,
+            "classifiedRate": 0.279957805907173,
+            "classifiedErrorRate": 0.02110022607385079,
             "misclassifiedAllRate": 0.00590717299578059,
-            "uncertainRate": 0.6970464135021097,
+            "uncertainRate": 0.720042194092827,
             "forcedErrorRate": 0.014135021097046414,
             "falseMasteryRate": 0.0007936507936507937,
             "falseLearnRate": 0.007758620689655172,
+            "falseMasteryByEvidence": {
+              "direct": 0.0007936507936507937
+            },
             "brier": 0.039269115944127984,
             "stops": {
               "complete": 0,
@@ -2177,13 +2581,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.93333333333333,
-            "classifiedRate": 0.5759493670886076,
-            "classifiedErrorRate": 0.01868131868131868,
+            "classifiedRate": 0.2926160337552743,
+            "classifiedErrorRate": 0.03677000720980533,
             "misclassifiedAllRate": 0.010759493670886076,
-            "uncertainRate": 0.42405063291139244,
+            "uncertainRate": 0.7073839662447257,
             "forcedErrorRate": 0.06455696202531645,
             "falseMasteryRate": 0.006666666666666667,
             "falseLearnRate": 0.011352657004830917,
+            "falseMasteryByEvidence": {
+              "direct": 0.006666666666666667
+            },
             "brier": 0.04763329876225258,
             "stops": {
               "complete": 0,
@@ -2195,13 +2602,16 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.833333333333336,
-            "classifiedRate": 0.5677215189873418,
-            "classifiedErrorRate": 0.023782980304719436,
+            "classifiedRate": 0.29324894514767935,
+            "classifiedErrorRate": 0.0460431654676259,
             "misclassifiedAllRate": 0.01350210970464135,
-            "uncertainRate": 0.4322784810126582,
+            "uncertainRate": 0.7067510548523206,
             "forcedErrorRate": 0.04767932489451477,
             "falseMasteryRate": 0.006666666666666667,
             "falseLearnRate": 0.013963963963963964,
+            "falseMasteryByEvidence": {
+              "direct": 0.006666666666666667
+            },
             "brier": 0.039655425955420605,
             "stops": {
               "complete": 0,
@@ -2213,13 +2623,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.9,
-            "classifiedRate": 0.6274261603375527,
-            "classifiedErrorRate": 0.018493611297915265,
+            "classifiedRate": 0.29873417721518986,
+            "classifiedErrorRate": 0.03884180790960452,
             "misclassifiedAllRate": 0.011603375527426161,
-            "uncertainRate": 0.3725738396624473,
+            "uncertainRate": 0.7012658227848101,
             "forcedErrorRate": 0.0710970464135021,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.011603375527426161,
+            "falseMasteryByEvidence": {},
             "brier": 0.051124115273600314,
             "stops": {
               "complete": 0,
@@ -2238,6 +2649,10 @@
             "forcedErrorRate": 0.36751054852320675,
             "falseMasteryRate": 0.003389830508474576,
             "falseLearnRate": 0.025,
+            "falseMasteryByEvidence": {
+              "direct": 0.0031073446327683617,
+              "requires": 0.0002824858757062147
+            },
             "brier": 0.2804033073187032,
             "stops": {
               "complete": 0,
@@ -2249,14 +2664,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.3206751054852321,
-            "classifiedErrorRate": 0.07434210526315789,
-            "misclassifiedAllRate": 0.023839662447257385,
-            "uncertainRate": 0.6793248945147679,
+            "classifiedRate": 0.3116033755274262,
+            "classifiedErrorRate": 0.061611374407582936,
+            "misclassifiedAllRate": 0.01919831223628692,
+            "uncertainRate": 0.6883966244725739,
             "forcedErrorRate": 0.35548523206751054,
-            "falseMasteryRate": 0.011333914559721011,
+            "falseMasteryRate": 0.0017436791630340018,
             "falseLearnRate": 0.03556827473426002,
+            "falseMasteryByEvidence": {
+              "direct": 0.0017436791630340018
+            },
             "brier": 0.2742532605114738,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.9,
+            "classifiedRate": 0.3426160337552743,
+            "classifiedErrorRate": 0.03140394088669951,
+            "misclassifiedAllRate": 0.010759493670886076,
+            "uncertainRate": 0.6573839662447257,
+            "forcedErrorRate": 0.20759493670886076,
+            "falseMasteryRate": 0.004827586206896552,
+            "falseLearnRate": 0.013373860182370821,
+            "falseMasteryByEvidence": {
+              "direct": 0.004827586206896552
+            },
+            "brier": 0.1467150642765749,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.833333333333336,
+            "classifiedRate": 0.2751054852320675,
+            "classifiedErrorRate": 0.032975460122699383,
+            "misclassifiedAllRate": 0.009071729957805906,
+            "uncertainRate": 0.7248945147679324,
+            "forcedErrorRate": 0.04493670886075949,
+            "falseMasteryRate": 0.001755926251097454,
+            "falseLearnRate": 0.011385726187170231,
+            "falseMasteryByEvidence": {
+              "direct": 0.001755926251097454
+            },
+            "brier": 0.06345195378082967,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.85,
+            "classifiedRate": 0.44662447257383964,
+            "classifiedErrorRate": 0.01086443079829948,
+            "misclassifiedAllRate": 0.004852320675105486,
+            "uncertainRate": 0.5533755274261604,
+            "forcedErrorRate": 0.15527426160337554,
+            "falseMasteryRate": 0.004798193621224951,
+            "falseLearnRate": 0.005012531328320802,
+            "falseMasteryByEvidence": {
+              "direct": 0.004798193621224951
+            },
+            "brier": 0.10219095891164393,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -2281,6 +2762,9 @@
             "forcedErrorRate": 0.016666666666666666,
             "falseMasteryRate": 0.010126582278481013,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.010126582278481013
+            },
             "brier": 0.012102033963072752,
             "stops": {
               "complete": 0,
@@ -2299,6 +2783,9 @@
             "forcedErrorRate": 0.010337552742616034,
             "falseMasteryRate": 0.00546448087431694,
             "falseLearnRate": 0.000925925925925926,
+            "falseMasteryByEvidence": {
+              "direct": 0.00546448087431694
+            },
             "brier": 0.04794026243780262,
             "stops": {
               "complete": 0,
@@ -2317,6 +2804,9 @@
             "forcedErrorRate": 0.004008438818565401,
             "falseMasteryRate": 0.0025925925925925925,
             "falseLearnRate": 0.000980392156862745,
+            "falseMasteryByEvidence": {
+              "direct": 0.0025925925925925925
+            },
             "brier": 0.03554732452870474,
             "stops": {
               "complete": 0,
@@ -2328,13 +2818,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.88333333333333,
-            "classifiedRate": 0.3090717299578059,
-            "classifiedErrorRate": 0.013651877133105802,
+            "classifiedRate": 0.2926160337552743,
+            "classifiedErrorRate": 0.014419610670511895,
             "misclassifiedAllRate": 0.004219409282700422,
-            "uncertainRate": 0.6909282700421941,
+            "uncertainRate": 0.7073839662447257,
             "forcedErrorRate": 0.009071729957805906,
             "falseMasteryRate": 0.003968253968253968,
             "falseLearnRate": 0.004310344827586207,
+            "falseMasteryByEvidence": {
+              "direct": 0.003968253968253968
+            },
             "brier": 0.036386486028216536,
             "stops": {
               "complete": 0,
@@ -2346,13 +2839,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.81666666666667,
-            "classifiedRate": 0.6521097046413502,
-            "classifiedErrorRate": 0.008087997411840828,
+            "classifiedRate": 0.3179324894514768,
+            "classifiedErrorRate": 0.0165892501658925,
             "misclassifiedAllRate": 0.005274261603375527,
-            "uncertainRate": 0.3478902953586498,
+            "uncertainRate": 0.6820675105485232,
             "forcedErrorRate": 0.07320675105485232,
             "falseMasteryRate": 0.005,
             "falseLearnRate": 0.005314009661835749,
+            "falseMasteryByEvidence": {
+              "direct": 0.005
+            },
             "brier": 0.0494222440102691,
             "stops": {
               "complete": 0,
@@ -2364,13 +2860,16 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.85,
-            "classifiedRate": 0.6590717299578059,
-            "classifiedErrorRate": 0.00736235595390525,
+            "classifiedRate": 0.3206751054852321,
+            "classifiedErrorRate": 0.015131578947368421,
             "misclassifiedAllRate": 0.004852320675105486,
-            "uncertainRate": 0.34092827004219406,
+            "uncertainRate": 0.6793248945147679,
             "forcedErrorRate": 0.015611814345991562,
             "falseMasteryRate": 0.016666666666666666,
             "falseLearnRate": 0.004054054054054054,
+            "falseMasteryByEvidence": {
+              "direct": 0.016666666666666666
+            },
             "brier": 0.023383719744842886,
             "stops": {
               "complete": 0,
@@ -2382,13 +2881,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.789662447257384,
-            "classifiedErrorRate": 0.0056104728827144,
+            "classifiedRate": 0.33459915611814345,
+            "classifiedErrorRate": 0.013240857503152586,
             "misclassifiedAllRate": 0.004430379746835443,
-            "uncertainRate": 0.210337552742616,
+            "uncertainRate": 0.6654008438818566,
             "forcedErrorRate": 0.016877637130801686,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004430379746835443,
+            "falseMasteryByEvidence": {},
             "brier": 0.019485018202764177,
             "stops": {
               "complete": 0,
@@ -2407,6 +2907,10 @@
             "forcedErrorRate": 0.3670886075949367,
             "falseMasteryRate": 0.005649717514124294,
             "falseLearnRate": 0.005833333333333334,
+            "falseMasteryByEvidence": {
+              "direct": 0.005367231638418079,
+              "requires": 0.0002824858757062147
+            },
             "brier": 0.28666015230513003,
             "stops": {
               "complete": 0,
@@ -2418,14 +2922,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.3367088607594937,
-            "classifiedErrorRate": 0.07832080200501253,
-            "misclassifiedAllRate": 0.026371308016877638,
-            "uncertainRate": 0.6632911392405063,
+            "classifiedRate": 0.3158227848101266,
+            "classifiedErrorRate": 0.049432197728790914,
+            "misclassifiedAllRate": 0.015611814345991562,
+            "uncertainRate": 0.6841772151898734,
             "forcedErrorRate": 0.35253164556962024,
-            "falseMasteryRate": 0.025283347863993024,
+            "falseMasteryRate": 0.003051438535309503,
             "falseLearnRate": 0.02739165985282093,
+            "falseMasteryByEvidence": {
+              "direct": 0.003051438535309503
+            },
             "brier": 0.27262029341504473,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.88333333333333,
+            "classifiedRate": 0.34177215189873417,
+            "classifiedErrorRate": 0.011111111111111112,
+            "misclassifiedAllRate": 0.0037974683544303796,
+            "uncertainRate": 0.6582278481012658,
+            "forcedErrorRate": 0.1909282700421941,
+            "falseMasteryRate": 0.0034482758620689655,
+            "falseLearnRate": 0.003951367781155016,
+            "falseMasteryByEvidence": {
+              "direct": 0.0034482758620689655
+            },
+            "brier": 0.1312404306348237,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.733333333333334,
+            "classifiedRate": 0.2873417721518987,
+            "classifiedErrorRate": 0.00881057268722467,
+            "misclassifiedAllRate": 0.002531645569620253,
+            "uncertainRate": 0.7126582278481013,
+            "forcedErrorRate": 0.030379746835443037,
+            "falseMasteryRate": 0.001755926251097454,
+            "falseLearnRate": 0.0027770063871146904,
+            "falseMasteryByEvidence": {
+              "direct": 0.001755926251097454
+            },
+            "brier": 0.05629148282598947,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.88333333333333,
+            "classifiedRate": 0.4132911392405063,
+            "classifiedErrorRate": 0.011230219499744768,
+            "misclassifiedAllRate": 0.004641350210970464,
+            "uncertainRate": 0.5867088607594937,
+            "forcedErrorRate": 0.15970464135021098,
+            "falseMasteryRate": 0.005080440304826418,
+            "falseLearnRate": 0.003341687552213868,
+            "falseMasteryByEvidence": {
+              "direct": 0.005080440304826418
+            },
+            "brier": 0.1064567498851588,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -2450,6 +3020,9 @@
             "forcedErrorRate": 0.016666666666666666,
             "falseMasteryRate": 0.010126582278481013,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.010126582278481013
+            },
             "brier": 0.012102033963072752,
             "stops": {
               "complete": 0,
@@ -2468,6 +3041,9 @@
             "forcedErrorRate": 0.013291139240506329,
             "falseMasteryRate": 0.005191256830601093,
             "falseLearnRate": 0.004629629629629629,
+            "falseMasteryByEvidence": {
+              "direct": 0.005191256830601093
+            },
             "brier": 0.0493135281892549,
             "stops": {
               "complete": 0,
@@ -2486,6 +3062,9 @@
             "forcedErrorRate": 0.00569620253164557,
             "falseMasteryRate": 0.0014814814814814814,
             "falseLearnRate": 0.003431372549019608,
+            "falseMasteryByEvidence": {
+              "direct": 0.0014814814814814814
+            },
             "brier": 0.0364030906897683,
             "stops": {
               "complete": 0,
@@ -2497,13 +3076,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.85,
-            "classifiedRate": 0.29240506329113924,
-            "classifiedErrorRate": 0.025974025974025976,
+            "classifiedRate": 0.27531645569620256,
+            "classifiedErrorRate": 0.027586206896551724,
             "misclassifiedAllRate": 0.007594936708860759,
-            "uncertainRate": 0.7075949367088608,
+            "uncertainRate": 0.7246835443037974,
             "forcedErrorRate": 0.024050632911392405,
             "falseMasteryRate": 0.0015873015873015873,
             "falseLearnRate": 0.009770114942528735,
+            "falseMasteryByEvidence": {
+              "direct": 0.0015873015873015873
+            },
             "brier": 0.044094382241023626,
             "stops": {
               "complete": 0,
@@ -2515,13 +3097,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.93333333333333,
-            "classifiedRate": 0.5742616033755275,
-            "classifiedErrorRate": 0.018736223365172666,
+            "classifiedRate": 0.2877637130801688,
+            "classifiedErrorRate": 0.0373900293255132,
             "misclassifiedAllRate": 0.010759493670886076,
-            "uncertainRate": 0.42573839662447255,
+            "uncertainRate": 0.7122362869198312,
             "forcedErrorRate": 0.06540084388185655,
             "falseMasteryRate": 0.005,
             "falseLearnRate": 0.011594202898550725,
+            "falseMasteryByEvidence": {
+              "direct": 0.005
+            },
             "brier": 0.048606962224350035,
             "stops": {
               "complete": 0,
@@ -2533,13 +3118,16 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.833333333333336,
-            "classifiedRate": 0.5656118143459916,
-            "classifiedErrorRate": 0.02349869451697128,
+            "classifiedRate": 0.2881856540084388,
+            "classifiedErrorRate": 0.046120058565153735,
             "misclassifiedAllRate": 0.013291139240506329,
-            "uncertainRate": 0.4343881856540084,
+            "uncertainRate": 0.7118143459915611,
             "forcedErrorRate": 0.0459915611814346,
             "falseMasteryRate": 0.006666666666666667,
             "falseLearnRate": 0.013738738738738739,
+            "falseMasteryByEvidence": {
+              "direct": 0.006666666666666667
+            },
             "brier": 0.0409462432201248,
             "stops": {
               "complete": 0,
@@ -2551,13 +3139,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.9,
-            "classifiedRate": 0.6274261603375527,
-            "classifiedErrorRate": 0.018493611297915265,
+            "classifiedRate": 0.29873417721518986,
+            "classifiedErrorRate": 0.03884180790960452,
             "misclassifiedAllRate": 0.011603375527426161,
-            "uncertainRate": 0.3725738396624473,
+            "uncertainRate": 0.7012658227848101,
             "forcedErrorRate": 0.0710970464135021,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.011603375527426161,
+            "falseMasteryByEvidence": {},
             "brier": 0.051124115273600314,
             "stops": {
               "complete": 0,
@@ -2576,6 +3165,10 @@
             "forcedErrorRate": 0.3841772151898734,
             "falseMasteryRate": 0.00423728813559322,
             "falseLearnRate": 0.014166666666666666,
+            "falseMasteryByEvidence": {
+              "direct": 0.003672316384180791,
+              "requires": 0.0005649717514124294
+            },
             "brier": 0.29824254268163897,
             "stops": {
               "complete": 0,
@@ -2587,14 +3180,81 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.93333333333333,
-            "classifiedRate": 0.3120253164556962,
-            "classifiedErrorRate": 0.07978363759296822,
-            "misclassifiedAllRate": 0.024894514767932488,
-            "uncertainRate": 0.6879746835443038,
+            "classifiedRate": 0.299789029535865,
+            "classifiedErrorRate": 0.06192821956368754,
+            "misclassifiedAllRate": 0.018565400843881856,
+            "uncertainRate": 0.700210970464135,
             "forcedErrorRate": 0.3540084388185654,
-            "falseMasteryRate": 0.013949433304272014,
+            "falseMasteryRate": 0.0008718395815170009,
             "falseLearnRate": 0.03515944399018806,
+            "falseMasteryByEvidence": {
+              "direct": 0.0008718395815170009
+            },
             "brier": 0.2728580481006357,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.86666666666667,
+            "classifiedRate": 0.32827004219409284,
+            "classifiedErrorRate": 0.02699228791773779,
+            "misclassifiedAllRate": 0.008860759493670886,
+            "uncertainRate": 0.6717299578059072,
+            "forcedErrorRate": 0.21265822784810126,
+            "falseMasteryRate": 0.004137931034482759,
+            "falseLearnRate": 0.01094224924012158,
+            "falseMasteryByEvidence": {
+              "direct": 0.0034482758620689655,
+              "requires": 0.000689655172413793
+            },
+            "brier": 0.14632620286437759,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.8,
+            "classifiedRate": 0.26666666666666666,
+            "classifiedErrorRate": 0.03164556962025317,
+            "misclassifiedAllRate": 0.008438818565400843,
+            "uncertainRate": 0.7333333333333334,
+            "forcedErrorRate": 0.04789029535864979,
+            "falseMasteryRate": 0.0026338893766461808,
+            "falseLearnRate": 0.010274923632324354,
+            "falseMasteryByEvidence": {
+              "direct": 0.0026338893766461808
+            },
+            "brier": 0.06448561010174522,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.85,
+            "classifiedRate": 0.4248945147679325,
+            "classifiedErrorRate": 0.010427010923535254,
+            "misclassifiedAllRate": 0.004430379746835443,
+            "uncertainRate": 0.5751054852320675,
+            "forcedErrorRate": 0.16097046413502109,
+            "falseMasteryRate": 0.004515946937623483,
+            "falseLearnRate": 0.004177109440267335,
+            "falseMasteryByEvidence": {
+              "direct": 0.004515946937623483
+            },
+            "brier": 0.1056776938150045,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -2619,6 +3279,9 @@
             "forcedErrorRate": 0.017721518987341773,
             "falseMasteryRate": 0.007805907172995781,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.007805907172995781
+            },
             "brier": 0.012743763888239817,
             "stops": {
               "complete": 0,
@@ -2637,6 +3300,9 @@
             "forcedErrorRate": 0.01139240506329114,
             "falseMasteryRate": 0.00546448087431694,
             "falseLearnRate": 0.000925925925925926,
+            "falseMasteryByEvidence": {
+              "direct": 0.00546448087431694
+            },
             "brier": 0.047226170359058565,
             "stops": {
               "complete": 0,
@@ -2655,6 +3321,9 @@
             "forcedErrorRate": 0.004852320675105486,
             "falseMasteryRate": 0.004074074074074074,
             "falseLearnRate": 0.000980392156862745,
+            "falseMasteryByEvidence": {
+              "direct": 0.004074074074074074
+            },
             "brier": 0.03464881999460356,
             "stops": {
               "complete": 0,
@@ -2666,13 +3335,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.833333333333336,
-            "classifiedRate": 0.309915611814346,
-            "classifiedErrorRate": 0.011572498298162015,
+            "classifiedRate": 0.29620253164556964,
+            "classifiedErrorRate": 0.012108262108262107,
             "misclassifiedAllRate": 0.003586497890295359,
-            "uncertainRate": 0.690084388185654,
+            "uncertainRate": 0.7037974683544304,
             "forcedErrorRate": 0.007594936708860759,
             "falseMasteryRate": 0.004761904761904762,
             "falseLearnRate": 0.003160919540229885,
+            "falseMasteryByEvidence": {
+              "direct": 0.004761904761904762
+            },
             "brier": 0.035553916932865505,
             "stops": {
               "complete": 0,
@@ -2684,13 +3356,14 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.65,
-            "classifiedRate": 0.6459915611814346,
-            "classifiedErrorRate": 0.006531678641410843,
+            "classifiedRate": 0.32194092827004217,
+            "classifiedErrorRate": 0.01310615989515072,
             "misclassifiedAllRate": 0.004219409282700422,
-            "uncertainRate": 0.35400843881856536,
+            "uncertainRate": 0.6780590717299578,
             "forcedErrorRate": 0.06983122362869199,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004830917874396135,
+            "falseMasteryByEvidence": {},
             "brier": 0.04207625121347967,
             "stops": {
               "complete": 0,
@@ -2702,13 +3375,16 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.733333333333334,
-            "classifiedRate": 0.6559071729957806,
-            "classifiedErrorRate": 0.006111289803795433,
+            "classifiedRate": 0.3270042194092827,
+            "classifiedErrorRate": 0.012258064516129033,
             "misclassifiedAllRate": 0.004008438818565401,
-            "uncertainRate": 0.3440928270042194,
+            "uncertainRate": 0.6729957805907173,
             "forcedErrorRate": 0.013924050632911392,
             "falseMasteryRate": 0.0033333333333333335,
             "falseLearnRate": 0.004054054054054054,
+            "falseMasteryByEvidence": {
+              "direct": 0.0033333333333333335
+            },
             "brier": 0.020885866278250058,
             "stops": {
               "complete": 0,
@@ -2720,13 +3396,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.789662447257384,
-            "classifiedErrorRate": 0.0056104728827144,
+            "classifiedRate": 0.33459915611814345,
+            "classifiedErrorRate": 0.013240857503152586,
             "misclassifiedAllRate": 0.004430379746835443,
-            "uncertainRate": 0.210337552742616,
+            "uncertainRate": 0.6654008438818566,
             "forcedErrorRate": 0.016877637130801686,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004430379746835443,
+            "falseMasteryByEvidence": {},
             "brier": 0.019485018202764177,
             "stops": {
               "complete": 0,
@@ -2745,6 +3422,9 @@
             "forcedErrorRate": 0.3527426160337553,
             "falseMasteryRate": 0.00480225988700565,
             "falseLearnRate": 0.0175,
+            "falseMasteryByEvidence": {
+              "direct": 0.00480225988700565
+            },
             "brier": 0.269076699712839,
             "stops": {
               "complete": 0,
@@ -2756,14 +3436,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.95,
-            "classifiedRate": 0.3430379746835443,
-            "classifiedErrorRate": 0.07441574415744158,
-            "misclassifiedAllRate": 0.02552742616033755,
-            "uncertainRate": 0.6569620253164556,
+            "classifiedRate": 0.32573839662447257,
+            "classifiedErrorRate": 0.050518134715025906,
+            "misclassifiedAllRate": 0.016455696202531647,
+            "uncertainRate": 0.6742616033755274,
             "forcedErrorRate": 0.3489451476793249,
-            "falseMasteryRate": 0.022667829119442023,
+            "falseMasteryRate": 0.003923278116826504,
             "falseLearnRate": 0.028209321340964842,
+            "falseMasteryByEvidence": {
+              "direct": 0.003923278116826504
+            },
             "brier": 0.27074855293477257,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.95,
+            "classifiedRate": 0.35443037974683544,
+            "classifiedErrorRate": 0.008333333333333333,
+            "misclassifiedAllRate": 0.002953586497890295,
+            "uncertainRate": 0.6455696202531646,
+            "forcedErrorRate": 0.1877637130801688,
+            "falseMasteryRate": 0.0034482758620689655,
+            "falseLearnRate": 0.002735562310030395,
+            "falseMasteryByEvidence": {
+              "direct": 0.0034482758620689655
+            },
+            "brier": 0.12777565924749454,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.85,
+            "classifiedRate": 0.3008438818565401,
+            "classifiedErrorRate": 0.01753155680224404,
+            "misclassifiedAllRate": 0.005274261603375527,
+            "uncertainRate": 0.6991561181434599,
+            "forcedErrorRate": 0.03459915611814346,
+            "falseMasteryRate": 0.006145741878841089,
+            "falseLearnRate": 0.004998611496806442,
+            "falseMasteryByEvidence": {
+              "direct": 0.006145741878841089
+            },
+            "brier": 0.05684191720974023,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.85,
+            "classifiedRate": 0.4620253164556962,
+            "classifiedErrorRate": 0.005936073059360731,
+            "misclassifiedAllRate": 0.0027426160337552744,
+            "uncertainRate": 0.5379746835443038,
+            "forcedErrorRate": 0.15632911392405063,
+            "falseMasteryRate": 0.002822466836014677,
+            "falseLearnRate": 0.002506265664160401,
+            "falseMasteryByEvidence": {
+              "direct": 0.002822466836014677
+            },
+            "brier": 0.09931420934036632,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -2788,6 +3534,9 @@
             "forcedErrorRate": 0.017721518987341773,
             "falseMasteryRate": 0.007805907172995781,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.007805907172995781
+            },
             "brier": 0.012743763888239817,
             "stops": {
               "complete": 0,
@@ -2806,6 +3555,9 @@
             "forcedErrorRate": 0.009282700421940928,
             "falseMasteryRate": 0.005737704918032787,
             "falseLearnRate": 0.004629629629629629,
+            "falseMasteryByEvidence": {
+              "direct": 0.005737704918032787
+            },
             "brier": 0.047740571611736816,
             "stops": {
               "complete": 0,
@@ -2824,6 +3576,9 @@
             "forcedErrorRate": 0.005063291139240506,
             "falseMasteryRate": 0.0025925925925925925,
             "falseLearnRate": 0.003431372549019608,
+            "falseMasteryByEvidence": {
+              "direct": 0.0025925925925925925
+            },
             "brier": 0.0354518665981192,
             "stops": {
               "complete": 0,
@@ -2835,13 +3590,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.75,
-            "classifiedRate": 0.30168776371308015,
-            "classifiedErrorRate": 0.02097902097902098,
+            "classifiedRate": 0.2818565400843882,
+            "classifiedErrorRate": 0.02245508982035928,
             "misclassifiedAllRate": 0.006329113924050633,
-            "uncertainRate": 0.6983122362869199,
+            "uncertainRate": 0.7181434599156118,
             "forcedErrorRate": 0.013713080168776372,
             "falseMasteryRate": 0.0007936507936507937,
             "falseLearnRate": 0.008333333333333333,
+            "falseMasteryByEvidence": {
+              "direct": 0.0007936507936507937
+            },
             "brier": 0.03920917440584822,
             "stops": {
               "complete": 0,
@@ -2853,13 +3611,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.570464135021097,
-            "classifiedErrorRate": 0.018121301775147928,
+            "classifiedRate": 0.29282700421940927,
+            "classifiedErrorRate": 0.035302593659942365,
             "misclassifiedAllRate": 0.010337552742616034,
-            "uncertainRate": 0.42953586497890295,
+            "uncertainRate": 0.7071729957805908,
             "forcedErrorRate": 0.05907172995780591,
             "falseMasteryRate": 0.0016666666666666668,
             "falseLearnRate": 0.011594202898550725,
+            "falseMasteryByEvidence": {
+              "direct": 0.0016666666666666668
+            },
             "brier": 0.0437709544615586,
             "stops": {
               "complete": 0,
@@ -2871,13 +3632,14 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.81666666666667,
-            "classifiedRate": 0.5616033755274261,
-            "classifiedErrorRate": 0.0236664162283997,
+            "classifiedRate": 0.29324894514767935,
+            "classifiedErrorRate": 0.045323741007194246,
             "misclassifiedAllRate": 0.013291139240506329,
-            "uncertainRate": 0.4383966244725739,
+            "uncertainRate": 0.7067510548523206,
             "forcedErrorRate": 0.04578059071729958,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.01418918918918919,
+            "falseMasteryByEvidence": {},
             "brier": 0.03897619636305709,
             "stops": {
               "complete": 0,
@@ -2889,13 +3651,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.9,
-            "classifiedRate": 0.6274261603375527,
-            "classifiedErrorRate": 0.018493611297915265,
+            "classifiedRate": 0.29873417721518986,
+            "classifiedErrorRate": 0.03884180790960452,
             "misclassifiedAllRate": 0.011603375527426161,
-            "uncertainRate": 0.3725738396624473,
+            "uncertainRate": 0.7012658227848101,
             "forcedErrorRate": 0.0710970464135021,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.011603375527426161,
+            "falseMasteryByEvidence": {},
             "brier": 0.051124115273600314,
             "stops": {
               "complete": 0,
@@ -2914,6 +3677,10 @@
             "forcedErrorRate": 0.3651898734177215,
             "falseMasteryRate": 0.00480225988700565,
             "falseLearnRate": 0.0275,
+            "falseMasteryByEvidence": {
+              "direct": 0.004519774011299435,
+              "requires": 0.0002824858757062147
+            },
             "brier": 0.2836362118355308,
             "stops": {
               "complete": 0,
@@ -2925,14 +3692,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.93333333333333,
-            "classifiedRate": 0.32383966244725737,
-            "classifiedErrorRate": 0.0742671009771987,
-            "misclassifiedAllRate": 0.024050632911392405,
-            "uncertainRate": 0.6761603375527426,
+            "classifiedRate": 0.31751054852320676,
+            "classifiedErrorRate": 0.06511627906976744,
+            "misclassifiedAllRate": 0.02067510548523207,
+            "uncertainRate": 0.6824894514767932,
             "forcedErrorRate": 0.35527426160337555,
-            "falseMasteryRate": 0.008282476024411508,
+            "falseMasteryRate": 0.0013077593722755014,
             "falseLearnRate": 0.03883892068683565,
+            "falseMasteryByEvidence": {
+              "direct": 0.0013077593722755014
+            },
             "brier": 0.27281481682403846,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.93333333333333,
+            "classifiedRate": 0.3421940928270042,
+            "classifiedErrorRate": 0.02466091245376079,
+            "misclassifiedAllRate": 0.008438818565400843,
+            "uncertainRate": 0.6578059071729958,
+            "forcedErrorRate": 0.20253164556962025,
+            "falseMasteryRate": 0.0020689655172413794,
+            "falseLearnRate": 0.011246200607902736,
+            "falseMasteryByEvidence": {
+              "direct": 0.0020689655172413794
+            },
+            "brier": 0.1439099429958769,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.9,
+            "classifiedRate": 0.27827004219409285,
+            "classifiedErrorRate": 0.0310841546626232,
+            "misclassifiedAllRate": 0.008649789029535865,
+            "uncertainRate": 0.7217299578059071,
+            "forcedErrorRate": 0.043459915611814344,
+            "falseMasteryRate": 0.001755926251097454,
+            "falseLearnRate": 0.010830324909747292,
+            "falseMasteryByEvidence": {
+              "direct": 0.001755926251097454
+            },
+            "brier": 0.06285247226171375,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.81666666666667,
+            "classifiedRate": 0.4550632911392405,
+            "classifiedErrorRate": 0.007417709782104775,
+            "misclassifiedAllRate": 0.0033755274261603376,
+            "uncertainRate": 0.5449367088607595,
+            "forcedErrorRate": 0.15632911392405063,
+            "falseMasteryRate": 0.002822466836014677,
+            "falseLearnRate": 0.005012531328320802,
+            "falseMasteryByEvidence": {
+              "direct": 0.002822466836014677
+            },
+            "brier": 0.10014732762066247,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -2957,6 +3790,9 @@
             "forcedErrorRate": 0.018776371308016876,
             "falseMasteryRate": 0.005485232067510549,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.005485232067510549
+            },
             "brier": 0.014950931717738446,
             "stops": {
               "complete": 0,
@@ -2975,6 +3811,9 @@
             "forcedErrorRate": 0.010970464135021098,
             "falseMasteryRate": 0.004644808743169399,
             "falseLearnRate": 0.000925925925925926,
+            "falseMasteryByEvidence": {
+              "direct": 0.004644808743169399
+            },
             "brier": 0.04716823179680021,
             "stops": {
               "complete": 0,
@@ -2993,6 +3832,9 @@
             "forcedErrorRate": 0.004852320675105486,
             "falseMasteryRate": 0.004074074074074074,
             "falseLearnRate": 0.000980392156862745,
+            "falseMasteryByEvidence": {
+              "direct": 0.004074074074074074
+            },
             "brier": 0.034645266161168864,
             "stops": {
               "complete": 0,
@@ -3004,13 +3846,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.81666666666667,
-            "classifiedRate": 0.30949367088607593,
-            "classifiedErrorRate": 0.011588275391956374,
+            "classifiedRate": 0.29578059071729956,
+            "classifiedErrorRate": 0.012125534950071327,
             "misclassifiedAllRate": 0.003586497890295359,
-            "uncertainRate": 0.6905063291139241,
+            "uncertainRate": 0.7042194092827004,
             "forcedErrorRate": 0.006751054852320675,
             "falseMasteryRate": 0.003968253968253968,
             "falseLearnRate": 0.0034482758620689655,
+            "falseMasteryByEvidence": {
+              "direct": 0.003968253968253968
+            },
             "brier": 0.03538962275874673,
             "stops": {
               "complete": 0,
@@ -3022,13 +3867,14 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.65,
-            "classifiedRate": 0.6459915611814346,
-            "classifiedErrorRate": 0.006531678641410843,
+            "classifiedRate": 0.32194092827004217,
+            "classifiedErrorRate": 0.01310615989515072,
             "misclassifiedAllRate": 0.004219409282700422,
-            "uncertainRate": 0.35400843881856536,
+            "uncertainRate": 0.6780590717299578,
             "forcedErrorRate": 0.06983122362869199,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004830917874396135,
+            "falseMasteryByEvidence": {},
             "brier": 0.04207625121347967,
             "stops": {
               "complete": 0,
@@ -3040,13 +3886,16 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.733333333333334,
-            "classifiedRate": 0.6559071729957806,
-            "classifiedErrorRate": 0.006111289803795433,
+            "classifiedRate": 0.3270042194092827,
+            "classifiedErrorRate": 0.012258064516129033,
             "misclassifiedAllRate": 0.004008438818565401,
-            "uncertainRate": 0.3440928270042194,
+            "uncertainRate": 0.6729957805907173,
             "forcedErrorRate": 0.013924050632911392,
             "falseMasteryRate": 0.0033333333333333335,
             "falseLearnRate": 0.004054054054054054,
+            "falseMasteryByEvidence": {
+              "direct": 0.0033333333333333335
+            },
             "brier": 0.020885866278250058,
             "stops": {
               "complete": 0,
@@ -3058,13 +3907,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.789662447257384,
-            "classifiedErrorRate": 0.0056104728827144,
+            "classifiedRate": 0.33459915611814345,
+            "classifiedErrorRate": 0.013240857503152586,
             "misclassifiedAllRate": 0.004430379746835443,
-            "uncertainRate": 0.210337552742616,
+            "uncertainRate": 0.6654008438818566,
             "forcedErrorRate": 0.016877637130801686,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004430379746835443,
+            "falseMasteryByEvidence": {},
             "brier": 0.019485018202764177,
             "stops": {
               "complete": 0,
@@ -3083,6 +3933,9 @@
             "forcedErrorRate": 0.35675105485232067,
             "falseMasteryRate": 0.004519774011299435,
             "falseLearnRate": 0.014166666666666666,
+            "falseMasteryByEvidence": {
+              "direct": 0.004519774011299435
+            },
             "brier": 0.27704777067614494,
             "stops": {
               "complete": 0,
@@ -3094,14 +3947,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.95,
-            "classifiedRate": 0.34050632911392403,
-            "classifiedErrorRate": 0.07125154894671623,
-            "misclassifiedAllRate": 0.024261603375527425,
-            "uncertainRate": 0.6594936708860759,
+            "classifiedRate": 0.32573839662447257,
+            "classifiedErrorRate": 0.050518134715025906,
+            "misclassifiedAllRate": 0.016455696202531647,
+            "uncertainRate": 0.6742616033755274,
             "forcedErrorRate": 0.34662447257383966,
-            "falseMasteryRate": 0.018744551002615517,
+            "falseMasteryRate": 0.0026155187445510027,
             "falseLearnRate": 0.029435813573180702,
+            "falseMasteryByEvidence": {
+              "direct": 0.0026155187445510027
+            },
             "brier": 0.2688109441232504,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.93333333333333,
+            "classifiedRate": 0.35548523206751054,
+            "classifiedErrorRate": 0.006528189910979229,
+            "misclassifiedAllRate": 0.002320675105485232,
+            "uncertainRate": 0.6445147679324894,
+            "forcedErrorRate": 0.19050632911392404,
+            "falseMasteryRate": 0.0020689655172413794,
+            "falseLearnRate": 0.0024316109422492403,
+            "falseMasteryByEvidence": {
+              "direct": 0.0020689655172413794
+            },
+            "brier": 0.12799511520822732,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.86666666666667,
+            "classifiedRate": 0.30168776371308015,
+            "classifiedErrorRate": 0.017482517482517484,
+            "misclassifiedAllRate": 0.005274261603375527,
+            "uncertainRate": 0.6983122362869199,
+            "forcedErrorRate": 0.03438818565400844,
+            "falseMasteryRate": 0.006145741878841089,
+            "falseLearnRate": 0.004998611496806442,
+            "falseMasteryByEvidence": {
+              "direct": 0.006145741878841089
+            },
+            "brier": 0.05703606855231227,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.85,
+            "classifiedRate": 0.46054852320675105,
+            "classifiedErrorRate": 0.005038937242327073,
+            "misclassifiedAllRate": 0.002320675105485232,
+            "uncertainRate": 0.539451476793249,
+            "forcedErrorRate": 0.15379746835443037,
+            "falseMasteryRate": 0.0022579734688117415,
+            "falseLearnRate": 0.002506265664160401,
+            "falseMasteryByEvidence": {
+              "direct": 0.0022579734688117415
+            },
+            "brier": 0.09905310947646563,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -3126,6 +4045,9 @@
             "forcedErrorRate": 0.018776371308016876,
             "falseMasteryRate": 0.005485232067510549,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.005485232067510549
+            },
             "brier": 0.014950931717738446,
             "stops": {
               "complete": 0,
@@ -3144,6 +4066,9 @@
             "forcedErrorRate": 0.008860759493670886,
             "falseMasteryRate": 0.004918032786885246,
             "falseLearnRate": 0.004629629629629629,
+            "falseMasteryByEvidence": {
+              "direct": 0.004918032786885246
+            },
             "brier": 0.047614015185932786,
             "stops": {
               "complete": 0,
@@ -3162,6 +4087,9 @@
             "forcedErrorRate": 0.005063291139240506,
             "falseMasteryRate": 0.0025925925925925925,
             "falseLearnRate": 0.003431372549019608,
+            "falseMasteryByEvidence": {
+              "direct": 0.0025925925925925925
+            },
             "brier": 0.0354518665981192,
             "stops": {
               "complete": 0,
@@ -3173,13 +4101,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.75,
-            "classifiedRate": 0.3018987341772152,
-            "classifiedErrorRate": 0.02166317260656883,
+            "classifiedRate": 0.2820675105485232,
+            "classifiedErrorRate": 0.02318623784592371,
             "misclassifiedAllRate": 0.006540084388185654,
-            "uncertainRate": 0.6981012658227848,
+            "uncertainRate": 0.7179324894514768,
             "forcedErrorRate": 0.013713080168776372,
             "falseMasteryRate": 0.0015873015873015873,
             "falseLearnRate": 0.008333333333333333,
+            "falseMasteryByEvidence": {
+              "direct": 0.0015873015873015873
+            },
             "brier": 0.039251823557255816,
             "stops": {
               "complete": 0,
@@ -3191,13 +4122,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.5710970464135021,
-            "classifiedErrorRate": 0.01810121906169191,
+            "classifiedRate": 0.29388185654008436,
+            "classifiedErrorRate": 0.035175879396984924,
             "misclassifiedAllRate": 0.010337552742616034,
-            "uncertainRate": 0.4289029535864979,
+            "uncertainRate": 0.7061181434599156,
             "forcedErrorRate": 0.05907172995780591,
             "falseMasteryRate": 0.0016666666666666668,
             "falseLearnRate": 0.011594202898550725,
+            "falseMasteryByEvidence": {
+              "direct": 0.0016666666666666668
+            },
             "brier": 0.04386994988670491,
             "stops": {
               "complete": 0,
@@ -3209,13 +4143,14 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.81666666666667,
-            "classifiedRate": 0.5616033755274261,
-            "classifiedErrorRate": 0.0236664162283997,
+            "classifiedRate": 0.29324894514767935,
+            "classifiedErrorRate": 0.045323741007194246,
             "misclassifiedAllRate": 0.013291139240506329,
-            "uncertainRate": 0.4383966244725739,
+            "uncertainRate": 0.7067510548523206,
             "forcedErrorRate": 0.04578059071729958,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.01418918918918919,
+            "falseMasteryByEvidence": {},
             "brier": 0.03897619636305709,
             "stops": {
               "complete": 0,
@@ -3227,13 +4162,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.9,
-            "classifiedRate": 0.6274261603375527,
-            "classifiedErrorRate": 0.018493611297915265,
+            "classifiedRate": 0.29873417721518986,
+            "classifiedErrorRate": 0.03884180790960452,
             "misclassifiedAllRate": 0.011603375527426161,
-            "uncertainRate": 0.3725738396624473,
+            "uncertainRate": 0.7012658227848101,
             "forcedErrorRate": 0.0710970464135021,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.011603375527426161,
+            "falseMasteryByEvidence": {},
             "brier": 0.051124115273600314,
             "stops": {
               "complete": 0,
@@ -3252,6 +4188,9 @@
             "forcedErrorRate": 0.3649789029535865,
             "falseMasteryRate": 0.002824858757062147,
             "falseLearnRate": 0.021666666666666667,
+            "falseMasteryByEvidence": {
+              "direct": 0.002824858757062147
+            },
             "brier": 0.2893585453304029,
             "stops": {
               "complete": 0,
@@ -3263,14 +4202,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.93333333333333,
-            "classifiedRate": 0.32932489451476793,
-            "classifiedErrorRate": 0.07687379884689302,
-            "misclassifiedAllRate": 0.02531645569620253,
-            "uncertainRate": 0.670675105485232,
+            "classifiedRate": 0.3229957805907173,
+            "classifiedErrorRate": 0.06792945787067277,
+            "misclassifiedAllRate": 0.021940928270042195,
+            "uncertainRate": 0.6770042194092827,
             "forcedErrorRate": 0.3521097046413502,
-            "falseMasteryRate": 0.009154315605928508,
+            "falseMasteryRate": 0.002179598953792502,
             "falseLearnRate": 0.040474243663123466,
+            "falseMasteryByEvidence": {
+              "direct": 0.002179598953792502
+            },
             "brier": 0.27102295951929617,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.916666666666664,
+            "classifiedRate": 0.3381856540084388,
+            "classifiedErrorRate": 0.022457891453524642,
+            "misclassifiedAllRate": 0.007594936708860759,
+            "uncertainRate": 0.6618143459915612,
+            "forcedErrorRate": 0.2059071729957806,
+            "falseMasteryRate": 0.0020689655172413794,
+            "falseLearnRate": 0.010030395136778116,
+            "falseMasteryByEvidence": {
+              "direct": 0.0020689655172413794
+            },
+            "brier": 0.14445412335472005,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.9,
+            "classifiedRate": 0.2789029535864979,
+            "classifiedErrorRate": 0.031013615733736764,
+            "misclassifiedAllRate": 0.008649789029535865,
+            "uncertainRate": 0.721097046413502,
+            "forcedErrorRate": 0.043248945147679324,
+            "falseMasteryRate": 0.001755926251097454,
+            "falseLearnRate": 0.010830324909747292,
+            "falseMasteryByEvidence": {
+              "direct": 0.001755926251097454
+            },
+            "brier": 0.06287688621603223,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.766666666666666,
+            "classifiedRate": 0.45548523206751057,
+            "classifiedErrorRate": 0.00555812876331635,
+            "misclassifiedAllRate": 0.002531645569620253,
+            "uncertainRate": 0.5445147679324894,
+            "forcedErrorRate": 0.15421940928270042,
+            "falseMasteryRate": 0.0019757267852102737,
+            "falseLearnRate": 0.004177109440267335,
+            "falseMasteryByEvidence": {
+              "direct": 0.0019757267852102737
+            },
+            "brier": 0.09900831763817886,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -3295,6 +4300,9 @@
             "forcedErrorRate": 0.01540084388185654,
             "falseMasteryRate": 0.00949367088607595,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.00949367088607595
+            },
             "brier": 0.01160343473850919,
             "stops": {
               "complete": 0,
@@ -3313,6 +4321,9 @@
             "forcedErrorRate": 0.010970464135021098,
             "falseMasteryRate": 0.005737704918032787,
             "falseLearnRate": 0.000925925925925926,
+            "falseMasteryByEvidence": {
+              "direct": 0.005737704918032787
+            },
             "brier": 0.04735324607634491,
             "stops": {
               "complete": 0,
@@ -3331,6 +4342,9 @@
             "forcedErrorRate": 0.005485232067510549,
             "falseMasteryRate": 0.004814814814814815,
             "falseLearnRate": 0.000980392156862745,
+            "falseMasteryByEvidence": {
+              "direct": 0.004814814814814815
+            },
             "brier": 0.03500784962915717,
             "stops": {
               "complete": 0,
@@ -3342,13 +4356,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.86666666666667,
-            "classifiedRate": 0.310126582278481,
-            "classifiedErrorRate": 0.012244897959183673,
+            "classifiedRate": 0.29641350210970463,
+            "classifiedErrorRate": 0.012811387900355872,
             "misclassifiedAllRate": 0.0037974683544303796,
-            "uncertainRate": 0.689873417721519,
+            "uncertainRate": 0.7035864978902954,
             "forcedErrorRate": 0.008649789029535865,
             "falseMasteryRate": 0.005555555555555556,
             "falseLearnRate": 0.003160919540229885,
+            "falseMasteryByEvidence": {
+              "direct": 0.005555555555555556
+            },
             "brier": 0.03606833919496183,
             "stops": {
               "complete": 0,
@@ -3360,13 +4377,14 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.68333333333333,
-            "classifiedRate": 0.6455696202531646,
-            "classifiedErrorRate": 0.006535947712418301,
+            "classifiedRate": 0.32151898734177214,
+            "classifiedErrorRate": 0.013123359580052493,
             "misclassifiedAllRate": 0.004219409282700422,
-            "uncertainRate": 0.35443037974683544,
+            "uncertainRate": 0.6784810126582279,
             "forcedErrorRate": 0.06962025316455696,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004830917874396135,
+            "falseMasteryByEvidence": {},
             "brier": 0.04207704083956409,
             "stops": {
               "complete": 0,
@@ -3378,13 +4396,16 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.733333333333334,
-            "classifiedRate": 0.6544303797468355,
-            "classifiedErrorRate": 0.005802707930367505,
+            "classifiedRate": 0.3261603375527426,
+            "classifiedErrorRate": 0.01164294954721863,
             "misclassifiedAllRate": 0.0037974683544303796,
-            "uncertainRate": 0.3455696202531645,
+            "uncertainRate": 0.6738396624472573,
             "forcedErrorRate": 0.015822784810126583,
             "falseMasteryRate": 0.0033333333333333335,
             "falseLearnRate": 0.0038288288288288288,
+            "falseMasteryByEvidence": {
+              "direct": 0.0033333333333333335
+            },
             "brier": 0.02108090023778949,
             "stops": {
               "complete": 0,
@@ -3396,13 +4417,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.789662447257384,
-            "classifiedErrorRate": 0.0056104728827144,
+            "classifiedRate": 0.33459915611814345,
+            "classifiedErrorRate": 0.013240857503152586,
             "misclassifiedAllRate": 0.004430379746835443,
-            "uncertainRate": 0.210337552742616,
+            "uncertainRate": 0.6654008438818566,
             "forcedErrorRate": 0.016877637130801686,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004430379746835443,
+            "falseMasteryByEvidence": {},
             "brier": 0.019485018202764177,
             "stops": {
               "complete": 0,
@@ -3421,6 +4443,9 @@
             "forcedErrorRate": 0.3569620253164557,
             "falseMasteryRate": 0.007627118644067797,
             "falseLearnRate": 0.0175,
+            "falseMasteryByEvidence": {
+              "direct": 0.007627118644067797
+            },
             "brier": 0.2730983594121174,
             "stops": {
               "complete": 0,
@@ -3432,14 +4457,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.96666666666667,
-            "classifiedRate": 0.3449367088607595,
-            "classifiedErrorRate": 0.07889908256880734,
-            "misclassifiedAllRate": 0.02721518987341772,
-            "uncertainRate": 0.6550632911392404,
+            "classifiedRate": 0.32489451476793246,
+            "classifiedErrorRate": 0.05,
+            "misclassifiedAllRate": 0.016244725738396623,
+            "uncertainRate": 0.6751054852320675,
             "forcedErrorRate": 0.3487341772151899,
-            "falseMasteryRate": 0.024847428073234524,
+            "falseMasteryRate": 0.002179598953792502,
             "falseLearnRate": 0.029435813573180702,
+            "falseMasteryByEvidence": {
+              "direct": 0.002179598953792502
+            },
             "brier": 0.27034536884152033,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.96666666666667,
+            "classifiedRate": 0.3516877637130802,
+            "classifiedErrorRate": 0.009598080383923215,
+            "misclassifiedAllRate": 0.0033755274261603376,
+            "uncertainRate": 0.6483122362869198,
+            "forcedErrorRate": 0.18755274261603375,
+            "falseMasteryRate": 0.004827586206896552,
+            "falseLearnRate": 0.002735562310030395,
+            "falseMasteryByEvidence": {
+              "direct": 0.004827586206896552
+            },
+            "brier": 0.12706181346912027,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.85,
+            "classifiedRate": 0.30042194092827,
+            "classifiedErrorRate": 0.016151685393258428,
+            "misclassifiedAllRate": 0.004852320675105486,
+            "uncertainRate": 0.69957805907173,
+            "forcedErrorRate": 0.03417721518987342,
+            "falseMasteryRate": 0.004389815627743635,
+            "falseLearnRate": 0.004998611496806442,
+            "falseMasteryByEvidence": {
+              "direct": 0.004389815627743635
+            },
+            "brier": 0.05674361286677532,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.833333333333336,
+            "classifiedRate": 0.46139240506329116,
+            "classifiedErrorRate": 0.006858710562414266,
+            "misclassifiedAllRate": 0.0031645569620253164,
+            "uncertainRate": 0.5386075949367088,
+            "forcedErrorRate": 0.15611814345991562,
+            "falseMasteryRate": 0.003386960203217612,
+            "falseLearnRate": 0.002506265664160401,
+            "falseMasteryByEvidence": {
+              "direct": 0.003386960203217612
+            },
+            "brier": 0.10036435808933222,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -3464,6 +4555,9 @@
             "forcedErrorRate": 0.01540084388185654,
             "falseMasteryRate": 0.00949367088607595,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.00949367088607595
+            },
             "brier": 0.01160343473850919,
             "stops": {
               "complete": 0,
@@ -3482,6 +4576,9 @@
             "forcedErrorRate": 0.009071729957805906,
             "falseMasteryRate": 0.005737704918032787,
             "falseLearnRate": 0.004629629629629629,
+            "falseMasteryByEvidence": {
+              "direct": 0.005737704918032787
+            },
             "brier": 0.04734985742963051,
             "stops": {
               "complete": 0,
@@ -3500,6 +4597,9 @@
             "forcedErrorRate": 0.005274261603375527,
             "falseMasteryRate": 0.002962962962962963,
             "falseLearnRate": 0.003431372549019608,
+            "falseMasteryByEvidence": {
+              "direct": 0.002962962962962963
+            },
             "brier": 0.035486241825049857,
             "stops": {
               "complete": 0,
@@ -3511,13 +4611,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.766666666666666,
-            "classifiedRate": 0.30147679324894516,
-            "classifiedErrorRate": 0.02099370188943317,
+            "classifiedRate": 0.28164556962025317,
+            "classifiedErrorRate": 0.02247191011235955,
             "misclassifiedAllRate": 0.006329113924050633,
-            "uncertainRate": 0.6985232067510548,
+            "uncertainRate": 0.7183544303797469,
             "forcedErrorRate": 0.014345991561181435,
             "falseMasteryRate": 0.0007936507936507937,
             "falseLearnRate": 0.008333333333333333,
+            "falseMasteryByEvidence": {
+              "direct": 0.0007936507936507937
+            },
             "brier": 0.03941766885963454,
             "stops": {
               "complete": 0,
@@ -3529,13 +4632,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.569831223628692,
-            "classifiedErrorRate": 0.018511662347278787,
+            "classifiedRate": 0.29240506329113924,
+            "classifiedErrorRate": 0.03607503607503607,
             "misclassifiedAllRate": 0.010548523206751054,
-            "uncertainRate": 0.430168776371308,
+            "uncertainRate": 0.7075949367088608,
             "forcedErrorRate": 0.05949367088607595,
             "falseMasteryRate": 0.0016666666666666668,
             "falseLearnRate": 0.011835748792270532,
+            "falseMasteryByEvidence": {
+              "direct": 0.0016666666666666668
+            },
             "brier": 0.043909633418387266,
             "stops": {
               "complete": 0,
@@ -3547,13 +4653,14 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.81666666666667,
-            "classifiedRate": 0.5548523206751055,
-            "classifiedErrorRate": 0.023574144486692015,
+            "classifiedRate": 0.29156118143459914,
+            "classifiedErrorRate": 0.04486251808972504,
             "misclassifiedAllRate": 0.013080168776371307,
-            "uncertainRate": 0.4451476793248945,
+            "uncertainRate": 0.7084388185654009,
             "forcedErrorRate": 0.04810126582278481,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.013963963963963964,
+            "falseMasteryByEvidence": {},
             "brier": 0.039679576421238955,
             "stops": {
               "complete": 0,
@@ -3565,13 +4672,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.9,
-            "classifiedRate": 0.6274261603375527,
-            "classifiedErrorRate": 0.018493611297915265,
+            "classifiedRate": 0.29873417721518986,
+            "classifiedErrorRate": 0.03884180790960452,
             "misclassifiedAllRate": 0.011603375527426161,
-            "uncertainRate": 0.3725738396624473,
+            "uncertainRate": 0.7012658227848101,
             "forcedErrorRate": 0.0710970464135021,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.011603375527426161,
+            "falseMasteryByEvidence": {},
             "brier": 0.051124115273600314,
             "stops": {
               "complete": 0,
@@ -3590,6 +4698,10 @@
             "forcedErrorRate": 0.3575949367088608,
             "falseMasteryRate": 0.005084745762711864,
             "falseLearnRate": 0.028333333333333332,
+            "falseMasteryByEvidence": {
+              "direct": 0.00480225988700565,
+              "requires": 0.0002824858757062147
+            },
             "brier": 0.2773832869577125,
             "stops": {
               "complete": 0,
@@ -3601,14 +4713,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.93333333333333,
-            "classifiedRate": 0.32552742616033753,
-            "classifiedErrorRate": 0.07064160725858717,
-            "misclassifiedAllRate": 0.0229957805907173,
-            "uncertainRate": 0.6744725738396624,
+            "classifiedRate": 0.3191983122362869,
+            "classifiedErrorRate": 0.061467283542630535,
+            "misclassifiedAllRate": 0.019620253164556962,
+            "uncertainRate": 0.6808016877637131,
             "forcedErrorRate": 0.3521097046413502,
-            "falseMasteryRate": 0.008282476024411508,
+            "falseMasteryRate": 0.0013077593722755014,
             "falseLearnRate": 0.03679476696647588,
+            "falseMasteryByEvidence": {
+              "direct": 0.0013077593722755014
+            },
             "brier": 0.27189593705853143,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.916666666666664,
+            "classifiedRate": 0.3415611814345992,
+            "classifiedErrorRate": 0.027177269919703522,
+            "misclassifiedAllRate": 0.009282700421940928,
+            "uncertainRate": 0.6584388185654009,
+            "forcedErrorRate": 0.20189873417721518,
+            "falseMasteryRate": 0.0020689655172413794,
+            "falseLearnRate": 0.012462006079027355,
+            "falseMasteryByEvidence": {
+              "direct": 0.0020689655172413794
+            },
+            "brier": 0.14384667534217874,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.916666666666664,
+            "classifiedRate": 0.2780590717299578,
+            "classifiedErrorRate": 0.03110773899848255,
+            "misclassifiedAllRate": 0.008649789029535865,
+            "uncertainRate": 0.7219409282700422,
+            "forcedErrorRate": 0.043459915611814344,
+            "falseMasteryRate": 0.001755926251097454,
+            "falseLearnRate": 0.010830324909747292,
+            "falseMasteryByEvidence": {
+              "direct": 0.001755926251097454
+            },
+            "brier": 0.06281920562704797,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.833333333333336,
+            "classifiedRate": 0.4569620253164557,
+            "classifiedErrorRate": 0.006463527239150508,
+            "misclassifiedAllRate": 0.002953586497890295,
+            "uncertainRate": 0.5430379746835443,
+            "forcedErrorRate": 0.1540084388185654,
+            "falseMasteryRate": 0.002540220152413209,
+            "falseLearnRate": 0.004177109440267335,
+            "falseMasteryByEvidence": {
+              "direct": 0.002540220152413209
+            },
+            "brier": 0.09953774203197228,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -3633,6 +4811,9 @@
             "forcedErrorRate": 0.02552742616033755,
             "falseMasteryRate": 0.016455696202531647,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.016455696202531647
+            },
             "brier": 0.017745565098545187,
             "stops": {
               "complete": 0,
@@ -3651,6 +4832,9 @@
             "forcedErrorRate": 0.008649789029535865,
             "falseMasteryRate": 0.007650273224043716,
             "falseLearnRate": 0.000925925925925926,
+            "falseMasteryByEvidence": {
+              "direct": 0.007650273224043716
+            },
             "brier": 0.046999182056759674,
             "stops": {
               "complete": 0,
@@ -3669,6 +4853,9 @@
             "forcedErrorRate": 0.0031645569620253164,
             "falseMasteryRate": 0.0025925925925925925,
             "falseLearnRate": 0.00196078431372549,
+            "falseMasteryByEvidence": {
+              "direct": 0.0025925925925925925
+            },
             "brier": 0.03390644773940782,
             "stops": {
               "complete": 0,
@@ -3680,13 +4867,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.3111814345991561,
-            "classifiedErrorRate": 0.013559322033898305,
+            "classifiedRate": 0.2974683544303797,
+            "classifiedErrorRate": 0.014184397163120567,
             "misclassifiedAllRate": 0.004219409282700422,
-            "uncertainRate": 0.6888185654008439,
+            "uncertainRate": 0.7025316455696202,
             "forcedErrorRate": 0.007805907172995781,
             "falseMasteryRate": 0.005555555555555556,
             "falseLearnRate": 0.003735632183908046,
+            "falseMasteryByEvidence": {
+              "direct": 0.005555555555555556
+            },
             "brier": 0.03647344175796382,
             "stops": {
               "complete": 0,
@@ -3698,13 +4888,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.7,
-            "classifiedRate": 0.640084388185654,
-            "classifiedErrorRate": 0.008239947264337508,
+            "classifiedRate": 0.31940928270042196,
+            "classifiedErrorRate": 0.016512549537648614,
             "misclassifiedAllRate": 0.005274261603375527,
-            "uncertainRate": 0.35991561181434595,
+            "uncertainRate": 0.680590717299578,
             "forcedErrorRate": 0.0689873417721519,
             "falseMasteryRate": 0.0016666666666666668,
             "falseLearnRate": 0.005797101449275362,
+            "falseMasteryByEvidence": {
+              "direct": 0.0016666666666666668
+            },
             "brier": 0.04212628895926236,
             "stops": {
               "complete": 0,
@@ -3716,13 +4909,16 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.733333333333334,
-            "classifiedRate": 0.6510548523206751,
-            "classifiedErrorRate": 0.0064808813998703824,
+            "classifiedRate": 0.32489451476793246,
+            "classifiedErrorRate": 0.012987012987012988,
             "misclassifiedAllRate": 0.004219409282700422,
-            "uncertainRate": 0.34894514767932494,
+            "uncertainRate": 0.6751054852320675,
             "forcedErrorRate": 0.014767932489451477,
             "falseMasteryRate": 0.006666666666666667,
             "falseLearnRate": 0.004054054054054054,
+            "falseMasteryByEvidence": {
+              "direct": 0.006666666666666667
+            },
             "brier": 0.020930008772462518,
             "stops": {
               "complete": 0,
@@ -3734,13 +4930,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.789662447257384,
-            "classifiedErrorRate": 0.0056104728827144,
+            "classifiedRate": 0.33459915611814345,
+            "classifiedErrorRate": 0.013240857503152586,
             "misclassifiedAllRate": 0.004430379746835443,
-            "uncertainRate": 0.210337552742616,
+            "uncertainRate": 0.6654008438818566,
             "forcedErrorRate": 0.016877637130801686,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004430379746835443,
+            "falseMasteryByEvidence": {},
             "brier": 0.019485018202764177,
             "stops": {
               "complete": 0,
@@ -3759,6 +4956,9 @@
             "forcedErrorRate": 0.3542194092827004,
             "falseMasteryRate": 0.00480225988700565,
             "falseLearnRate": 0.0075,
+            "falseMasteryByEvidence": {
+              "direct": 0.00480225988700565
+            },
             "brier": 0.26960817661861614,
             "stops": {
               "complete": 0,
@@ -3770,14 +4970,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.93333333333333,
-            "classifiedRate": 0.34029535864978905,
-            "classifiedErrorRate": 0.07377557346559206,
-            "misclassifiedAllRate": 0.02510548523206751,
-            "uncertainRate": 0.659704641350211,
+            "classifiedRate": 0.3229957805907173,
+            "classifiedErrorRate": 0.049640757674722404,
+            "misclassifiedAllRate": 0.016033755274261603,
+            "uncertainRate": 0.6770042194092827,
             "forcedErrorRate": 0.34810126582278483,
-            "falseMasteryRate": 0.022231909328683522,
+            "falseMasteryRate": 0.0034873583260680036,
             "falseLearnRate": 0.027800490596892886,
+            "falseMasteryByEvidence": {
+              "direct": 0.0034873583260680036
+            },
             "brier": 0.27087540493718165,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.983333333333334,
+            "classifiedRate": 0.34852320675105486,
+            "classifiedErrorRate": 0.012711864406779662,
+            "misclassifiedAllRate": 0.004430379746835443,
+            "uncertainRate": 0.6514767932489451,
+            "forcedErrorRate": 0.1839662447257384,
+            "falseMasteryRate": 0.008275862068965517,
+            "falseLearnRate": 0.002735562310030395,
+            "falseMasteryByEvidence": {
+              "direct": 0.008275862068965517
+            },
+            "brier": 0.12910274794531781,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.833333333333336,
+            "classifiedRate": 0.30063291139240506,
+            "classifiedErrorRate": 0.016842105263157894,
+            "misclassifiedAllRate": 0.005063291139240506,
+            "uncertainRate": 0.6993670886075949,
+            "forcedErrorRate": 0.03459915611814346,
+            "falseMasteryRate": 0.004389815627743635,
+            "falseLearnRate": 0.005276312135517912,
+            "falseMasteryByEvidence": {
+              "direct": 0.004389815627743635
+            },
+            "brier": 0.057530830557443784,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.8,
+            "classifiedRate": 0.46729957805907174,
+            "classifiedErrorRate": 0.007223476297968397,
+            "misclassifiedAllRate": 0.0033755274261603376,
+            "uncertainRate": 0.5327004219409283,
+            "forcedErrorRate": 0.15548523206751055,
+            "falseMasteryRate": 0.002540220152413209,
+            "falseLearnRate": 0.005847953216374269,
+            "falseMasteryByEvidence": {
+              "direct": 0.002540220152413209
+            },
+            "brier": 0.09881435062948835,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -3802,6 +5068,9 @@
             "forcedErrorRate": 0.02552742616033755,
             "falseMasteryRate": 0.016455696202531647,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.016455696202531647
+            },
             "brier": 0.017745565098545187,
             "stops": {
               "complete": 0,
@@ -3820,6 +5089,9 @@
             "forcedErrorRate": 0.011603375527426161,
             "falseMasteryRate": 0.007650273224043716,
             "falseLearnRate": 0.004629629629629629,
+            "falseMasteryByEvidence": {
+              "direct": 0.007650273224043716
+            },
             "brier": 0.04712782012689245,
             "stops": {
               "complete": 0,
@@ -3838,6 +5110,9 @@
             "forcedErrorRate": 0.004641350210970464,
             "falseMasteryRate": 0.0022222222222222222,
             "falseLearnRate": 0.004411764705882353,
+            "falseMasteryByEvidence": {
+              "direct": 0.0022222222222222222
+            },
             "brier": 0.03498686410662904,
             "stops": {
               "complete": 0,
@@ -3849,13 +5124,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.8,
-            "classifiedRate": 0.299789029535865,
-            "classifiedErrorRate": 0.022519352568613652,
+            "classifiedRate": 0.279957805907173,
+            "classifiedErrorRate": 0.024114544084400905,
             "misclassifiedAllRate": 0.006751054852320675,
-            "uncertainRate": 0.700210970464135,
+            "uncertainRate": 0.720042194092827,
             "forcedErrorRate": 0.013924050632911392,
             "falseMasteryRate": 0.0015873015873015873,
             "falseLearnRate": 0.008620689655172414,
+            "falseMasteryByEvidence": {
+              "direct": 0.0015873015873015873
+            },
             "brier": 0.03948874210100377,
             "stops": {
               "complete": 0,
@@ -3867,13 +5145,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.9,
-            "classifiedRate": 0.5763713080168776,
-            "classifiedErrorRate": 0.019399707174231333,
+            "classifiedRate": 0.29388185654008436,
+            "classifiedErrorRate": 0.03804737975592247,
             "misclassifiedAllRate": 0.011181434599156118,
-            "uncertainRate": 0.42362869198312236,
+            "uncertainRate": 0.7061181434599156,
             "forcedErrorRate": 0.06139240506329114,
             "falseMasteryRate": 0.005,
             "falseLearnRate": 0.012077294685990338,
+            "falseMasteryByEvidence": {
+              "direct": 0.005
+            },
             "brier": 0.04481992541617322,
             "stops": {
               "complete": 0,
@@ -3885,13 +5166,14 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.85,
-            "classifiedRate": 0.5630801687763713,
-            "classifiedErrorRate": 0.022480329711502434,
+            "classifiedRate": 0.29156118143459914,
+            "classifiedErrorRate": 0.04341534008683068,
             "misclassifiedAllRate": 0.012658227848101266,
-            "uncertainRate": 0.43691983122362865,
+            "uncertainRate": 0.7084388185654009,
             "forcedErrorRate": 0.04451476793248945,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.013513513513513514,
+            "falseMasteryByEvidence": {},
             "brier": 0.03874749806295436,
             "stops": {
               "complete": 0,
@@ -3903,13 +5185,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.9,
-            "classifiedRate": 0.6274261603375527,
-            "classifiedErrorRate": 0.018493611297915265,
+            "classifiedRate": 0.29873417721518986,
+            "classifiedErrorRate": 0.03884180790960452,
             "misclassifiedAllRate": 0.011603375527426161,
-            "uncertainRate": 0.3725738396624473,
+            "uncertainRate": 0.7012658227848101,
             "forcedErrorRate": 0.0710970464135021,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.011603375527426161,
+            "falseMasteryByEvidence": {},
             "brier": 0.051124115273600314,
             "stops": {
               "complete": 0,
@@ -3928,6 +5211,10 @@
             "forcedErrorRate": 0.3719409282700422,
             "falseMasteryRate": 0.005649717514124294,
             "falseLearnRate": 0.0125,
+            "falseMasteryByEvidence": {
+              "direct": 0.005367231638418079,
+              "requires": 0.0002824858757062147
+            },
             "brier": 0.2860221632648345,
             "stops": {
               "complete": 0,
@@ -3939,14 +5226,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.30886075949367087,
-            "classifiedErrorRate": 0.06420765027322405,
-            "misclassifiedAllRate": 0.019831223628691982,
-            "uncertainRate": 0.6911392405063291,
+            "classifiedRate": 0.30253164556962026,
+            "classifiedErrorRate": 0.05439330543933055,
+            "misclassifiedAllRate": 0.016455696202531647,
+            "uncertainRate": 0.6974683544303797,
             "forcedErrorRate": 0.35928270042194094,
-            "falseMasteryRate": 0.009154315605928508,
+            "falseMasteryRate": 0.002179598953792502,
             "falseLearnRate": 0.029844644317252658,
+            "falseMasteryByEvidence": {
+              "direct": 0.002179598953792502
+            },
             "brier": 0.27570493762795756,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.916666666666664,
+            "classifiedRate": 0.3379746835443038,
+            "classifiedErrorRate": 0.025593008739076155,
+            "misclassifiedAllRate": 0.008649789029535865,
+            "uncertainRate": 0.6620253164556962,
+            "forcedErrorRate": 0.19535864978902953,
+            "falseMasteryRate": 0.002758620689655172,
+            "falseLearnRate": 0.011246200607902736,
+            "falseMasteryByEvidence": {
+              "direct": 0.002758620689655172
+            },
+            "brier": 0.14077012260532684,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.9,
+            "classifiedRate": 0.27784810126582277,
+            "classifiedErrorRate": 0.030372057706909643,
+            "misclassifiedAllRate": 0.008438818565400843,
+            "uncertainRate": 0.7221518987341773,
+            "forcedErrorRate": 0.043459915611814344,
+            "falseMasteryRate": 0.000877963125548727,
+            "falseLearnRate": 0.010830324909747292,
+            "falseMasteryByEvidence": {
+              "direct": 0.000877963125548727
+            },
+            "brier": 0.06265075917198878,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.85,
+            "classifiedRate": 0.46350210970464134,
+            "classifiedErrorRate": 0.006827492034592627,
+            "misclassifiedAllRate": 0.0031645569620253164,
+            "uncertainRate": 0.5364978902953587,
+            "forcedErrorRate": 0.15358649789029535,
+            "falseMasteryRate": 0.0019757267852102737,
+            "falseLearnRate": 0.006683375104427736,
+            "falseMasteryByEvidence": {
+              "direct": 0.0019757267852102737
+            },
+            "brier": 0.09922793205174454,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -3971,6 +5324,9 @@
             "forcedErrorRate": 0.013080168776371307,
             "falseMasteryRate": 0.009915611814345991,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.009915611814345991
+            },
             "brier": 0.010968810408461493,
             "stops": {
               "complete": 0,
@@ -3989,6 +5345,9 @@
             "forcedErrorRate": 0.009915611814345991,
             "falseMasteryRate": 0.005191256830601093,
             "falseLearnRate": 0.000925925925925926,
+            "falseMasteryByEvidence": {
+              "direct": 0.005191256830601093
+            },
             "brier": 0.046622511093110476,
             "stops": {
               "complete": 0,
@@ -4007,6 +5366,9 @@
             "forcedErrorRate": 0.006540084388185654,
             "falseMasteryRate": 0.005185185185185185,
             "falseLearnRate": 0.000980392156862745,
+            "falseMasteryByEvidence": {
+              "direct": 0.005185185185185185
+            },
             "brier": 0.035586920131432394,
             "stops": {
               "complete": 0,
@@ -4018,13 +5380,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.81666666666667,
-            "classifiedRate": 0.3109704641350211,
-            "classifiedErrorRate": 0.0101763907734057,
+            "classifiedRate": 0.29725738396624474,
+            "classifiedErrorRate": 0.0106458481192335,
             "misclassifiedAllRate": 0.0031645569620253164,
-            "uncertainRate": 0.689029535864979,
+            "uncertainRate": 0.7027426160337553,
             "forcedErrorRate": 0.006962025316455696,
             "falseMasteryRate": 0.0031746031746031746,
             "falseLearnRate": 0.003160919540229885,
+            "falseMasteryByEvidence": {
+              "direct": 0.0031746031746031746
+            },
             "brier": 0.03544308481804819,
             "stops": {
               "complete": 0,
@@ -4036,13 +5401,14 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.63333333333333,
-            "classifiedRate": 0.6459915611814346,
-            "classifiedErrorRate": 0.006531678641410843,
+            "classifiedRate": 0.32194092827004217,
+            "classifiedErrorRate": 0.01310615989515072,
             "misclassifiedAllRate": 0.004219409282700422,
-            "uncertainRate": 0.35400843881856536,
+            "uncertainRate": 0.6780590717299578,
             "forcedErrorRate": 0.0689873417721519,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004830917874396135,
+            "falseMasteryByEvidence": {},
             "brier": 0.041824971704323456,
             "stops": {
               "complete": 0,
@@ -4054,13 +5420,16 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.75,
-            "classifiedRate": 0.6588607594936708,
-            "classifiedErrorRate": 0.006083893691962856,
+            "classifiedRate": 0.32742616033755273,
+            "classifiedErrorRate": 0.012242268041237113,
             "misclassifiedAllRate": 0.004008438818565401,
-            "uncertainRate": 0.34113924050632916,
+            "uncertainRate": 0.6725738396624472,
             "forcedErrorRate": 0.012869198312236287,
             "falseMasteryRate": 0.0033333333333333335,
             "falseLearnRate": 0.004054054054054054,
+            "falseMasteryByEvidence": {
+              "direct": 0.0033333333333333335
+            },
             "brier": 0.020743262923019343,
             "stops": {
               "complete": 0,
@@ -4072,13 +5441,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.789662447257384,
-            "classifiedErrorRate": 0.0056104728827144,
+            "classifiedRate": 0.33459915611814345,
+            "classifiedErrorRate": 0.013240857503152586,
             "misclassifiedAllRate": 0.004430379746835443,
-            "uncertainRate": 0.210337552742616,
+            "uncertainRate": 0.6654008438818566,
             "forcedErrorRate": 0.016877637130801686,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004430379746835443,
+            "falseMasteryByEvidence": {},
             "brier": 0.019485018202764177,
             "stops": {
               "complete": 0,
@@ -4097,6 +5467,10 @@
             "forcedErrorRate": 0.3491561181434599,
             "falseMasteryRate": 0.005084745762711864,
             "falseLearnRate": 0.0225,
+            "falseMasteryByEvidence": {
+              "direct": 0.00480225988700565,
+              "requires": 0.0002824858757062147
+            },
             "brier": 0.2653716394524906,
             "stops": {
               "complete": 0,
@@ -4108,14 +5482,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.95,
-            "classifiedRate": 0.3470464135021097,
-            "classifiedErrorRate": 0.0729483282674772,
-            "misclassifiedAllRate": 0.02531645569620253,
-            "uncertainRate": 0.6529535864978904,
+            "classifiedRate": 0.32974683544303796,
+            "classifiedErrorRate": 0.04926423544465771,
+            "misclassifiedAllRate": 0.016244725738396623,
+            "uncertainRate": 0.670253164556962,
             "forcedErrorRate": 0.34430379746835443,
-            "falseMasteryRate": 0.01961639058413252,
+            "falseMasteryRate": 0.0008718395815170009,
             "falseLearnRate": 0.030662305805396566,
+            "falseMasteryByEvidence": {
+              "direct": 0.0008718395815170009
+            },
             "brier": 0.26720708984591685,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.95,
+            "classifiedRate": 0.35675105485232067,
+            "classifiedErrorRate": 0.00827912477823773,
+            "misclassifiedAllRate": 0.002953586497890295,
+            "uncertainRate": 0.6432489451476793,
+            "forcedErrorRate": 0.1858649789029536,
+            "falseMasteryRate": 0.0034482758620689655,
+            "falseLearnRate": 0.002735562310030395,
+            "falseMasteryByEvidence": {
+              "direct": 0.0034482758620689655
+            },
+            "brier": 0.12480455615867926,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.85,
+            "classifiedRate": 0.3012658227848101,
+            "classifiedErrorRate": 0.018907563025210083,
+            "misclassifiedAllRate": 0.00569620253164557,
+            "uncertainRate": 0.6987341772151898,
+            "forcedErrorRate": 0.03459915611814346,
+            "falseMasteryRate": 0.007901668129938543,
+            "falseLearnRate": 0.004998611496806442,
+            "falseMasteryByEvidence": {
+              "direct": 0.007901668129938543
+            },
+            "brier": 0.05699790376759412,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.81666666666667,
+            "classifiedRate": 0.46455696202531643,
+            "classifiedErrorRate": 0.009082652134423252,
+            "misclassifiedAllRate": 0.004219409282700422,
+            "uncertainRate": 0.5354430379746835,
+            "forcedErrorRate": 0.15611814345991562,
+            "falseMasteryRate": 0.004798193621224951,
+            "falseLearnRate": 0.002506265664160401,
+            "falseMasteryByEvidence": {
+              "direct": 0.004798193621224951
+            },
+            "brier": 0.10012831418674066,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -4140,6 +5580,9 @@
             "forcedErrorRate": 0.013080168776371307,
             "falseMasteryRate": 0.009915611814345991,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.009915611814345991
+            },
             "brier": 0.010968810408461493,
             "stops": {
               "complete": 0,
@@ -4158,6 +5601,9 @@
             "forcedErrorRate": 0.008016877637130802,
             "falseMasteryRate": 0.005191256830601093,
             "falseLearnRate": 0.004629629629629629,
+            "falseMasteryByEvidence": {
+              "direct": 0.005191256830601093
+            },
             "brier": 0.04673858333536222,
             "stops": {
               "complete": 0,
@@ -4176,6 +5622,9 @@
             "forcedErrorRate": 0.006118143459915612,
             "falseMasteryRate": 0.0033333333333333335,
             "falseLearnRate": 0.00392156862745098,
+            "falseMasteryByEvidence": {
+              "direct": 0.0033333333333333335
+            },
             "brier": 0.035855943459183186,
             "stops": {
               "complete": 0,
@@ -4187,13 +5636,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.766666666666666,
-            "classifiedRate": 0.3023206751054852,
-            "classifiedErrorRate": 0.022330774598743892,
+            "classifiedRate": 0.2824894514767933,
+            "classifiedErrorRate": 0.02389843166542196,
             "misclassifiedAllRate": 0.006751054852320675,
-            "uncertainRate": 0.6976793248945148,
+            "uncertainRate": 0.7175105485232067,
             "forcedErrorRate": 0.013924050632911392,
             "falseMasteryRate": 0.002380952380952381,
             "falseLearnRate": 0.008333333333333333,
+            "falseMasteryByEvidence": {
+              "direct": 0.002380952380952381
+            },
             "brier": 0.03945184339166644,
             "stops": {
               "complete": 0,
@@ -4205,13 +5657,16 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.5702531645569621,
-            "classifiedErrorRate": 0.01812800591934887,
+            "classifiedRate": 0.2926160337552743,
+            "classifiedErrorRate": 0.035328046142754144,
             "misclassifiedAllRate": 0.010337552742616034,
-            "uncertainRate": 0.42974683544303793,
+            "uncertainRate": 0.7073839662447257,
             "forcedErrorRate": 0.05928270042194093,
             "falseMasteryRate": 0.0016666666666666668,
             "falseLearnRate": 0.011594202898550725,
+            "falseMasteryByEvidence": {
+              "direct": 0.0016666666666666668
+            },
             "brier": 0.043773447519820215,
             "stops": {
               "complete": 0,
@@ -4223,13 +5678,14 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.81666666666667,
-            "classifiedRate": 0.560126582278481,
-            "classifiedErrorRate": 0.02448210922787194,
+            "classifiedRate": 0.29430379746835444,
+            "classifiedErrorRate": 0.04659498207885305,
             "misclassifiedAllRate": 0.013713080168776372,
-            "uncertainRate": 0.439873417721519,
+            "uncertainRate": 0.7056962025316456,
             "forcedErrorRate": 0.04556962025316456,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.01463963963963964,
+            "falseMasteryByEvidence": {},
             "brier": 0.039292295833740984,
             "stops": {
               "complete": 0,
@@ -4241,13 +5697,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.9,
-            "classifiedRate": 0.6274261603375527,
-            "classifiedErrorRate": 0.018493611297915265,
+            "classifiedRate": 0.29873417721518986,
+            "classifiedErrorRate": 0.03884180790960452,
             "misclassifiedAllRate": 0.011603375527426161,
-            "uncertainRate": 0.3725738396624473,
+            "uncertainRate": 0.7012658227848101,
             "forcedErrorRate": 0.0710970464135021,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.011603375527426161,
+            "falseMasteryByEvidence": {},
             "brier": 0.051124115273600314,
             "stops": {
               "complete": 0,
@@ -4266,6 +5723,10 @@
             "forcedErrorRate": 0.3561181434599156,
             "falseMasteryRate": 0.005084745762711864,
             "falseLearnRate": 0.034166666666666665,
+            "falseMasteryByEvidence": {
+              "direct": 0.00480225988700565,
+              "requires": 0.0002824858757062147
+            },
             "brier": 0.27646334876283485,
             "stops": {
               "complete": 0,
@@ -4277,14 +5738,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.93333333333333,
-            "classifiedRate": 0.3265822784810127,
-            "classifiedErrorRate": 0.06976744186046512,
-            "misclassifiedAllRate": 0.02278481012658228,
-            "uncertainRate": 0.6734177215189874,
+            "classifiedRate": 0.32046413502109705,
+            "classifiedErrorRate": 0.06056616194865043,
+            "misclassifiedAllRate": 0.019409282700421943,
+            "uncertainRate": 0.679535864978903,
             "forcedErrorRate": 0.3521097046413502,
-            "falseMasteryRate": 0.008282476024411508,
+            "falseMasteryRate": 0.0013077593722755014,
             "falseLearnRate": 0.03638593622240392,
+            "falseMasteryByEvidence": {
+              "direct": 0.0013077593722755014
+            },
             "brier": 0.2709890883595607,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.9,
+            "classifiedRate": 0.34324894514767934,
+            "classifiedErrorRate": 0.02581438229870928,
+            "misclassifiedAllRate": 0.008860759493670886,
+            "uncertainRate": 0.6567510548523207,
+            "forcedErrorRate": 0.1991561181434599,
+            "falseMasteryRate": 0.002758620689655172,
+            "falseLearnRate": 0.011550151975683891,
+            "falseMasteryByEvidence": {
+              "direct": 0.002758620689655172
+            },
+            "brier": 0.14207689214669347,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.9,
+            "classifiedRate": 0.27827004219409285,
+            "classifiedErrorRate": 0.0310841546626232,
+            "misclassifiedAllRate": 0.008649789029535865,
+            "uncertainRate": 0.7217299578059071,
+            "forcedErrorRate": 0.043459915611814344,
+            "falseMasteryRate": 0.001755926251097454,
+            "falseLearnRate": 0.010830324909747292,
+            "falseMasteryByEvidence": {
+              "direct": 0.001755926251097454
+            },
+            "brier": 0.06285247226171375,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.85,
+            "classifiedRate": 0.4540084388185654,
+            "classifiedErrorRate": 0.009758364312267658,
+            "misclassifiedAllRate": 0.004430379746835443,
+            "uncertainRate": 0.5459915611814345,
+            "forcedErrorRate": 0.15569620253164557,
+            "falseMasteryRate": 0.004515946937623483,
+            "falseLearnRate": 0.004177109440267335,
+            "falseMasteryByEvidence": {
+              "direct": 0.004515946937623483
+            },
+            "brier": 0.10137001947782995,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -4309,6 +5836,9 @@
             "forcedErrorRate": 0.02109704641350211,
             "falseMasteryRate": 0.017932489451476793,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.017932489451476793
+            },
             "brier": 0.016834643209811737,
             "stops": {
               "complete": 0,
@@ -4327,6 +5857,9 @@
             "forcedErrorRate": 0.01181434599156118,
             "falseMasteryRate": 0.007923497267759563,
             "falseLearnRate": 0.000925925925925926,
+            "falseMasteryByEvidence": {
+              "direct": 0.007923497267759563
+            },
             "brier": 0.04761746548411935,
             "stops": {
               "complete": 0,
@@ -4345,6 +5878,9 @@
             "forcedErrorRate": 0.0033755274261603376,
             "falseMasteryRate": 0.0014814814814814814,
             "falseLearnRate": 0.000980392156862745,
+            "falseMasteryByEvidence": {
+              "direct": 0.0014814814814814814
+            },
             "brier": 0.033469111343951405,
             "stops": {
               "complete": 0,
@@ -4356,13 +5892,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.666666666666664,
-            "classifiedRate": 0.3149789029535865,
-            "classifiedErrorRate": 0.010716677829872739,
+            "classifiedRate": 0.3012658227848101,
+            "classifiedErrorRate": 0.011204481792717087,
             "misclassifiedAllRate": 0.0033755274261603376,
-            "uncertainRate": 0.6850210970464135,
+            "uncertainRate": 0.6987341772151898,
             "forcedErrorRate": 0.004641350210970464,
             "falseMasteryRate": 0.0015873015873015873,
             "falseLearnRate": 0.004022988505747126,
+            "falseMasteryByEvidence": {
+              "direct": 0.0015873015873015873
+            },
             "brier": 0.03506879200156816,
             "stops": {
               "complete": 0,
@@ -4374,13 +5913,14 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.63333333333333,
-            "classifiedRate": 0.6462025316455696,
-            "classifiedErrorRate": 0.0068560235063663075,
+            "classifiedRate": 0.32151898734177214,
+            "classifiedErrorRate": 0.013779527559055118,
             "misclassifiedAllRate": 0.004430379746835443,
-            "uncertainRate": 0.3537974683544304,
+            "uncertainRate": 0.6784810126582279,
             "forcedErrorRate": 0.07025316455696203,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.005072463768115942,
+            "falseMasteryByEvidence": {},
             "brier": 0.04181167429415262,
             "stops": {
               "complete": 0,
@@ -4392,13 +5932,14 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.71666666666667,
-            "classifiedRate": 0.6537974683544304,
-            "classifiedErrorRate": 0.005808325266214908,
+            "classifiedRate": 0.3278481012658228,
+            "classifiedErrorRate": 0.011583011583011582,
             "misclassifiedAllRate": 0.0037974683544303796,
-            "uncertainRate": 0.3462025316455696,
+            "uncertainRate": 0.6721518987341772,
             "forcedErrorRate": 0.009071729957805906,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004054054054054054,
+            "falseMasteryByEvidence": {},
             "brier": 0.0200269599303391,
             "stops": {
               "complete": 0,
@@ -4410,13 +5951,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.916666666666664,
-            "classifiedRate": 0.789662447257384,
-            "classifiedErrorRate": 0.0056104728827144,
+            "classifiedRate": 0.33459915611814345,
+            "classifiedErrorRate": 0.013240857503152586,
             "misclassifiedAllRate": 0.004430379746835443,
-            "uncertainRate": 0.210337552742616,
+            "uncertainRate": 0.6654008438818566,
             "forcedErrorRate": 0.016877637130801686,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.004430379746835443,
+            "falseMasteryByEvidence": {},
             "brier": 0.019485018202764177,
             "stops": {
               "complete": 0,
@@ -4435,6 +5977,10 @@
             "forcedErrorRate": 0.3421940928270042,
             "falseMasteryRate": 0.003389830508474576,
             "falseLearnRate": 0.023333333333333334,
+            "falseMasteryByEvidence": {
+              "direct": 0.0031073446327683617,
+              "requires": 0.0002824858757062147
+            },
             "brier": 0.258478278048532,
             "stops": {
               "complete": 0,
@@ -4446,14 +5992,80 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.96666666666667,
-            "classifiedRate": 0.3510548523206751,
-            "classifiedErrorRate": 0.07872596153846154,
-            "misclassifiedAllRate": 0.027637130801687764,
-            "uncertainRate": 0.6489451476793249,
+            "classifiedRate": 0.33122362869198313,
+            "classifiedErrorRate": 0.05031847133757962,
+            "misclassifiedAllRate": 0.016666666666666666,
+            "uncertainRate": 0.6687763713080168,
             "forcedErrorRate": 0.3438818565400844,
-            "falseMasteryRate": 0.023539668700959023,
+            "falseMasteryRate": 0.0008718395815170009,
             "falseLearnRate": 0.031479967293540474,
+            "falseMasteryByEvidence": {
+              "direct": 0.0008718395815170009
+            },
             "brier": 0.2693366166424426,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.9,
+            "classifiedRate": 0.3580168776371308,
+            "classifiedErrorRate": 0.009428403064230996,
+            "misclassifiedAllRate": 0.0033755274261603376,
+            "uncertainRate": 0.6419831223628691,
+            "forcedErrorRate": 0.18544303797468353,
+            "falseMasteryRate": 0.004827586206896552,
+            "falseLearnRate": 0.002735562310030395,
+            "falseMasteryByEvidence": {
+              "direct": 0.004827586206896552
+            },
+            "brier": 0.12590328453863908,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.833333333333336,
+            "classifiedRate": 0.3023206751054852,
+            "classifiedErrorRate": 0.015352407536636426,
+            "misclassifiedAllRate": 0.004641350210970464,
+            "uncertainRate": 0.6976793248945148,
+            "forcedErrorRate": 0.03291139240506329,
+            "falseMasteryRate": 0.001755926251097454,
+            "falseLearnRate": 0.005554012774229381,
+            "falseMasteryByEvidence": {
+              "direct": 0.001755926251097454
+            },
+            "brier": 0.05694787501676207,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.78333333333333,
+            "classifiedRate": 0.4611814345991561,
+            "classifiedErrorRate": 0.008234217749313814,
+            "misclassifiedAllRate": 0.0037974683544303796,
+            "uncertainRate": 0.5388185654008439,
+            "forcedErrorRate": 0.15464135021097047,
+            "falseMasteryRate": 0.003951453570420547,
+            "falseLearnRate": 0.003341687552213868,
+            "falseMasteryByEvidence": {
+              "direct": 0.003951453570420547
+            },
+            "brier": 0.10000943869106191,
             "stops": {
               "complete": 0,
               "budget": 60,
@@ -4478,6 +6090,9 @@
             "forcedErrorRate": 0.02109704641350211,
             "falseMasteryRate": 0.017932489451476793,
             "falseLearnRate": 0,
+            "falseMasteryByEvidence": {
+              "direct": 0.017932489451476793
+            },
             "brier": 0.016834643209811737,
             "stops": {
               "complete": 0,
@@ -4496,6 +6111,9 @@
             "forcedErrorRate": 0.010126582278481013,
             "falseMasteryRate": 0.007650273224043716,
             "falseLearnRate": 0.004629629629629629,
+            "falseMasteryByEvidence": {
+              "direct": 0.007650273224043716
+            },
             "brier": 0.04859642054842413,
             "stops": {
               "complete": 0,
@@ -4514,6 +6132,9 @@
             "forcedErrorRate": 0.004219409282700422,
             "falseMasteryRate": 0.0011111111111111111,
             "falseLearnRate": 0.00392156862745098,
+            "falseMasteryByEvidence": {
+              "direct": 0.0011111111111111111
+            },
             "brier": 0.03489970747258908,
             "stops": {
               "complete": 0,
@@ -4525,13 +6146,16 @@
             "profile": "Acquis jusqu'à B1",
             "learners": 60,
             "meanQuestions": 39.733333333333334,
-            "classifiedRate": 0.30168776371308015,
-            "classifiedErrorRate": 0.022377622377622378,
+            "classifiedRate": 0.2818565400843882,
+            "classifiedErrorRate": 0.023952095808383235,
             "misclassifiedAllRate": 0.006751054852320675,
-            "uncertainRate": 0.6983122362869199,
+            "uncertainRate": 0.7181434599156118,
             "forcedErrorRate": 0.014135021097046414,
             "falseMasteryRate": 0.002380952380952381,
             "falseLearnRate": 0.008333333333333333,
+            "falseMasteryByEvidence": {
+              "direct": 0.002380952380952381
+            },
             "brier": 0.0395239498924302,
             "stops": {
               "complete": 0,
@@ -4543,13 +6167,14 @@
             "profile": "Acquis jusqu'à B2",
             "learners": 60,
             "meanQuestions": 39.833333333333336,
-            "classifiedRate": 0.5691983122362869,
-            "classifiedErrorRate": 0.017790956263899184,
+            "classifiedRate": 0.29451476793248943,
+            "classifiedErrorRate": 0.034383954154727794,
             "misclassifiedAllRate": 0.010126582278481013,
-            "uncertainRate": 0.4308016877637131,
+            "uncertainRate": 0.7054852320675106,
             "forcedErrorRate": 0.05569620253164557,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.011594202898550725,
+            "falseMasteryByEvidence": {},
             "brier": 0.04188095554206305,
             "stops": {
               "complete": 0,
@@ -4561,13 +6186,14 @@
             "profile": "Acquis jusqu'à C1",
             "learners": 60,
             "meanQuestions": 39.8,
-            "classifiedRate": 0.5605485232067511,
-            "classifiedErrorRate": 0.024087316522393678,
+            "classifiedRate": 0.2951476793248945,
+            "classifiedErrorRate": 0.045746962115797,
             "misclassifiedAllRate": 0.01350210970464135,
-            "uncertainRate": 0.4394514767932489,
+            "uncertainRate": 0.7048523206751055,
             "forcedErrorRate": 0.043459915611814344,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.014414414414414415,
+            "falseMasteryByEvidence": {},
             "brier": 0.03903023712116857,
             "stops": {
               "complete": 0,
@@ -4579,13 +6205,14 @@
             "profile": "Acquis jusqu'à C2",
             "learners": 60,
             "meanQuestions": 39.9,
-            "classifiedRate": 0.6274261603375527,
-            "classifiedErrorRate": 0.018493611297915265,
+            "classifiedRate": 0.29873417721518986,
+            "classifiedErrorRate": 0.03884180790960452,
             "misclassifiedAllRate": 0.011603375527426161,
-            "uncertainRate": 0.3725738396624473,
+            "uncertainRate": 0.7012658227848101,
             "forcedErrorRate": 0.0710970464135021,
             "falseMasteryRate": 0,
             "falseLearnRate": 0.011603375527426161,
+            "falseMasteryByEvidence": {},
             "brier": 0.051124115273600314,
             "stops": {
               "complete": 0,
@@ -4604,6 +6231,10 @@
             "forcedErrorRate": 0.36265822784810126,
             "falseMasteryRate": 0.003672316384180791,
             "falseLearnRate": 0.0325,
+            "falseMasteryByEvidence": {
+              "direct": 0.003389830508474576,
+              "requires": 0.0002824858757062147
+            },
             "brier": 0.2737881439404334,
             "stops": {
               "complete": 0,
@@ -4615,14 +6246,78 @@
             "profile": "Profils dispersés",
             "learners": 60,
             "meanQuestions": 39.93333333333333,
-            "classifiedRate": 0.320253164556962,
-            "classifiedErrorRate": 0.06653491436100131,
-            "misclassifiedAllRate": 0.021308016877637132,
-            "uncertainRate": 0.679746835443038,
+            "classifiedRate": 0.31666666666666665,
+            "classifiedErrorRate": 0.061958694203864094,
+            "misclassifiedAllRate": 0.019620253164556962,
+            "uncertainRate": 0.6833333333333333,
             "forcedErrorRate": 0.3550632911392405,
-            "falseMasteryRate": 0.004795117698343505,
+            "falseMasteryRate": 0.0013077593722755014,
             "falseLearnRate": 0.03679476696647588,
+            "falseMasteryByEvidence": {
+              "direct": 0.0013077593722755014
+            },
             "brier": 0.27146113186335125,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B2 avec 6 trous au hasard",
+            "learners": 60,
+            "meanQuestions": 39.9,
+            "classifiedRate": 0.34177215189873417,
+            "classifiedErrorRate": 0.024691358024691357,
+            "misclassifiedAllRate": 0.008438818565400843,
+            "uncertainRate": 0.6582278481012658,
+            "forcedErrorRate": 0.19852320675105486,
+            "falseMasteryRate": 0.002758620689655172,
+            "falseLearnRate": 0.01094224924012158,
+            "falseMasteryByEvidence": {
+              "direct": 0.002758620689655172
+            },
+            "brier": 0.1411550199271861,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "B1 avec îlots C1",
+            "learners": 60,
+            "meanQuestions": 39.9,
+            "classifiedRate": 0.2795358649789029,
+            "classifiedErrorRate": 0.028679245283018868,
+            "misclassifiedAllRate": 0.008016877637130802,
+            "uncertainRate": 0.7204641350210971,
+            "forcedErrorRate": 0.042616033755274264,
+            "falseMasteryRate": 0,
+            "falseLearnRate": 0.010552624271035824,
+            "falseMasteryByEvidence": {},
+            "brier": 0.0624226483417096,
+            "stops": {
+              "complete": 0,
+              "budget": 60,
+              "bank-exhausted": 0
+            }
+          },
+          {
+            "profile": "A2 à moitié",
+            "learners": 60,
+            "meanQuestions": 39.833333333333336,
+            "classifiedRate": 0.4540084388185654,
+            "classifiedErrorRate": 0.008364312267657992,
+            "misclassifiedAllRate": 0.0037974683544303796,
+            "uncertainRate": 0.5459915611814345,
+            "forcedErrorRate": 0.1569620253164557,
+            "falseMasteryRate": 0.0031047135196161446,
+            "falseLearnRate": 0.005847953216374269,
+            "falseMasteryByEvidence": {
+              "direct": 0.0031047135196161446
+            },
+            "brier": 0.10113236896496797,
             "stops": {
               "complete": 0,
               "budget": 60,

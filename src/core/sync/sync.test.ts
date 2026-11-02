@@ -10,6 +10,8 @@ import { createScheduler, review } from '../srs/scheduler';
 import { loadBookText, loadBooks, removeBook, saveBook, saveProgress } from '../repo/booksRepo';
 import { bindAccount, pendingChanges, resetLocalData, syncOnce } from './engine';
 import { MemoryRemote } from './memoryRemote';
+import { loadPlacementMarks, savePlacementMark } from '../repo/placementRepo';
+import { pointState, withMarks, type DoneRecord } from '../learn/placementResults';
 
 const scheduler = createScheduler({ ...DEFAULT_SETTINGS, enableFuzz: false });
 const strip = (notes: Awaited<ReturnType<typeof loadNotes>>) =>
@@ -74,6 +76,43 @@ describe('synchronisation entre appareils', () => {
     await syncOnce(b, remote);
     await syncOnce(a, remote);
     expect(await loadNotes(a)).toEqual([]);
+  });
+
+  it('placement : deux appareils corrigent deux points différents, aucune correction ne se perd', async () => {
+    const remote = new MemoryRemote();
+    const pc = await createMemoryDatabase();
+    const phone = await createMemoryDatabase();
+    const universeId = await createUniverse(pc, 'Anglais', 'en');
+    const test: DoneRecord = {
+      status: 'done',
+      at: 1_000,
+      overrides: {},
+      results: [
+        { id: 'a', state: 'learn', probability: 0.2, evidence: 'tested' },
+        { id: 'b', state: 'consolidate', probability: 0.5, evidence: 'tested' },
+      ],
+    };
+    await saveSettings(pc, { placement: { [universeId]: test } });
+    await syncOnce(pc, remote);
+    await syncOnce(phone, remote);
+
+    // Hors ligne : le PC corrige « a », le téléphone fait le mini-test de « b » (et change un autre réglage, après).
+    await savePlacementMark(pc, universeId, { kind: 'override', pointId: 'a', data: 'mastered' }, 2_000);
+    await savePlacementMark(phone, universeId, { kind: 'check', pointId: 'b', data: { at: 3_000, probability: 0.97, state: 'mastered' } }, 3_000);
+    await saveSettings(phone, { newPerDay: 12 });
+    for (const db of [pc, phone, pc, phone]) await syncOnce(db, remote);
+
+    for (const db of [pc, phone]) {
+      const record = withMarks((await loadSettings(db)).placement[universeId], await loadPlacementMarks(db, universeId)) as DoneRecord;
+      expect(pointState(record, 'a')).toBe('mastered');
+      expect(pointState(record, 'b')).toBe('mastered');
+    }
+  });
+
+  it('placement : les corrections antérieures à un nouveau test ne comptent plus ; une correction retirée l’est partout', async () => {
+    const base: DoneRecord = { status: 'done', at: 5_000, overrides: { a: 'mastered' }, results: [{ id: 'a', state: 'learn', probability: 0.2, evidence: 'tested' }] };
+    expect(pointState(withMarks(base, [{ kind: 'override', pointId: 'a', data: null, at: 6_000 }]), 'a')).toBe('learn');
+    expect(pointState(withMarks({ ...base, overrides: {} }, [{ kind: 'override', pointId: 'a', data: 'mastered', at: 4_000 }]), 'a')).toBe('learn');
   });
 
   it('livres : la position de lecture suit l’utilisateur, le texte reste local', async () => {

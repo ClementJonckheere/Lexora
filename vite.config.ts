@@ -39,6 +39,11 @@ export default defineConfig({
     chunkSizeWarningLimit: 1500,
   },
   test: {
+    // Fonctions Supabase (Deno) exécutées sous Vitest : leurs modules jsr:/npm: remplacés par des doublures.
+    alias: {
+      'jsr:@supabase/supabase-js@2': fileURLToPath(new URL('./src/test-support/edgeStubs.ts', import.meta.url)),
+      'npm:web-push@3.6.7': fileURLToPath(new URL('./src/test-support/edgeStubs.ts', import.meta.url)),
+    },
     environment: 'node',
     include: ['src/**/*.test.ts'],
   },

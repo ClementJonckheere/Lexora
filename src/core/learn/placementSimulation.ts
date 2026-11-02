@@ -1,4 +1,4 @@
-import { PlacementModel, type PlacementAnswer, type PlacementDecision, type PlacementQuestion, type PlacementTarget } from './placement';
+import { PlacementModel, type PlacementAnswer, type PlacementDecision, type PlacementEstimate, type PlacementQuestion, type PlacementTarget } from './placement';
 
 /** Simulations abstraites de connaissances ; ces identifiants ne sont pas des exercices a montrer a l'utilisateur. */
 export interface PlacementProfile {
@@ -64,6 +64,8 @@ export interface PlacementSimulationRow {
   falseMasteryRate: number;
   /** Part des points connus classés « à apprendre » : ce que des questions mal posées coûtent. */
   falseLearnRate: number;
+  /** Faux acquis selon leur preuve (testé, déduit des prérequis, déduit du niveau) : d'où viennent les erreurs. */
+  falseMasteryByEvidence: Record<string, number>;
   brier: number;
   stops: Record<NonNullable<PlacementDecision['reason']>, number>;
 }
@@ -106,6 +108,32 @@ export function referencePlacementProfiles(targets: readonly PlacementTarget[]):
   ];
 }
 
+/**
+ * Lacunes irrégulières, plus proches des vrais apprenants que les profils par niveau : un B2 avec quelques trous pris
+ * au hasard (et ce qui en dépend), un B1 avec des îlots de C1, un A2 à moitié acquis.
+ */
+export function irregularPlacementProfiles(targets: readonly PlacementTarget[]): PlacementProfile[] {
+  const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+  const upTo = (level: string) => targets.filter((t) => levels.indexOf(t.level ?? '') >= 0 && levels.indexOf(t.level ?? '') <= levels.indexOf(level)).map((t) => t.id);
+  const byId = new Map(targets.map((t) => [t.id, t]));
+  /** Un point dont un prérequis (direct ou non) est un trou est inconnu lui aussi. */
+  const dependsOn = (id: string, holes: Set<string>, seen = new Set<string>()): boolean =>
+    holes.has(id) || (!seen.has(id) && (seen.add(id), (byId.get(id)?.requires ?? []).some((r) => dependsOn(r, holes, seen))));
+  return [
+    {
+      name: 'B2 avec 6 trous au hasard',
+      knowledge: (rng) => {
+        const ids = upTo('B2');
+        const holes = new Set<string>();
+        while (holes.size < Math.min(6, ids.length)) holes.add(ids[Math.floor(rng() * ids.length)]);
+        return knownWithPrerequisites(targets, new Set(ids.filter((id) => !dependsOn(id, holes))));
+      },
+    },
+    { name: 'B1 avec îlots C1', knowledge: (rng) => knownWithPrerequisites(targets, new Set([...upTo('B1'), ...targets.filter((t) => t.level === 'C1' && rng() < 0.4).map((t) => t.id)])) },
+    { name: 'A2 à moitié', knowledge: (rng) => knownWithPrerequisites(targets, new Set(upTo('A2').filter(() => rng() < 0.5))) },
+  ];
+}
+
 export function simulatePlacement(
   model: PlacementModel,
   profiles: readonly PlacementProfile[],
@@ -114,6 +142,8 @@ export function simulatePlacement(
   noise: PlacementNoise = { slip: 0.1, typedChance: 0.05, unknownShare: 0.35 },
   behaviour: PlacementBehaviour = 'random',
   learner?: PlacementLearner,
+  /** Ce que l'application retient des estimations (appPlacementEstimates) : mesurer ce qui est réellement enregistré. */
+  retained: (estimates: PlacementEstimate[]) => PlacementEstimate[] = (e) => e,
 ): PlacementSimulationRow[] {
   const shortcuts = behaviour === 'shortcut' || learner?.heuristic === 'dominant' ? shortcutForms(model.questions) : new Map<string, string>();
   type Q = PlacementQuestion & { form?: string; options?: string[]; answer?: string };
@@ -159,6 +189,7 @@ export function simulatePlacement(
     let falseMastery = 0;
     let knownPoints = 0;
     let falseLearn = 0;
+    const byEvidence: Record<string, number> = {};
     const stops = { complete: 0, budget: 0, 'bank-exhausted': 0 };
     for (let learner = 0; learner < learners; learner++) {
       const rng = placementRng(seed + index * 1000003 + learner * 7919);
@@ -175,13 +206,16 @@ export function simulatePlacement(
         answers = model.answer(answers, q.id, response);
       }
       questions += answers.length;
-      for (const e of model.estimate(answers)) {
+      for (const e of retained(model.estimate(answers))) {
         const known = truth[e.id];
         squaredError += (e.probability - Number(known)) ** 2;
         if ((e.probability >= 0.5) !== known) forcedErrors++;
         if (!known) {
           unknownPoints++;
-          if (e.state === 'mastered') falseMastery++;
+          if (e.state === 'mastered') {
+            falseMastery++;
+            byEvidence[e.evidence] = (byEvidence[e.evidence] ?? 0) + 1;
+          }
         } else {
           knownPoints++;
           if (e.state === 'learn') falseLearn++;
@@ -197,7 +231,9 @@ export function simulatePlacement(
       classifiedRate: classified / total, classifiedErrorRate: classified ? errors / classified : 0,
       misclassifiedAllRate: errors / total, uncertainRate: 1 - classified / total,
       forcedErrorRate: forcedErrors / total, falseMasteryRate: unknownPoints ? falseMastery / unknownPoints : 0,
-      falseLearnRate: knownPoints ? falseLearn / knownPoints : 0, brier: squaredError / total, stops,
+      falseLearnRate: knownPoints ? falseLearn / knownPoints : 0,
+      falseMasteryByEvidence: Object.fromEntries(Object.entries(byEvidence).map(([k, n]) => [k, unknownPoints ? n / unknownPoints : 0])),
+      brier: squaredError / total, stops,
     };
   });
 }

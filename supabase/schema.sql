@@ -270,6 +270,20 @@ create table if not exists public.verb_answers (
   server_updated_at  bigint not null default 0
 );
 
+-- Placement : corrections point par point (« je connais déjà », mini-tests de leçon), sans écrasement entre appareils.
+create table if not exists public.placement_marks (
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  mark_key           text not null,
+  universe_id        uuid not null,
+  kind               text not null check (kind in ('override', 'check')),
+  point_id           text not null,
+  data               text not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0,
+  primary key (user_id, mark_key)
+);
+
 -- Série : jours manqués couverts par un bouclier (toutes langues confondues).
 create table if not exists public.streak_shields (
   user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
@@ -298,7 +312,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers', 'streak_shields'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers', 'streak_shields', 'placement_marks'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);
