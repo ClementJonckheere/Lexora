@@ -201,6 +201,8 @@ interface AppState {
   moveNotes(ids: string[], universeId: string): Promise<void>;
   setUniverseNewPerDay(id: string, value: number | null): Promise<void>;
   update: AvailableUpdate | null;
+  /** Installation en cours : avancement du téléchargement (null : inconnu), undefined sinon. */
+  updateProgress: number | null | undefined;
   setUpdate(update: AvailableUpdate | null): void;
   toggleFavorite(id: string): Promise<void>;
   updateSettings(patch: Partial<Settings>): Promise<void>;
@@ -317,6 +319,7 @@ export const useApp = create<AppState>((set, get) => {
     hideTranslation: false,
     selectedNoteId: null,
     update: null,
+    updateProgress: undefined,
 
     async init() {
       try {

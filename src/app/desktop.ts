@@ -1,7 +1,7 @@
 import { useApp } from './store';
 import { dayKey } from '@/core/domain/dates';
 import { settingsFor } from '@/core/domain/settings';
-import { checkForUpdate, notify, onTrayAction, setCloseToTray, setTrayTooltip } from '@/core/platform/desktop';
+import { checkForUpdate, notify, onTrayAction, setCloseToTray, setTrayTooltip, type AvailableUpdate } from '@/core/platform/desktop';
 import { countDue } from '@/core/srs/queue';
 import { readPref, writePref } from '@/ui/prefs';
 import { loadDailyProgress, type DailyProgress } from '@/core/repo/progressRepo';
@@ -71,12 +71,38 @@ async function refreshTooltip() {
   await setTrayTooltip(total ? `Lexora : ${total} fiche${total > 1 ? 's' : ''} à réviser` : 'Lexora : tout est à jour').catch(() => undefined);
 }
 
-export async function checkUpdates(manual = false): Promise<void> {
+/**
+ * Télécharge et installe la nouvelle version, puis redémarre Lexora (installateur Windows en mode passif : une
+ * petite fenêtre de progression, aucune question). Avancement partagé par le bandeau et les Paramètres.
+ */
+export async function installUpdate(update: AvailableUpdate): Promise<void> {
+  if (useApp.getState().updateProgress !== undefined) return;
+  useApp.setState({ updateProgress: null });
+  try {
+    await update.install((p) => useApp.setState({ updateProgress: p }));
+  } catch (err) {
+    useApp.setState({ updateProgress: undefined });
+    useApp.getState().toast('error', `Mise à jour impossible : ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
+/** Une installation automatique ratée n'est pas retentée en boucle : une seule tentative par version et par jour. */
+const AUTO_RETRY_MS = 24 * 3600_000;
+
+export async function checkUpdates(manual = false, atStartup = false): Promise<void> {
   const { setUpdate, toast } = useApp.getState();
   try {
     const update = await checkForUpdate();
     setUpdate(update);
     if (manual) toast('info', update ? `Version ${update.version} disponible.` : 'Lexora est à jour.');
+    // Au démarrage : installation sans attendre l'utilisateur (réglage « Mises à jour automatiques »).
+    if (update && atStartup && useApp.getState().settings.autoUpdate) {
+      const tried = readPref<{ version: string; at: number } | null>('update.autoTried', null);
+      if (tried?.version === update.version && Date.now() - tried.at < AUTO_RETRY_MS) return;
+      writePref('update.autoTried', { version: update.version, at: Date.now() });
+      toast('info', `Installation de la version ${update.version}… Lexora va redémarrer.`);
+      await installUpdate(update);
+    }
   } catch (err) {
     if (manual) toast('error', `Vérification impossible : ${err instanceof Error ? err.message : String(err)}`);
   }
@@ -109,7 +135,7 @@ export function startDesktopIntegration(): () => void {
   }).then((un) => cleanups.push(un));
 
   void refreshTooltip();
-  void checkUpdates();
+  void checkUpdates(false, true);
   const updateTimer = setInterval(() => void checkUpdates(), UPDATE_EVERY_MS);
   const tick = setInterval(() => void maybeRemind(), TICK_MS);
   void maybeRemind();
