@@ -500,7 +500,8 @@ export const useApp = create<AppState>((set, get) => {
       writePref('universeId', id);
       const target = get().universes.find((u) => u.id === id);
       if (!target) return;
-      set({ universe: target });
+      // Le planificateur prend les paramètres FSRS de la nouvelle langue (refresh ne voit plus de changement d'univers).
+      set({ universe: target, scheduler: createScheduler(get().settings, target.id) });
       await get().refresh();
       set((s) => ({ libraryFilters: DEFAULT_FILTERS, selectedNoteId: null, route: s.route.name === 'collection' || s.route.name === 'session' ? { name: 'home' } : s.route, routeKey: s.routeKey + 1 }));
     },
