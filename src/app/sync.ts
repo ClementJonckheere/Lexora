@@ -60,7 +60,7 @@ export function runSync(opts: { manual?: boolean } = {}): Promise<void> {
       setStatus({ state: 'idle', lastSync: Date.now(), error: null });
       if (pulled > 0) {
         const settings = await loadSettings(db);
-        useApp.setState({ settings, scheduler: createScheduler(settings) });
+        useApp.setState({ settings, scheduler: createScheduler(settings, useApp.getState().universe?.id) });
         await useApp.getState().refresh();
       }
       if (opts.manual) useApp.getState().toast('success', 'Synchronisé');

@@ -13,7 +13,7 @@ Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, 
 
 La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
 
-**État documenté : version 2.37.0.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
+**État documenté : version 2.38.0.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -125,7 +125,7 @@ Le même code SQL tourne dans les trois environnements. Dans l'application, c'es
 
 ## 5. Modèle de données
 
-Le schéma SQLite est en **version 13** (`PRAGMA user_version`), indépendamment de la version 2.37.0 de l'application. Les **18 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
+Le schéma SQLite est en **version 13** (`PRAGMA user_version`), indépendamment de la version 2.38.0 de l'application. Les **18 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
 
 | Table | Clé locale | Principales données |
 |---|---|---|
@@ -167,7 +167,9 @@ La synchronisation se déclenche quelques secondes après chaque modification, t
 
 ## 6. Logique de mémorisation
 
-**FSRS** modélise chaque fiche par sa *stabilité* (nombre de jours au bout duquel la probabilité de rappel tombe à 90 %) et sa *difficulté*. Après chaque réponse, il calcule la prochaine date pour viser la **rétention souhaitée** (90 % par défaut, réglable). Le modèle utilise actuellement les paramètres par défaut de `ts-fsrs` ; l'optimisation à partir de l'historique de chaque utilisateur reste à développer (voir §8).
+**FSRS** modélise chaque fiche par sa *stabilité* (nombre de jours au bout duquel la probabilité de rappel tombe à 90 %) et sa *difficulté*. Après chaque réponse, il calcule la prochaine date pour viser la **rétention souhaitée** (90 % par défaut, réglable). Par défaut, le modèle utilise les paramètres moyens de `ts-fsrs` (FSRS-6, 21 paramètres).
+
+**Paramètres personnels (2.38)** : *Paramètres → Mémorisation → Paramètres FSRS personnels → Calculer avec mon historique*. Lexora rejoue l'historique de chaque fiche (historique complet, depuis sa première révision) et ajuste les 21 paramètres pour que le modèle prédise mieux vos réussites et vos oublis aux révisions faites au moins un jour après la précédente (perte logarithmique, Adam, paramètres bornés comme ts-fsrs, léger rappel vers les valeurs par défaut quand les données sont peu nombreuses ; `src/core/srs/optimizer.ts`). Une fiche sur cinq, choisie par son identifiant, est mise de côté : les nouveaux paramètres ne sont appliqués que s'ils prédisent mieux ces révisions de contrôle que les paramètres en place (perte au moins 0,5 % plus basse, écart par tranches pas plus haut, à 2 % près, au moins 80 révisions de contrôle). Il faut au moins 400 révisions utilisables ; chaque langue qui en a assez (et n'est pas tout l'historique) peut avoir ses propres paramètres, sinon ceux de toutes langues s'appliquent. Résultats synchronisés (réglage `fsrsParams`) ; *Revenir aux paramètres par défaut* les retire. Les échéances déjà fixées ne bougent pas : les nouveaux paramètres comptent à la prochaine révision de chaque fiche. La charge suit toujours la **rétention visée** (réglage).
 
 - **Nouvelle expression** : étapes courtes (1 min, 10 min) dans la session, puis intervalles en jours.
 - **Oubliée** (`1`) : la fiche passe en réapprentissage, revient dans la session quelques cartes plus loin, sa stabilité chute et l'oubli est compté.
@@ -214,7 +216,7 @@ Les chantiers suivants restent **indisponibles dans l'interface** :
 | 2 | **Repérage grammatical dans le lecteur** | Intégrer les motifs au lecteur après relecture d'au moins 50 passages par point et mesure d'une précision strictement supérieure à 90 %. Conserver les jugements et des cas annotés comme tests permanents ; une simulation du mécanisme ne remplace pas une mesure humaine de la justesse des passages. |
 | 3 | **Phrases choisies à la main** | Compléter les points peu fournis dans Tatoeba : conditionnel mixte (16 candidats avec traduction française), subjonctif (36), selon le comptage du 29 octobre 2026. Ces comptes sont des candidats à relire, pas des exercices validés. Conserver les sources et les traductions relues ; préserver la banque complémentaire lors des régénérations. |
 | 4 | **Verbes irréguliers et collections** | Module d'entraînement aux trois formes des verbes irréguliers. Collections make / do et verbes ou adjectifs à préposition, importables comme notes avec leurs deux fiches FSRS. Fait : module de verbes (2.27, *Apprendre*) et collections prêtes à importer (2.28, *Collections*). |
-| 5 | **FSRS personnel et analyse Qlik** | Optimiser les paramètres sur `review_logs` par utilisateur et univers, après quelques centaines de révisions ; comparer la calibration avant / après sur des révisions mises de côté. Préparer un export documenté et des vues SQL pour Qlik Cloud avec accès en lecture seule : prédit / observé, rétention par direction, temps de réponse, mots à problème, progression grammaticale et signalements. |
+| 5 | **FSRS personnel et analyse Qlik** | FSRS personnel : fait en 2.38 (voir §6), à valider sur de vrais historiques. Préparer un export documenté et des vues SQL pour Qlik Cloud avec accès en lecture seule : prédit / observé, rétention par direction, temps de réponse, mots à problème, progression grammaticale et signalements. |
 | 6 | **Shadowing** | Écouter une phrase, la répéter au micro, réécouter et comparer. Première étape : enregistrement local avec `MediaRecorder`. Une évaluation de prononciation Azure via une fonction Supabase pourra venir ensuite ; elle n'est pas implémentée. |
 
 **Limite à mesurer pour le placement** : 40 questions avec au moins deux questions par point permettent de tester directement 20 points au maximum. Les autres points ne peuvent être déduits que si `requires` fournit des éléments suffisants ; les résultats incertains doivent rester signalés comme tels. La simulation doit évaluer cette limite avant toute mise en ligne.
@@ -227,7 +229,7 @@ Les chantiers suivants restent **indisponibles dans l'interface** :
 
 ### Option A : récupérer l'installateur
 
-La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.37.0_x64-setup.exe`.
+La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.38.0_x64-setup.exe`.
 
 Le workflow GitHub Actions `CI & installateur Windows` lance les tests puis construit l'installateur à chaque push sur `main` ou `claude/**`, à chaque tag `v*`, pour les PR vers `main`, et sur demande depuis l'onglet *Actions* → *Run workflow*. Pour essayer une construction non publiée : **Actions → exécution réussie de la branche voulue → artefact lexora-windows**.
 

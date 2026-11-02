@@ -114,7 +114,7 @@ export async function backupToFile(): Promise<void> {
 async function reloadAll() {
   const s = state();
   const settings = await loadSettings(s.db);
-  useApp.setState({ settings, scheduler: createScheduler(settings) });
+  useApp.setState({ settings, scheduler: createScheduler(settings, s.universe?.id) });
   await s.refresh();
 }
 

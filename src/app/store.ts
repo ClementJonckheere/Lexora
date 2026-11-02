@@ -392,7 +392,8 @@ export const useApp = create<AppState>((set, get) => {
         vocabObservations: knowledge?.observations ?? [],
         grammarAnswers: knowledge?.grammar ?? [],
         revision: s.revision + 1,
-        ...(changedUniverse ? { libraryFilters: DEFAULT_FILTERS, selectedNoteId: null } : {}),
+        // Paramètres FSRS personnels propres à la langue, s'il y en a.
+        ...(changedUniverse ? { libraryFilters: DEFAULT_FILTERS, selectedNoteId: null, scheduler: createScheduler(s.settings, current?.id) } : {}),
       }));
     },
 
@@ -586,7 +587,7 @@ export const useApp = create<AppState>((set, get) => {
 
     async updateSettings(patch) {
       const settings = await saveSettings(db(), patch);
-      set({ settings, scheduler: createScheduler(settings) });
+      set({ settings, scheduler: createScheduler(settings, get().universe?.id) });
       await afterWrite();
     },
 

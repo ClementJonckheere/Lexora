@@ -35,6 +35,11 @@ export interface Settings {
   newOrder: 'frequency' | 'added';
   /** Test de placement grammatical, par univers : passé (résultats par point, corrections) ou écarté. */
   placement: Record<string, PlacementRecord>;
+  /**
+   * Paramètres FSRS personnels (src/core/srs/optimizer.ts), « all » (toutes langues) ou par univers : dernier calcul,
+   * avec sa mesure de contrôle. Utilisés seulement s'ils prédisaient mieux que les paramètres en place (`applied`).
+   */
+  fsrsParams: Record<string, FsrsFit>;
   /** Titre affiché à côté du rang, par univers (identifiant du titre, ou « none »). */
   displayedTitles: Record<string, string>;
   /** Classement (Statistiques) : participation choisie, pseudo affiché aux autres. */
@@ -67,6 +72,31 @@ export interface Settings {
 export type ThemeMode = 'system' | 'light' | 'dark';
 
 export type PlacementState = 'mastered' | 'consolidate' | 'learn';
+export interface FsrsFit {
+  w: number[];
+  at: number;
+  applied: boolean;
+  reviews: number;
+  /** Révisions de contrôle : paramètres en place avant le calcul, puis nouveaux. */
+  before: { logLoss: number; rmse: number; reviews: number };
+  after: { logLoss: number; rmse: number; reviews: number };
+}
+
+function sanitizeFsrsParams(raw: unknown): Record<string, FsrsFit> {
+  if (!raw || typeof raw !== 'object') return {};
+  const out: Record<string, FsrsFit> = {};
+  const m = (x: unknown) => {
+    const o = (x ?? {}) as Record<string, unknown>;
+    return { logLoss: Number(o.logLoss) || 0, rmse: Number(o.rmse) || 0, reviews: Number(o.reviews) || 0 };
+  };
+  for (const [key, v] of Object.entries(raw as Record<string, unknown>)) {
+    const f = v as Partial<FsrsFit> | null;
+    if (!f || !Array.isArray(f.w) || f.w.length !== 21 || !f.w.every((x) => typeof x === 'number' && Number.isFinite(x)) || typeof f.at !== 'number') continue;
+    out[key] = { w: f.w, at: f.at, applied: f.applied === true, reviews: Number(f.reviews) || 0, before: m(f.before), after: m(f.after) };
+  }
+  return out;
+}
+
 export type PlacementRecord =
   | { status: 'skipped'; at: number }
   | {
@@ -170,6 +200,7 @@ export const DEFAULT_SETTINGS: Settings = {
   displayedTitles: {},
   leaderboard: { enabled: false, name: '' },
   placement: {},
+  fsrsParams: {},
   settingsVersion: 0,
   ttsVoices: {},
   ttsRate: 0.95,
@@ -212,6 +243,7 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.clozeFront = bool(raw.clozeFront, s.clozeFront);
   s.newOrder = raw.newOrder === 'added' ? 'added' : 'frequency';
   s.placement = sanitizePlacement(raw.placement);
+  s.fsrsParams = sanitizeFsrsParams(raw.fsrsParams);
   s.displayedTitles =
     raw.displayedTitles && typeof raw.displayedTitles === 'object'
       ? Object.fromEntries(Object.entries(raw.displayedTitles as Record<string, unknown>).filter((e): e is [string, string] => typeof e[1] === 'string'))
