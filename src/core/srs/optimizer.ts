@@ -61,11 +61,12 @@ interface Sequence {
   scored: number;
 }
 
-/** Jour calendaire local (les écarts se comptent en jours, comme FSRS). */
-const dayIndex = (at: number) => {
-  const d = new Date(at);
-  return Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY);
-};
+/**
+ * Jour calendaire UTC : la convention du planificateur (dateDiffInDays de ts-fsrs, qui compte les écarts entre dates
+ * UTC). Une autre convention (dates locales) donnerait 0 jour là où le planificateur en compte 1, autour de minuit UTC
+ * (à Paris, entre 0 h et 1 h ou 2 h) : le calcul et sa mesure ne porteraient pas sur les mêmes écarts.
+ */
+export const dayIndex = (at: number) => Math.floor(at / DAY);
 
 /** Historiques complets seulement : la première révision d'une fiche doit la trouver nouvelle. */
 export function sequences(rows: readonly ReviewRow[]): Sequence[] {

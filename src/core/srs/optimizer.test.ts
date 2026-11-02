@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { default_w, FSRSAlgorithm, forgetting_curve, generatorParameters, type FSRSState } from 'ts-fsrs';
+import { dateDiffInDays, default_w, FSRSAlgorithm, forgetting_curve, generatorParameters, type FSRSState } from 'ts-fsrs';
 import { fitParameters, isHoldout, metrics, MIN_FIT_REVIEWS, sequences, type ReviewRow } from './optimizer';
 
 const DAY = 86_400_000;
@@ -68,4 +68,23 @@ describe('optimisation des paramètres FSRS', () => {
     const fit = await fitParameters(simulate(default_w, 400, 7), { epochs: 3 });
     expect(fit?.better).toBe(false);
   }, 60_000);
+});
+
+describe('jours comptés comme le planificateur', () => {
+  it('même convention que ts-fsrs (dates UTC), y compris autour de minuit UTC', () => {
+    // À Paris (UTC+1) : 00 h 50 puis 01 h 10 le même jour local, mais de part et d'autre de minuit UTC.
+    const pairs = [
+      [Date.UTC(2026, 10, 1, 23, 50), Date.UTC(2026, 10, 2, 0, 10)],
+      [Date.UTC(2026, 10, 1, 0, 10), Date.UTC(2026, 10, 1, 23, 50)],
+      [Date.UTC(2026, 2, 28, 22, 30), Date.UTC(2026, 2, 30, 0, 30)],
+    ];
+    for (const [a, b] of pairs) {
+      const [seq] = sequences([
+        { cardId: 'x', at: a, rating: 3, state: 0 },
+        { cardId: 'x', at: b, rating: 3, state: 2 },
+        { cardId: 'x', at: b + 3 * DAY, rating: 3, state: 2 },
+      ]);
+      expect(seq.steps[1].t).toBe(dateDiffInDays(new Date(a), new Date(b)));
+    }
+  });
 });

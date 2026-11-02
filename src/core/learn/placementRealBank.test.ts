@@ -23,6 +23,8 @@ const MAX_FALSE_MASTERY = 0.03;
 /** Faux « à apprendre » : le moins grave (leçon refaite), mais au-delà le test ne sert plus. */
 const MAX_FALSE_LEARN = 0.05;
 const MAX_CLASSIFIED_ERROR = 0.08;
+/** Simulations de plusieurs centaines de tests complets : quelques secondes chacune, davantage sur une CI chargée. */
+const SIMULATION_TIMEOUT = 60_000;
 
 const summary = (rows: PlacementSimulationRow[]) =>
   rows
@@ -39,12 +41,12 @@ describe('placement livré : vraie banque, réglages de l’application', () => 
   it.each(['random', 'shortcut'] as const)('apprenants « %s » : peu de faux acquis, même avec des lacunes irrégulières', (behaviour) => {
     const rows = simulatePlacement(model, profiles, 20, 20261102, undefined, behaviour, undefined, appPlacementEstimates);
     expect(summary(rows)).toEqual([]);
-  });
+  }, SIMULATION_TIMEOUT);
 
   it('hors des hypothèses du modèle : règle « forme la plus courte », questions mal posées', () => {
     const rows = simulatePlacement(model, profiles, 12, 20261103, undefined, 'random', { heuristic: 'shortest', share: 0.8, defective: 0.15 }, appPlacementEstimates);
     // Questions mal posées : on tolère plus de faux « à apprendre » (le coût est une leçon refaite), pas de faux acquis.
     const bad = rows.filter((r) => r.falseMasteryRate > 0.05).map((r) => `${r.profile} : faux acquis ${(100 * r.falseMasteryRate).toFixed(1)} %`);
     expect(bad).toEqual([]);
-  });
+  }, SIMULATION_TIMEOUT);
 });
