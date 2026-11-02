@@ -20,6 +20,8 @@ import { PhoneSettingsTabs } from './PhoneSettingsTabs';
 import { currentPush, disablePush, enablePush, pushSupported } from '@/core/platform/push';
 import { reminderHour } from '@/core/progress/reminder';
 import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
+import { optimizeFsrs, type ScopeOutcome } from '@/app/fsrsOptimize';
+import { MIN_FIT_REVIEWS } from '@/core/srs/optimizer';
 
 function Setting({ title, desc, children }: { title: string; desc?: ReactNode; children: ReactNode }) {
   return (
@@ -171,6 +173,7 @@ export function SettingsPage() {
               ))}
             </select>
           </Setting>
+          <FsrsPersonalSetting />
           <Setting title="Seuil de maîtrise" desc="Stabilité FSRS (en jours) à partir de laquelle une fiche est considérée comme maîtrisée.">
             <NumberInput value={settings.masteryThresholdDays} min={7} max={365} onCommit={(v) => update({ masteryThresholdDays: Math.round(v) })} />
           </Setting>
@@ -391,6 +394,74 @@ function OptionalNumberInput({ value, placeholder, onCommit }: { value: number |
 }
 
 /** Intégration à Windows : démarrage, zone de notification, rappel, mises à jour. */
+const pct = (x: number) => `${(100 * x).toLocaleString('fr-FR', { maximumFractionDigits: 1 })} %`;
+
+/**
+ * Paramètres FSRS personnels : calcul sur l'historique, mesure sur des révisions de contrôle, application seulement
+ * en cas de gain (src/core/srs/optimizer.ts, src/app/fsrsOptimize.ts).
+ */
+function FsrsPersonalSetting() {
+  const settings = useApp((s) => s.settings);
+  const universes = useApp((s) => s.universes);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [last, setLast] = useState<ScopeOutcome[] | null>(null);
+  const fits = Object.entries(settings.fsrsParams);
+  const name = (scope: string) => (scope === 'all' ? 'Toutes langues' : universes.find((u) => u.id === scope)?.name ?? 'Univers supprimé');
+
+  const run = () => {
+    setProgress(0);
+    void attempt(async () => {
+      const out = await optimizeFsrs(setProgress);
+      setLast(out);
+      const applied = out.filter((o) => o.fit?.better).length;
+      if (!out.some((o) => o.fit)) throw new Error(`Pas encore assez de révisions : il en faut au moins ${MIN_FIT_REVIEWS} faites au moins un jour après la précédente.`);
+      return applied;
+    }).then((applied) => {
+      setProgress(null);
+      if (applied !== undefined) useApp.getState().toast('success', applied ? 'Paramètres personnels appliqués' : 'Paramètres actuels conservés : pas de gain mesuré');
+    });
+  };
+
+  return (
+    <Setting
+      title="Paramètres FSRS personnels"
+      desc={
+        <>
+          FSRS calcule les échéances avec des paramètres moyens. Lexora peut les recalculer sur vos propres révisions (toutes langues, et chaque langue
+          qui a assez d'historique), puis les vérifie sur 20 % de vos fiches mises de côté : ils ne sont appliqués que s'ils y prédisent mieux vos
+          réussites et vos oublis. Les échéances déjà fixées ne bougent pas.
+          {fits.length > 0 && (
+            <span className="fsrs-fits">
+              {fits.map(([scope, f]) => (
+                <span key={scope}>
+                  <strong>{name(scope)}</strong> : {f.reviews} révisions, écart de prédiction {pct(f.before.rmse)} → {pct(f.after.rmse)} ;{' '}
+                  {f.applied ? `appliqués le ${new Date(f.at).toLocaleDateString('fr-FR')}` : 'non appliqués (pas de gain mesuré)'}
+                </span>
+              ))}
+            </span>
+          )}
+          {last?.some((o) => !o.fit) && (
+            <span className="fsrs-fits muted">
+              Pas assez de révisions pour : {last.filter((o) => !o.fit).map((o) => o.name).join(', ')}.
+            </span>
+          )}
+        </>
+      }
+    >
+      <div className="stack stack--sm" style={{ alignItems: 'flex-end' }}>
+        <Button onClick={run} disabled={progress !== null}>
+          {progress !== null ? `Calcul… ${Math.round(progress * 100)} %` : 'Calculer avec mon historique'}
+        </Button>
+        {fits.some(([, f]) => f.applied) && (
+          <button className="link small" onClick={() => void attempt(() => useApp.getState().updateSettings({ fsrsParams: {} }), 'Paramètres par défaut rétablis')}>
+            Revenir aux paramètres par défaut
+          </button>
+        )}
+      </div>
+    </Setting>
+  );
+}
+
 /** Rappel quotidien : notification Windows, ou du téléphone (Web Push), à l'heure habituelle ou choisie. */
 function ReminderSection() {
   const settings = useApp((s) => s.settings);

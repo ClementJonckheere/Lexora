@@ -14,6 +14,7 @@ import type { PlacementState } from '@/core/domain/settings';
 import type { PlacementResponse } from '@/core/learn/placement';
 import type { PlacementItem } from '@/core/learn/placementBank';
 import { checkItems, checkResult, needsCheck } from '@/core/learn/placementResults';
+import { usePlacement } from '@/ui/hooks/usePlacement';
 
 /** Une leçon : l'explication et ses exemples, puis des séances d'exercices tirées au hasard. */
 export function LessonPage({ id, startReview = false }: { id: string; startReview?: boolean }) {
@@ -23,7 +24,7 @@ export function LessonPage({ id, startReview = false }: { id: string; startRevie
   const { navigate } = useApp.getState();
   const [bank, setBank] = useState<Exercise[] | null>(null);
   const [session, setSession] = useState<{ items: Exercise[]; review: boolean } | null>(null);
-  const placement = useApp((s) => (universeId ? s.settings.placement[universeId] : undefined));
+  const placement = usePlacement();
   // Mini-test proposé tant que la leçon n'est pas commencée ; son verdict reste affiché après coup.
   const [checkVerdict, setCheckVerdict] = useState<PlacementState | null>(null);
 
@@ -407,9 +408,8 @@ function ExerciseSession({
  */
 function LessonCheck({ id, onDone }: { id: string; onDone: (state: PlacementState) => void }) {
   const universe = useApp((s) => s.universe);
-  const placement = useApp((s) => s.settings.placement);
-  const record = universe ? placement[universe.id] : undefined;
-  const { updateSettings, toast } = useApp.getState();
+  const record = usePlacement();
+  const { savePlacementMark, toast } = useApp.getState();
   const [items, setItems] = useState<PlacementItem[] | null>(null);
   const [started, setStarted] = useState(false);
   const [responses, setResponses] = useState<{ q: string; response: PlacementResponse; mode: 'typed' | 'choice'; choices?: number }[]>([]);
@@ -434,7 +434,7 @@ function LessonCheck({ id, onDone }: { id: string; onDone: (state: PlacementStat
     if (next.length < items.length) return;
     const prior = record.results.find((r) => r.id === id)?.probability ?? 0.5;
     const check = { ...checkResult(prior, next), answers: next.map((r) => ({ q: r.q, r: r.response })) };
-    void updateSettings({ placement: { ...placement, [universe!.id]: { ...record, checks: { ...record.checks, [id]: check } } } })
+    void savePlacementMark(universe!.id, { kind: 'check', pointId: id, data: check })
       .then(() => onDone(check.state))
       .catch((err) => toast('error', errorMessage(err)));
   };

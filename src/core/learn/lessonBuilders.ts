@@ -187,11 +187,34 @@ const FR_COND_PAST = /(?<![a-zà-ÿ])(?:aurais|aurait|aurions|auriez|auraient|se
  * Conditionnels (2e, 3e et mixtes) : would + base ou would have + participe dans la conséquence. La traduction tranche
  * (« je serais » / « j'aurais été ») ; c'est le choix que demande le conditionnel mixte (If I had studied, I would be…).
  */
+/** Plus-que-parfait dans la proposition en « si » (si j'avais su, s'il était venu, si ce n'avait été). */
+const FR_SI_PLUPERFECT =
+  /^[^,.;!?]*?\b(?:avai[st]|avions|aviez|avaient|étai[st]|étions|étiez|étaient)\s+(?:(?:pas|jamais|plus|encore|déjà|vraiment|toujours)\s+)*(?:été|eu|su|pu|dû|vu|[a-zàâçéèêëîïôûù]+(?:é|ée|és|ées|i|ie|is|ise|it|ite|u|ue|us|ert|erte|aint|eint))(?![a-zàâçéèêëîïôûù])/i;
+
+/**
+ * Conditionnel mixte : les deux propositions à des temps croisés. Condition passée, conséquence présente
+ * (If I had studied, I would be…) ; ou condition présente, conséquence passée (If I were braver, I would have told
+ * her). Un conditionnel classique (If you had asked, I would have helped ; If I were rich, I would buy…) n'en est pas un.
+ */
 const conditionalResult: Builder = (s, known) => {
   if (!/\bif\b/i.test(s.en)) return [];
   const m = only(/\b(would|wouldn't|would not)\s+(?:(have)\s+([a-z]+)|([a-z]+))\b/, s.en);
   if (!m) return [];
   const [whole, modal, have, part, bare] = m;
+  // Proposition en if : jusqu'à la virgule (If…, I would…), ou après le conditionnel (I would… if…).
+  const at = s.en.search(/\bif\b/i);
+  const clause = at < m.index ? s.en.slice(at, m.index).split(/[,;]/)[0] : s.en.slice(at);
+  // Le plus-que-parfait doit être le verbe de la condition, pas celui d'une autre proposition (if she knew he had…).
+  const pastPerfect = [...clause.matchAll(/\b(had|'d)(?:n't|\s+not)?\s+(?:(?:still|already|never|just|ever|only|really|also)\s+)?([a-z]+)\b/g)].some(
+    (x) =>
+      !/\b(?:were|was|knew|did|thought|said|told|felt|found|saw|[a-z]{3,}ed)\b/.test(clause.slice(0, x.index)) &&
+      (x[2] === 'been' || (x[1] === 'had' ? isParticiple(x[2], known) : x[2] === 'had' || (isParticiple(x[2], known) && baseOf(x[2], known) !== x[2]))),
+  );
+  const past = /\b(?:were|was|weren't|wasn't|did|didn't|knew|had|could|lived|liked|wanted|loved|spoke|went|came|told|thought)\b|\b[a-z]{3,}ed\b/.test(clause);
+  // La traduction confirme : plus-que-parfait après « si » pour une condition passée, imparfait sinon.
+  const frIf = /\bs(?:i\b|')/i.exec(s.fr);
+  const frPluperfect = frIf ? FR_SI_PLUPERFECT.test(s.fr.slice(frIf.index)) : null;
+  if (have ? pastPerfect || !past || frPluperfect === true : !pastPerfect || frPluperfect === false) return [];
   const frPast = FR_COND_PAST.test(s.fr);
   const frPresent = FR_CONDITIONAL.test(s.fr) && !frPast;
   if (have) {
@@ -380,6 +403,9 @@ const subjunctive: Builder = (s, known) => {
   const rest = s.en.slice(m.index + m[0].length);
   const c = /^(he|she|it|[A-Z][a-z]+|the\s+[a-z]+|his\s+[a-z]+|her\s+[a-z]+)\s+(not\s+)?([a-z]+)\b/.exec(rest);
   if (!c) return [];
+  // « ask that the whole time » : that est un pronom, « the whole » n'est pas un sujet (adjectif sans nom).
+  const head = /^(?:the|his|her)\s+([a-z]+)$/.exec(c[1])?.[1];
+  if (head && (isListedAdjective(head) || /^(?:whole|same|other|next|last|first|only|entire|rest|very|such)$/.test(head))) return [];
   const verb = c[3];
   if (!plausibleBase(verb, known) || /^(?:should|would|will|can|could|must|may|might)$/.test(verb)) return [];
   const other = verb === 'be' ? 'is' : presentOf(verb, 'he');

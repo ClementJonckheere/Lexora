@@ -99,6 +99,12 @@ export const SYNC_TABLES: SyncTable[] = [
     columns: ['id', 'universe_id', 'verb', 'past_given', 'participle_given', 'past_ok', 'participle_ok', 'created_at', ...SYNC],
     optional: true,
   },
+  {
+    name: 'placement_marks',
+    key: 'mark_key',
+    columns: ['mark_key', 'universe_id', 'kind', 'point_id', 'data', ...SYNC],
+    optional: true,
+  },
   { name: 'streak_shields', key: 'day', columns: ['day', 'used_at', ...SYNC], optional: true, global: true },
 ];
 

@@ -94,8 +94,17 @@ describe('B2', () => {
     expect(shown('mixed-conditionals', 'If I had studied harder, I would be a doctor now.', 'Si j’avais étudié davantage, je serais médecin aujourd’hui.')).toBe(
       'If I had studied harder, I [would be {would be | would have been}] a doctor now.',
     );
-    expect(shown('mixed-conditionals', 'If you had asked me, I would have helped you.', 'Si tu me l’avais demandé, je t’aurais aidé.')).toBe(
-      'If you had asked me, I [would have helped {would have helped | would help}] you.',
+    expect(shown('mixed-conditionals', 'If I were braver, I would have told her.', 'Si j’étais plus courageux, je le lui aurais dit.')).toBe(
+      'If I were braver, I [would have told {would have told | would tell}] her.',
+    );
+    // Conditionnels classiques (troisième, deuxième) : pas des conditionnels mixtes.
+    expect(shown('mixed-conditionals', 'If you had asked me, I would have helped you.', 'Si tu me l’avais demandé, je t’aurais aidé.')).toBeNull();
+    expect(shown('mixed-conditionals', 'If I were rich, I would buy a boat.', 'Si j’étais riche, j’achèterais un bateau.')).toBeNull();
+    expect(shown('mixed-conditionals', 'Tom wondered what Mary would say if she knew he had spent the week in Boston.', 'Tom se demanda ce que Mary dirait si elle savait qu’il avait passé la semaine à Boston.')).toBeNull();
+    // La traduction tranche : « si j’avais été » est une condition passée, pas « if I were ».
+    expect(shown('mixed-conditionals', 'If I were a bird, I would have been able to fly to you.', 'Si j’avais été un oiseau, j’aurais pu voler jusqu’à toi.')).toBeNull();
+    expect(shown('mixed-conditionals', 'I would be a doctor now if I had studied harder.', 'Je serais médecin aujourd’hui si j’avais étudié davantage.')).toBe(
+      'I [would be {would be | would have been}] a doctor now if I had studied harder.',
     );
     expect(shown('mixed-conditionals', 'I would be happy to help.', 'Je serais ravi d’aider.')).toBeNull();
   });
@@ -159,6 +168,8 @@ describe('C1 et A2', () => {
   it('subjonctif, do d’insistance', () => {
     expect(shown('subjunctive', 'I suggest that he be told the truth.', 'Je suggère qu’on lui dise la vérité.')).toBe('I suggest that he [be {be | is}] told the truth.');
     expect(shown('subjunctive', 'She insisted that Tom leave at once.', 'Elle a insisté pour que Tom parte immédiatement.')).toBe('She insisted that Tom [leave {leave | leaves}] at once.');
+    // « that » pronom, « the whole time » : pas de subjonctif.
+    expect(shown('subjunctive', 'I, too, wanted to ask that the whole time.', 'Moi aussi, je voulais demander ça tout le temps.')).toBeNull();
     expect(shown('emphatic-do', 'I did call you, but you were out.', "Je t'ai bien appelé, mais tu étais sorti.")).toBe('I [did call {did call | did called}] you, but you were out.');
     expect(shown('emphatic-do', 'Do sit down, please.', 'Asseyez-vous donc, je vous en prie.')).toBe('[Do sit {Do sit | Do sitting | Do to sit}] down, please.');
     expect(shown('emphatic-do', 'Where do you live?', 'Où habites-tu ?')).toBeNull();

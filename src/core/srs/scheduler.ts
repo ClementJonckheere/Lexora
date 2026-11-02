@@ -4,7 +4,8 @@ import type { Settings } from '../domain/settings';
 
 /**
  * Répétition espacée : algorithme FSRS (Free Spaced Repetition Scheduler)
- * via la bibliothèque de référence `ts-fsrs`, paramètres par défaut du modèle.
+ * via la bibliothèque de référence `ts-fsrs` : paramètres par défaut du modèle, ou paramètres personnels calculés sur
+ * votre historique (src/core/srs/optimizer.ts) quand ils prédisent mieux vos révisions.
  *
  * Notation : 1 Oublié (Again) · 2 Difficile (Hard) · 3 Retenu (Good) · 4 Facile (Easy).
  * Étapes d'apprentissage courtes (1 min, 10 min) puis intervalles calculés par FSRS
@@ -23,9 +24,21 @@ export const GRADES: { grade: Grade; label: string; key: string }[] = [
 
 export type Scheduler = FSRS;
 
-export function createScheduler(settings: Pick<Settings, 'desiredRetention' | 'maximumInterval' | 'enableFuzz'>): Scheduler {
+/** Paramètres personnels retenus pour un univers : les siens s'il en a, sinon ceux de toutes langues, sinon aucun. */
+export function personalWeights(settings: Partial<Pick<Settings, 'fsrsParams'>>, universeId?: string | null): number[] | undefined {
+  const fits = settings.fsrsParams ?? {};
+  const own = universeId ? fits[universeId] : undefined;
+  return (own?.applied ? own : fits.all?.applied ? fits.all : undefined)?.w;
+}
+
+export function createScheduler(
+  settings: Pick<Settings, 'desiredRetention' | 'maximumInterval' | 'enableFuzz'> & Partial<Pick<Settings, 'fsrsParams'>>,
+  universeId?: string | null,
+): Scheduler {
+  const w = personalWeights(settings, universeId);
   return fsrs(
     generatorParameters({
+      ...(w ? { w } : {}),
       request_retention: settings.desiredRetention,
       maximum_interval: settings.maximumInterval,
       enable_fuzz: settings.enableFuzz,

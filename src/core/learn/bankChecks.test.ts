@@ -31,10 +31,15 @@ const blocklist = readFileSync('scripts/grammar-blocklist.txt', 'utf8')
 
 describe('contrôles des banques livrées', () => {
   const lessons = (JSON.parse(readFileSync(`${DIR}/lessons.json`, 'utf8')).lessons as { id: string }[]).map((l) => l.id);
+  const written = JSON.parse(readFileSync(`${DIR}/exercises-written.json`, 'utf8')).lessons as Record<string, Exercise[]>;
+  it('exercices rédigés : leçons connues', () => {
+    expect(Object.keys(written).filter((id) => !lessons.includes(id))).toEqual([]);
+  });
   it.each(lessons)('leçon %s', (id) => {
     const file = `${DIR}/exercises/${id}.json`;
-    if (!existsSync(file)) return; // banque pas encore générée par la CI
-    const items = JSON.parse(readFileSync(file, 'utf8')).items as Exercise[];
+    if (!existsSync(file) && !written[id]) return; // banque pas encore générée par la CI
+    // Comme dans l'application : exercices rédigés, puis banque Tatoeba.
+    const items = [...(written[id] ?? []), ...(existsSync(file) ? (JSON.parse(readFileSync(file, 'utf8')).items as Exercise[]) : [])];
     const errors = checkBank(id, items, blocklist).filter((i) => i.level === 'error');
     expect(errors.map((e) => `${e.id} : ${e.message}`)).toEqual([]);
   });

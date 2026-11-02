@@ -1,5 +1,5 @@
 import type { PlacementRecord, PlacementState } from '../domain/settings';
-import { DEFAULT_PLACEMENT_CONFIG, updatePlacementProbability, type PlacementAnswer, type PlacementEstimate, type PlacementResponse } from './placement';
+import { DEFAULT_PLACEMENT_CONFIG, PlacementModel, updatePlacementProbability, type PlacementAnswer, type PlacementEstimate, type PlacementResponse } from './placement';
 import type { PlacementItem } from './placementBank';
 
 /**
@@ -11,17 +11,53 @@ export type DoneRecord = Extract<PlacementRecord, { status: 'done' }>;
 
 export const STATE_LABEL: Record<PlacementState, string> = { mastered: 'Acquis', consolidate: 'À consolider', learn: 'À apprendre' };
 
+/**
+ * Ce que l'application retient du moteur : un point jamais posé ni impliqué par un point testé, classé « acquis » par
+ * le seul niveau global, reste « à consolider » ; le mini-test de sa leçon tranche (3 à 5 questions). Mesuré sur la
+ * vraie banque (placementRealBank.test.ts) : ces déductions faisaient presque tous les faux acquis des profils à
+ * lacunes isolées (un B2 avec quelques trous). Les points classés « à apprendre » par le niveau restent tels quels.
+ */
+export function appPlacementEstimates(estimates: readonly PlacementEstimate[]): PlacementEstimate[] {
+  return estimates.map((e) => (e.state === 'mastered' && e.evidence === 'level' ? { ...e, state: 'consolidate' } : e));
+}
+
 /** Enregistrement d'un test terminé, à partir des estimations du moteur. */
 export function placementRecord(estimates: readonly PlacementEstimate[], now = Date.now(), answers: readonly PlacementAnswer[] = []): DoneRecord {
   return {
     status: 'done',
     at: now,
     answers: answers.map((a) => ({ q: a.questionId, r: a.response })),
-    results: estimates
+    results: appPlacementEstimates(estimates)
       .filter((e) => e.kind === 'point')
       .map((e) => ({ id: e.id, state: e.state, probability: Math.round(e.probability * 1000) / 1000, evidence: e.evidence })),
     overrides: {},
   };
+}
+
+/**
+ * Correction d'un point, enregistrée à part (table `placement_marks`) pour que deux appareils ne s'écrasent pas :
+ * « override » (état choisi par l'utilisateur, null : correction retirée) ou « check » (mini-test de la leçon).
+ */
+export type PlacementMark =
+  | { kind: 'override'; pointId: string; data: PlacementState | null; at: number }
+  | { kind: 'check'; pointId: string; data: NonNullable<DoneRecord['checks']>[string]; at: number };
+
+/**
+ * Résultat du test complété des corrections faites depuis (celles d'avant un nouveau test ne comptent plus). Les
+ * corrections encore rangées dans les réglages (versions avant 2.37) restent la base, les lignes à part priment.
+ */
+export function withMarks<R extends PlacementRecord | undefined>(record: R, marks: readonly PlacementMark[]): R {
+  if (!record || record.status !== 'done') return record;
+  const overrides = { ...record.overrides };
+  const checks = { ...record.checks };
+  for (const m of [...marks].sort((a, b) => a.at - b.at)) {
+    if (m.at < record.at) continue;
+    if (m.kind === 'override') {
+      if (m.data) overrides[m.pointId] = m.data;
+      else delete overrides[m.pointId];
+    } else if (m.data && typeof m.data === 'object') checks[m.pointId] = m.data;
+  }
+  return { ...record, overrides, ...(Object.keys(checks).length ? { checks } : {}) } as R;
 }
 
 /** État d'un point : la correction de l'utilisateur d'abord, puis le mini-test de la leçon, sinon l'estimation du test. */
@@ -146,4 +182,19 @@ export function placementScope<T extends { id: string; requires?: readonly strin
   };
   for (const id of lessonIds) visit(id);
   return points.filter((p) => keep.has(p.id));
+}
+
+/**
+ * Modèle du test de placement tel que l'application le construit (périmètre des leçons, réglages livrés) : la page du
+ * test et le contrôle de la CI (placementRealBank.test.ts) passent par ici, pour tester exactement ce qui est livré.
+ */
+export function appPlacementModel(
+  points: readonly { id: string; level?: string; requires?: readonly string[] }[],
+  lessonIds: readonly string[],
+  items: readonly PlacementItem[],
+): PlacementModel {
+  const scope = placementScope(points, lessonIds);
+  const ids = new Set(scope.map((p) => p.id));
+  const targets = scope.map((p) => ({ id: p.id, kind: 'point' as const, requires: (p.requires ?? []).filter((r) => ids.has(r)), level: p.level }));
+  return new PlacementModel(targets, items.filter((q) => ids.has(q.targetId)), PLACEMENT_APP_CONFIG);
 }

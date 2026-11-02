@@ -3890,3 +3890,11 @@ p {
 .phone-tabs .segmented button {
   flex: 1;
 }
+
+/* Paramètres FSRS personnels : un résultat par périmètre. */
+.fsrs-fits {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}

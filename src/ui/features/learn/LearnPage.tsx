@@ -9,6 +9,7 @@ import { useLessonReviews } from './reviews';
 import { placementSummary, pointState, STATE_LABEL, suggestedLesson } from '@/core/learn/placementResults';
 import { verbSummary } from '@/core/learn/irregularVerbs';
 import { loadVerbAnswers } from '@/core/repo/learnRepo';
+import { usePlacement } from '@/ui/hooks/usePlacement';
 
 /** « Plus tard » : la proposition du test revient à la prochaine ouverture de l'application. */
 let placementLater = false;
@@ -45,7 +46,7 @@ export function LearnPage() {
   const reviews = useLessonReviews();
   const universe = useApp((s) => s.universe);
   const placementAll = useApp((s) => s.settings.placement);
-  const placement = universe ? placementAll[universe.id] : undefined;
+  const placement = usePlacement();
   const [later, setLater] = useState(placementLater);
   const verbs = useVerbSummary();
 

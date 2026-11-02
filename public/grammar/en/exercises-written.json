@@ -1,0 +1,281 @@
+{
+ "version": 1,
+ "note": "Exercices rédigés à la main pour les points rares ou mal servis par Tatoeba. Chargés avant la banque générée (exercises/<leçon>.json), jamais régénérés.",
+ "lessons": {
+  "mixed-conditionals": [
+   {
+    "id": "written:mixed-conditionals:1",
+    "en": "If I had studied medicine, I would be a doctor now.",
+    "fr": "Si j'avais fait médecine, je serais médecin aujourd'hui.",
+    "before": "If I had studied medicine, I ",
+    "after": " a doctor now.",
+    "answer": "would be",
+    "choices": [
+     "would be",
+     "would have been"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:2",
+    "en": "If she had taken that job, she would live in Paris now.",
+    "fr": "Si elle avait accepté ce poste, elle vivrait à Paris maintenant.",
+    "before": "If she had taken that job, she ",
+    "after": " in Paris now.",
+    "answer": "would live",
+    "choices": [
+     "would live",
+     "would have lived"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:3",
+    "en": "If we had left earlier, we would be there by now.",
+    "fr": "Si nous étions partis plus tôt, nous y serions déjà.",
+    "before": "If we had left earlier, we ",
+    "after": " there by now.",
+    "answer": "would be",
+    "choices": [
+     "would be",
+     "would have been"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:4",
+    "en": "If you had saved some money, you wouldn't be broke today.",
+    "fr": "Si tu avais mis de l'argent de côté, tu ne serais pas fauché aujourd'hui.",
+    "before": "If you had saved some money, you ",
+    "after": " broke today.",
+    "answer": "wouldn't be",
+    "choices": [
+     "wouldn't be",
+     "wouldn't have been"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:5",
+    "en": "If he hadn't missed the train, he would be here with us.",
+    "fr": "S'il n'avait pas raté le train, il serait ici avec nous.",
+    "before": "If he hadn't missed the train, he ",
+    "after": " here with us.",
+    "answer": "would be",
+    "choices": [
+     "would be",
+     "would have been"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:6",
+    "en": "If I had learned English as a child, I would speak it fluently now.",
+    "fr": "Si j'avais appris l'anglais enfant, je le parlerais couramment maintenant.",
+    "before": "If I had learned English as a child, I ",
+    "after": " it fluently now.",
+    "answer": "would speak",
+    "choices": [
+     "would speak",
+     "would have spoken"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:7",
+    "en": "If they had booked the tickets, they would know their seats.",
+    "fr": "S'ils avaient réservé les billets, ils connaîtraient leurs places.",
+    "before": "If they had booked the tickets, they ",
+    "after": " their seats.",
+    "answer": "would know",
+    "choices": [
+     "would know",
+     "would have known"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:8",
+    "en": "If you had gone to bed earlier, you wouldn't feel so tired now.",
+    "fr": "Si tu t'étais couché plus tôt, tu ne te sentirais pas si fatigué maintenant.",
+    "before": "If you had gone to bed earlier, you ",
+    "after": " so tired now.",
+    "answer": "wouldn't feel",
+    "choices": [
+     "wouldn't feel",
+     "wouldn't have felt"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:9",
+    "en": "If I were you, I would have told her the truth.",
+    "fr": "Si j'étais toi, je lui aurais dit la vérité.",
+    "before": "If I were you, I ",
+    "after": " her the truth.",
+    "answer": "would have told",
+    "choices": [
+     "would have told",
+     "would tell"
+    ],
+    "form": "would-have"
+   },
+   {
+    "id": "written:mixed-conditionals:10",
+    "en": "If he were more careful, he wouldn't have lost his keys.",
+    "fr": "S'il était plus prudent, il n'aurait pas perdu ses clés.",
+    "before": "If he were more careful, he ",
+    "after": " his keys.",
+    "answer": "wouldn't have lost",
+    "choices": [
+     "wouldn't have lost",
+     "wouldn't lose"
+    ],
+    "form": "would-have"
+   },
+   {
+    "id": "written:mixed-conditionals:11",
+    "en": "If she spoke Spanish, she would have understood the guide.",
+    "fr": "Si elle parlait espagnol, elle aurait compris le guide.",
+    "before": "If she spoke Spanish, she ",
+    "after": " the guide.",
+    "answer": "would have understood",
+    "choices": [
+     "would have understood",
+     "would understand"
+    ],
+    "form": "would-have"
+   },
+   {
+    "id": "written:mixed-conditionals:12",
+    "en": "If I didn't trust you, I wouldn't have lent you my car.",
+    "fr": "Si je n'avais pas confiance en toi, je ne t'aurais pas prêté ma voiture.",
+    "before": "If I didn't trust you, I ",
+    "after": " you my car.",
+    "answer": "wouldn't have lent",
+    "choices": [
+     "wouldn't have lent",
+     "wouldn't lend"
+    ],
+    "form": "would-have"
+   },
+   {
+    "id": "written:mixed-conditionals:13",
+    "en": "If Tom weren't so shy, he would have asked her to dance.",
+    "fr": "Si Tom n'était pas si timide, il l'aurait invitée à danser.",
+    "before": "If Tom weren't so shy, he ",
+    "after": " her to dance.",
+    "answer": "would have asked",
+    "choices": [
+     "would have asked",
+     "would ask"
+    ],
+    "form": "would-have"
+   },
+   {
+    "id": "written:mixed-conditionals:14",
+    "en": "If we lived closer, we would have visited you more often.",
+    "fr": "Si nous habitions plus près, nous serions venus vous voir plus souvent.",
+    "before": "If we lived closer, we ",
+    "after": " you more often.",
+    "answer": "would have visited",
+    "choices": [
+     "would have visited",
+     "would visit"
+    ],
+    "form": "would-have"
+   },
+   {
+    "id": "written:mixed-conditionals:15",
+    "en": "If you knew him, you wouldn't have said that.",
+    "fr": "Si tu le connaissais, tu n'aurais pas dit ça.",
+    "before": "If you knew him, you ",
+    "after": " that.",
+    "answer": "wouldn't have said",
+    "choices": [
+     "wouldn't have said",
+     "wouldn't say"
+    ],
+    "form": "would-have"
+   },
+   {
+    "id": "written:mixed-conditionals:16",
+    "en": "If I were taller, I would have reached the top shelf.",
+    "fr": "Si j'étais plus grand, j'aurais atteint l'étagère du haut.",
+    "before": "If I were taller, I ",
+    "after": " the top shelf.",
+    "answer": "would have reached",
+    "choices": [
+     "would have reached",
+     "would reach"
+    ],
+    "form": "would-have"
+   },
+   {
+    "id": "written:mixed-conditionals:17",
+    "en": "If I hadn't broken my leg, I would be skiing with them right now.",
+    "fr": "Si je ne m'étais pas cassé la jambe, je serais en train de skier avec eux en ce moment.",
+    "before": "If I hadn't broken my leg, I ",
+    "after": " skiing with them right now.",
+    "answer": "would be",
+    "choices": [
+     "would be",
+     "would have been"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:18",
+    "en": "If Tom had listened to his doctor, he wouldn't be in hospital now.",
+    "fr": "Si Tom avait écouté son médecin, il ne serait pas à l'hôpital maintenant.",
+    "before": "If Tom had listened to his doctor, he ",
+    "after": " in hospital now.",
+    "answer": "wouldn't be",
+    "choices": [
+     "wouldn't be",
+     "wouldn't have been"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:19",
+    "en": "If you had planted the tree last year, it would give fruit this summer.",
+    "fr": "Si tu avais planté l'arbre l'an dernier, il donnerait des fruits cet été.",
+    "before": "If you had planted the tree last year, it ",
+    "after": " fruit this summer.",
+    "answer": "would give",
+    "choices": [
+     "would give",
+     "would have given"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:20",
+    "en": "If they had won the lottery, they would own a big house today.",
+    "fr": "S'ils avaient gagné au loto, ils posséderaient une grande maison aujourd'hui.",
+    "before": "If they had won the lottery, they ",
+    "after": " a big house today.",
+    "answer": "would own",
+    "choices": [
+     "would own",
+     "would have owned"
+    ],
+    "form": "would"
+   },
+   {
+    "id": "written:mixed-conditionals:21",
+    "en": "If she had answered my email, I would know what to do now.",
+    "fr": "Si elle avait répondu à mon e-mail, je saurais quoi faire maintenant.",
+    "before": "If she had answered my email, I ",
+    "after": " what to do now.",
+    "answer": "would know",
+    "choices": [
+     "would know",
+     "would have known"
+    ],
+    "form": "would"
+   }
+  ]
+ }
+}

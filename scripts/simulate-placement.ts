@@ -5,9 +5,9 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { PlacementModel, type PlacementTarget, type PlacementQuestion } from '../src/core/learn/placement';
-import { referencePlacementProfiles, simulatePlacement, type PlacementBehaviour, type PlacementLearner } from '../src/core/learn/placementSimulation';
+import { irregularPlacementProfiles, referencePlacementProfiles, simulatePlacement, type PlacementBehaviour, type PlacementLearner } from '../src/core/learn/placementSimulation';
 import type { PlacementItem } from '../src/core/learn/placementBank';
-import { PLACEMENT_APP_CONFIG, placementScope } from '../src/core/learn/placementResults';
+import { appPlacementEstimates, appPlacementModel, PLACEMENT_APP_CONFIG, placementScope } from '../src/core/learn/placementResults';
 
 const path = 'public/grammar/en/points.json';
 const data = JSON.parse(readFileSync(path, 'utf8')) as { points: { id: string; level: string; requires: string[]; after: string[] }[] };
@@ -78,14 +78,14 @@ const report = {
   // Réglages de l'application, apprenants hors des hypothèses du modèle : règles superficielles qu'il ne connaît pas,
   // part de raccourci différente de la sienne (0,2 et 0,8 au lieu de 0,5), questions mal posées.
   robustness: (() => {
-    const ids = new Set(lessonScope.map((t) => t.id));
-    const model = new PlacementModel(lessonScope, bank.filter((q) => ids.has(q.targetId)), PLACEMENT_APP_CONFIG);
+    // Exactement le modèle de l'application, et ce qu'elle enregistre (src/core/learn/placementResults.ts).
+    const model = appPlacementModel(data.points, lessonIds, bank);
     const out = [];
     for (const heuristic of ['dominant', 'suffix-s', 'longest', 'shortest'] as const)
       for (const share of [0.2, 0.8])
         for (const defective of [0, 0.15]) {
           const learner: PlacementLearner = { heuristic, share, defective };
-          const rows = simulatePlacement(model, referencePlacementProfiles(lessonScope), robustLearners, seed, undefined, 'random', learner);
+          const rows = simulatePlacement(model, [...referencePlacementProfiles(model.targets), ...irregularPlacementProfiles(model.targets)], robustLearners, seed, undefined, 'random', learner, appPlacementEstimates);
           const worst = (k: 'falseMasteryRate' | 'falseLearnRate' | 'uncertainRate') => Math.max(...rows.map((r) => r[k]));
           console.log(
             `robustesse ${heuristic.padEnd(9)} part ${share} défectueuses ${defective} : faux acquis ≤ ${(100 * worst('falseMasteryRate')).toFixed(1)} %, faux « à apprendre » ≤ ${(100 * worst('falseLearnRate')).toFixed(1)} %, incertains ≤ ${(100 * worst('uncertainRate')).toFixed(1)} %`,
