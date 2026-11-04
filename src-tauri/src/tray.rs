@@ -1,4 +1,4 @@
-//! Icône dans la zone de notification de Windows.
+//! Icône dans la zone de notification de Windows (barre des menus sur macOS).
 //!
 //! Lexora peut rester lancé en arrière-plan : le raccourci global d'ajout et le rappel
 //! quotidien fonctionnent alors en permanence. Fermer la fenêtre la masque (si l'option

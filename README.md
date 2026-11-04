@@ -13,7 +13,7 @@ Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, 
 
 La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
 
-**État documenté : version 2.39.0.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
+**État documenté : version 2.40.0.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -125,7 +125,7 @@ Le même code SQL tourne dans les trois environnements. Dans l'application, c'es
 
 ## 5. Modèle de données
 
-Le schéma SQLite est en **version 13** (`PRAGMA user_version`), indépendamment de la version 2.39.0 de l'application. Les **18 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
+Le schéma SQLite est en **version 13** (`PRAGMA user_version`), indépendamment de la version 2.40.0 de l'application. Les **18 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
 
 | Table | Clé locale | Principales données |
 |---|---|---|
@@ -229,15 +229,28 @@ Les chantiers suivants restent **indisponibles dans l'interface** :
 
 ### Option A : récupérer l'installateur
 
-La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.39.0_x64-setup.exe`.
+La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.40.0_x64-setup.exe`.
 
-Le workflow GitHub Actions `CI & installateur Windows` lance les tests puis construit l'installateur à chaque push sur `main` ou `claude/**`, à chaque tag `v*`, pour les PR vers `main`, et sur demande depuis l'onglet *Actions* → *Run workflow*. Pour essayer une construction non publiée : **Actions → exécution réussie de la branche voulue → artefact lexora-windows**.
+Le workflow GitHub Actions `CI & installateurs Windows et macOS` lance les tests puis construit les installateurs à chaque push sur `main` ou `claude/**`, à chaque tag `v*`, pour les PR vers `main`, et sur demande depuis l'onglet *Actions* → *Run workflow*. La release n'est publiée que depuis `main` (ou un tag `v*`). Pour essayer une construction non publiée : **Actions → exécution réussie de la branche voulue → artefact lexora-windows** (ou **lexora-macos**).
+
+## Installation (Mac)
+
+Depuis la 2.40, la même release fournit une application Mac **universelle** (Apple Silicon M1 à M4 et Intel, macOS 10.15 ou plus récent) : `Lexora_<version>_universal.dmg`.
+
+1. Ouvrir le `.dmg`, glisser **Lexora** dans **Applications**.
+2. **Première ouverture** : l'application est signée localement (signature « ad hoc ») mais pas notarisée par Apple, faute de compte Apple Developer payant ; macOS la bloque une fois.
+   - macOS 15 (Sequoia) et plus récent : ouvrir Lexora (message « Apple n'a pas pu vérifier… »), cliquer **Terminé**, puis **Réglages Système → Confidentialité et sécurité**, en bas : **Ouvrir quand même**, et confirmer avec le mot de passe.
+   - macOS 14 et antérieur : **clic droit** (ou Ctrl+clic) sur Lexora dans Applications → **Ouvrir** → **Ouvrir**.
+   - Autre solution, dans le Terminal : `xattr -dr com.apple.quarantine /Applications/Lexora.app`.
+3. Les ouvertures suivantes sont normales. Les **mises à jour** passent par le même mécanisme que sous Windows (archive signée par la clé Tauri de Lexora, `latest.json`) et s'installent au démarrage, sans repasser par cette confirmation.
+
+Sur Mac, l'icône de Lexora vit dans la **barre des menus** (au lieu de la zone de notification) ; fermer la fenêtre la réduit, un clic sur l'icône du Dock la rouvre. Les raccourcis utilisent **⌘** à la place de Ctrl (affichés ainsi dans l'application). Données dans `~/Library/Application Support/com.clementjonckheere.lexora/`. La connexion Google, la synchronisation et toutes les fonctions sont les mêmes que sous Windows.
 
 ### Mises à jour automatiques
 
 Dès la version 2.1.0, Lexora vérifie au démarrage (puis toutes les 6 h, ou *Paramètres → Rechercher*) si une nouvelle version est publiée et propose de l'installer en un clic.
 
-**Depuis la 2.39** : au démarrage, une nouvelle version s'installe d'elle-même (téléchargement signé, installateur Windows en mode passif, puis redémarrage), sans geste de l'utilisateur ; réglage *Paramètres → Windows → Mises à jour automatiques* (activé par défaut, propre à l'appareil). Une installation ratée n'est pas retentée en boucle (une tentative automatique par version et par jour) ; les vérifications toutes les 6 h proposent la version sans l'installer, pour ne pas interrompre une séance. Une version disponible s'installe aussi depuis *Paramètres → Windows → Mises à jour → Installer la version…*. Les versions antérieures à la 2.39 ne savent pas encore s'installer seules : passer à la 2.39 avec le bouton *Installer* une dernière fois.
+**Depuis la 2.39** : au démarrage, une nouvelle version s'installe d'elle-même (téléchargement signé, installateur Windows en mode passif, puis redémarrage), sans geste de l'utilisateur ; réglage *Paramètres → Windows → Mises à jour automatiques* (activé par défaut, propre à l'appareil). Une installation ratée n'est pas retentée en boucle (une tentative automatique par version et par jour) ; les vérifications toutes les 6 h proposent la version sans l'installer, pour ne pas interrompre une séance. Une version disponible s'installe aussi depuis *Paramètres → Windows → Mises à jour → Installer la version…*. Sur Mac, même fonctionnement (*Paramètres → macOS*). Les versions antérieures à la 2.39 ne savent pas encore s'installer seules : passer à la 2.39 avec le bouton *Installer* une dernière fois.
 
 - À chaque push, si la version (`package.json`, `src-tauri/Cargo.toml`, `src-tauri/tauri.conf.json`) n'a pas encore de *Release*, la CI publie la release `v<version>` avec les installateurs signés et `latest.json`.
 - Prérequis : deux secrets GitHub, **`TAURI_SIGNING_PRIVATE_KEY`** (contenu de la clé privée de signature) et **`TAURI_SIGNING_PRIVATE_KEY_PASSWORD`**. La clé publique correspondante est dans `tauri.conf.json`. Sans ces secrets, l'installateur est construit mais aucune release n'est publiée.
