@@ -33,7 +33,8 @@ export default defineConfig({
   },
   envPrefix: ['VITE_', 'TAURI_ENV_*'],
   build: {
-    target: 'es2022',
+    // WebKit du Mac (WKWebView) : Safari 15 au moins ; esbuild convertit ou refuse la syntaxe plus récente.
+    target: ['es2022', 'safari15'],
     minify: !process.env.TAURI_ENV_DEBUG ? 'esbuild' : false,
     sourcemap: !!process.env.TAURI_ENV_DEBUG,
     chunkSizeWarningLimit: 1500,

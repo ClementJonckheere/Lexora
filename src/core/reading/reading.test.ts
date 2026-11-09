@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { decodeText, isHeading, parseGutenberg, progressAt, splitChapterTitle, stripBoilerplate } from './gutenberg';
 import { catalogUrl, displayName, parseCatalogPage, shortTitle, textFormat, type GutendexPage } from './gutendex';
-import { estimateLevel, ranksFromList, sampleForLevel, withinLevel } from './level';
+import { estimateLevel, ranksFromList, sampleForLevel, splitSentences, withinLevel } from './level';
 import { cleanSelection, sentenceAround, sourceNote, startsSentence, wordAt } from './selection';
 import { opdsUrl, parseOpds } from './opds';
 import { matchesSearch, pageAfter } from './catalog';
@@ -293,5 +293,17 @@ describe('wordAt', () => {
   it('ignore la ponctuation et les espaces', () => {
     expect(wordAt('a , b', 2)).toBeNull();
     expect(word(0)).toBeNull();
+  });
+});
+
+describe('découpage en phrases (sans lookbehind, compatible avec les anciens WebKit)', () => {
+  it('« Mr. », « Dr » ne terminent pas une phrase ; ponctuation et guillemets fermants oui', () => {
+    expect(splitSentences('Mr. Bennet replied. Dr Watson came! “Go home,” she said? Fine…').map((x) => x.trim())).toEqual([
+      'Mr. Bennet replied',
+      'Dr Watson came',
+      '“Go home,” she said',
+      'Fine',
+      '',
+    ]);
   });
 });

@@ -232,7 +232,7 @@ function NoteEditorDialog() {
               lang={language}
               onChange={(e) => set('expression', e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.ctrlKey) {
+                if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
                   e.preventDefault();
                   document.getElementById(showPronunciation ? 'f-pronunciation' : 'f-translation')?.focus();
                 }
@@ -273,7 +273,7 @@ function NoteEditorDialog() {
               spellCheck={false}
               onChange={(e) => set('pronunciation', e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.ctrlKey) {
+                if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
                   e.preventDefault();
                   document.getElementById('f-translation')?.focus();
                 }
@@ -292,7 +292,7 @@ function NoteEditorDialog() {
             lang="fr"
             onChange={(e) => set('translation', e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.ctrlKey) {
+              if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
                 document.getElementById('ex-0')?.focus();
               }
@@ -333,7 +333,7 @@ function NoteEditorDialog() {
                   autoComplete="off"
                   onChange={(e) => setExample(i, e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.ctrlKey) {
+                    if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey) {
                       e.preventDefault();
                       if (ex.trim()) addExample();
                     }
