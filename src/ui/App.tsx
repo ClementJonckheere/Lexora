@@ -37,6 +37,7 @@ import { PHONE_QUERY, useMediaQuery } from './hooks/useMediaQuery';
 import { StreakFlame } from './features/progress/StreakFlame';
 import { usePushSync } from './hooks/usePushSync';
 import { keyLabel } from '@/core/platform/env';
+import { MixedPracticePage } from '@/ui/features/learn/MixedPracticePage';
 
 const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string }[] = [
   { route: 'home', label: 'Accueil', icon: Home, key: '1' },
@@ -107,7 +108,7 @@ function TopBar() {
   const current =
     route.name === 'collection'
       ? 'collections'
-      : route.name === 'lesson' || route.name === 'placement' || route.name === 'verbs' || route.name === 'grammar-annotate'
+      : route.name === 'lesson' || route.name === 'placement' || route.name === 'verbs' || route.name === 'mixed' || route.name === 'grammar-annotate'
         ? 'learn'
         : phone && route.name === 'stats'
           ? 'settings'
@@ -225,6 +226,8 @@ function Page() {
       return <LessonPage key={route.id} id={route.id} startReview={route.review} />;
     case 'placement':
       return <PlacementPage retake={route.retake} />;
+    case 'mixed':
+      return <MixedPracticePage key={route.group} groupId={route.group} />;
     case 'verbs':
       return <VerbsPage />;
     case 'stats':

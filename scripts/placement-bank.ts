@@ -1,4 +1,5 @@
-// Banque du placement grammatical (public/grammar/en/placement.json), tirée des banques d'exercices des leçons.
+// Banque du placement grammatical (public/grammar/en/placement.json), tirée des banques réservées à l'évaluation
+// (placement/<point>.json, evaluation/<leçon>.json) et des questions rédigées : jamais d'une phrase d'exercice.
 // Exécuté par la CI après la génération des banques (.github/workflows/grammar.yml), ou à la main :
 //   npx vite-node scripts/placement-bank.ts
 // Points A1 et A2 : questions des banques du placement (public/grammar/en/placement, générées par la CI). Les points
@@ -24,9 +25,10 @@ const sources = [
   // Points A1 et A2 : banques des générateurs du placement (placementBuilders.ts), d'abord, même quand le point a une
   // leçon : ce sont elles qui ont été relues (placement-excluded.json), la banque de la leçon en est un sur-ensemble.
   ...points.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/placement/${id}.json` })),
-  // be-used-to : questions tirées de la banque relue de used to, même depuis sa propre leçon (2.30).
-  { target: 'be-used-to', lesson: 'used-to', file: `${DIR}/exercises/used-to.json` },
-  ...lessons.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/exercises/${id}.json` })),
+  // be-used-to : questions tirées du générateur relu de used to, même depuis sa propre leçon (2.30), sur ses phrases
+  // d'évaluation (2.41 : plus jamais celles des exercices).
+  { target: 'be-used-to', lesson: 'used-to', file: `${DIR}/evaluation/used-to.json` },
+  ...lessons.map(({ id }) => ({ target: id, lesson: id, file: `${DIR}/evaluation/${id}.json` })),
 ];
 // Questions rédigées (étape 3) : prioritaires sur la banque générée d'une leçon ajoutée ensuite (2.29 : B1), plus variées
 // et faites pour le test ; les phrases générées servent aux exercices de la leçon.

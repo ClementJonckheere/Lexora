@@ -54,6 +54,7 @@ export type Route =
   | { name: 'lesson'; id: string; review?: boolean }
   | { name: 'placement'; retake?: boolean }
   | { name: 'verbs' }
+  | { name: 'mixed'; group: string }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';

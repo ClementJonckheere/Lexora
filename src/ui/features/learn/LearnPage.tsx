@@ -10,6 +10,7 @@ import { placementSummary, pointState, STATE_LABEL, suggestedLesson } from '@/co
 import { verbSummary } from '@/core/learn/irregularVerbs';
 import { loadVerbAnswers } from '@/core/repo/learnRepo';
 import { usePlacement } from '@/ui/hooks/usePlacement';
+import { groupReady, MIN_ANSWERS, MIX_GROUPS } from '@/core/learn/mixedPractice';
 
 /** « Plus tard » : la proposition du test revient à la prochaine ouverture de l'application. */
 let placementLater = false;
@@ -246,6 +247,8 @@ export function LearnPage() {
         </section>
       )}
 
+      <MixedPracticeCard />
+
       {dueLessons.length > 0 && (
         <section className="card card-pad learn-due">
           <div className="row row--between">
@@ -310,6 +313,44 @@ export function LearnPage() {
 }
 
 /** Bilan des verbes irréguliers de l'univers (maîtrisés, à revoir), relu après chaque séance. */
+/** Révisions mélangées : un bouton par groupe de contrastes, disponible après 10 réponses dans deux de ses leçons. */
+function MixedPracticeCard() {
+  const answers = useApp((s) => s.grammarAnswers);
+  const data = useGrammarData();
+  const { navigate } = useApp.getState();
+  if (!data) return null;
+  const titles = new Map(data.points.map((p) => [p.id, p.title]));
+  return (
+    <section className="card card-pad learn-mixed">
+      <strong>Révisions mélangées</strong>
+      <p className="muted small">
+        Des phrases de plusieurs leçons, sans dire laquelle : choisir la règle d'après le contexte, comme en situation. Une explication suit chaque
+        réponse.
+      </p>
+      <div className="learn-mixed-groups">
+        {MIX_GROUPS.map((g) => {
+          const ready = groupReady(g, answers);
+          return (
+            <div key={g.id} className="row row--between row--wrap">
+              <span>
+                {g.title}{' '}
+                {!ready && (
+                  <span className="muted small">
+                    · après {MIN_ANSWERS} exercices dans deux de ces leçons : {g.lessons.map((id) => titles.get(id) ?? id).join(', ')}
+                  </span>
+                )}
+              </span>
+              <Button size="sm" disabled={!ready} onClick={() => navigate({ name: 'mixed', group: g.id })}>
+                S'entraîner
+              </Button>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function useVerbSummary() {
   const db = useApp((s) => s.db);
   const universe = useApp((s) => s.universe);
