@@ -36,6 +36,7 @@ import { OnboardingScreen, UniverseSwitcher, UniversesDialog } from './features/
 import { PHONE_QUERY, useMediaQuery } from './hooks/useMediaQuery';
 import { StreakFlame } from './features/progress/StreakFlame';
 import { usePushSync } from './hooks/usePushSync';
+import { keyLabel } from '@/core/platform/env';
 
 const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string }[] = [
   { route: 'home', label: 'Accueil', icon: Home, key: '1' },
@@ -129,7 +130,7 @@ function TopBar() {
             aria-current={current === r ? 'page' : undefined}
             aria-label={label}
             onClick={() => navigate({ name: r } as Route)}
-            title={`${label} (Ctrl+${key})`}
+            title={keyLabel(`${label} (Ctrl+${key})`)}
           >
             <Icon size={15} />
             <span className="label">{label}</span>
@@ -182,7 +183,7 @@ function ShortcutsHelp() {
             {rows.map(([k, v]) => (
               <tr key={k} style={{ cursor: 'default' }}>
                 <td style={{ paddingLeft: 0 }}>
-                  <span className="code">{k}</span>
+                  <span className="code">{keyLabel(k)}</span>
                 </td>
                 <td>{v}</td>
               </tr>

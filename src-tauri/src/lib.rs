@@ -108,7 +108,7 @@ pub fn run() {
             #[cfg(desktop)]
             {
                 tray::setup(app.handle())?;
-                // Lancement automatique avec Windows : démarre masqué dans la zone de notification.
+                // Lancement automatique avec le système : démarre masqué (zone de notification, barre des menus du Mac).
                 if !std::env::args().any(|a| a == "--hidden") {
                     tray::show_main(app.handle());
                 }
@@ -142,6 +142,14 @@ pub fn run() {
             read_text_file,
             write_text_file
         ])
-        .run(tauri::generate_context!())
-        .expect("erreur au lancement de Lexora");
+        .build(tauri::generate_context!())
+        .expect("erreur au lancement de Lexora")
+        .run(|app, event| {
+            // macOS : un clic sur l'icône du Dock rouvre la fenêtre masquée (fermée dans la barre des menus).
+            #[cfg(target_os = "macos")]
+            if let tauri::RunEvent::Reopen { .. } = event {
+                tray::show_main(app);
+            }
+            let _ = (app, event);
+        });
 }

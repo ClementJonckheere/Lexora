@@ -1,8 +1,8 @@
-name: CI & installateur Windows
+name: CI & installateurs Windows et macOS
 
 on:
   push:
-    # main, branches de travail et tags v* : chaque push produit l'installateur Windows.
+    # main, branches de travail et tags v* : chaque push produit les installateurs Windows et macOS.
     branches: [main, 'claude/**']
     tags: ['v*']
   pull_request:
@@ -136,12 +136,100 @@ jobs:
           retention-days: 30
           path: |
             src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/nsis/*.exe.sig
             src-tauri/target/release/bundle/msi/*.msi
-      # Mise à jour automatique : une release publique v<version> par version (latest.json + installateurs signés).
-      # Pour publier une nouvelle version, augmenter « version » dans package.json, src-tauri/Cargo.toml et tauri.conf.json.
-      - name: Release v<version> (mise à jour automatique)
-        if: github.event_name == 'push' && steps.signing.outputs.enabled == 'true'
-        shell: bash
+            src-tauri/target/release/bundle/msi/*.msi.sig
+
+  macos:
+    name: Application macOS (Apple Silicon et Intel)
+    needs: [test, sync-integration]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: npm ci
+      # Même clé de signature des mises à jour que Windows (signature Tauri, indépendante de toute licence Apple).
+      - name: Signature des mises à jour
+        id: signing
+        run: |
+          CLEAN=$(printf '%s' "$KEY" | tr -d ' \t\r\n')
+          if [ -z "$CLEAN" ]; then
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo '{"bundle":{"createUpdaterArtifacts":false}}' > "$RUNNER_TEMP/nosign.json"
+            echo "::warning::Secret TAURI_SIGNING_PRIVATE_KEY absent : pas de mise à jour automatique publiée."
+            exit 0
+          fi
+          printf '%s' "$CLEAN" > "$RUNNER_TEMP/updater.key"
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+        env:
+          KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      # Application universelle signée « ad hoc » (bundle.macOS.signingIdentity « - ») : sans compte Apple Developer,
+      # elle n'est pas notarisée ; macOS demande une confirmation à la première ouverture (voir le README).
+      - name: Construction
+        run: |
+          if [ "${{ steps.signing.outputs.enabled }}" = "true" ]; then
+            export TAURI_SIGNING_PRIVATE_KEY="$(cat "$RUNNER_TEMP/updater.key")"
+            export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="$(printf '%s' "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD" | tr -d ' \t\r\n')"
+            npm run app:build -- --target universal-apple-darwin --bundles app,dmg
+          else
+            unset TAURI_SIGNING_PRIVATE_KEY
+            npm run app:build -- --target universal-apple-darwin --bundles app,dmg --config "$RUNNER_TEMP/nosign.json"
+          fi
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      # L'archive de mise à jour s'appelle « Lexora.app.tar.gz » : renommée avec la version, comme les autres fichiers.
+      - name: Nommer l'archive de mise à jour
+        run: |
+          VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          DIR=src-tauri/target/universal-apple-darwin/release/bundle/macos
+          for f in "$DIR"/*.app.tar.gz "$DIR"/*.app.tar.gz.sig; do
+            [ -e "$f" ] || continue
+            mv "$f" "$DIR/Lexora_${VERSION}_universal.app.${f##*.app.}"
+          done
+          ls -la "$DIR" src-tauri/target/universal-apple-darwin/release/bundle/dmg
+      - name: Publier l'application (artefacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexora-macos
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/*.tar.gz
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/*.tar.gz.sig
+
+  # Mise à jour automatique : une release publique v<version> par version (latest.json + installateurs signés).
+  # Windows est indispensable ; macOS y est ajouté s'il a été construit (un échec du Mac ne bloque pas Windows).
+  # Pour publier une nouvelle version, augmenter « version » dans package.json, src-tauri/Cargo.toml et tauri.conf.json.
+  release:
+    name: Release v<version> (mise à jour automatique)
+    needs: [windows, macos]
+    # Publication depuis main (ou un tag v*) seulement : sur une branche de travail, la CI construit sans publier.
+    if: always() && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && needs.windows.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: lexora-windows
+          path: release/windows
+      - uses: actions/download-artifact@v4
+        if: needs.macos.result == 'success'
+        with:
+          name: lexora-macos
+          path: release/macos
+      - name: Publier la release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -151,8 +239,21 @@ jobs:
             echo "Release $TAG déjà publiée : rien à faire."
             exit 0
           fi
-          BUNDLE=src-tauri/target/release/bundle
-          node scripts/updater-manifest.mjs "$BUNDLE" "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG" latest.json
+          if ! ls release/windows/nsis/*.exe.sig > /dev/null 2>&1; then
+            echo "::warning::Installateurs non signés (secret TAURI_SIGNING_PRIVATE_KEY absent) : pas de release."
+            exit 0
+          fi
+          MAC=()
+          MAC_ARGS=()
+          NOTES="Windows : installez Lexora_${VERSION}_x64-setup.exe."
+          if ls release/macos/macos/*.app.tar.gz.sig > /dev/null 2>&1; then
+            MAC=(release/macos/dmg/*.dmg release/macos/macos/*.app.tar.gz release/macos/macos/*.app.tar.gz.sig)
+            MAC_ARGS=(--macos release/macos)
+            NOTES="$NOTES Mac (Apple Silicon et Intel) : ouvrez Lexora_${VERSION}_universal.dmg et glissez Lexora dans Applications ; première ouverture : voir le README (application non notarisée)."
+          else
+            echo "::warning::Application macOS absente : release Windows seulement."
+          fi
+          node scripts/updater-manifest.mjs "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG" latest.json --windows release/windows "${MAC_ARGS[@]}"
           gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Lexora $VERSION" --latest \
-            --notes "Installez Lexora_${VERSION}_x64-setup.exe. Les versions installées se mettent à jour automatiquement." \
-            latest.json $BUNDLE/nsis/*.exe $BUNDLE/nsis/*.exe.sig $BUNDLE/msi/*.msi $BUNDLE/msi/*.msi.sig
+            --notes "$NOTES Les versions installées se mettent à jour automatiquement." \
+            latest.json release/windows/nsis/*.exe release/windows/nsis/*.exe.sig release/windows/msi/*.msi release/windows/msi/*.msi.sig "${MAC[@]}"

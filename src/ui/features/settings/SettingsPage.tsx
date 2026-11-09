@@ -4,7 +4,7 @@ import { attempt, useApp } from '@/app/store';
 import { backupNowToAppFolder, backupToFile, exportToCsv, exportToJson, importFromFile, restoreFromFile } from '@/app/dataActions';
 import type { DirectionMode, Settings } from '@/core/domain/settings';
 import { getAppInfo, type AppInfo } from '@/core/platform/files';
-import { isTauri } from '@/core/platform/env';
+import { isTauri, systemWords } from '@/core/platform/env';
 import { loadVoices, speechSupported } from '@/core/platform/speech';
 import { speakText } from '@/ui/speech';
 import { languageInfo } from '@/core/domain/languages';
@@ -94,7 +94,7 @@ export function SettingsPage() {
           <div className="card-header">
             <h2 className="card-title">Apparence</h2>
           </div>
-          <Setting title="Fond" desc="Clair comme du papier, ou sombre comme la nuit. « Système » suit le réglage de Windows. Propre à cet ordinateur.">
+          <Setting title="Fond" desc="Clair comme du papier, ou sombre comme la nuit. « Système » suit le réglage de l'ordinateur. Propre à cet ordinateur.">
             <Segmented
               value={settings.theme}
               options={[
@@ -212,7 +212,7 @@ export function SettingsPage() {
                 desc={
                   voices.length
                     ? 'Voix installées sur cet appareil (fonctionnent hors ligne). Réglage propre à chaque langue.'
-                    : `Aucune voix ${lang.name.toLowerCase()} installée. Windows : Paramètres → Heure et langue → Voix → Ajouter des voix.`
+                    : `Aucune voix ${lang.name.toLowerCase()} installée. ${systemWords().addVoice}.`
                 }
               >
                 <div className="row">
@@ -342,7 +342,7 @@ export function SettingsPage() {
           {db?.kind === 'browser' && (
             <div className="setting">
               <div className="notice notice--info">
-                Aperçu navigateur : les données sont stockées dans ce navigateur (IndexedDB). Installez l'application Windows pour un stockage SQLite
+                Aperçu navigateur : les données sont stockées dans ce navigateur (IndexedDB). Installez l'application (Windows ou Mac) pour un stockage SQLite
                 local avec sauvegardes automatiques.
               </div>
             </div>
@@ -502,7 +502,7 @@ function ReminderSection() {
         desc={
           unavailable ||
           (desktop
-            ? "Notification Windows une fois par jour : série à garder (ou à sauver avec un bouclier), révisions en attente."
+            ? `Notification ${systemWords().name} une fois par jour : série à garder (ou à sauver avec un bouclier), révisions en attente.`
             : "Notification sur cet appareil, même Lexora fermée, si vous n'avez pas encore révisé aujourd'hui (tous appareils confondus).")
         }
       >
@@ -553,13 +553,14 @@ function DesktopSection() {
   }, []);
 
   if (!isTauri()) return null;
+  const os = systemWords();
 
   return (
     <section className="card settings-section">
       <div className="card-header">
-        <h2 className="card-title">Windows</h2>
+        <h2 className="card-title">{os.name}</h2>
       </div>
-      <Setting title="Lancer Lexora au démarrage de Windows" desc="Démarre discrètement dans la zone de notification : le raccourci d'ajout et le rappel sont toujours actifs.">
+      <Setting title={`Lancer Lexora au démarrage de ${os.name}`} desc={`Démarre discrètement dans ${os.tray} : le raccourci d'ajout et le rappel sont toujours actifs.`}>
         <Switch
           label="Lancer au démarrage"
           checked={!!autostart}
@@ -567,11 +568,11 @@ function DesktopSection() {
             void attempt(async () => {
               await setAutostart(v);
               setAutostartState(v);
-            }, v ? 'Lexora démarrera avec Windows' : 'Démarrage automatique désactivé')
+            }, v ? `Lexora démarrera avec ${os.name}` : 'Démarrage automatique désactivé')
           }
         />
       </Setting>
-      <Setting title="Fermer la fenêtre = réduire dans la zone de notification" desc="Lexora reste actif près de l'horloge. Pour quitter : clic droit sur l'icône → Quitter.">
+      <Setting title={`Fermer la fenêtre = réduire dans ${os.tray}`} desc={os.trayHint}>
         <Switch label="Réduire à la fermeture" checked={settings.closeToTray} onChange={(v) => void save({ closeToTray: v })} />
       </Setting>
       <Setting
@@ -733,7 +734,7 @@ function NaturalVoiceSetting({ enabled, onChange }: { enabled: boolean; onChange
       await checkNaturalVoice();
       setState({ ok: true, text: "Active. Les sons sont gardés sur cet appareil : chaque expression n'est demandée qu'une fois." });
     } catch (err) {
-      setState({ ok: false, text: `Non disponible : ${err instanceof Error ? err.message : String(err)}. La voix de Windows est utilisée.` });
+      setState({ ok: false, text: `Non disponible : ${err instanceof Error ? err.message : String(err)}. La voix de ${systemWords().name} est utilisée.` });
     } finally {
       setBusy(false);
     }
@@ -746,7 +747,7 @@ function NaturalVoiceSetting({ enabled, onChange }: { enabled: boolean; onChange
       title="Voix naturelle"
       desc={
         <>
-          Voix de qualité studio (Microsoft Azure) à la place de la voix de Windows, pour toutes les expressions et phrases sans enregistrement. Clé gardée sur le
+          Voix de qualité studio (Microsoft Azure) à la place de la voix du système, pour toutes les expressions et phrases sans enregistrement. Clé gardée sur le
           serveur Lexora, réservée aux comptes connectés ; nécessite Internet.
           {enabled && state && (
             <div className={state.ok ? 'small' : 'field-error'} style={state.ok ? { color: 'var(--mastered)', marginTop: 4 } : { marginTop: 4 }}>

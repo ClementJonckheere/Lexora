@@ -2,6 +2,7 @@ import { forwardRef, useEffect, useRef, type ButtonHTMLAttributes, type ReactNod
 import { X } from 'lucide-react';
 import type { Mastery } from '@/core/domain/types';
 import { MASTERY_LABEL } from '@/core/domain/types';
+import { keyLabel } from '@/core/platform/env';
 
 /* ---------------------------------- Button --------------------------------- */
 
@@ -38,7 +39,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 });
 
 export function Kbd({ children }: { children: ReactNode }) {
-  return <kbd className="kbd">{children}</kbd>;
+  return <kbd className="kbd">{typeof children === 'string' ? keyLabel(children) : children}</kbd>;
 }
 
 /* ---------------------------------- Badges --------------------------------- */
