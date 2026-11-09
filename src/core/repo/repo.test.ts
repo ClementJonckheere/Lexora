@@ -13,7 +13,7 @@ import { buildQueue } from '../srs/queue';
 import { addTag, createNote, deleteNotes, findDuplicates, loadNotes, moveNotes, restoreNotes, setSuspended, updateNote, type NoteTarget } from './notesRepo';
 import { addToCollection, createCollection, deleteCollection, loadCollections } from './collectionsRepo';
 import { createUniverse, deleteUniverse, loadUniverses } from './universesRepo';
-import { countNewIntroduced, loadForgetCounts, recordPractice, recordReview, typedBaseline, undoReview } from './reviewRepo';
+import { countNewIntroduced, countNewIntroducedByUniverse, loadForgetCounts, recordPractice, recordReview, typedBaseline, undoReview } from './reviewRepo';
 import { loadSettings, saveSettings } from './settingsRepo';
 import { computeStats } from './statsRepo';
 import { exportBackup, exportCsv, exportNotesJson, importNotes, parseCsvNotes, parseJsonNotes, restoreBackup } from './transfer';
@@ -198,6 +198,8 @@ describe('révisions', () => {
     const out = review(scheduler, before, Rating.Again, now);
     const logId = await recordReview(db, out.card, out.log, 4200, now, null, en.universeId);
     expect(await countNewIntroduced(db, now - 1000, 'fr_en', en.universeId)).toBe(1);
+    expect(await countNewIntroducedByUniverse(db, now - 1000, 'fr_en')).toEqual({ [en.universeId]: 1 });
+    expect(await countNewIntroducedByUniverse(db, now - 1000, 'en_fr')).toEqual({});
     const typedRows = () => db.select<{ n: number }>('SELECT COUNT(*) AS n FROM typed_answers WHERE log_id = ? AND deleted = 0', [logId]);
     expect((await typedRows())[0].n).toBe(1);
 

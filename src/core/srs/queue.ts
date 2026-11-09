@@ -1,5 +1,5 @@
 import { State } from 'ts-fsrs';
-import { activeDirections, primaryDirection, type Settings } from '../domain/settings';
+import { activeDirections, primaryDirection, settingsFor, type Settings } from '../domain/settings';
 import { endOfStudyDay, startOfStudyDay } from '../domain/dates';
 import type { CardRecord, Direction, Mastery, Note } from '../domain/types';
 import { cardMastery, retrievability, type Scheduler } from './scheduler';
@@ -114,6 +114,33 @@ export function countDue(notes: Note[], opts: QueueOptions): DueCounts {
     total: learning.length + reviews.length + news.length,
     newWaiting: newPrimaryWaiting,
   };
+}
+
+/**
+ * Fiches à réviser par univers (pastilles du sélecteur, icône du bureau) : chaque langue avec son plafond de
+ * nouveaux mots, le quota du budget s'il y en a un, et ses propres nouveaux mots déjà introduits aujourd'hui.
+ */
+export function dueByUniverse(
+  notes: readonly Note[],
+  universes: readonly { id: string; newPerDay: number | null }[],
+  opts: Omit<QueueOptions, 'newIntroducedToday'> & {
+    introducedToday: Readonly<Record<string, number>>;
+    quotas?: Readonly<Record<string, number>> | null;
+  },
+): Map<string, DueCounts> {
+  const { introducedToday, quotas, settings, ...rest } = opts;
+  const byUniverse = new Map<string, Note[]>();
+  for (const n of notes) {
+    const xs = byUniverse.get(n.universeId);
+    if (xs) xs.push(n);
+    else byUniverse.set(n.universeId, [n]);
+  }
+  return new Map(
+    universes.map((u) => [
+      u.id,
+      countDue(byUniverse.get(u.id) ?? [], { ...rest, settings: settingsFor(settings, u, quotas), newIntroducedToday: introducedToday[u.id] ?? 0 }),
+    ]),
+  );
 }
 
 /** Répartit régulièrement les nouvelles fiches parmi les révisions. */

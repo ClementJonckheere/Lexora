@@ -1,8 +1,7 @@
 import { useApp } from './store';
 import { dayKey } from '@/core/domain/dates';
-import { settingsFor } from '@/core/domain/settings';
 import { checkForUpdate, notify, onTrayAction, setCloseToTray, setTrayTooltip, type AvailableUpdate } from '@/core/platform/desktop';
-import { countDue } from '@/core/srs/queue';
+import { dueByUniverse as countDueByUniverse } from '@/core/srs/queue';
 import { readPref, writePref } from '@/ui/prefs';
 import { loadDailyProgress, type DailyProgress } from '@/core/repo/progressRepo';
 import { reminderHour, reminderText } from '@/core/progress/reminder';
@@ -18,14 +17,14 @@ const TICK_MS = 60_000;
 /** Fiches à réviser, par univers. */
 export function dueByUniverse(): { name: string; total: number }[] {
   const s = useApp.getState();
-  const now = Date.now();
-  return s.universes.map((u) => ({
-    name: u.name,
-    total: countDue(
-      s.allNotes.filter((n) => n.universeId === u.id),
-      { now, settings: settingsFor(s.settings, u, s.dayBudget?.quotas), scheduler: s.scheduler, newIntroducedToday: u.id === s.universe?.id ? s.newIntroducedToday : 0 },
-    ).total,
-  }));
+  const due = countDueByUniverse(s.allNotes, s.universes, {
+    now: Date.now(),
+    settings: s.settings,
+    scheduler: s.scheduler,
+    introducedToday: s.newIntroducedByUniverse,
+    quotas: s.dayBudget?.quotas,
+  });
+  return s.universes.map((u) => ({ name: u.name, total: due.get(u.id)?.total ?? 0 }));
 }
 
 /** Progression (série, heure habituelle), relue au plus toutes les 10 minutes ou après une modification. */

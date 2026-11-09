@@ -85,6 +85,19 @@ export async function countNewIntroduced(db: Queryable, since: number, primary: 
   return Number(rows[0]?.n ?? 0);
 }
 
+/** Nouveaux mots introduits depuis `since`, par univers (fiche principale révisée pour la première fois). */
+export async function countNewIntroducedByUniverse(db: Queryable, since: number, primary: Direction): Promise<Record<string, number>> {
+  const rows = await db.select<{ universe_id: string; n: number }>(
+    `SELECT n.universe_id, COUNT(DISTINCT r.card_id) AS n FROM review_logs r
+       JOIN cards c ON c.id = r.card_id
+       JOIN notes n ON n.id = c.note_id
+     WHERE r.deleted = 0 AND r.state = 0 AND r.reviewed_at >= ? AND c.direction = ?
+     GROUP BY n.universe_id`,
+    [since, primary],
+  );
+  return Object.fromEntries(rows.map((r) => [r.universe_id, Number(r.n)]));
+}
+
 /** Entraînement libre : journalisé, sans aucun effet sur la planification. */
 export async function recordPractice(db: Database, noteId: string, mode: PracticeMode, rating: number, now = Date.now()) {
   await db.execute('INSERT INTO practice_logs (id, note_id, mode, rating, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', [
