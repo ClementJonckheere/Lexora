@@ -4,8 +4,10 @@
 //
 // Exécuté par la CI (.github/workflows/grammar.yml), qui télécharge les exports Tatoeba (CC BY 2.0 FR) :
 //   eng_sentences.tsv, fra_sentences.tsv (id, langue, texte) et eng-fra_links.tsv (id anglais, id français).
-// Produit aussi la banque d'exercices de chaque leçon rédigée (public/grammar/en/exercises/<leçon>.json), et celle des
-// questions de placement des points sans leçon (public/grammar/en/placement/<point>.json).
+// Produit aussi la banque d'exercices de chaque leçon rédigée (public/grammar/en/exercises/<leçon>.json), la banque
+// d'évaluation de chaque leçon (public/grammar/en/evaluation/<leçon>.json) et celle des questions de placement des
+// points A1 et A2 (public/grammar/en/placement/<point>.json). Exercices : phrases d'entraînement seulement ; banques
+// d'évaluation et de placement : phrases réservées à l'évaluation (src/core/learn/evaluationSplit.ts), jamais les mêmes.
 // Écarte les phrases de la liste de mots bloqués (scripts/grammar-blocklist.txt) et celles que les utilisateurs ont
 // signalées (<dossier des exports>/reported.json, lu par la CI dans Supabase), gardées d'une génération à l'autre dans
 // public/grammar/en/exercises/excluded.json.
@@ -16,6 +18,7 @@ import { PATTERN_IDS, matchSentence } from '../src/core/learn/patterns';
 import { buildExercise, type Exercise } from '../src/core/learn/exercises';
 import { PLACEMENT_BUILDERS, buildPlacementExercise } from '../src/core/learn/placementBuilders';
 import { LESSON_BUILDERS, buildLessonExercise } from '../src/core/learn/lessonBuilders';
+import { poolOf, type SentencePool } from '../src/core/learn/evaluationSplit';
 import { mkdirSync } from 'node:fs';
 
 const MIN_CANDIDATES = 30;
@@ -135,10 +138,13 @@ function makeBank(
   build: (s: { id: number; en: string; fr: string }) => Exercise | null,
   size: number,
   previous: readonly string[],
+  pool: SentencePool,
   skip?: Set<string>,
 ): Exercise[] {
   const all: Exercise[] = [];
+  // Entraînement ou évaluation : une phrase n'appartient qu'à l'un des deux, pour tous les générateurs.
   for (const s of kept) {
+    if (poolOf(s.id) !== pool) continue;
     const ex = build({ id: s.id, en: s.text, fr: frenchText.get(frenchOf.get(s.id)!)! });
     if (ex && !excluded.has(ex.id) && !skip?.has(ex.id)) all.push(ex);
   }
@@ -200,13 +206,29 @@ for (const { id } of lessons) {
   // Leçons A1 et A2 : mêmes générateurs que les questions du placement (placementBuilders.ts), banque plus grande ;
   // leçons B1 ajoutées en 2.29 : lessonBuilders.ts.
   const build = id in PLACEMENT_BUILDERS ? buildPlacementExercise : id in LESSON_BUILDERS ? buildLessonExercise : buildExercise;
-  const items = makeBank(`leçon ${id}`, (s) => build(id, s, known), BANK_SIZE, previousIds(`public/grammar/en/exercises/${id}.json`), rejected);
+  const items = makeBank(`leçon ${id}`, (s) => build(id, s, known), BANK_SIZE, previousIds(`public/grammar/en/exercises/${id}.json`), 'training', rejected);
   bankSizes[id] = items.length;
   if (items.length < MIN_CANDIDATES) console.log(`::warning::Leçon ${id} : seulement ${items.length} exercices`);
   writeFileSync(
     `public/grammar/en/exercises/${id}.json`,
     `${JSON.stringify({ version: 1, lesson: id, generatedAt: new Date().toISOString(), source: 'Tatoeba (CC BY 2.0 FR)', items })}\n`,
   );
+}
+
+/* ------------------------------------------------- banques d'évaluation --- */
+
+// Même générateur que les exercices de la leçon, sur les seules phrases réservées à l'évaluation : questions du
+// placement pour les points qui n'ont pas de banque de placement (be-used-to, leçons sans questions rédigées), et
+// mesures futures (révisions mélangées, transfert). Jamais servies comme exercices.
+const EVALUATION_BANK_SIZE = 60;
+mkdirSync('public/grammar/en/evaluation', { recursive: true });
+const evaluationSizes: Record<string, number> = {};
+for (const { id } of lessons) {
+  const build = id in PLACEMENT_BUILDERS ? buildPlacementExercise : id in LESSON_BUILDERS ? buildLessonExercise : buildExercise;
+  const file = `public/grammar/en/evaluation/${id}.json`;
+  const items = makeBank(`évaluation ${id}`, (s) => build(id, s, known), EVALUATION_BANK_SIZE, previousIds(file), 'evaluation', rejected);
+  evaluationSizes[id] = items.length;
+  writeFileSync(file, `${JSON.stringify({ version: 1, lesson: id, generatedAt: new Date().toISOString(), source: 'Tatoeba (CC BY 2.0 FR)', items })}\n`);
 }
 
 /* ------------------------------------------- questions du placement A1, A2 --- */
@@ -217,7 +239,7 @@ const PLACEMENT_BANK_SIZE = 60;
 mkdirSync('public/grammar/en/placement', { recursive: true });
 const placementSizes: Record<string, number> = {};
 for (const id of Object.keys(PLACEMENT_BUILDERS)) {
-  const items = makeBank(`placement ${id}`, (s) => buildPlacementExercise(id, s, known), PLACEMENT_BANK_SIZE, previousIds(`public/grammar/en/placement/${id}.json`));
+  const items = makeBank(`placement ${id}`, (s) => buildPlacementExercise(id, s, known), PLACEMENT_BANK_SIZE, previousIds(`public/grammar/en/placement/${id}.json`), 'evaluation');
   placementSizes[id] = items.length;
   if (items.length < 8) console.log(`::warning::Placement ${id} : seulement ${items.length} questions possibles`);
   writeFileSync(
@@ -230,4 +252,5 @@ writeFileSync(
   `${JSON.stringify({ version: 1, note: 'Exercices signalés par les utilisateurs, exclus des banques.', items: [...excluded].sort() }, null, 1)}\n`,
 );
 writeFileSync('public/grammar/en/exercises/index.json', `${JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), sizes: bankSizes })}\n`);
+writeFileSync('public/grammar/en/evaluation/index.json', `${JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), sizes: evaluationSizes })}\n`);
 writeFileSync('public/grammar/en/placement/index.json', `${JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), sizes: placementSizes })}\n`);

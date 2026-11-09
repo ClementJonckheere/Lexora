@@ -3533,8 +3533,23 @@ p {
 .verb-answer {
   color: var(--mastered);
 }
-.learn-verbs {
+.learn-verbs,
+.learn-mixed {
   margin-bottom: 16px;
+}
+.learn-mixed p {
+  margin: 4px 0 10px;
+}
+.learn-mixed-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mixed-explanation {
+  max-width: 560px;
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
 }
 .verb-reference {
   margin-top: 8px;
