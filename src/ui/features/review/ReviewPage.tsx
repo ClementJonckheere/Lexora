@@ -18,7 +18,8 @@ export function useDueCounts(scope: ReviewScope = {}, direction: Direction | nul
   const notes = useApp((s) => s.notes);
   const baseSettings = useApp((s) => s.settings);
   const universe = useApp((s) => s.universe);
-  const settings = useMemo(() => settingsFor(baseSettings, universe), [baseSettings, universe]);
+  const quotas = useApp((s) => s.dayBudget?.quotas);
+  const settings = useMemo(() => settingsFor(baseSettings, universe, quotas), [baseSettings, universe, quotas]);
   const scheduler = useApp((s) => s.scheduler);
   const newIntroducedToday = useApp((s) => s.newIntroducedToday);
   const collections = useApp((s) => s.collections);
@@ -43,6 +44,7 @@ function useNextDue() {
 export function ReviewPage() {
   const settings = useApp((s) => s.settings);
   const universe = useApp((s) => s.universe);
+  const quotas = useApp((s) => s.dayBudget?.quotas);
   const notes = useApp((s) => s.notes);
   const collections = useApp((s) => s.collections);
   const forgetCounts = useApp((s) => s.forgetCounts);
@@ -124,7 +126,7 @@ export function ReviewPage() {
               {due.total > 0 ? (
                 <>
                   {due.review} à revoir · {due.new} nouveau{due.new > 1 ? 'x' : ''} · {due.learning} en apprentissage
-                  {due.newWaiting > 0 && ` · ${due.newWaiting} nouveaux en attente (plafond ${settingsFor(settings, universe).newPerDay}/jour)`}
+                  {due.newWaiting > 0 && ` · ${due.newWaiting} nouveaux en attente (${settings.dailyMinutes ? `budget de ${settings.dailyMinutes} min : ${settingsFor(settings, universe, quotas).newPerDay} aujourd'hui` : `plafond ${settingsFor(settings, universe).newPerDay}/jour`})`}
                 </>
               ) : notes.length === 0 ? (
                 'Ajoutez du vocabulaire : chaque expression devient automatiquement une fiche.'

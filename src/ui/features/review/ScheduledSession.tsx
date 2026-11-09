@@ -63,7 +63,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
     const noteIds = scopeIds(s.notes, config);
     const items = buildQueue(s.notes, {
       now: Date.now(),
-      settings: settingsFor(s.settings, s.universe),
+      settings: settingsFor(s.settings, s.universe, s.dayBudget?.quotas),
       scheduler: s.scheduler,
       newIntroducedToday: s.newIntroducedToday,
       limit: config.limit,

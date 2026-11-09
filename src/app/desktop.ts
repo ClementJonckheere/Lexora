@@ -23,7 +23,7 @@ export function dueByUniverse(): { name: string; total: number }[] {
     name: u.name,
     total: countDue(
       s.allNotes.filter((n) => n.universeId === u.id),
-      { now, settings: settingsFor(s.settings, u), scheduler: s.scheduler, newIntroducedToday: u.id === s.universe?.id ? s.newIntroducedToday : 0 },
+      { now, settings: settingsFor(s.settings, u, s.dayBudget?.quotas), scheduler: s.scheduler, newIntroducedToday: u.id === s.universe?.id ? s.newIntroducedToday : 0 },
     ).total,
   }));
 }
