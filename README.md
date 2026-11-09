@@ -13,7 +13,7 @@ Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, 
 
 La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
 
-**État documenté : version 2.42.0.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
+**État documenté : version 2.42.1.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -34,7 +34,7 @@ Tout le reste (planification, ordre, rythme, catégorie) est automatique.
 
 ## 2. Pages
 
-Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à réviser par langue), puis **Accueil · Bibliothèque · Réviser · Collections · Lecture · Apprendre · Statistiques · Paramètres**. En bas : le compte et l'état de synchronisation, **Rechercher (`Ctrl+K`)** et **+ Ajouter (`N`)**.
+Barre latérale : **sélecteur d'univers** (langue courante, nombre de fiches à réviser par langue : chacune avec son plafond de nouveaux mots, ses nouveaux mots déjà introduits aujourd'hui et, s'il est activé, son quota du budget quotidien ; même compte pour l'icône du bureau), puis **Accueil · Bibliothèque · Réviser · Collections · Lecture · Apprendre · Statistiques · Paramètres**. En bas : le compte et l'état de synchronisation, **Rechercher (`Ctrl+K`)** et **+ Ajouter (`N`)**.
 
 - **Connexion** (premier lancement) : « Continuer avec Google ». Le navigateur s'ouvre et l'application récupère la session. Elle reste ensuite connectée, y compris hors ligne.
 - **Choix de la première langue** : grille de langues (anglais, espagnol, portugais, allemand, italien, russe, chinois, japonais, coréen, arabe, néerlandais, ou toute autre langue par son code ISO).
@@ -125,7 +125,7 @@ Le même code SQL tourne dans les trois environnements. Dans l'application, c'es
 
 ## 5. Modèle de données
 
-Le schéma SQLite est en **version 13** (`PRAGMA user_version`), indépendamment de la version 2.42.0 de l'application. Les **18 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
+Le schéma SQLite est en **version 13** (`PRAGMA user_version`), indépendamment de la version 2.42.1 de l'application. Les **18 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
 
 | Table | Clé locale | Principales données |
 |---|---|---|
@@ -231,7 +231,7 @@ Les chantiers suivants restent **indisponibles dans l'interface** :
 
 ### Option A : récupérer l'installateur
 
-La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.42.0_x64-setup.exe`.
+La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.42.1_x64-setup.exe`.
 
 Le workflow GitHub Actions `CI & installateurs Windows et macOS` lance les tests puis construit les installateurs à chaque push sur `main` ou `claude/**`, à chaque tag `v*`, pour les PR vers `main`, et sur demande depuis l'onglet *Actions* → *Run workflow*. La release n'est publiée que depuis `main` (ou un tag `v*`). Pour essayer une construction non publiée : **Actions → exécution réussie de la branche voulue → artefact lexora-windows** (ou **lexora-macos**).
 

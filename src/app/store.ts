@@ -14,7 +14,7 @@ import type { Collection, Direction, Mastery, Note, NoteInput, PracticeMode, Uni
 import * as notesRepo from '@/core/repo/notesRepo';
 import * as collectionsRepo from '@/core/repo/collectionsRepo';
 import * as universesRepo from '@/core/repo/universesRepo';
-import { countNewIntroduced, loadForgetCounts } from '@/core/repo/reviewRepo';
+import { countNewIntroducedByUniverse, loadForgetCounts } from '@/core/repo/reviewRepo';
 import { loadSettings, saveSettings } from '@/core/repo/settingsRepo';
 import * as booksRepo from '@/core/repo/booksRepo';
 import type { Book, CachedLevel } from '@/core/repo/booksRepo';
@@ -130,6 +130,8 @@ interface AppState {
   collections: Collection[];
   forgetCounts: Map<string, number>;
   newIntroducedToday: number;
+  /** Nouveaux mots introduits aujourd'hui, par univers (compteurs de toutes les langues, budget). */
+  newIntroducedByUniverse: Record<string, number>;
   /** Budget quotidien en minutes (null : désactivé) ; ses quotas plafonnent les nouveaux mots du jour, par langue. */
   dayBudget: AppDayBudget | null;
   /** Liste de fréquence de la langue courante (ordre des nouveaux mots), null tant qu'elle n'est pas chargée. */
@@ -300,6 +302,7 @@ export const useApp = create<AppState>((set, get) => {
     collections: [],
     forgetCounts: new Map(),
     newIntroducedToday: 0,
+    newIntroducedByUniverse: {},
     dayBudget: null,
     frequencyRanks: null,
     revision: 0,
@@ -363,11 +366,10 @@ export const useApp = create<AppState>((set, get) => {
       ]);
       const wanted = get().universe?.id ?? readPref<string | null>('universeId', null);
       const current = universes.find((u) => u.id === wanted) ?? universes[0] ?? null;
-      const newIntroducedToday = current
-        ? await countNewIntroduced(d, startOfStudyDay(Date.now(), settings.dayStartHour), primaryDirection(settings), current.id)
-        : 0;
+      const newIntroducedByUniverse = await countNewIntroducedByUniverse(d, startOfStudyDay(Date.now(), settings.dayStartHour), primaryDirection(settings));
+      const newIntroducedToday = current ? (newIntroducedByUniverse[current.id] ?? 0) : 0;
       // Une erreur du budget ne doit pas bloquer l'application : on retombe sur les plafonds réglés.
-      const dayBudget = await computeDayBudget(d, settings, universes, allNotes, current?.id ?? null).catch(() => null);
+      const dayBudget = await computeDayBudget(d, settings, universes, allNotes, current?.id ?? null, newIntroducedByUniverse).catch(() => null);
       const changedUniverse = current?.id !== get().universe?.id;
       const knowledge = current
         ? {
@@ -393,6 +395,7 @@ export const useApp = create<AppState>((set, get) => {
         collections: current ? allCollections.filter((c) => c.universeId === current.id) : [],
         forgetCounts,
         newIntroducedToday,
+        newIntroducedByUniverse,
         dayBudget,
         books,
         bookCovers,

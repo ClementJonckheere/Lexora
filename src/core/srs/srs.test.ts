@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { Rating, State } from 'ts-fsrs';
 import { DEFAULT_SETTINGS, type Settings } from '../domain/settings';
 import type { CardRecord, Direction, Note } from '../domain/types';
-import { buildQueue, countDue, noteMastery } from './queue';
+import { buildQueue, countDue, dueByUniverse, noteMastery } from './queue';
 import { createScheduler, previewIntervals, review } from './scheduler';
 import { SessionQueue } from './session';
 
@@ -122,6 +122,21 @@ describe('file de révision', () => {
     expect(q.every((i) => i.kind === 'new' && i.direction === 'fr_en')).toBe(true);
     expect(buildQueue(notes, opts({ newIntroducedToday: 8 }))).toHaveLength(2);
     expect(countDue(notes, opts()).newWaiting).toBe(5);
+  });
+
+  it('compteurs par langue : plafond, quota du budget et nouveaux mots déjà introduits propres à chaque langue', () => {
+    const inUniverse = (u: string, from: number) => Array.from({ length: 15 }, (_, i) => ({ ...note(from + i), universeId: u }));
+    const notes = [...inUniverse('en', 1), ...inUniverse('es', 100), ...inUniverse('de', 200)];
+    const universes = [
+      { id: 'en', newPerDay: null },
+      { id: 'es', newPerDay: 6 },
+      { id: 'de', newPerDay: null },
+    ];
+    const due = dueByUniverse(notes, universes, { now: NOW, settings, scheduler, introducedToday: { en: 3, es: 4 }, quotas: { de: 2 } });
+    expect(due.get('en')?.new).toBe(settings.newPerDay - 3);
+    // Espagnol : 4 déjà introduits sur 6, pas 6 comme si la langue n'avait encore rien vu.
+    expect(due.get('es')?.new).toBe(2);
+    expect(due.get('de')?.new).toBe(2);
   });
 
   it('introduit la direction EN→FR le lendemain de la première révision', () => {

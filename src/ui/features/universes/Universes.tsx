@@ -2,8 +2,7 @@ import { useMemo, useState } from 'react';
 import { Check, ChevronsUpDown, Pencil, Plus, Settings2, Trash2 } from 'lucide-react';
 import { attempt, errorMessage, useApp } from '@/app/store';
 import { LANGUAGES, languageBadge, languageInfo } from '@/core/domain/languages';
-import { countDue } from '@/core/srs/queue';
-import { settingsFor } from '@/core/domain/settings';
+import { dueByUniverse } from '@/core/srs/queue';
 import type { Universe } from '@/core/domain/types';
 import { Button, Field, Modal } from '@/ui/components/ui';
 import { confirm } from '@/ui/components/Confirm';
@@ -22,22 +21,12 @@ export function useDuePerUniverse() {
   const universes = useApp((s) => s.universes);
   const settings = useApp((s) => s.settings);
   const scheduler = useApp((s) => s.scheduler);
-  const current = useApp((s) => s.universe?.id);
-  const newIntroducedToday = useApp((s) => s.newIntroducedToday);
+  const introducedToday = useApp((s) => s.newIntroducedByUniverse);
   const quotas = useApp((s) => s.dayBudget?.quotas);
   return useMemo(() => {
-    const now = Date.now();
-    return new Map(
-      universes.map((u) => [
-        u.id,
-        countDue(
-          allNotes.filter((n) => n.universeId === u.id),
-          // Le compteur de nouveaux mots du jour n'est connu que pour l'univers courant.
-          { now, settings: settingsFor(settings, u, quotas), scheduler, newIntroducedToday: u.id === current ? newIntroducedToday : 0 },
-        ).total,
-      ]),
-    );
-  }, [allNotes, universes, settings, scheduler, current, newIntroducedToday, quotas]);
+    const due = dueByUniverse(allNotes, universes, { now: Date.now(), settings, scheduler, introducedToday, quotas });
+    return new Map([...due].map(([id, c]) => [id, c.total]));
+  }, [allNotes, universes, settings, scheduler, introducedToday, quotas]);
 }
 
 /** Sélecteur d'univers (haut de la barre latérale). */

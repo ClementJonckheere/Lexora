@@ -1,8 +1,8 @@
-import { activeDirections, primaryDirection, type Settings } from '@/core/domain/settings';
+import { activeDirections, type Settings } from '@/core/domain/settings';
 import { dayKey, endOfStudyDay, startOfStudyDay } from '@/core/domain/dates';
 import type { Note, Universe } from '@/core/domain/types';
 import type { Queryable } from '@/core/db/types';
-import { loadBudgetData } from '@/core/repo/budgetRepo';
+import { loadBudgetLogs } from '@/core/repo/budgetRepo';
 import { budgetHistory, dayBudget, type BudgetDay, type DayBudget } from '@/core/srs/dailyBudget';
 import { State } from '@/core/srs/scheduler';
 import { readPref, writePref } from '@/ui/prefs';
@@ -24,12 +24,14 @@ export async function computeDayBudget(
   universes: readonly Universe[],
   notes: readonly Note[],
   currentId: string | null,
+  /** Nouveaux mots déjà introduits aujourd'hui, par univers. */
+  introducedToday: Readonly<Record<string, number>>,
   now = Date.now(),
 ): Promise<AppDayBudget | null> {
   if (!settings.dailyMinutes) return null;
   const start = startOfStudyDay(now, settings.dayStartHour);
   const end = endOfStudyDay(now, settings.dayStartHour);
-  const { logs, introducedToday } = await loadBudgetData(db, start, primaryDirection(settings), now);
+  const logs = await loadBudgetLogs(db, now);
   const durations = logs
     .map((l) => l.durationMs)
     .filter((d) => d > 0)
