@@ -131,8 +131,8 @@ const SOURCES: Record<string, string[] | null> = {
     '\\b(?:want|wants|wanted|need|needs|needed|decide|decided|hope|hoped|plan|planned|refuse|refused|promise|promised)\\s+(?:to\\s+[a-z]+|(?:me|him|her|us|them|you)\\s+to\\s+[a-z]+)',
     `\\b(?:enjoy|enjoys|enjoyed|avoid|avoided|finish|finished|mind|minded|keep|kept|suggest|suggested|imagine|imagined)\\s+${ING}\\b`,
   ],
-  // Pas après un modal (« would have said » : conditionnel passé, « must have gone » : déduction).
-  'present-perfect': [`(?<!\\b(?:would|could|should|might|must|may|will|can't|couldn't|wouldn't|shouldn't|to)\\s+)\\b(?:have|has|'ve|haven't|hasn't)\\s+(?:not\\s+|never\\s+|ever\\s+|just\\s+|already\\s+|always\\s+)?${PARTICIPLE}\\b`],
+  // Pas après un modal (« would have said » : conditionnel passé, « must have gone » : déduction) : voir NOT_AFTER.
+  'present-perfect': [`\\b(?:have|has|'ve|haven't|hasn't)\\s+(?:not\\s+|never\\s+|ever\\s+|just\\s+|already\\s+|always\\s+)?${PARTICIPLE}\\b`],
   'perfect-vs-past': null,
   'for-since': [
     `\\bsince\\s+(?:\\d{4}|last|yesterday|then|childhood|${DAYS}|${MONTHS})\\b`,
@@ -140,7 +140,7 @@ const SOURCES: Record<string, string[] | null> = {
   ],
   'perfect-continuous': [`\\b(?:have|has|'ve|'s)\\s+(?:not\\s+)?been\\s+${ING}\\b`],
   'past-perfect': [`\\b(?:had|'d)\\s+(?:not\\s+|never\\s+|already\\s+|just\\s+)?(?!better\\b)${PARTICIPLE}\\b`],
-  'used-to': ['\\b(?<!\\b(?:am|is|are|was|were|be|been|get|got|getting)\\s)used\\s+to\\s+(?!(?:the|a|an|it|that|this)\\b)[a-z]+'],
+  'used-to': ['\\bused\\s+to\\s+(?!(?:the|a|an|it|that|this)\\b)[a-z]+'],
   'first-conditional': ["\\bif\\b[^.?!;]*,\\s*[^.?!;]*?\\b(?:will|won't|'ll)\\b", "\\b(?:will|won't|'ll)\\b[^.?!;]*\\bif\\b"],
   'time-clauses': [
     `\\b(?:when|as soon as|until)\\s+${SUBJECT}\\s+(?!(?:was|were|had|did|would|could|should|might|must|${PAST})\\b)[a-z]+\\b`,
@@ -217,6 +217,16 @@ const SOURCES: Record<string, string[] | null> = {
   'wh-ever': ['\\b(?:whatever|whoever|wherever|whenever|however\\s+(?:hard|much|many|long|often|fast|good|bad|difficult))\\b'],
 };
 
+/**
+ * Mots qui ne doivent pas précéder une correspondance (fin du texte qui la précède). Remplace les lookbehinds
+ * (?<!…), que les WebKit antérieurs à Safari 16.4 refusent : un motif refusé empêchait toute l'application de démarrer.
+ */
+const NOT_AFTER: Record<string, RegExp> = {
+  'present-perfect': /\b(?:would|could|should|might|must|may|will|can't|couldn't|wouldn't|shouldn't|to)\s+$/i,
+  // « be used to » : un autre point.
+  'used-to': /\b(?:am|is|are|was|were|be|been|get|got|getting)\s$/i,
+};
+
 const compiled = new Map<string, RegExp[] | null>(
   Object.entries(SOURCES).map(([id, sources]) => [id, sources ? sources.map((s) => new RegExp(s, 'gi')) : null]),
 );
@@ -235,11 +245,17 @@ export function matchSentence(pointId: string, sentence: string): PatternMatch[]
   // Apostrophe typographique ramenée à l'apostrophe droite (même longueur : positions inchangées).
   const s = sentence.replace(/’/g, "'");
   const out: PatternMatch[] = [];
+  const notAfter = NOT_AFTER[pointId];
   for (const re of regexes) {
     re.lastIndex = 0;
     for (let m = re.exec(s); m; m = re.exec(s)) {
       if (!m[0]) {
         re.lastIndex++;
+        continue;
+      }
+      // Équivalent du lookbehind : correspondance écartée, la recherche reprend juste après son début.
+      if (notAfter?.test(s.slice(0, m.index))) {
+        re.lastIndex = m.index + 1;
         continue;
       }
       // Espaces de tête exclus du surlignage (motifs ancrés en début de phrase).

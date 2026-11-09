@@ -61,3 +61,10 @@ describe('motifs de repérage', () => {
     expect(found('will', 'I’ll call you.')).toEqual(['’ll']);
   });
 });
+
+describe('motifs sans lookbehind (exclusions vérifiées sur le texte qui précède)', () => {
+  it('présent parfait : pas après un modal ou « to », mais trouvé plus loin dans la phrase', () => {
+    expect(found('present-perfect', 'I would have said it, but she has gone.')).toEqual(['has gone']);
+    expect(found('present-perfect', 'He seems to have forgotten.')).toEqual([]);
+  });
+});

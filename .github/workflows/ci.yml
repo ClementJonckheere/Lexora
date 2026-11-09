@@ -38,6 +38,8 @@ jobs:
         with:
           workspaces: src-tauri
       - run: npm run build
+      # WebKit du Mac : pas de syntaxe que les versions plus anciennes refusent au chargement (lookbehind).
+      - run: node scripts/check-webkit.mjs dist
       - run: cargo test --manifest-path src-tauri/Cargo.toml
 
   sync-integration:
@@ -229,31 +231,53 @@ jobs:
         with:
           name: lexora-macos
           path: release/macos
-      - name: Publier la release
+      # Release absente : création (Windows, et Mac s'il a été construit). Release déjà publiée sans le Mac (construction
+      # Mac ratée la première fois) : une relance réussie, ou un push suivant de la même version, y ajoute le Mac et
+      # remplace latest.json. Release complète : rien à faire.
+      - name: Publier ou compléter la release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")
           TAG="v$VERSION"
-          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
-            echo "Release $TAG déjà publiée : rien à faire."
-            exit 0
-          fi
           if ! ls release/windows/nsis/*.exe.sig > /dev/null 2>&1; then
             echo "::warning::Installateurs non signés (secret TAURI_SIGNING_PRIVATE_KEY absent) : pas de release."
             exit 0
           fi
           MAC=()
           MAC_ARGS=()
-          NOTES="Windows : installez Lexora_${VERSION}_x64-setup.exe."
           if ls release/macos/macos/*.app.tar.gz.sig > /dev/null 2>&1; then
             MAC=(release/macos/dmg/*.dmg release/macos/macos/*.app.tar.gz release/macos/macos/*.app.tar.gz.sig)
             MAC_ARGS=(--macos release/macos)
-            NOTES="$NOTES Mac (Apple Silicon et Intel) : ouvrez Lexora_${VERSION}_universal.dmg et glissez Lexora dans Applications ; première ouverture : voir le README (application non notarisée)."
           else
-            echo "::warning::Application macOS absente : release Windows seulement."
+            echo "::warning::Application macOS absente de cette exécution."
           fi
-          node scripts/updater-manifest.mjs "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG" latest.json --windows release/windows "${MAC_ARGS[@]}"
+          BASE="https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG"
+
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            ASSETS=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets -q '.assets[].name')
+            if printf '%s\n' "$ASSETS" | grep -q '\.app\.tar\.gz\.sig$'; then
+              echo "Release $TAG déjà complète (Windows et Mac) : rien à faire."
+              exit 0
+            fi
+            if [ ${#MAC[@]} -eq 0 ]; then
+              echo "Release $TAG publiée sans le Mac, et le Mac n'a pas été construit cette fois : rien à ajouter."
+              exit 0
+            fi
+            # Ajout du Mac à la release existante. Les installateurs Windows de cette exécution sont reconstruits, donc
+            # signés autrement que ceux déjà en ligne : latest.json reprend les entrées Windows publiées, sans les toucher.
+            gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern latest.json --output published.json --clobber
+            node scripts/updater-manifest.mjs "$BASE" latest.json --keep-windows published.json "${MAC_ARGS[@]}"
+            gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber latest.json "${MAC[@]}"
+            echo "Release $TAG complétée avec l'application Mac."
+            exit 0
+          fi
+
+          NOTES="Windows : installez Lexora_${VERSION}_x64-setup.exe."
+          if [ ${#MAC[@]} -gt 0 ]; then
+            NOTES="$NOTES Mac (Apple Silicon et Intel, macOS 11 ou plus récent) : ouvrez Lexora_${VERSION}_universal.dmg et glissez Lexora dans Applications ; première ouverture : voir le README (application non notarisée)."
+          fi
+          node scripts/updater-manifest.mjs "$BASE" latest.json --windows release/windows "${MAC_ARGS[@]}"
           gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "Lexora $VERSION" --latest \
             --notes "$NOTES Les versions installées se mettent à jour automatiquement." \
             latest.json release/windows/nsis/*.exe release/windows/nsis/*.exe.sig release/windows/msi/*.msi release/windows/msi/*.msi.sig "${MAC[@]}"

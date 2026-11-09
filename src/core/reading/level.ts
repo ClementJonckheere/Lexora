@@ -86,13 +86,33 @@ function percentile(sorted: number[], p: number): number {
   return sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))];
 }
 
-const SENTENCE_END = /(?<!\b(?:Mr|Mrs|Ms|Dr|St|Sr|Jr|Mme|Mlle|Sra|Sr|Hr|Fr|Nr)\.?)[.!?…。！？]+["'”’»)]*\s*/u;
+const SENTENCE_END = /[.!?…。！？]+["'”’»)]*\s*/gu;
+/** « Mr. Bennet » ne termine pas une phrase. Vérifié sur le texte qui précède : pas de lookbehind (WebKit ancien). */
+const ABBREVIATION_BEFORE = /\b(?:Mr|Mrs|Ms|Dr|St|Sr|Jr|Mme|Mlle|Sra|Hr|Fr|Nr)\.?$/u;
+
+/** Phrases du texte. */
+export function splitSentences(text: string): string[] {
+  const out: string[] = [];
+  let start = 0;
+  SENTENCE_END.lastIndex = 0;
+  for (let m = SENTENCE_END.exec(text); m; m = SENTENCE_END.exec(text)) {
+    if (!m[0]) {
+      SENTENCE_END.lastIndex++;
+      continue;
+    }
+    if (ABBREVIATION_BEFORE.test(text.slice(start, m.index))) continue;
+    out.push(text.slice(start, m.index));
+    start = m.index + m[0].length;
+  }
+  out.push(text.slice(start));
+  return out;
+}
 
 /** Mots du texte, sans les noms propres (capitale en milieu de phrase). */
 function wordsOf(text: string): { words: string[]; sentences: number } {
   const words: string[] = [];
   let sentences = 0;
-  for (const sentence of text.split(SENTENCE_END)) {
+  for (const sentence of splitSentences(text)) {
     const tokens = sentence.match(/[\p{L}\p{M}]+(?:['’][\p{L}\p{M}]+)*/gu) ?? [];
     if (!tokens.length) continue;
     sentences++;
