@@ -25,6 +25,11 @@ export interface Settings {
   autoTranslate: boolean;
   /** Objectif quotidien : nombre de réponses par jour (toutes langues). */
   dailyGoal: number;
+  /**
+   * Budget quotidien en minutes (0 : désactivé) : les nouveaux mots du jour s'adaptent à la charge de révision prévue
+   * (src/core/srs/dailyBudget.ts), sans dépasser le plafond réglé.
+   */
+  dailyMinutes: number;
   /** Prononciation : enregistrement humain (Wiktionnaire) quand il existe, sinon voix de synthèse. */
   recordedVoice: boolean;
   /** Voix naturelle partagée (fonction « speak », Azure) plutôt que la voix de Windows. */
@@ -195,6 +200,7 @@ export const DEFAULT_SETTINGS: Settings = {
   typeAnswer: true,
   autoTranslate: true,
   dailyGoal: 20,
+  dailyMinutes: 0,
   recordedVoice: true,
   naturalVoice: true,
   clozeFront: true,
@@ -241,6 +247,7 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.typeAnswer = bool(raw.typeAnswer, s.typeAnswer);
   s.autoTranslate = bool(raw.autoTranslate, s.autoTranslate);
   s.dailyGoal = Math.round(clamp(num(raw.dailyGoal, s.dailyGoal), 5, 500));
+  s.dailyMinutes = Math.round(clamp(num(raw.dailyMinutes, s.dailyMinutes), 0, 240));
   s.recordedVoice = bool(raw.recordedVoice, s.recordedVoice);
   s.naturalVoice = bool(raw.naturalVoice, s.naturalVoice);
   s.clozeFront = bool(raw.clozeFront, s.clozeFront);
@@ -279,7 +286,17 @@ export function primaryDirection(settings: Pick<Settings, 'directions'>): Direct
   return settings.directions === 'en_fr' ? 'en_fr' : 'fr_en';
 }
 
-/** Réglages appliqués à un univers : son plafond de nouveaux mots, s'il en a un, remplace le réglage général. */
-export function settingsFor<T extends Pick<Settings, 'newPerDay'>>(settings: T, universe: { newPerDay: number | null } | null | undefined): T {
-  return universe?.newPerDay == null ? settings : { ...settings, newPerDay: universe.newPerDay };
+/**
+ * Réglages d'un univers : son plafond de nouveaux mots s'il en a un ; avec le budget quotidien en minutes, le plafond
+ * du jour calculé pour lui (`quotas`, jamais au-dessus du plafond réglé).
+ */
+export function settingsFor<T extends Pick<Settings, 'newPerDay'>>(
+  settings: T,
+  universe: { id?: string; newPerDay: number | null } | null | undefined,
+  quotas?: Readonly<Record<string, number>> | null,
+): T {
+  const cap = universe?.newPerDay ?? settings.newPerDay;
+  const quota = universe?.id && quotas ? quotas[universe.id] : undefined;
+  const newPerDay = quota !== undefined ? Math.min(cap, quota) : cap;
+  return newPerDay === settings.newPerDay ? settings : { ...settings, newPerDay };
 }

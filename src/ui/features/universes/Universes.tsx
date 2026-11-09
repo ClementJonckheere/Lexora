@@ -24,6 +24,7 @@ export function useDuePerUniverse() {
   const scheduler = useApp((s) => s.scheduler);
   const current = useApp((s) => s.universe?.id);
   const newIntroducedToday = useApp((s) => s.newIntroducedToday);
+  const quotas = useApp((s) => s.dayBudget?.quotas);
   return useMemo(() => {
     const now = Date.now();
     return new Map(
@@ -32,11 +33,11 @@ export function useDuePerUniverse() {
         countDue(
           allNotes.filter((n) => n.universeId === u.id),
           // Le compteur de nouveaux mots du jour n'est connu que pour l'univers courant.
-          { now, settings: settingsFor(settings, u), scheduler, newIntroducedToday: u.id === current ? newIntroducedToday : 0 },
+          { now, settings: settingsFor(settings, u, quotas), scheduler, newIntroducedToday: u.id === current ? newIntroducedToday : 0 },
         ).total,
       ]),
     );
-  }, [allNotes, universes, settings, scheduler, current, newIntroducedToday]);
+  }, [allNotes, universes, settings, scheduler, current, newIntroducedToday, quotas]);
 }
 
 /** Sélecteur d'univers (haut de la barre latérale). */

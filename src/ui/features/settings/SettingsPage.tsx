@@ -128,6 +128,7 @@ export function SettingsPage() {
               />
             </Setting>
           )}
+          <BudgetSetting value={settings.dailyMinutes} onChange={(dailyMinutes) => update({ dailyMinutes })} />
           <Setting
             title="Taper la réponse (français → langue)"
             desc="Avant de dévoiler, vous tapez l'expression : Lexora vérifie (formes conjuguées tolérées) et propose la note. Faux : Oublié ; forme approchée : Difficile ; exact : Retenu ; exact et nettement plus rapide que d'habitude : Facile (jamais sur un mot nouveau ou en réapprentissage). Entrée accepte la note, 1 à 4 la change."
@@ -768,3 +769,51 @@ function NaturalVoiceSetting({ enabled, onChange }: { enabled: boolean; onChange
     </Setting>
   );
 }
+
+const BUDGET_CHOICES = [0, 5, 10, 15, 20, 30, 45, 60];
+const fmtMin = (m: number) => (m < 10 ? m.toFixed(1).replace('.', ',') : String(Math.round(m)));
+
+/**
+ * Budget quotidien en minutes : les nouveaux mots du jour s'adaptent à la charge de révision prévue
+ * (src/core/srs/dailyBudget.ts). Le plan du jour et l'écart prévu / réel des jours passés sont affichés.
+ */
+function BudgetSetting({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const budget = useApp((s) => s.dayBudget);
+  const universe = useApp((s) => s.universe);
+  const choices = BUDGET_CHOICES.includes(value) ? BUDGET_CHOICES : [...BUDGET_CHOICES, value].sort((a, b) => a - b);
+  const history = budget?.history.slice(-7) ?? [];
+  const gaps = history.filter((h) => h.spent > 0);
+  const meanGap = gaps.length ? gaps.reduce((a, h) => a + (h.spent - h.predicted), 0) / gaps.length : null;
+  return (
+    <Setting
+      title="Budget quotidien"
+      desc="Le temps que vous voulez consacrer chaque jour aux révisions, toutes langues. Le nombre de nouveaux mots s'adapte aux révisions prévues aujourd'hui et dans la semaine : beaucoup de révisions, peu ou pas de nouveaux mots. Le plafond de nouveaux mots reste une limite ; vous pouvez toujours ajouter autant de notes que vous voulez, seule leur introduction est étalée."
+    >
+      <div className="stack stack--sm" style={{ alignItems: 'flex-end' }}>
+        <select className="select" value={String(value)} onChange={(e) => onChange(Number(e.target.value))}>
+          {choices.map((m) => (
+            <option key={m} value={String(m)}>
+              {m === 0 ? 'Désactivé' : `${m} min par jour`}
+            </option>
+          ))}
+        </select>
+        {budget && (
+          <p className="muted small" style={{ textAlign: 'right', maxWidth: 340 }}>
+            Aujourd'hui : environ {fmtMin(budget.plan.reviewMinutes)} min de révisions prévues, {fmtMin(budget.plan.minutesPerNew)} min par nouveau mot
+            (première semaine comprise) : {budget.plan.allowedNew} nouveau{budget.plan.allowedNew > 1 ? 'x' : ''} mot{budget.plan.allowedNew > 1 ? 's' : ''} permis
+            {universe && budget.quotas[universe.id] !== undefined && `, dont ${budget.quotas[universe.id]} en ${universe.name}`}. Réponse médiane :{' '}
+            {fmtMin(budget.profile.medianMs / 1000)} s. Déjà passé : {fmtMin(budget.spentToday)} min.
+            {history.length > 0 && (
+              <>
+                <br />
+                Prévu / réel : {history.map((h) => `${fmtMin(h.predicted)} / ${fmtMin(h.spent)}`).join(' · ')} min
+                {meanGap !== null && ` (écart moyen ${meanGap >= 0 ? '+' : ''}${fmtMin(meanGap)} min)`}.
+              </>
+            )}
+          </p>
+        )}
+      </div>
+    </Setting>
+  );
+}
+

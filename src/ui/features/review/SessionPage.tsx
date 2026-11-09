@@ -18,7 +18,7 @@ export function SessionPage({ config }: { config: SessionConfig }) {
     return (
       buildQueue(s.notes, {
         now: Date.now(),
-        settings: settingsFor(s.settings, s.universe),
+        settings: settingsFor(s.settings, s.universe, s.dayBudget?.quotas),
         scheduler: s.scheduler,
         newIntroducedToday: s.newIntroducedToday,
         limit: 1,

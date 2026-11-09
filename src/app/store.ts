@@ -32,6 +32,7 @@ import { runSync, scheduleSync, startSyncLoop, stopSyncLoop } from './sync';
 import { spendStreakShields } from '@/core/repo/progressRepo';
 import { loadPlacementMarks, savePlacementMark } from '@/core/repo/placementRepo';
 import type { PlacementMark } from '@/core/learn/placementResults';
+import { computeDayBudget, type AppDayBudget } from './budget';
 
 export type SessionConfig =
   | ({ kind: 'scheduled'; limit: number | null; direction?: Direction | null } & ReviewScope)
@@ -129,6 +130,8 @@ interface AppState {
   collections: Collection[];
   forgetCounts: Map<string, number>;
   newIntroducedToday: number;
+  /** Budget quotidien en minutes (null : désactivé) ; ses quotas plafonnent les nouveaux mots du jour, par langue. */
+  dayBudget: AppDayBudget | null;
   /** Liste de fréquence de la langue courante (ordre des nouveaux mots), null tant qu'elle n'est pas chargée. */
   frequencyRanks: { language: string; ranks: FrequencyRanks } | null;
   /** Incrémenté à chaque modification des données. */
@@ -297,6 +300,7 @@ export const useApp = create<AppState>((set, get) => {
     collections: [],
     forgetCounts: new Map(),
     newIntroducedToday: 0,
+    dayBudget: null,
     frequencyRanks: null,
     revision: 0,
     books: [],
@@ -362,6 +366,8 @@ export const useApp = create<AppState>((set, get) => {
       const newIntroducedToday = current
         ? await countNewIntroduced(d, startOfStudyDay(Date.now(), settings.dayStartHour), primaryDirection(settings), current.id)
         : 0;
+      // Une erreur du budget ne doit pas bloquer l'application : on retombe sur les plafonds réglés.
+      const dayBudget = await computeDayBudget(d, settings, universes, allNotes, current?.id ?? null).catch(() => null);
       const changedUniverse = current?.id !== get().universe?.id;
       const knowledge = current
         ? {
@@ -387,6 +393,7 @@ export const useApp = create<AppState>((set, get) => {
         collections: current ? allCollections.filter((c) => c.universeId === current.id) : [],
         forgetCounts,
         newIntroducedToday,
+        dayBudget,
         books,
         bookCovers,
         bookLevels,
