@@ -1,16 +1,16 @@
 {
  "version": 1,
- "generatedAt": "2026-10-30T19:53:07.202Z",
- "sentences": 2039572,
- "withFrench": 336747,
+ "generatedAt": "2026-11-09T10:47:23.644Z",
+ "sentences": 2040567,
+ "withFrench": 337162,
  "minCandidates": 30,
  "short": [
   "mixed-conditionals (16)"
  ],
  "counts": {
   "be": {
-   "total": 420765,
-   "withFrench": 82255,
+   "total": 421025,
+   "withFrench": 82369,
    "samples": [
     "Today is June 18th and it is Muiriel's birthday!",
     "Muiriel is 20 now.",
@@ -20,8 +20,8 @@
    ]
   },
   "was-were": {
-   "total": 201292,
-   "withFrench": 24013,
+   "total": 201347,
+   "withFrench": 24034,
    "samples": [
     "That was an evil bunny.",
     "I was in the mountains.",
@@ -31,8 +31,8 @@
    ]
   },
   "subject-object-pronouns": {
-   "total": 186595,
-   "withFrench": 29258,
+   "total": 186682,
+   "withFrench": 29294,
    "samples": [
     "Education in this world disappoints me.",
     "I'll call them tomorrow when I come back.",
@@ -42,8 +42,8 @@
    ]
   },
   "possessive-adjectives": {
-   "total": 256764,
-   "withFrench": 46741,
+   "total": 256924,
+   "withFrench": 46798,
    "samples": [
     "You are in my way.",
     "I'll do my best not to disturb your studying.",
@@ -53,8 +53,8 @@
    ]
   },
   "articles": {
-   "total": 727540,
-   "withFrench": 127091,
+   "total": 727969,
+   "withFrench": 127263,
    "samples": [
     "The password is \"Muiriel\".",
     "I'm at a loss for words.",
@@ -64,8 +64,8 @@
    ]
   },
   "plural-forms": {
-   "total": 54597,
-   "withFrench": 8827,
+   "total": 54646,
+   "withFrench": 8838,
    "samples": [
     "Most people think I'm crazy.",
     "I may be antisocial, but it doesn't mean I don't talk to people.",
@@ -75,8 +75,8 @@
    ]
   },
   "this-that": {
-   "total": 109716,
-   "withFrench": 22239,
+   "total": 109786,
+   "withFrench": 22258,
    "samples": [
     "This is never going to end.",
     "Education in this world disappoints me.",
@@ -86,8 +86,8 @@
    ]
   },
   "present-simple": {
-   "total": 40394,
-   "withFrench": 7082,
+   "total": 40416,
+   "withFrench": 7092,
    "samples": [
     "It depends on the context.",
     "It seems interesting to me.",
@@ -97,8 +97,8 @@
    ]
   },
   "do-questions": {
-   "total": 139604,
-   "withFrench": 23918,
+   "total": 139673,
+   "withFrench": 23934,
    "samples": [
     "I just don't know what to say.",
     "I don't know if I have the time.",
@@ -108,8 +108,8 @@
    ]
   },
   "wh-questions": {
-   "total": 88205,
-   "withFrench": 16695,
+   "total": 88259,
+   "withFrench": 16718,
    "samples": [
     "How many close friends do you have?",
     "Why do you ask?",
@@ -119,8 +119,8 @@
    ]
   },
   "there-is": {
-   "total": 15820,
-   "withFrench": 3226,
+   "total": 15836,
+   "withFrench": 3235,
    "samples": [
     "Then there is a problem...",
     "I hate it when there are a lot of people.",
@@ -141,8 +141,8 @@
    ]
   },
   "can": {
-   "total": 73552,
-   "withFrench": 13371,
+   "total": 73606,
+   "withFrench": 13385,
    "samples": [
     "Sometimes he can be a strange guy.",
     "I can only wonder if this is the same for everyone else.",
@@ -152,8 +152,8 @@
    ]
   },
   "imperative": {
-   "total": 29829,
-   "withFrench": 7094,
+   "total": 29849,
+   "withFrench": 7103,
    "samples": [
     "Let's try something.",
     "Let's consider the worst that could happen.",
@@ -163,8 +163,8 @@
    ]
   },
   "prepositions-time-place": {
-   "total": 11964,
-   "withFrench": 1646,
+   "total": 11967,
+   "withFrench": 1648,
    "samples": [
     "For some reason I feel more alive at night.",
     "In the 1950's, the Finns were cited as having one of the least healthy diets in the world.",
@@ -174,8 +174,8 @@
    ]
   },
   "frequency-adverbs": {
-   "total": 56724,
-   "withFrench": 8766,
+   "total": 56756,
+   "withFrench": 8775,
    "samples": [
     "This is never going to end.",
     "Sometimes he can be a strange guy.",
@@ -185,8 +185,8 @@
    ]
   },
   "present-continuous": {
-   "total": 84581,
-   "withFrench": 14869,
+   "total": 84639,
+   "withFrench": 14897,
    "samples": [
     "I'm going to go.",
     "He's kicking me!",
@@ -196,8 +196,8 @@
    ]
   },
   "past-simple-regular": {
-   "total": 121852,
-   "withFrench": 20435,
+   "total": 121905,
+   "withFrench": 20454,
    "samples": [
     "I thought you liked to learn new things.",
     "After that, I left, but then I realized that I forgot my backpack at their house.",
@@ -207,8 +207,8 @@
    ]
   },
   "past-simple-irregular": {
-   "total": 166340,
-   "withFrench": 25113,
+   "total": 166394,
+   "withFrench": 25131,
    "samples": [
     "I told them to send me another ticket.",
     "The last person I told my idea to thought I was nuts.",
@@ -218,8 +218,8 @@
    ]
   },
   "past-participle": {
-   "total": 92059,
-   "withFrench": 13144,
+   "total": 92099,
+   "withFrench": 13161,
    "samples": [
     "This is what I would have said.",
     "This is always the way it has been.",
@@ -229,8 +229,8 @@
    ]
   },
   "past-questions": {
-   "total": 78254,
-   "withFrench": 7136,
+   "total": 78275,
+   "withFrench": 7150,
    "samples": [
     "I didn't know where it came from.",
     "I didn't like it.",
@@ -240,8 +240,8 @@
    ]
   },
   "past-continuous": {
-   "total": 40664,
-   "withFrench": 3493,
+   "total": 40675,
+   "withFrench": 3499,
    "samples": [
     "I was wondering if you were going to show up today.",
     "\"This is what I was looking for!\" he exclaimed.",
@@ -251,8 +251,8 @@
    ]
   },
   "uncountables": {
-   "total": 12501,
-   "withFrench": 2456,
+   "total": 12513,
+   "withFrench": 2459,
    "samples": [
     "What changes the world is communication, not information.",
     "From the doctor's grim expression, it was clear he had somber news for the patient.",
@@ -262,8 +262,8 @@
    ]
   },
   "countables": {
-   "total": 44050,
-   "withFrench": 7263,
+   "total": 44079,
+   "withFrench": 7268,
    "samples": [
     "How many close friends do you have?",
     "If you look at the lyrics, they don't really mean much.",
@@ -273,8 +273,8 @@
    ]
   },
   "comparatives": {
-   "total": 33981,
-   "withFrench": 5809,
+   "total": 33999,
+   "withFrench": 5815,
    "samples": [
     "You're in better shape than I am.",
     "That's the stupidest thing I've ever said.",
@@ -284,8 +284,8 @@
    ]
   },
   "possessive-s": {
-   "total": 68768,
-   "withFrench": 6108,
+   "total": 68790,
+   "withFrench": 6117,
    "samples": [
     "Today is June 18th and it is Muiriel's birthday!",
     "You're just running away from life's problems.",
@@ -295,8 +295,8 @@
    ]
   },
   "going-to": {
-   "total": 20446,
-   "withFrench": 2385,
+   "total": 20452,
+   "withFrench": 2386,
    "samples": [
     "I'm going to go.",
     "I was wondering if you were going to show up today.",
@@ -306,8 +306,8 @@
    ]
   },
   "will": {
-   "total": 95028,
-   "withFrench": 15182,
+   "total": 95070,
+   "withFrench": 15197,
    "samples": [
     "I will be back soon.",
     "This will cost €30.",
@@ -317,8 +317,8 @@
    ]
   },
   "must-have-to": {
-   "total": 38445,
-   "withFrench": 5953,
+   "total": 38473,
+   "withFrench": 5963,
    "samples": [
     "I have to go to sleep.",
     "It would be something I'd have to program.",
@@ -328,8 +328,8 @@
    ]
   },
   "should": {
-   "total": 35022,
-   "withFrench": 4142,
+   "total": 35033,
+   "withFrench": 4149,
    "samples": [
     "You should sleep.",
     "I shouldn't have logged off.",
@@ -339,8 +339,8 @@
    ]
   },
   "adverbs-manner": {
-   "total": 117417,
-   "withFrench": 14745,
+   "total": 117491,
+   "withFrench": 14767,
    "samples": [
     "It is unfortunately true.",
     "Oh, there's a butterfly!",
@@ -350,8 +350,8 @@
    ]
   },
   "verb-patterns": {
-   "total": 100351,
-   "withFrench": 11790,
+   "total": 100394,
+   "withFrench": 11799,
    "samples": [
     "It's because you don't want to be alone.",
     "I once wanted to be an astrophysicist.",
@@ -361,8 +361,8 @@
    ]
   },
   "present-perfect": {
-   "total": 78252,
-   "withFrench": 11424,
+   "total": 78282,
+   "withFrench": 11441,
    "samples": [
     "That's the stupidest thing I've ever said.",
     "I've always wondered what it'd be like to have siblings.",
@@ -372,8 +372,8 @@
    ]
   },
   "for-since": {
-   "total": 6017,
-   "withFrench": 985,
+   "total": 6022,
+   "withFrench": 986,
    "samples": [
     "I can't take it anymore! I haven't slept for three days!",
     "Will you listen to me for a few minutes?",
@@ -383,8 +383,8 @@
    ]
   },
   "perfect-continuous": {
-   "total": 6567,
-   "withFrench": 717,
+   "total": 6569,
+   "withFrench": 718,
    "samples": [
     "What do you think I've been doing?",
     "You have been thinking about this problem the whole morning. Take a break; go eat lunch.",
@@ -394,8 +394,8 @@
    ]
   },
   "past-perfect": {
-   "total": 16185,
-   "withFrench": 1634,
+   "total": 16190,
+   "withFrench": 1636,
    "samples": [
     "At the age of six he had learned to use the typewriter and told the teacher that he did not need to learn to write by hand.",
     "Though his stay in Europe was transient, Spenser felt he had learned much more about interactions with other people from traveling than he did at college.",
@@ -405,7 +405,7 @@
    ]
   },
   "used-to": {
-   "total": 6207,
+   "total": 6209,
    "withFrench": 662,
    "samples": [
     "Miyazaki is not what it used to be.",
@@ -416,8 +416,8 @@
    ]
   },
   "first-conditional": {
-   "total": 5624,
-   "withFrench": 846,
+   "total": 5625,
+   "withFrench": 847,
    "samples": [
     "If you know that something unpleasant will happen, that you will go to the dentist for example, or to France, then that is not good.",
     "If you don't listen to us, we will have to resort to coercion.",
@@ -427,8 +427,8 @@
    ]
   },
   "time-clauses": {
-   "total": 9223,
-   "withFrench": 1541,
+   "total": 9230,
+   "withFrench": 1542,
    "samples": [
     "I suppose it's different when you think about it over the long term.",
     "I'll call them tomorrow when I come back.",
@@ -438,7 +438,7 @@
    ]
   },
   "second-conditional": {
-   "total": 8187,
+   "total": 8191,
    "withFrench": 958,
    "samples": [
     "If I wanted to scare you, I would tell you what I dreamt about a few weeks ago.",
@@ -449,8 +449,8 @@
    ]
   },
   "passive": {
-   "total": 62980,
-   "withFrench": 9611,
+   "total": 63008,
+   "withFrench": 9618,
    "samples": [
     "\"To tell you the truth, I am scared of heights.\" \"You are a coward!\"",
     "Rye was called the grain of poverty.",
@@ -460,7 +460,7 @@
    ]
   },
   "relatives-defining": {
-   "total": 7097,
+   "total": 7099,
    "withFrench": 759,
    "samples": [
     "Poor is not the one who has too little, but the one who wants too much.",
@@ -471,7 +471,7 @@
    ]
   },
   "deduction-present": {
-   "total": 9673,
+   "total": 9677,
    "withFrench": 1395,
    "samples": [
     "I may be antisocial, but it doesn't mean I don't talk to people.",
@@ -493,8 +493,8 @@
    ]
   },
   "quantifiers": {
-   "total": 29287,
-   "withFrench": 4995,
+   "total": 29310,
+   "withFrench": 4999,
    "samples": [
     "They are too busy fighting against each other to care for common ideals.",
     "Back in high school, I got up at 6 a.m. every morning.",
@@ -504,8 +504,8 @@
    ]
   },
   "say-tell": {
-   "total": 149791,
-   "withFrench": 11254,
+   "total": 149814,
+   "withFrench": 11269,
    "samples": [
     "I just don't know what to say.",
     "I told them to send me another ticket.",
@@ -515,8 +515,8 @@
    ]
   },
   "gerund-infinitive-meaning": {
-   "total": 19543,
-   "withFrench": 2609,
+   "total": 19548,
+   "withFrench": 2610,
    "samples": [
     "Stop seeing me as a \"normal\" person!",
     "Stop asking me for a drink! Go get it yourself.",
@@ -526,8 +526,8 @@
    ]
   },
   "subject-questions": {
-   "total": 5031,
-   "withFrench": 943,
+   "total": 5032,
+   "withFrench": 947,
    "samples": [
     "What keeps you up so late?",
     "Who wants some hot chocolate?",
@@ -537,7 +537,7 @@
    ]
   },
   "purpose-to": {
-   "total": 7255,
+   "total": 7257,
    "withFrench": 942,
    "samples": [
     "In order to do that, you have to take risks.",
@@ -548,8 +548,8 @@
    ]
   },
   "preposition-ing": {
-   "total": 29549,
-   "withFrench": 4341,
+   "total": 29558,
+   "withFrench": 4342,
    "samples": [
     "I think my living with you has influenced your way of living.",
     "Thanks for having explained to me at last why people take me for an idiot.",
@@ -559,8 +559,8 @@
    ]
   },
   "indirect-questions": {
-   "total": 31771,
-   "withFrench": 4139,
+   "total": 31775,
+   "withFrench": 4143,
    "samples": [
     "I just don't know what to say.",
     "I've always wondered what it'd be like to have siblings.",
@@ -570,8 +570,8 @@
    ]
   },
   "too-enough": {
-   "total": 17406,
-   "withFrench": 3156,
+   "total": 17416,
+   "withFrench": 3159,
    "samples": [
     "They are too busy fighting against each other to care for common ideals.",
     "I found a solution, but I found it so fast that it can't be the right solution.",
@@ -581,8 +581,8 @@
    ]
   },
   "make-let": {
-   "total": 14110,
-   "withFrench": 2101,
+   "total": 14114,
+   "withFrench": 2106,
    "samples": [
     "Seriously though, episode 21 made me almost cry while laughing.",
     "It's no use pretending to make me believe that I believe things you don't believe!",
@@ -592,8 +592,8 @@
    ]
   },
   "phrasal-verbs": {
-   "total": 7361,
-   "withFrench": 1209,
+   "total": 7363,
+   "withFrench": 1211,
    "samples": [
     "I suppose it's different when you think about it over the long term.",
     "I hate those spiders. They're always there to freak me out when I'm cleaning.",
@@ -603,8 +603,8 @@
    ]
   },
   "question-tags": {
-   "total": 21614,
-   "withFrench": 1249,
+   "total": 21618,
+   "withFrench": 1251,
    "samples": [
     "It's not much of a surprise, is it?",
     "\"She likes music.\" \"So do I.\"",
@@ -647,8 +647,8 @@
    ]
   },
   "passive-modals": {
-   "total": 8704,
-   "withFrench": 988,
+   "total": 8708,
+   "withFrench": 989,
    "samples": [
     "An expert is someone who knows some of the worst mistakes that can be made in his field, and how to avoid them.",
     "When you send a telegram, brevity is essential because you will be charged for every word.",
@@ -669,7 +669,7 @@
    ]
   },
   "relatives-non-defining": {
-   "total": 2366,
+   "total": 2369,
    "withFrench": 257,
    "samples": [
     "Holy crap, who's the asshole who dares call me in the middle of the night?!",
@@ -680,7 +680,7 @@
    ]
   },
   "deduction-past": {
-   "total": 3542,
+   "total": 3544,
    "withFrench": 485,
    "samples": [
     "Seeing that you're not surprised, I think you must have known.",
@@ -691,8 +691,8 @@
    ]
   },
   "reported-questions": {
-   "total": 9235,
-   "withFrench": 877,
+   "total": 9236,
+   "withFrench": 880,
    "samples": [
     "I told them to send me another ticket.",
     "I've always wondered what it'd be like to have siblings.",
@@ -746,7 +746,7 @@
    ]
   },
   "cleft-sentences": {
-   "total": 3299,
+   "total": 3304,
    "withFrench": 721,
    "samples": [
     "It is inevitable that I go to France someday, I just don't know when.",
@@ -757,7 +757,7 @@
    ]
   },
   "participle-clauses": {
-   "total": 2581,
+   "total": 2582,
    "withFrench": 552,
    "samples": [
     "Come on, play with me, I'm so bored!",
@@ -780,7 +780,7 @@
   },
   "emphatic-do": {
    "total": 3596,
-   "withFrench": 569,
+   "withFrench": 570,
    "samples": [
     "I don't like it when mathematicians who know much more than I do can't express themselves explicitly.",
     "Though his stay in Europe was transient, Spenser felt he had learned much more about interactions with other people from traveling than he did at college.",
