@@ -349,6 +349,29 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_placement_marks_universe ON placement_marks(universe_id, deleted)',
   ],
+}, {
+  version: 14,
+  name: 'réutiliser mes expressions',
+  statements: [
+    // Une ligne par réponse de l'entraînement « Réutiliser mes expressions » (src/core/srs/reuse.ts), sans effet
+    // sur FSRS : étape (1 autre phrase, 2 intention, 3 phrase personnelle), phrase Tatoeba (0 sinon), réponse
+    // écrite, vérification automatique, autoévaluation (1 à revoir, 2 à peu près, 3 juste).
+    `CREATE TABLE reuse_answers (
+      id           TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      note_id      TEXT    NOT NULL,
+      stage        INTEGER NOT NULL,
+      sentence_id  INTEGER NOT NULL DEFAULT 0,
+      given        TEXT    NOT NULL DEFAULT '',
+      verdict      TEXT    NOT NULL,
+      rating       INTEGER NOT NULL,
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_reuse_answers_universe ON reuse_answers(universe_id, deleted)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

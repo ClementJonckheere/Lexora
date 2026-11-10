@@ -1,11 +1,12 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { CheckCircle2, ChevronDown, ChevronRight, Ear, Flame, PencilLine, Shuffle, SlidersHorizontal, Zap } from 'lucide-react';
+import { CheckCircle2, ChevronDown, ChevronRight, Ear, Flame, MessageSquareText, PencilLine, Shuffle, SlidersHorizontal, Zap } from 'lucide-react';
 import { useApp, type SessionConfig } from '@/app/store';
 import { formatDue } from '@/core/domain/dates';
 import { directionShort, type Direction } from '@/core/domain/types';
 import { countDue } from '@/core/srs/queue';
 import { settingsFor } from '@/core/domain/settings';
 import { clozeCandidates, difficultNotes } from '@/core/srs/practice';
+import { pickReuseNotes } from '@/core/srs/reuse';
 import { hasScope, scopeIds, scopeNotes, type ReviewScope } from '@/core/srs/scope';
 import { readPref, writePref } from '@/ui/prefs';
 import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
@@ -92,6 +93,8 @@ export function ReviewPage() {
   const language = useApp((s) => s.universe?.language ?? 'en');
   const universeName = useApp((s) => s.universe?.name ?? '');
   const clozeCount = useMemo(() => clozeCandidates(scoped, language).length, [scoped, language]);
+  const reuseAnswers = useApp((s) => s.reuseAnswers);
+  const reuseCount = useMemo(() => pickReuseNotes(notes, reuseAnswers, settings, Date.now(), Infinity).length, [notes, reuseAnswers, settings]);
 
   const start = (config: SessionConfig) => navigate({ name: 'session', config });
   const startScheduled = (limit: number | null) => start({ kind: 'scheduled', limit, direction: dir, ...scope });
@@ -260,6 +263,15 @@ export function ReviewPage() {
           onStart={(limit) => start({ kind: 'practice', mode: 'random', limit, direction: dir, ...scope })}
         />
         <ModeCard
+          icon={<MessageSquareText size={18} />}
+          title="Réutiliser mes expressions"
+          desc="Vos expressions déjà retenues, pas à pas : dans une autre phrase réelle, à partir d'une intention, puis dans une phrase à vous."
+          count={reuseCount}
+          empty="Disponible pour les expressions déjà en révision ; chacune revient au plus tous les deux jours."
+          onStart={(limit) => navigate({ name: 'reuse', limit: Math.min(limit ?? 5, 5) })}
+          sizes={[5]}
+        />
+        <ModeCard
           icon={<Ear size={18} />}
           title="Écoute"
           desc="Écoutez l'expression, puis tapez ce que vous entendez ou son sens en français."
@@ -291,6 +303,7 @@ function ModeCard({
   count,
   empty,
   onStart,
+  sizes = [10, 25],
 }: {
   icon: ReactNode;
   title: string;
@@ -298,7 +311,10 @@ function ModeCard({
   count: number;
   empty: string;
   onStart: (limit: number | null) => void;
+  /** Tailles de séance proposées (la seconde : « Tous » au-delà de la première). */
+  sizes?: number[];
 }) {
+  const [small, large] = sizes;
   const disabled = count === 0;
   return (
     <div className="mode-card" aria-disabled={disabled} style={disabled ? { opacity: 0.6 } : undefined}>
@@ -311,12 +327,12 @@ function ModeCard({
         {disabled ? empty : desc}
       </p>
       <div className="row">
-        <Button size="sm" variant="primary" disabled={disabled} onClick={() => onStart(Math.min(count, 10))}>
-          {count < 10 ? `Commencer (${count})` : '10 mots'}
+        <Button size="sm" variant="primary" disabled={disabled} onClick={() => onStart(Math.min(count, small))}>
+          {count < small ? `Commencer (${count})` : `${small} mots`}
         </Button>
-        {count > 10 && (
-          <Button size="sm" disabled={disabled} onClick={() => onStart(Math.min(count, 25))}>
-            {count < 25 ? `Tous (${count})` : '25'}
+        {large !== undefined && count > small && (
+          <Button size="sm" disabled={disabled} onClick={() => onStart(Math.min(count, large))}>
+            {count < large ? `Tous (${count})` : String(large)}
           </Button>
         )}
       </div>

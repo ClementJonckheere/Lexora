@@ -38,6 +38,7 @@ import { StreakFlame } from './features/progress/StreakFlame';
 import { usePushSync } from './hooks/usePushSync';
 import { keyLabel } from '@/core/platform/env';
 import { MixedPracticePage } from '@/ui/features/learn/MixedPracticePage';
+import { ReusePage } from '@/ui/features/review/ReusePage';
 
 const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string }[] = [
   { route: 'home', label: 'Accueil', icon: Home, key: '1' },
@@ -230,6 +231,8 @@ function Page() {
       return <MixedPracticePage key={route.group} groupId={route.group} />;
     case 'verbs':
       return <VerbsPage />;
+    case 'reuse':
+      return <ReusePage key={key} limit={route.limit} />;
     case 'stats':
       return <StatsPage />;
     case 'progress':
@@ -268,7 +271,7 @@ export function App() {
 
   useEffect(() => (appReady ? startDesktopIntegration() : undefined), [appReady]);
 
-  const inSession = route.name === 'session';
+  const inSession = route.name === 'session' || route.name === 'reuse';
   const focus = inSession || route.name === 'reader' || route.name === 'vocab-test';
 
   useHotkeys(

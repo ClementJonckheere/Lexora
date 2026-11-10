@@ -109,7 +109,7 @@ describe('exemples (Tatoeba)', () => {
 
   it('lit les phrases et leur traduction française', () => {
     const list = parseTatoeba(response);
-    expect(list[0]).toEqual({ text: 'Never take your health for granted.', translation: 'Ne considère jamais ta santé comme acquise.' });
+    expect(list[0]).toEqual({ id: 1, text: 'Never take your health for granted.', translation: 'Ne considère jamais ta santé comme acquise.' });
     expect(list[1].translation).toBeNull();
     expect(parseTatoeba({ data: [{ text: 'Hi.', translations: [{ text: 'Salut.', lang: 'fra' }] }] })).toEqual([{ text: 'Hi.', translation: 'Salut.' }]);
     expect(parseTatoeba(null)).toEqual([]);
