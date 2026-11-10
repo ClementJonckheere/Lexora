@@ -23,7 +23,7 @@ const IGNORED: Record<string, Set<string>> = {
 };
 
 // Verbes irréguliers fréquents : base → formes.
-const IRREGULAR: Record<string, string[]> = {
+export const IRREGULAR: Record<string, string[]> = {
   be: ['am', 'is', 'are', 'was', 'were', 'been', 'being'],
   have: ['has', 'had', 'having'],
   do: ['does', 'did', 'done', 'doing'],

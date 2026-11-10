@@ -2,7 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, CheckCircle2, Loader2, RefreshCw, Volume2, XCircle } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import { scheduleSync } from '@/app/sync';
-import { checkVerb, IRREGULAR_VERBS, pickVerbs, verbStates, verbSummary, type IrregularVerb, type VerbAnswer } from '@/core/learn/irregularVerbs';
+import type { AnswerFeedback } from '@/core/domain/errorKind';
+import { ErrorFeedback } from '@/ui/components/ErrorFeedback';
+import { checkVerb, verbFeedback, IRREGULAR_VERBS, pickVerbs, verbStates, verbSummary, type IrregularVerb, type VerbAnswer } from '@/core/learn/irregularVerbs';
 import { loadVerbAnswers, recordVerbAnswer } from '@/core/repo/learnRepo';
 import { Button, Kbd } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
@@ -143,6 +145,7 @@ function VerbSession({
   const [past, setPast] = useState('');
   const [participle, setParticiple] = useState('');
   const [result, setResult] = useState<{ pastOk: boolean; participleOk: boolean } | null>(null);
+  const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const [score, setScore] = useState({ right: 0, total: 0 });
   const pastInput = useRef<HTMLInputElement>(null);
   const participleInput = useRef<HTMLInputElement>(null);
@@ -161,6 +164,9 @@ function VerbSession({
     const answer: VerbAnswer = { verb: verb.base, at, ...r };
     setResult(r);
     const correct = r.pastOk && r.participleOk;
+    const fb = correct ? null : verbFeedback(verb, past, participle);
+    setFeedback(fb);
+    if (fb) useApp.getState().recordError({ source: 'verbs', itemId: verb.base, kind: fb.kind, expected: `${verb.past[0]} ${verb.participle[0]}`, given: `${past} ${participle}`, createdAt: at });
     setScore((s) => ({ right: s.right + (correct ? 1 : 0), total: s.total + 1 }));
     focus.add({ kind: 'verb', at, verb: verb.base, correct });
     onAnswer(answer);
@@ -172,6 +178,7 @@ function VerbSession({
   };
   const next = () => {
     setResult(null);
+    setFeedback(null);
     setPast('');
     setParticiple('');
     setIndex((i) => i + 1);
@@ -286,6 +293,7 @@ function VerbSession({
                   {verb.base} · {verb.past.join(' / ')} · {verb.participle.join(' / ')}
                 </span>
               </div>
+              <ErrorFeedback feedback={feedback} />
               <Button variant="primary" onClick={next} shortcut="Entrée">
                 {index + 1 < queue.length ? 'Suivant' : 'Voir le bilan'}
               </Button>

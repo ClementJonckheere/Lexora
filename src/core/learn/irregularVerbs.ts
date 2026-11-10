@@ -1,3 +1,4 @@
+import { classifyAnswer, type AnswerFeedback } from '../domain/errorKind';
 import data from './irregular-verbs.json';
 import { dayKey } from '../domain/dates';
 
@@ -110,4 +111,28 @@ export function verbSummary(answers: readonly VerbAnswer[], now = Date.now()): {
     due: states.filter((s) => s.due !== null && s.due <= now).length,
     total: states.length,
   };
+}
+
+/**
+ * Retour par type d'erreur pour un verbe (src/core/domain/errorKind.ts), forme fausse par forme fausse : prétérit
+ * et participe inversés, verbe régularisé (« taked »), faute de frappe…
+ */
+export function verbFeedback(verb: IrregularVerb, past: string, participle: string): AnswerFeedback | null {
+  const fields = [
+    { label: 'prétérit', given: past, accepted: verb.past, other: verb.participle, otherLabel: 'participe passé' },
+    { label: 'participe passé', given: participle, accepted: verb.participle, other: verb.past, otherLabel: 'prétérit' },
+  ];
+  for (const f of fields) {
+    if (formOk(f.given, f.accepted)) continue;
+    if (formOk(f.given, f.other))
+      return {
+        kind: 'form',
+        diffs: [{ kind: 'form', expected: f.accepted[0], given: f.given.trim() }],
+        message: `Forme du mot : « ${f.given.trim()} » est le ${f.otherLabel} ; ${f.label} attendu : « ${f.accepted.join(' / ')} ».`,
+        tip: `Prétérit (action passée datée : I went) et participe passé (après have, ou au passif : I have gone) sont deux formes différentes pour « ${verb.base} ».`,
+      };
+    const fb = classifyAnswer(f.accepted, f.given, 'en');
+    if (fb) return { ...fb, message: `${f.label[0].toUpperCase()}${f.label.slice(1)} : ${fb.message[0].toLowerCase()}${fb.message.slice(1)}` };
+  }
+  return null;
 }

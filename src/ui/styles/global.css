@@ -3944,3 +3944,20 @@ p {
 .listening-transcript { margin: 0; font-size: 1.3rem; font-weight: 500; line-height: 1.5; text-align: center; color: var(--text); }
 .listening-missed { text-decoration: underline wavy var(--danger, #c2410c); text-underline-offset: 4px; }
 .listening-credit { margin-top: 18px; text-align: center; }
+
+/* Retour par type d'erreur : sous le verdict, discret. */
+.error-feedback {
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-left: 3px solid var(--border-strong, var(--border));
+  border-radius: 6px;
+  background: var(--surface-2, transparent);
+  text-align: left;
+  max-width: 560px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+.error-feedback--typo { border-left-color: var(--mastered); }
+.error-feedback--other { border-left-color: var(--danger); }
+.error-feedback-message { font-weight: 500; color: var(--text); }
+.error-feedback-tip { color: var(--text-2); margin-top: 2px; }

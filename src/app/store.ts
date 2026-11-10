@@ -37,6 +37,7 @@ import { loadReuseAnswers, recordReuseAnswer } from '@/core/repo/reuseRepo';
 import type { ReuseAnswer } from '@/core/srs/reuse';
 import { loadListeningAnswers, recordListeningAnswer } from '@/core/repo/listeningRepo';
 import type { ListeningAnswer } from '@/core/srs/listening';
+import { recordAnswerError, type AnswerError } from '@/core/repo/errorsRepo';
 
 export type SessionConfig =
   | ({ kind: 'scheduled'; limit: number | null; direction?: Direction | null } & ReviewScope)
@@ -250,6 +251,8 @@ interface AppState {
   answerGrammar(answer: GrammarAnswer): Promise<void>;
   /** Réponse de « Réutiliser mes expressions » (sans effet sur la planification). */
   answerReuse(answer: Omit<ReuseAnswer, 'id' | 'universeId'>): Promise<void>;
+  /** Réponse fausse ou approchée, avec son type d'erreur (mesure des erreurs qui reculent). */
+  recordError(error: AnswerError): void;
   /** Phrase écoutée (sans effet sur la planification). */
   answerListening(answer: Omit<ListeningAnswer, 'id' | 'universeId'>): Promise<void>;
   /** Phrase signalée : retirée de la leçon, ses réponses ne comptent plus. */
@@ -735,6 +738,14 @@ export const useApp = create<AppState>((set, get) => {
       const row = await recordReuseAnswer(db(), { ...answer, universeId: u.id });
       set((s) => ({ reuseAnswers: [...s.reuseAnswers, row] }));
       scheduleSync();
+    },
+    recordError(error) {
+      const u = get().universe;
+      if (!u) return;
+      // Mesure seulement : un échec d'enregistrement ne doit pas interrompre la séance.
+      void recordAnswerError(db(), u.id, error)
+        .then(() => scheduleSync())
+        .catch(() => undefined);
     },
     async answerListening(answer) {
       const u = get().universe;

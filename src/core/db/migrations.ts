@@ -396,6 +396,28 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_listening_answers_universe ON listening_answers(universe_id, deleted)',
   ],
+}, {
+  version: 16,
+  name: 'retour par type d’erreur',
+  statements: [
+    // Une ligne par réponse fausse ou approchée (src/core/domain/errorKind.ts) : d'où elle vient (révision,
+    // entraînement, réutiliser, leçon, verbes), l'élément (note, exercice, verbe), le type d'erreur, l'attendu et la
+    // réponse. Sert à mesurer quels types d'erreurs reculent.
+    `CREATE TABLE answer_errors (
+      id           TEXT PRIMARY KEY,
+      universe_id  TEXT    NOT NULL,
+      source       TEXT    NOT NULL,
+      item_id      TEXT    NOT NULL,
+      kind         TEXT    NOT NULL,
+      expected     TEXT    NOT NULL DEFAULT '',
+      given        TEXT    NOT NULL DEFAULT '',
+      created_at   INTEGER NOT NULL,
+      updated_at   INTEGER NOT NULL,
+      deleted      INTEGER NOT NULL DEFAULT 0,
+      dirty        INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_answer_errors_universe ON answer_errors(universe_id, deleted, created_at)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;
