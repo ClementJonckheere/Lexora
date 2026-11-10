@@ -39,6 +39,7 @@ import { usePushSync } from './hooks/usePushSync';
 import { keyLabel } from '@/core/platform/env';
 import { MixedPracticePage } from '@/ui/features/learn/MixedPracticePage';
 import { ReusePage } from '@/ui/features/review/ReusePage';
+import { ListeningPage } from '@/ui/features/review/ListeningPage';
 
 const NAV: { route: Route['name']; label: string; icon: typeof Home; key: string }[] = [
   { route: 'home', label: 'Accueil', icon: Home, key: '1' },
@@ -233,6 +234,8 @@ function Page() {
       return <VerbsPage />;
     case 'reuse':
       return <ReusePage key={key} limit={route.limit} />;
+    case 'listening':
+      return <ListeningPage key={key} />;
     case 'stats':
       return <StatsPage />;
     case 'progress':
@@ -271,7 +274,7 @@ export function App() {
 
   useEffect(() => (appReady ? startDesktopIntegration() : undefined), [appReady]);
 
-  const inSession = route.name === 'session' || route.name === 'reuse';
+  const inSession = route.name === 'session' || route.name === 'reuse' || route.name === 'listening';
   const focus = inSession || route.name === 'reader' || route.name === 'vocab-test';
 
   useHotkeys(

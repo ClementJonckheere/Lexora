@@ -1,0 +1,27 @@
+{
+  "language": "en",
+  "generated": "2026-11-10",
+  "audioFormat": "id, audio_id, auteur, licence, attribution",
+  "funnel": {
+    "sentences": 2040567,
+    "withFrench": 336701,
+    "withAudio": 850270,
+    "withFrenchAndAudio": 177298,
+    "compatibleLicense": 175654,
+    "keptLength": 173970,
+    "keptTopics": 173404,
+    "training": 138701,
+    "evaluation": 34703
+  },
+  "shipped": {
+    "training": 30000,
+    "evaluation": 1000
+  },
+  "licenses": {
+    "CC BY-NC-ND 3.0": 835380,
+    "(aucune)": 6438,
+    "CC BY 4.0": 3842,
+    "CC BY-SA 4.0": 3321,
+    "CC BY-NC 4.0": 2638
+  }
+}

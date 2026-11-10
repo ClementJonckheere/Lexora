@@ -3923,3 +3923,24 @@ p {
   line-height: 1.4;
   color: var(--text);
 }
+
+/* Écoute et shadowing : étapes, sens, transcription (mots manqués à la dictée soulignés), crédit de l'enregistrement. */
+.listening-card { text-align: left; }
+.listening-steps {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.listening-steps li { padding: 2px 10px; border-radius: 999px; border: 1px solid var(--border); }
+.listening-steps li.is-current { color: var(--text); border-color: var(--text-2); font-weight: 600; }
+.listening-steps li.is-done { color: var(--mastered); border-color: transparent; }
+.listening-translation { margin: 0; font-size: 1.2rem; text-align: center; }
+.listening-transcript { margin: 0; font-size: 1.3rem; font-weight: 500; line-height: 1.5; text-align: center; color: var(--text); }
+.listening-missed { text-decoration: underline wavy var(--danger, #c2410c); text-underline-offset: 4px; }
+.listening-credit { margin-top: 18px; text-align: center; }

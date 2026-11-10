@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import { CheckCircle2, ChevronDown, ChevronRight, Ear, Flame, MessageSquareText, PencilLine, Shuffle, SlidersHorizontal, Zap } from 'lucide-react';
+import { AudioLines, CheckCircle2, ChevronDown, ChevronRight, Ear, Flame, MessageSquareText, PencilLine, Shuffle, SlidersHorizontal, Zap } from 'lucide-react';
 import { useApp, type SessionConfig } from '@/app/store';
 import { formatDue } from '@/core/domain/dates';
 import { directionShort, type Direction } from '@/core/domain/types';
@@ -7,6 +7,7 @@ import { countDue } from '@/core/srs/queue';
 import { settingsFor } from '@/core/domain/settings';
 import { clozeCandidates, difficultNotes } from '@/core/srs/practice';
 import { pickReuseNotes } from '@/core/srs/reuse';
+import { LISTENING_LANGUAGES } from '@/core/srs/listening';
 import { hasScope, scopeIds, scopeNotes, type ReviewScope } from '@/core/srs/scope';
 import { readPref, writePref } from '@/ui/prefs';
 import { useDailyProgress } from '@/ui/hooks/useDailyProgress';
@@ -272,6 +273,17 @@ export function ReviewPage() {
           sizes={[5]}
         />
         <ModeCard
+          icon={<AudioLines size={18} />}
+          title="Écoute et shadowing"
+          desc="Des phrases enregistrées, vos expressions d'abord : écouter sans texte, comprendre, répéter au micro et comparer, puis redire l'idée autrement."
+          count={LISTENING_LANGUAGES.includes(language) ? 5 : 0}
+          empty="Pas encore de phrases enregistrées préparées pour cette langue."
+          onStart={() => navigate({ name: 'listening' })}
+          sizes={[5]}
+          startLabel="5 phrases"
+          hideCount
+        />
+        <ModeCard
           icon={<Ear size={18} />}
           title="Écoute"
           desc="Écoutez l'expression, puis tapez ce que vous entendez ou son sens en français."
@@ -304,6 +316,8 @@ function ModeCard({
   empty,
   onStart,
   sizes = [10, 25],
+  startLabel,
+  hideCount = false,
 }: {
   icon: ReactNode;
   title: string;
@@ -313,6 +327,9 @@ function ModeCard({
   onStart: (limit: number | null) => void;
   /** Tailles de séance proposées (la seconde : « Tous » au-delà de la première). */
   sizes?: number[];
+  /** Libellé du bouton de départ, à la place de « n mots ». */
+  startLabel?: string;
+  hideCount?: boolean;
 }) {
   const [small, large] = sizes;
   const disabled = count === 0;
@@ -320,7 +337,7 @@ function ModeCard({
     <div className="mode-card" aria-disabled={disabled} style={disabled ? { opacity: 0.6 } : undefined}>
       <div className="row row--between">
         <span className="mode-icon">{icon}</span>
-        <span className="muted small">{count}</span>
+        {!hideCount && <span className="muted small">{count}</span>}
       </div>
       <div className="mode-title">{title}</div>
       <p className="muted small" style={{ flex: 1 }}>
@@ -328,7 +345,7 @@ function ModeCard({
       </p>
       <div className="row">
         <Button size="sm" variant="primary" disabled={disabled} onClick={() => onStart(Math.min(count, small))}>
-          {count < small ? `Commencer (${count})` : `${small} mots`}
+          {startLabel ?? (count < small ? `Commencer (${count})` : `${small} mots`)}
         </Button>
         {large !== undefined && count > small && (
           <Button size="sm" disabled={disabled} onClick={() => onStart(Math.min(count, large))}>
