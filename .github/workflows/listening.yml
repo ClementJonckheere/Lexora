@@ -1,0 +1,51 @@
+name: Écoute (phrases Tatoeba enregistrées)
+
+# Banque d'« Écoute et shadowing » (public/listening/en) : phrases Tatoeba avec traduction française, enregistrement
+# et licence d'enregistrement compatible, séparées entre entraînement et évaluation ; puis enregistrée dans la branche.
+# Relancer à la main (Actions → Run workflow) pour suivre les nouveaux enregistrements de Tatoeba.
+
+on:
+  workflow_dispatch:
+  push:
+    paths: ['scripts/listening-bank.ts', 'scripts/grammar-blocklist.txt', 'src/core/learn/evaluationSplit.ts', 'src/core/srs/listening.ts', '.github/workflows/listening.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: listening-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Exports Tatoeba
+        run: |
+          mkdir -p tatoeba && cd tatoeba
+          base=https://downloads.tatoeba.org/exports/per_language
+          curl -fsSL "$base/eng/eng_sentences.tsv.bz2" | bunzip2 > eng_sentences.tsv
+          curl -fsSL "$base/fra/fra_sentences.tsv.bz2" | bunzip2 > fra_sentences.tsv
+          curl -fsSL "$base/eng/eng-fra_links.tsv.bz2" | bunzip2 > eng-fra_links.tsv
+          curl -fsSL https://downloads.tatoeba.org/exports/sentences_with_audio.tar.bz2 | tar -xjO > sentences_with_audio.csv
+          head -3 sentences_with_audio.csv
+          wc -l eng_sentences.tsv eng-fra_links.tsv sentences_with_audio.csv
+      - run: npx vite-node scripts/listening-bank.ts tatoeba eng en
+      - name: Contrôles de la banque avant d'enregistrer
+        run: npx vitest run src/core/srs/listeningBank.test.ts
+      - name: Enregistrer la banque
+        run: |
+          git add public/listening
+          if git diff --cached --quiet; then echo "Banque inchangée."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Écoute : phrases Tatoeba enregistrées ($(date -u +%Y-%m-%d))"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
