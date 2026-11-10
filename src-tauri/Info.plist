@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Fusionné par Tauri dans l'Info.plist de l'application macOS. -->
+<plist version="1.0">
+<dict>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>Lexora utilise le micro pour enregistrer votre répétition (Écoute et shadowing) et vous la faire réécouter. L'enregistrement reste sur votre Mac et n'est pas gardé.</string>
+</dict>
+</plist>

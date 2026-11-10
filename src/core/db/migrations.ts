@@ -372,6 +372,30 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_reuse_answers_universe ON reuse_answers(universe_id, deleted)',
   ],
+}, {
+  version: 15,
+  name: 'écoute et shadowing',
+  statements: [
+    // Une ligne par phrase écoutée (src/core/srs/listening.ts) : compréhension autoévaluée (1 à 3), dictée et part des
+    // mots retrouvés (-1 sans dictée), répétitions enregistrées, reformulation. Les enregistrements eux-mêmes ne sont
+    // jamais gardés.
+    `CREATE TABLE listening_answers (
+      id               TEXT PRIMARY KEY,
+      universe_id      TEXT    NOT NULL,
+      sentence_id      INTEGER NOT NULL,
+      note_id          TEXT    NOT NULL DEFAULT '',
+      comprehension    INTEGER NOT NULL,
+      dictation        TEXT    NOT NULL DEFAULT '',
+      dictation_score  INTEGER NOT NULL DEFAULT -1,
+      shadowed         INTEGER NOT NULL DEFAULT 0,
+      reformulated     INTEGER NOT NULL DEFAULT 0,
+      created_at       INTEGER NOT NULL,
+      updated_at       INTEGER NOT NULL,
+      deleted          INTEGER NOT NULL DEFAULT 0,
+      dirty            INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_listening_answers_universe ON listening_answers(universe_id, deleted)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

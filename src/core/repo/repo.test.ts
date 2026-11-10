@@ -17,6 +17,7 @@ import { countNewIntroduced, countNewIntroducedByUniverse, loadForgetCounts, rec
 import { loadSettings, saveSettings } from './settingsRepo';
 import { computeStats } from './statsRepo';
 import { loadReuseAnswers, recordReuseAnswer } from './reuseRepo';
+import { loadListeningAnswers, recordListeningAnswer } from './listeningRepo';
 import { exportBackup, exportCsv, exportNotesJson, importNotes, parseCsvNotes, parseJsonNotes, restoreBackup } from './transfer';
 
 let db: Database;
@@ -204,6 +205,18 @@ describe('réutiliser mes expressions', () => {
     expect(got[0].given).toHaveLength(500);
     await deleteUniverse(db, es);
     expect(await loadReuseAnswers(db, es)).toEqual([]);
+  });
+});
+
+describe('écoute et shadowing', () => {
+  it('enregistre et relit les phrases écoutées ; supprimées avec l’univers', async () => {
+    const es = await createUniverse(db, 'Espagnol', 'es');
+    const base = { sentenceId: 1234, noteId: '', comprehension: 2 as const, dictation: ' I am going home ', dictationScore: 75, shadowed: 2, reformulated: true, createdAt: 9 };
+    await recordListeningAnswer(db, { ...base, universeId: en.universeId });
+    await recordListeningAnswer(db, { ...base, universeId: es });
+    expect(await loadListeningAnswers(db, en.universeId)).toEqual([expect.objectContaining({ ...base, universeId: en.universeId, dictation: 'I am going home' })]);
+    await deleteUniverse(db, es);
+    expect(await loadListeningAnswers(db, es)).toEqual([]);
   });
 });
 

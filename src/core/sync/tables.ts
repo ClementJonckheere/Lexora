@@ -111,6 +111,12 @@ export const SYNC_TABLES: SyncTable[] = [
     columns: ['id', 'universe_id', 'note_id', 'stage', 'sentence_id', 'given', 'verdict', 'rating', 'created_at', ...SYNC],
     optional: true,
   },
+  {
+    name: 'listening_answers',
+    key: 'id',
+    columns: ['id', 'universe_id', 'sentence_id', 'note_id', 'comprehension', 'dictation', 'dictation_score', 'shadowed', 'reformulated', 'created_at', ...SYNC],
+    optional: true,
+  },
   { name: 'streak_shields', key: 'day', columns: ['day', 'used_at', ...SYNC], optional: true, global: true },
 ];
 

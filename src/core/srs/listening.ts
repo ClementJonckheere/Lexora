@@ -15,6 +15,9 @@ import { isEvaluationSentence } from '../learn/evaluationSplit';
  * celles qui contiennent une expression déjà retenue en révision, puis des phrases du quotidien jamais entendues.
  */
 
+/** Langues dont la banque d'écoute est générée (.github/workflows/listening.yml). */
+export const LISTENING_LANGUAGES: readonly string[] = ['en'];
+
 export interface ListeningSentence {
   id: number;
   text: string;
