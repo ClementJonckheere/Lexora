@@ -7,6 +7,8 @@ import { buildCloze } from '../domain/cloze';
  */
 
 export interface ExampleSentence {
+  /** Identifiant Tatoeba (absent d'une réponse qui ne le donne pas). */
+  id?: number;
   text: string;
   /** Traduction française (aide à la compréhension, non enregistrée dans la fiche). */
   translation: string | null;
@@ -48,7 +50,7 @@ export function parseTatoeba(json: unknown): ExampleSentence[] {
     if (!text) continue;
     const flat = ([] as unknown[]).concat(...((Array.isArray(r.translations) ? r.translations : []) as unknown[]).map((t) => (Array.isArray(t) ? t : [t])));
     const fr = (flat as Json[]).find((t) => t && t.lang === 'fra' && typeof t.text === 'string');
-    out.push({ text, translation: fr ? String(fr.text) : null });
+    out.push({ ...(typeof r.id === 'number' ? { id: r.id } : {}), text, translation: fr ? String(fr.text) : null });
   }
   return out;
 }
@@ -93,6 +95,34 @@ export function findExamples(expression: string, language: string, signal?: Abor
     })();
     cache.set(key, p);
     p.catch(() => cache.delete(key));
+  }
+  return p;
+}
+
+const reuseCache = new Map<string, Promise<{ id: number; text: string; translation: string }[]>>();
+
+/**
+ * Phrases pour « Réutiliser mes expressions » (src/core/srs/reuse.ts) : jusqu'à 20 phrases traduites en français
+ * et identifiées, expression exacte puis tous ses mots ; le tri et l'exclusion des phrases d'évaluation se font ensuite.
+ */
+export function findReuseSentences(expression: string, language: string, signal?: AbortSignal): Promise<{ id: number; text: string; translation: string }[]> {
+  const q = searchForm(expression, language);
+  const key = `${language}|${q.toLowerCase()}`;
+  let p = reuseCache.get(key);
+  if (!p) {
+    p = (async () => {
+      const out = new Map<number, { id: number; text: string; translation: string }>();
+      for (const exact of q.includes(' ') ? [true, false] : [false]) {
+        const url = tatoebaUrl(q, language, exact);
+        if (!url) break;
+        for (const s of parseTatoeba(await httpGetJson<unknown>(url, { signal, timeoutMs: 15_000 })))
+          if (s.id !== undefined && s.translation && buildCloze(expression, s.text, language)) out.set(s.id, { id: s.id, text: s.text, translation: s.translation });
+        if (out.size >= 6) break;
+      }
+      return [...out.values()].slice(0, 20);
+    })();
+    reuseCache.set(key, p);
+    p.catch(() => reuseCache.delete(key));
   }
   return p;
 }

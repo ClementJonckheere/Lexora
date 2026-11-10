@@ -13,7 +13,7 @@ Chaque langue est un **univers** (anglais, espagnol, chinois, portugais, russe, 
 
 La lecture de livres et l'onglet secondaire **Apprendre**, consacré à la grammaire anglaise, complètent ce carnet. **Pas d'IA générative dans l'application** : les phrases viennent de sources identifiées ; les explications de grammaire sont préparées hors de l'application, puis relues.
 
-**État documenté : version 2.42.1.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
+**État documenté : version 2.43.0.** Le parcours grammatical comporte 79 points de A1 à C2 et 40 pièges francophones ; les 79 points ont leur leçon et leurs exercices (34 en A1 et A2, 26 en B1, 9 en B2, 5 en C1 et, depuis la 2.33, 5 en C2 ; celles ajoutées depuis la 2.25 sont à relire). Le test de placement est disponible dans *Apprendre* ; le surlignage grammatical dans le lecteur ne l'est pas encore (voir [les chantiers restants](#8-état-de-validation-et-chantiers-restants)).
 
 Application de bureau Windows **hors ligne d'abord** : la base SQLite locale permet de tout faire sans réseau. Avec un **compte Google** (via Supabase), les données se synchronisent entre appareils, en vue de la future application mobile. Aucun abonnement.
 Configuration du compte et de la synchronisation : [docs/SUPABASE.md](docs/SUPABASE.md).
@@ -125,7 +125,7 @@ Le même code SQL tourne dans les trois environnements. Dans l'application, c'es
 
 ## 5. Modèle de données
 
-Le schéma SQLite est en **version 13** (`PRAGMA user_version`), indépendamment de la version 2.42.1 de l'application. Les **18 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
+Le schéma SQLite est en **version 14** (`PRAGMA user_version`), indépendamment de la version 2.43.0 de l'application. Les **19 tables synchronisées** partagent un modèle commun avec PostgreSQL. Les listes exhaustives sont dans [`src/core/db/migrations.ts`](src/core/db/migrations.ts), [`src/core/db/migrationV2.ts`](src/core/db/migrationV2.ts), [`src/core/sync/tables.ts`](src/core/sync/tables.ts) et [`supabase/schema.sql`](supabase/schema.sql).
 
 | Table | Clé locale | Principales données |
 |---|---|---|
@@ -141,6 +141,7 @@ Le schéma SQLite est en **version 13** (`PRAGMA user_version`), indépendamment
 | `vocab_observations` | `obs_key` | Univers, source (`chapter`, `select`, `exposure`), mot, rang, connu / inconnu, date |
 | `grammar_answers` | `id` | Univers, leçon, exercice, réponse correcte ou non, signalement, date |
 | `note_entries` | `id` | Univers, note, durée de saisie d'un mot ajouté depuis le formulaire, date |
+| `reuse_answers` | `id` | Univers, note, étape (1 à 3), phrase Tatoeba, réponse écrite, vérification automatique, autoévaluation 1–3, date (v14, « Réutiliser mes expressions ») |
 | `typed_answers` | `log_id` | Révision dont la réponse a été tapée (XP d'une réponse tapée), univers, date |
 | `settings` | `key` | Réglages partagés entre appareils |
 
@@ -183,6 +184,7 @@ La synchronisation se déclenche quelques secondes après chaque modification, t
 - L'**entraînement libre** (aléatoire, mots difficiles, phrases à trous, écoute) est enregistré dans l'historique (`practice_logs`) mais **ne modifie jamais** les dates de révision.
 - **Phrases à trous** : construites uniquement à partir de **vos** exemples. Les mots de l'expression y sont repérés, formes fléchies et verbes irréguliers compris (*figured … out*, *took … for granted*). La correction tolère une autre forme du même mot.
 - **Mots difficiles** : au moins 2 oublis (hors toute première présentation).
+- **Réutiliser mes expressions (2.43)** : carte de *Réviser* (entraînement libre), séances de 5 expressions parmi celles déjà **en révision** (fiche principale retenue au moins une fois), pour passer de la réussite d'une fiche à l'emploi de l'expression. Trois étapes, dans l'ordre, pour chaque expression (`src/core/srs/reuse.ts`) : **1. dans une autre phrase** : une phrase réelle de Tatoeba avec sa traduction française, jamais vue dans la note, trou à remplir (formes conjuguées et fautes de frappe tolérées, comme en révision) ; **2. à partir d'une intention** : la phrase française d'une paire Tatoeba, à dire dans la langue en employant l'expression (sa traduction est rappelée ; *Indice* montre l'expression), sans phrase de la langue visible ; la phrase source est **une réponse possible**, pas la seule : une autre phrase jugée juste devient une variante acceptée pour cette intention ; **3. dans une phrase à vous** : écrite, ou dite à voix haute, comparée à vos exemples ; si elle est juste, elle peut rejoindre les exemples de la note (et donc les phrases à trous des révisions). Sans IA générative : Lexora vérifie que l'expression est employée (repérage commun aux langues, `src/core/domain/cloze.ts`), jamais la justesse de toute la phrase, que vous jugez (*À revoir* / *À peu près* / *Juste*, touches 1 à 3 ; à l'étape 1 la note est proposée). On passe à l'étape suivante après une réponse juste ; un échec ne fait pas reculer ; une expression revient au plus tous les deux jours (parcours en cours d'abord, puis nouvelles venues, puis entretien en phrase libre). Les phrases réservées à l'évaluation (`src/core/learn/evaluationSplit.ts`) ne sont jamais proposées : elles restent disponibles pour mesurer plus tard la réussite dans un exemple jamais rencontré. Sans connexion ou sans phrase trouvée, l'expression passe à la phrase personnelle. Réponses dans `reuse_answers` (synchronisée), **sans effet sur FSRS**. Pas encore compté dans l'XP ni dans la série.
 
 **Niveaux de maîtrise** (critère explicite) :
 
@@ -231,7 +233,7 @@ Les chantiers suivants restent **indisponibles dans l'interface** :
 
 ### Option A : récupérer l'installateur
 
-La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.42.1_x64-setup.exe`.
+La [dernière release](https://github.com/ClementJonckheere/Lexora/releases/latest) fournit l'installateur publié : lancer `Lexora_<version>_x64-setup.exe` (installation par utilisateur, sans droits administrateur) ou le `.msi`. Pour la version documentée ici, le fichier est `Lexora_2.43.0_x64-setup.exe`.
 
 Le workflow GitHub Actions `CI & installateurs Windows et macOS` lance les tests puis construit les installateurs à chaque push sur `main` ou `claude/**`, à chaque tag `v*`, pour les PR vers `main`, et sur demande depuis l'onglet *Actions* → *Run workflow*. La release n'est publiée que depuis `main` (ou un tag `v*`). Pour essayer une construction non publiée : **Actions → exécution réussie de la branche voulue → artefact lexora-windows** (ou **lexora-macos**).
 

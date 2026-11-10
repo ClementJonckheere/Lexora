@@ -33,6 +33,8 @@ import { spendStreakShields } from '@/core/repo/progressRepo';
 import { loadPlacementMarks, savePlacementMark } from '@/core/repo/placementRepo';
 import type { PlacementMark } from '@/core/learn/placementResults';
 import { computeDayBudget, type AppDayBudget } from './budget';
+import { loadReuseAnswers, recordReuseAnswer } from '@/core/repo/reuseRepo';
+import type { ReuseAnswer } from '@/core/srs/reuse';
 
 export type SessionConfig =
   | ({ kind: 'scheduled'; limit: number | null; direction?: Direction | null } & ReviewScope)
@@ -56,6 +58,7 @@ export type Route =
   | { name: 'placement'; retake?: boolean }
   | { name: 'verbs' }
   | { name: 'mixed'; group: string }
+  | { name: 'reuse'; limit: number }
   | { name: 'settings' };
 
 export type SortKey = 'recent' | 'oldest' | 'az' | 'za' | 'mastery';
@@ -154,6 +157,8 @@ interface AppState {
   vocabObservations: Observation[];
   /** Réponses aux exercices de grammaire (onglet Apprendre) dans l'univers courant. */
   grammarAnswers: GrammarAnswer[];
+  /** Réponses de « Réutiliser mes expressions » dans l'univers courant. */
+  reuseAnswers: ReuseAnswer[];
 
   route: Route;
   /** Change à chaque navigation : force le remontage d'une page (ex. nouvelle session). */
@@ -238,6 +243,8 @@ interface AppState {
   /** Enregistre des signaux de lecture (décisions, sélections, mots rencontrés). */
   observe(list: Observation[]): Promise<void>;
   answerGrammar(answer: GrammarAnswer): Promise<void>;
+  /** Réponse de « Réutiliser mes expressions » (sans effet sur la planification). */
+  answerReuse(answer: Omit<ReuseAnswer, 'id' | 'universeId'>): Promise<void>;
   /** Phrase signalée : retirée de la leçon, ses réponses ne comptent plus. */
   reportGrammar(lessonId: string, itemId: string): Promise<void>;
 }
@@ -314,6 +321,7 @@ export const useApp = create<AppState>((set, get) => {
     placementMarks: [],
     vocabObservations: [],
     grammarAnswers: [],
+    reuseAnswers: [],
 
     route: { name: 'home' },
     routeKey: 0,
@@ -378,6 +386,7 @@ export const useApp = create<AppState>((set, get) => {
             observations: await knowledgeRepo.loadObservations(d, current.id),
             grammar: await learnRepo.loadGrammarAnswers(d, current.id),
             placement: await loadPlacementMarks(d, current.id),
+            reuse: await loadReuseAnswers(d, current.id),
           }
         : null;
       if (current && get().frequencyRanks?.language !== current.language) {
@@ -405,6 +414,7 @@ export const useApp = create<AppState>((set, get) => {
         placementMarks: knowledge?.placement ?? [],
         vocabObservations: knowledge?.observations ?? [],
         grammarAnswers: knowledge?.grammar ?? [],
+        reuseAnswers: knowledge?.reuse ?? [],
         revision: s.revision + 1,
         // Paramètres FSRS personnels propres à la langue, s'il y en a.
         ...(changedUniverse ? { libraryFilters: DEFAULT_FILTERS, selectedNoteId: null, scheduler: createScheduler(s.settings, current?.id) } : {}),
@@ -707,6 +717,13 @@ export const useApp = create<AppState>((set, get) => {
       if (!u) return;
       await learnRepo.recordGrammarAnswer(db(), u.id, answer);
       set((s) => ({ grammarAnswers: [...s.grammarAnswers, answer] }));
+      scheduleSync();
+    },
+    async answerReuse(answer) {
+      const u = get().universe;
+      if (!u) return;
+      const row = await recordReuseAnswer(db(), { ...answer, universeId: u.id });
+      set((s) => ({ reuseAnswers: [...s.reuseAnswers, row] }));
       scheduleSync();
     },
     async reportGrammar(lessonId, itemId) {

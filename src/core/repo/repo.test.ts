@@ -16,6 +16,7 @@ import { createUniverse, deleteUniverse, loadUniverses } from './universesRepo';
 import { countNewIntroduced, countNewIntroducedByUniverse, loadForgetCounts, recordPractice, recordReview, typedBaseline, undoReview } from './reviewRepo';
 import { loadSettings, saveSettings } from './settingsRepo';
 import { computeStats } from './statsRepo';
+import { loadReuseAnswers, recordReuseAnswer } from './reuseRepo';
 import { exportBackup, exportCsv, exportNotesJson, importNotes, parseCsvNotes, parseJsonNotes, restoreBackup } from './transfer';
 
 let db: Database;
@@ -186,6 +187,23 @@ describe('collections', () => {
     [n] = await loadNotes(db);
     expect(n.collectionIds).toEqual([b]);
     expect(await loadCollections(db)).toHaveLength(1);
+  });
+});
+
+describe('réutiliser mes expressions', () => {
+  it('enregistre et relit les réponses par univers ; supprimées avec l’univers', async () => {
+    const noteId = await createNote(db, tackle, en);
+    const es = await createUniverse(db, 'Espagnol', 'es');
+    const base = { noteId, stage: 2 as const, sentenceId: 1234, verdict: 'present' as const, rating: 3 as const };
+    await recordReuseAnswer(db, { ...base, universeId: en.universeId, given: `  We tackled the issue.  ${'x'.repeat(600)}`, createdAt: 5 });
+    await recordReuseAnswer(db, { ...base, universeId: es, given: 'otra', createdAt: 6 });
+    const got = await loadReuseAnswers(db, en.universeId);
+    expect(got).toHaveLength(1);
+    expect(got[0]).toMatchObject({ noteId, stage: 2, sentenceId: 1234, verdict: 'present', rating: 3, createdAt: 5 });
+    expect(got[0].given.startsWith('We tackled the issue.')).toBe(true);
+    expect(got[0].given).toHaveLength(500);
+    await deleteUniverse(db, es);
+    expect(await loadReuseAnswers(db, es)).toEqual([]);
   });
 });
 

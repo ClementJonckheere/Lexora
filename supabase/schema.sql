@@ -284,6 +284,23 @@ create table if not exists public.placement_marks (
   primary key (user_id, mark_key)
 );
 
+-- Réutiliser mes expressions : une ligne par réponse (étape, phrase Tatoeba, réponse écrite, autoévaluation).
+create table if not exists public.reuse_answers (
+  id                 uuid primary key,
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  universe_id        uuid not null,
+  note_id            uuid not null,
+  stage              smallint not null check (stage between 1 and 3),
+  sentence_id        bigint not null default 0,
+  given              text not null default '',
+  verdict            text not null,
+  rating             smallint not null check (rating between 1 and 3),
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0
+);
+
 -- Série : jours manqués couverts par un bouclier (toutes langues confondues).
 create table if not exists public.streak_shields (
   user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
@@ -312,7 +329,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers', 'streak_shields', 'placement_marks'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers', 'streak_shields', 'placement_marks', 'reuse_answers'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);
