@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkVerb, formOk, IRREGULAR_VERBS, masteredVerbs, pickVerbs, verbState, VERB_NEW_PER_SESSION, type VerbAnswer } from './irregularVerbs';
+import { checkVerb, formOk, verbFeedback, IRREGULAR_VERBS, masteredVerbs, pickVerbs, verbState, VERB_NEW_PER_SESSION, type VerbAnswer } from './irregularVerbs';
 
 const DAY = 86_400_000;
 const T = new Date(2026, 9, 30, 9, 0).getTime();
@@ -50,5 +50,18 @@ describe('verbes irréguliers : réponses', () => {
     expect(s.slice(0, 2).map((v) => v.base)).toEqual(['take', 'go']); // le plus en retard d'abord ; make pas encore dû
     expect(s.filter((v) => !['take', 'go'].includes(v.base))).toHaveLength(VERB_NEW_PER_SESSION);
     expect(s.some((v) => v.base === 'make')).toBe(false);
+  });
+});
+
+describe('verbes : retour par type d’erreur', () => {
+  const go = IRREGULAR_VERBS.find((v) => v.base === 'go')!;
+  const take = IRREGULAR_VERBS.find((v) => v.base === 'take')!;
+  it('prétérit et participe inversés, verbe régularisé, faute de frappe ; rien si juste', () => {
+    expect(verbFeedback(go, 'went', 'gone')).toBeNull();
+    expect(verbFeedback(go, 'gone', 'gone')!.message).toMatch(/« gone » est le participe passé ; prétérit attendu : « went »/);
+    const reg = verbFeedback(take, 'taked', 'taken')!;
+    expect(reg.kind).toBe('form');
+    expect(reg.tip).toMatch(/irrégulier/);
+    expect(verbFeedback(take, 'took', 'takne')!.kind).toBe('typo');
   });
 });

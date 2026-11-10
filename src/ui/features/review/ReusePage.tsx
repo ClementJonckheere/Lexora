@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, CheckCircle2, Lightbulb, Loader2, Mic, RefreshCw, Volume2, XCircle } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import { languageInfo } from '@/core/domain/languages';
+import { classifyAnswer, expressionVariants, type AnswerFeedback } from '@/core/domain/errorKind';
+import { ErrorFeedback } from '@/ui/components/ErrorFeedback';
 import { findReuseSentences } from '@/core/translate/examples';
 import {
   acceptedVariants,
@@ -90,6 +92,7 @@ function ReuseSession({ items, language, onAgain, onClose }: { items: ReuseItem[
   const [index, setIndex] = useState(0);
   const [typed, setTyped] = useState('');
   const [result, setResult] = useState<Result | null>(null);
+  const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const [hint, setHint] = useState(false);
   const [keep, setKeep] = useState(false);
   const [ratings, setRatings] = useState<ReuseRating[]>([]);
@@ -108,6 +111,12 @@ function ReuseSession({ items, language, onAgain, onClose }: { items: ReuseItem[
     if (!typed.trim()) return;
     if (item.stage === 1) {
       const { verdict, rating } = checkReuseTyped(item, typed, language);
+      if (verdict !== 'exact' && item.sentence) {
+        const expected = [item.sentence.cloze.answers.join(' '), ...expressionVariants(item.note.expression)];
+        const fb = classifyAnswer(expected, typed, language);
+        setFeedback(fb);
+        if (fb) useApp.getState().recordError({ source: 'reuse', itemId: item.note.id, kind: fb.kind, expected: expected[0], given: typed, createdAt: Date.now() });
+      }
       return setResult({ given: typed, verdict, suggested: rating });
     }
     const { verdict, suggested } = checkReuseSentence(item.note, typed, language, accepted);
@@ -145,6 +154,7 @@ function ReuseSession({ items, language, onAgain, onClose }: { items: ReuseItem[
       ).catch((err) => toast('error', errorMessage(err)));
     }
     setResult(null);
+    setFeedback(null);
     setTyped('');
     setHint(false);
     setKeep(false);
@@ -295,6 +305,7 @@ function ReuseSession({ items, language, onAgain, onClose }: { items: ReuseItem[
             ) : (
               <div className="stack stack--sm" style={{ marginTop: 12 }}>
                 <Feedback item={item} result={result} language={language} onSpeak={speak} />
+                <ErrorFeedback feedback={feedback} />
                 {item.stage === 3 && result.verdict === 'present' && (
                   <label className="row small" style={{ gap: 6 }}>
                     <input

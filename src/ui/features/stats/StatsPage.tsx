@@ -1,3 +1,5 @@
+import { ERROR_LABELS, errorTrend, type ErrorTrend } from '@/core/domain/errorKind';
+import { loadAnswerErrors } from '@/core/repo/errorsRepo';
 import { useEffect, useState } from 'react';
 import { useApp } from '@/app/store';
 import { directionShort } from '@/core/domain/types';
@@ -33,6 +35,14 @@ export function StatsPage() {
       .then(setStats)
       .catch((e) => setError(e instanceof Error ? e.message : String(e)));
   }, [db, notes, settings, scheduler, revision, universe]);
+  const [errors, setErrors] = useState<ErrorTrend[]>([]);
+  useEffect(() => {
+    if (!db || !universe) return;
+    const now = Date.now();
+    void loadAnswerErrors(db, universe.id, now - 60 * 86_400_000)
+      .then((list) => setErrors(errorTrend(list, now)))
+      .catch(() => setErrors([]));
+  }, [db, revision, universe]);
 
   if (error) return <div className="page"><EmptyState title="Statistiques indisponibles">{error}</EmptyState></div>;
   if (!stats)
@@ -170,6 +180,42 @@ export function StatsPage() {
           )}
         </section>
       </div>
+      <section className="card" style={{ marginTop: 16 }}>
+        <div className="card-header" style={{ paddingBottom: 8 }}>
+          <h2 className="card-title">Erreurs par type</h2>
+        </div>
+        {errors.length ? (
+          <table className="simple-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th className="num">30 derniers jours</th>
+                <th className="num">30 jours d'avant</th>
+                <th>Dernier exemple</th>
+              </tr>
+            </thead>
+            <tbody>
+              {errors.map((e) => (
+                <tr key={e.kind}>
+                  <td>
+                    <strong>{ERROR_LABELS[e.kind]}</strong>
+                  </td>
+                  <td className="num">
+                    {e.recent}
+                    {e.previous > 0 && e.recent < e.previous && <span className="muted small"> (recule)</span>}
+                  </td>
+                  <td className="num">{e.previous}</td>
+                  <td className="small">{e.example ? <span lang={universe?.language}>« {e.example.given} » pour « {e.example.expected} »</span> : <span className="muted">-</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="muted small" style={{ padding: '4px 20px 20px' }}>
+            Aucune erreur relevée : les réponses tapées fausses ou approchées (révisions, entraînements, leçons, verbes) apparaîtront ici par type.
+          </p>
+        )}
+      </section>
       <p className="muted small" style={{ marginTop: 20 }}>
         Rétention mesurée : part des fiches en révision espacée que vous avez retrouvées (toute réponse autre que « Oublié »). Mémorisation estimée :
         moyenne de la probabilité de rappel calculée par FSRS pour chaque fiche à cet instant. Objectif réglé : {Math.round(settings.desiredRetention * 100)} %.

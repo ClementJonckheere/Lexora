@@ -3,6 +3,9 @@ import { ArrowLeft, CheckCircle2, Flag, Loader2, RefreshCw, RotateCcw, Volume2, 
 import { errorMessage, useApp } from '@/app/store';
 import { FocusFooter, useFocusMeter } from '@/ui/features/progress/FocusFooter';
 import { isCorrect, type Exercise } from '@/core/learn/exercises';
+import { classifyAnswer, type AnswerFeedback } from '@/core/domain/errorKind';
+import { explanation } from '@/core/learn/mixedPractice';
+import { ErrorFeedback } from '@/ui/components/ErrorFeedback';
 import { lessonProgress, MASTERY_TARGET, MASTERY_WINDOW, pickSession, SESSION_SIZE } from '@/core/learn/progress';
 import { dueLabel, lessonReview, REVIEW_PASS, REVIEW_SIZE } from '@/core/learn/review';
 import { Button, Kbd } from '@/ui/components/ui';
@@ -66,6 +69,7 @@ export function LessonPage({ id, startReview = false }: { id: string; startRevie
         lessonId={id}
         title={point.title}
         items={session.items}
+        pool={bank ?? []}
         review={session.review}
         onAgain={() => start(false)}
         onClose={() => setSession(null)}
@@ -205,11 +209,15 @@ function StartOnEnter({ enabled, onStart }: { enabled: boolean; onStart: () => v
 
 type Result = { correct: boolean; given: string };
 
+/** Exercices ajoutés au plus par séance après des erreurs. */
+const MAX_RETRIES = 3;
+
 /** Séance de 10 exercices : réponse, correction immédiate, bilan, « Nouvelles phrases ». */
 function ExerciseSession({
   lessonId,
   title,
-  items,
+  items: initialItems,
+  pool,
   review = false,
   onAgain,
   onClose,
@@ -217,6 +225,8 @@ function ExerciseSession({
   lessonId: string;
   title: string;
   items: Exercise[];
+  /** Banque de la leçon : après une erreur, un exercice de même nature revient en fin de séance. */
+  pool: Exercise[];
   review?: boolean;
   onAgain: () => void;
   onClose: () => void;
@@ -224,8 +234,13 @@ function ExerciseSession({
   const { answerGrammar, reportGrammar, toast } = useApp.getState();
   const answers = useApp((s) => s.grammarAnswers);
   const [index, setIndex] = useState(0);
+  const [items, setItems] = useState(initialItems);
+  /** Exercices ajoutés après une erreur (nouvelle occasion d'appliquer la même règle). */
+  const [retries, setRetries] = useState<Set<string>>(() => new Set());
   const [typed, setTyped] = useState('');
   const [result, setResult] = useState<Result | null>(null);
+  const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
+  const [retryAdded, setRetryAdded] = useState(false);
   const [score, setScore] = useState({ right: 0, done: 0, reported: 0 });
   const input = useRef<HTMLInputElement>(null);
   const ex = items[index];
@@ -242,6 +257,24 @@ function ExerciseSession({
     if (!ex || result || !given.trim()) return;
     const correct = ex.choices ? given === ex.answer : isCorrect(ex, given);
     setResult({ correct, given });
+    if (!correct) {
+      const expected = [ex.answer, ...(ex.accept ?? [])];
+      const fb = classifyAnswer(expected, given, 'en');
+      setFeedback(fb);
+      if (fb) useApp.getState().recordError({ source: 'grammar', itemId: ex.id, kind: fb.kind, expected: ex.answer, given, createdAt: Date.now() });
+      // Révision d'une leçon : nombre de questions fixe. Entraînement : un exercice de même nature, trois au plus.
+      if (!review && retries.size < MAX_RETRIES) {
+        const reported = new Set(answers.filter((a) => a.reported).map((a) => a.itemId));
+        const used = new Set(items.map((e) => e.id));
+        const candidates = pool.filter((e) => !used.has(e.id) && !reported.has(e.id) && (e.form ?? '') === (ex.form ?? '') && !!e.choices === !!ex.choices);
+        const retry = candidates[Math.floor(Math.random() * candidates.length)];
+        if (retry) {
+          setItems((xs) => [...xs, retry]);
+          setRetries((r) => new Set(r).add(retry.id));
+          setRetryAdded(true);
+        }
+      }
+    }
     setScore((s) => ({ ...s, right: s.right + (correct ? 1 : 0), done: s.done + 1 }));
     focus.add({ kind: 'grammar', at: Date.now(), itemId: ex.id, correct, typed: !ex.choices });
     void answerGrammar({ lessonId, itemId: ex.id, correct, reported: false, createdAt: Date.now() }).catch((err) => toast('error', errorMessage(err)));
@@ -249,6 +282,8 @@ function ExerciseSession({
 
   const next = () => {
     setResult(null);
+    setFeedback(null);
+    setRetryAdded(false);
     setTyped('');
     setIndex((i) => i + 1);
   };
@@ -333,6 +368,7 @@ function ExerciseSession({
           <div className="card flashcard exercise-card">
             <div className="flashcard-meta">
               <span>{ex.choices ? 'Choisissez la bonne forme' : ex.hint ? `Complétez avec « ${ex.hint} »` : 'Complétez la phrase'}</span>
+              {retries.has(ex.id) && <span>· Nouvelle occasion</span>}
             </div>
             <p className="exercise-sentence" lang="en">
               {ex.before}
@@ -386,6 +422,12 @@ function ExerciseSession({
                       : `Juste. Ici « ${result.given.trim()} » convient aussi ; forme attendue : ${ex.answer}`
                     : `Réponse : ${ex.answer}${result.given ? ` (vous : ${result.given})` : ''}`}
                 </div>
+                {!result.correct && (
+                  <ErrorFeedback
+                    feedback={feedback}
+                    extra={[explanation(lessonId, ex.form), retryAdded ? 'Une phrase de même nature reviendra en fin de séance.' : null].filter(Boolean).join(' ') || null}
+                  />
+                )}
                 <Button variant="primary" onClick={next} shortcut="Entrée">
                   {index + 1 < items.length ? 'Suivant' : 'Voir le bilan'}
                 </Button>

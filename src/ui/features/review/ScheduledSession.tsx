@@ -13,6 +13,8 @@ import { buildQueue, type QueueItem } from '@/core/srs/queue';
 import { scopeIds } from '@/core/srs/scope';
 import { settingsFor } from '@/core/domain/settings';
 import type { AnswerVerdict } from '@/core/domain/answer';
+import { classifyAnswer, expressionVariants, type AnswerFeedback } from '@/core/domain/errorKind';
+import { ErrorFeedback } from '@/ui/components/ErrorFeedback';
 import { checkTyped, clozeFront, frequencyRank, MS_PER_CHAR, suggestGrade } from '@/core/srs/typed';
 import { readPref, writePref } from '@/ui/prefs';
 import { GRADES, previewIntervals, review, type Grade } from '@/core/srs/scheduler';
@@ -82,6 +84,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   const [busy, setBusy] = useState(false);
   const [typed, setTyped] = useState('');
   const [verdict, setVerdict] = useState<AnswerVerdict | 'skipped' | null>(null);
+  const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const tally = useRef<Tally>({ 1: 0, 2: 0, 3: 0, 4: 0 });
   const undoStack = useRef<UndoEntry[]>([]);
   const shownAt = useRef(Date.now());
@@ -132,7 +135,15 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
   const submitTyped = () => {
     if (!note) return;
     answeredIn.current = Date.now() - shownAt.current;
-    setVerdict(typed.trim() ? checkTyped(note, front, typed, language) : 'skipped');
+    const v = typed.trim() ? checkTyped(note, front, typed, language) : 'skipped';
+    setVerdict(v);
+    if (v === 'close' || v === 'wrong') {
+      // Les mots de la phrase à trous (« figured … out »), sinon l'expression elle-même.
+      const expected = [...(front ? [front.cloze.answers.join(' ')] : []), ...expressionVariants(note.expression)];
+      const fb = classifyAnswer(expected, typed, language);
+      setFeedback(fb);
+      if (fb) useApp.getState().recordError({ source: 'review', itemId: note.id, kind: fb.kind, expected: expected[0], given: typed, createdAt: Date.now() });
+    }
     reveal();
   };
 
@@ -150,6 +161,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
     setRevealed(false);
     setTyped('');
     setVerdict(null);
+    setFeedback(null);
     shownAt.current = Date.now();
   };
 
@@ -286,6 +298,7 @@ export function ScheduledSession({ config }: { config: Extract<SessionConfig, { 
             </span>
           </div>
         )}
+        {revealed && <ErrorFeedback feedback={feedback} />}
         {typing && typedNotice && !revealed && (
           <div className="typed-notice">
             <span>

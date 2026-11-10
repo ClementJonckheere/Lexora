@@ -18,6 +18,7 @@ import { loadSettings, saveSettings } from './settingsRepo';
 import { computeStats } from './statsRepo';
 import { loadReuseAnswers, recordReuseAnswer } from './reuseRepo';
 import { loadListeningAnswers, recordListeningAnswer } from './listeningRepo';
+import { loadAnswerErrors, recordAnswerError } from './errorsRepo';
 import { exportBackup, exportCsv, exportNotesJson, importNotes, parseCsvNotes, parseJsonNotes, restoreBackup } from './transfer';
 
 let db: Database;
@@ -217,6 +218,19 @@ describe('écoute et shadowing', () => {
     expect(await loadListeningAnswers(db, en.universeId)).toEqual([expect.objectContaining({ ...base, universeId: en.universeId, dictation: 'I am going home' })]);
     await deleteUniverse(db, es);
     expect(await loadListeningAnswers(db, es)).toEqual([]);
+  });
+});
+
+describe('erreurs par type', () => {
+  it('enregistre et relit les erreurs depuis une date ; supprimées avec l’univers', async () => {
+    const es = await createUniverse(db, 'Espagnol', 'es');
+    const e = { source: 'review' as const, itemId: 'n1', kind: 'preposition' as const, expected: 'depend on', given: ' depend of ', createdAt: 50 };
+    await recordAnswerError(db, en.universeId, e);
+    await recordAnswerError(db, en.universeId, { ...e, createdAt: 5 });
+    await recordAnswerError(db, es, e);
+    expect(await loadAnswerErrors(db, en.universeId, 10)).toEqual([{ ...e, given: 'depend of' }]);
+    await deleteUniverse(db, es);
+    expect(await loadAnswerErrors(db, es)).toEqual([]);
   });
 });
 

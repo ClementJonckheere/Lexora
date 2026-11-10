@@ -319,6 +319,22 @@ create table if not exists public.listening_answers (
   server_updated_at  bigint not null default 0
 );
 
+-- Retour par type d'erreur : une ligne par réponse fausse ou approchée (source, élément, type, attendu, réponse).
+create table if not exists public.answer_errors (
+  id                 uuid primary key,
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  universe_id        uuid not null,
+  source             text not null check (source in ('review', 'practice', 'reuse', 'grammar', 'verbs')),
+  item_id            text not null,
+  kind               text not null check (kind in ('typo', 'form', 'preposition', 'article', 'missing', 'extra', 'order', 'other')),
+  expected           text not null default '',
+  given              text not null default '',
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0
+);
+
 -- Série : jours manqués couverts par un bouclier (toutes langues confondues).
 create table if not exists public.streak_shields (
   user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
@@ -347,7 +363,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers', 'streak_shields', 'placement_marks', 'reuse_answers', 'listening_answers'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers', 'streak_shields', 'placement_marks', 'reuse_answers', 'listening_answers', 'answer_errors'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);

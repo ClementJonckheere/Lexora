@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, Snail, Volume2, XCircle } from 'lucide-react';
 import { errorMessage, useApp, type SessionConfig } from '@/app/store';
 import { checkListening, type ListeningVerdict } from '@/core/domain/answer';
+import { classifyAnswer, expressionVariants, type AnswerFeedback } from '@/core/domain/errorKind';
+import { ErrorFeedback } from '@/ui/components/ErrorFeedback';
 import { checkCloze, clozeHint, type ClozeVerdict } from '@/core/domain/cloze';
 import { directionLabel } from '@/core/domain/types';
 import { recordPractice } from '@/core/repo/reviewRepo';
@@ -200,6 +202,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
   const [, setTick] = useState(0);
   const [answer, setAnswer] = useState('');
   const [verdict, setVerdict] = useState<ClozeVerdict | 'skipped' | null>(null);
+  const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const [hint, setHint] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const tally = useRef<Tally>({ 1: 0, 2: 0, 3: 0, 4: 0 });
@@ -214,7 +217,16 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
   const check = () => {
     if (!item) return;
     if (!answer.trim()) setVerdict('skipped');
-    else setVerdict(checkCloze(item.cloze, answer, language));
+    else {
+      const v = checkCloze(item.cloze, answer, language);
+      setVerdict(v);
+      if (v !== 'exact') {
+        const expected = [item.cloze.answers.join(' '), ...(note ? expressionVariants(note.expression) : [])];
+        const fb = classifyAnswer(expected, answer, language);
+        setFeedback(fb);
+        if (fb) useApp.getState().recordError({ source: 'practice', itemId: item.noteId, kind: fb.kind, expected: expected[0], given: answer, createdAt: Date.now() });
+      }
+    }
     if (note && useApp.getState().settings.autoSpeak) speakNote(note);
   };
 
@@ -226,6 +238,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
     session.queue.advance();
     setAnswer('');
     setVerdict(null);
+    setFeedback(null);
     setHint(false);
     setTick((t) => t + 1);
   };
@@ -289,6 +302,7 @@ export function ClozePractice({ config }: { config: PracticeConfig }) {
               {verdict === 'wrong' && `Réponse : ${item.cloze.answers.join(' … ')}`}
               {verdict === 'skipped' && `Réponse : ${item.cloze.answers.join(' … ')}`}
             </div>
+            <ErrorFeedback feedback={feedback} />
             {note && (
               <p className="muted" style={{ marginTop: 10 }}>
                 <strong className="text-2">{note.expression}</strong> : {note.translation}
@@ -340,6 +354,7 @@ export function ListenPractice({ config }: { config: PracticeConfig }) {
   const [, setTick] = useState(0);
   const [answer, setAnswer] = useState('');
   const [verdict, setVerdict] = useState<ListeningVerdict | 'skipped' | null>(null);
+  const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const tally = useRef<Tally>({ 1: 0, 2: 0, 3: 0, 4: 0 });
 
@@ -366,7 +381,14 @@ export function ListenPractice({ config }: { config: PracticeConfig }) {
 
   const check = () => {
     if (!note) return;
-    setVerdict(answer.trim() ? checkListening(note.expression, note.translation, answer, language) : 'skipped');
+    const v = answer.trim() ? checkListening(note.expression, note.translation, answer, language) : 'skipped';
+    setVerdict(v);
+    // Forme approchée seulement : une réponse fausse peut être un essai de traduction, pas une faute dans l'expression.
+    if (v === 'close') {
+      const fb = classifyAnswer(expressionVariants(note.expression), answer, language);
+      setFeedback(fb);
+      if (fb) useApp.getState().recordError({ source: 'practice', itemId: note.id, kind: fb.kind, expected: note.expression, given: answer, createdAt: Date.now() });
+    }
   };
 
   const next = (override?: Grade) => {
@@ -377,6 +399,7 @@ export function ListenPractice({ config }: { config: PracticeConfig }) {
     session.queue.advance();
     setAnswer('');
     setVerdict(null);
+    setFeedback(null);
     setTick((t) => t + 1);
   };
 
@@ -430,6 +453,7 @@ export function ListenPractice({ config }: { config: PracticeConfig }) {
               {verdict === 'wrong' && 'Pas tout à fait'}
               {verdict === 'skipped' && 'Réponse'}
             </div>
+            <ErrorFeedback feedback={feedback} />
             <p className="listen-answer" lang={language}>
               {note.expression}
             </p>
