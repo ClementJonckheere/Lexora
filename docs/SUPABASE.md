@@ -156,6 +156,29 @@ Avec la ligne de commande Supabase : `supabase functions deploy speak` puis `sup
 
 Les expressions à prononcer sont envoyées à Azure (via cette fonction). La voix naturelle se désactive dans *Paramètres → Voix naturelle*.
 
+## Correction des phrases (LanguageTool, facultatif)
+
+Dans *Réutiliser mes expressions* (étapes 2 et 3), les phrases écrites sont vérifiées par [LanguageTool](https://languagetool.org) (correcteur à règles, open source, non génératif), installé **sur votre propre serveur** : les phrases ne sont envoyées qu'à lui. LanguageTool signale des fautes possibles ; il ne juge pas le sens. Sans serveur, rien ne change dans Lexora.
+
+1. **Serveur LanguageTool** (Java ; 1 à 2 Go de mémoire), par exemple avec Docker sur un petit serveur ou un NAS :
+   `docker run -d --name languagetool --restart unless-stopped -p 8010:8010 -e Java_Xmx=1g erikvl87/languagetool`
+   puis l'exposer en HTTPS (proxy inverse : Caddy, Nginx, Traefik), par exemple `https://lt.mondomaine.fr`. Test : `https://lt.mondomaine.fr/v2/languages` affiche la liste des langues. Pour des corrections plus fines en anglais, LanguageTool peut utiliser ses données « n-grammes » (8 Go, facultatives ; voir la documentation de l'image).
+   Pour que seul Supabase s'en serve, protégez-le par mot de passe au niveau du proxy inverse (authentification « Basic ») : la fonction transmet l'en-tête donné dans `LANGUAGETOOL_AUTH`.
+2. **Fonction** : *Edge Functions → Deploy a new function → Via Editor*, nom `grammar` (exactement), contenu de [`supabase/functions/grammar/index.ts`](../supabase/functions/grammar/index.ts), *Deploy* ; laissez activée la vérification du jeton.
+3. **Secrets** : `LANGUAGETOOL_URL` = l'adresse du serveur (`https://lt.mondomaine.fr`) ; facultatif `LANGUAGETOOL_AUTH` = `Basic ` suivi de `utilisateur:motdepasse` encodé en base64 ; `ALLOWED_EMAILS` s'applique aussi.
+4. **Vérification** : *Paramètres → Prononciation & raccourcis → Correction des phrases → Tester* affiche « Serveur LanguageTool joignable ».
+
+En ligne de commande : `supabase functions deploy grammar` puis `supabase secrets set LANGUAGETOOL_URL=https://lt.mondomaine.fr`.
+
+## Notation de la prononciation (facultatif)
+
+Dans *Écoute et shadowing*, la répétition enregistrée peut être notée par l'évaluation de la prononciation d'[Azure AI Speech](https://learn.microsoft.com/azure/ai-services/speech-service/how-to-pronunciation-assessment) : note globale, précision, fluidité, complétude, et précision mot par mot. Elle utilise **la même ressource Azure que la voix naturelle** (mêmes secrets `AZURE_SPEECH_KEY` et `AZURE_SPEECH_REGION`) ; le niveau gratuit F0 compte 5 heures de reconnaissance par mois, largement assez pour quelques phrases par jour.
+
+1. **Fonction** : *Edge Functions → Deploy a new function → Via Editor*, nom `pronounce` (exactement), contenu de [`supabase/functions/pronounce/index.ts`](../supabase/functions/pronounce/index.ts), *Deploy* ; vérification du jeton activée.
+2. **Activation** : chacun choisit dans *Paramètres → Prononciation & raccourcis → Notation de la prononciation* (désactivée par défaut), puis *Tester*.
+
+L'enregistrement (converti sur l'appareil en WAV 16 kHz, 30 secondes au plus) et la phrase de référence sont envoyés à Azure via la fonction, puis oubliés : ni la fonction ni Lexora ne gardent la voix ; seules les notes sont enregistrées (table `pronunciation_scores`). En ligne de commande : `supabase functions deploy pronounce`.
+
 ## Version web (téléphone)
 
 Lexora existe aussi en version web, publiée sur GitHub Pages (`https://<compte>.github.io/Lexora/`) et installable sur l'écran d'accueil d'un iPhone ou d'un téléphone Android, sans licence ni boutique. Même compte, mêmes données : la synchronisation Supabase fait le lien avec l'application Windows. Mise en place, une fois :

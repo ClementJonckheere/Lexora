@@ -3961,3 +3961,23 @@ p {
 .error-feedback--other { border-left-color: var(--danger); }
 .error-feedback-message { font-weight: 500; color: var(--text); }
 .error-feedback-tip { color: var(--text-2); margin-top: 2px; }
+
+/* Notation de la prononciation (facultative). */
+.pron-result { text-align: center; max-width: 560px; }
+.pron-scores { display: flex; align-items: baseline; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.pron-score-main { font-size: 1.8rem; font-weight: 600; color: var(--text); }
+.pron-words { margin: 6px 0; font-size: 1.1rem; }
+.pron-word--good { color: var(--mastered); }
+.pron-word--fair { color: #b45309; }
+.pron-word--poor { color: var(--danger); font-weight: 600; }
+.pron-word--missing { color: var(--danger); text-decoration: line-through; }
+.pron-word--extra { color: var(--text-3); font-style: italic; }
+
+/* Signalements de LanguageTool (Réutiliser mes expressions). */
+.grammar-check { text-align: left; max-width: 560px; font-size: 14px; }
+.grammar-check ul { margin: 4px 0 0 18px; padding: 0; }
+.grammar-issue { background: none; color: inherit; text-decoration: underline wavy var(--danger); text-underline-offset: 3px; }
+.grammar-issue--misspelling { text-decoration-color: var(--danger); }
+.grammar-issue--style { text-decoration-color: var(--text-3); }
+
+.text-danger { color: var(--danger); }

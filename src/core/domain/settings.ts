@@ -36,6 +36,11 @@ export interface Settings {
   naturalVoice: boolean;
   /** Français → langue : une phrase d'exemple à trous au recto (quand la note en a une). */
   clozeFront: boolean;
+  /**
+   * Notation de la prononciation (Écoute et shadowing) : l'enregistrement de la répétition est envoyé à Azure pour
+   * la note, puis oublié. Désactivée par défaut : chacun choisit d'envoyer sa voix.
+   */
+  pronunciationScoring: boolean;
   /** Ordre des nouveaux mots : les plus fréquents dans la langue d'abord, ou par date d'ajout. */
   newOrder: 'frequency' | 'added';
   /** Test de placement grammatical, par univers : passé (résultats par point, corrections) ou écarté. */
@@ -204,6 +209,7 @@ export const DEFAULT_SETTINGS: Settings = {
   recordedVoice: true,
   naturalVoice: true,
   clozeFront: true,
+  pronunciationScoring: false,
   newOrder: 'frequency',
   displayedTitles: {},
   leaderboard: { enabled: false, name: '' },
@@ -251,6 +257,7 @@ export function sanitizeSettings(raw: Partial<Record<keyof Settings, unknown>>):
   s.recordedVoice = bool(raw.recordedVoice, s.recordedVoice);
   s.naturalVoice = bool(raw.naturalVoice, s.naturalVoice);
   s.clozeFront = bool(raw.clozeFront, s.clozeFront);
+  s.pronunciationScoring = bool(raw.pronunciationScoring, s.pronunciationScoring);
   s.newOrder = raw.newOrder === 'added' ? 'added' : 'frequency';
   s.placement = sanitizePlacement(raw.placement);
   s.fsrsParams = sanitizeFsrsParams(raw.fsrsParams);

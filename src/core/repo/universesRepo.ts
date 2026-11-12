@@ -85,6 +85,7 @@ export async function deleteUniverse(db: Database, id: string, now = Date.now())
     await tx.execute('UPDATE typed_answers SET deleted = 1, updated_at = ?, dirty = 1 WHERE universe_id = ? AND deleted = 0', [now, id]);
     await tx.execute('UPDATE reading_sessions SET deleted = 1, updated_at = ?, dirty = 1 WHERE universe_id = ? AND deleted = 0', [now, id]);
     await tx.execute('UPDATE placement_marks SET deleted = 1, updated_at = ?, dirty = 1 WHERE universe_id = ? AND deleted = 0', [now, id]);
+    await tx.execute('UPDATE pronunciation_scores SET deleted = 1, updated_at = ?, dirty = 1 WHERE universe_id = ? AND deleted = 0', [now, id]);
     await tx.execute('UPDATE answer_errors SET deleted = 1, updated_at = ?, dirty = 1 WHERE universe_id = ? AND deleted = 0', [now, id]);
     await tx.execute('UPDATE listening_answers SET deleted = 1, updated_at = ?, dirty = 1 WHERE universe_id = ? AND deleted = 0', [now, id]);
     await tx.execute('UPDATE reuse_answers SET deleted = 1, updated_at = ?, dirty = 1 WHERE universe_id = ? AND deleted = 0', [now, id]);

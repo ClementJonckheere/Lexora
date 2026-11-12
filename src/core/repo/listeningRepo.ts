@@ -43,3 +43,27 @@ export async function recordListeningAnswer(db: Database, a: Omit<ListeningAnswe
   );
   return row;
 }
+
+/** Note de prononciation d'une répétition (Azure) : seules les notes sont gardées. */
+export async function recordPronunciation(
+  db: Database,
+  universeId: string,
+  s: { sentenceId: number; score: number; accuracy: number; fluency: number; completeness: number; createdAt: number },
+  now = Date.now(),
+): Promise<void> {
+  const clamp = (x: number) => Math.max(0, Math.min(100, Math.round(x)));
+  await db.execute(
+    `INSERT INTO pronunciation_scores (id, universe_id, sentence_id, score, accuracy, fluency, completeness, created_at, updated_at, deleted, dirty)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1)`,
+    [newId(), universeId, s.sentenceId, clamp(s.score), clamp(s.accuracy), clamp(s.fluency), clamp(s.completeness), s.createdAt, now],
+  );
+}
+
+/** Notes de prononciation d'un univers depuis `since` (évolution dans le temps). */
+export async function loadPronunciation(db: Queryable, universeId: string, since = 0): Promise<{ sentenceId: number; score: number; createdAt: number }[]> {
+  const rows = await db.select<{ sentence_id: number; score: number; created_at: number }>(
+    'SELECT sentence_id, score, created_at FROM pronunciation_scores WHERE universe_id = ? AND deleted = 0 AND created_at >= ? ORDER BY created_at',
+    [universeId, since],
+  );
+  return rows.map((r) => ({ sentenceId: Number(r.sentence_id), score: Number(r.score), createdAt: Number(r.created_at) }));
+}

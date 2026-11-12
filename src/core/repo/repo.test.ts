@@ -17,7 +17,7 @@ import { countNewIntroduced, countNewIntroducedByUniverse, loadForgetCounts, rec
 import { loadSettings, saveSettings } from './settingsRepo';
 import { computeStats } from './statsRepo';
 import { loadReuseAnswers, recordReuseAnswer } from './reuseRepo';
-import { loadListeningAnswers, recordListeningAnswer } from './listeningRepo';
+import { loadListeningAnswers, loadPronunciation, recordListeningAnswer, recordPronunciation } from './listeningRepo';
 import { loadAnswerErrors, recordAnswerError } from './errorsRepo';
 import { exportBackup, exportCsv, exportNotesJson, importNotes, parseCsvNotes, parseJsonNotes, restoreBackup } from './transfer';
 
@@ -216,6 +216,8 @@ describe('écoute et shadowing', () => {
     await recordListeningAnswer(db, { ...base, universeId: en.universeId });
     await recordListeningAnswer(db, { ...base, universeId: es });
     expect(await loadListeningAnswers(db, en.universeId)).toEqual([expect.objectContaining({ ...base, universeId: en.universeId, dictation: 'I am going home' })]);
+    await recordPronunciation(db, en.universeId, { sentenceId: 1234, score: 89.6, accuracy: 120, fluency: 90, completeness: 100, createdAt: 9 });
+    expect(await loadPronunciation(db, en.universeId)).toEqual([{ sentenceId: 1234, score: 90, createdAt: 9 }]);
     await deleteUniverse(db, es);
     expect(await loadListeningAnswers(db, es)).toEqual([]);
   });
