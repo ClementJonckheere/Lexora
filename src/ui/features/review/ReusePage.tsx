@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, CheckCircle2, Lightbulb, Loader2, Mic, RefreshCw, Volume2, XCircle } from 'lucide-react';
 import { errorMessage, useApp } from '@/app/store';
 import { languageInfo } from '@/core/domain/languages';
+import { checkSentence, markIssues, type GrammarIssue } from '@/core/grammar/languageTool';
+import { ServiceUnavailable } from '@/core/platform/serverCheck';
 import { classifyAnswer, expressionVariants, type AnswerFeedback } from '@/core/domain/errorKind';
 import { ErrorFeedback } from '@/ui/components/ErrorFeedback';
 import { findReuseSentences } from '@/core/translate/examples';
@@ -93,6 +95,9 @@ function ReuseSession({ items, language, onAgain, onClose }: { items: ReuseItem[
   const [typed, setTyped] = useState('');
   const [result, setResult] = useState<Result | null>(null);
   const [feedback, setFeedback] = useState<AnswerFeedback | null>(null);
+  const [grammar, setGrammar] = useState<GrammarState>(null);
+  /** Numéro de la vérification en cours : une réponse arrivée après « suivant » est ignorée. */
+  const grammarRequest = useRef(0);
   const [hint, setHint] = useState(false);
   const [keep, setKeep] = useState(false);
   const [ratings, setRatings] = useState<ReuseRating[]>([]);
@@ -121,6 +126,14 @@ function ReuseSession({ items, language, onAgain, onClose }: { items: ReuseItem[
     }
     const { verdict, suggested } = checkReuseSentence(item.note, typed, language, accepted);
     setResult({ given: typed, verdict, suggested });
+    // Phrase écrite : LanguageTool (serveur de l'utilisateur) signale les fautes possibles ; absent, rien ne change.
+    const text = typed.trim();
+    const request = ++grammarRequest.current;
+    const show = (state: GrammarState) => request === grammarRequest.current && setGrammar(state);
+    setGrammar('busy');
+    checkSentence(text, language)
+      .then((issues) => show(issues ? { text, issues } : null))
+      .catch((err) => show(err instanceof ServiceUnavailable && err.silent ? null : { error: err instanceof Error ? err.message : String(err) }));
   };
 
   const rate = (rating: ReuseRating) => {
@@ -155,6 +168,8 @@ function ReuseSession({ items, language, onAgain, onClose }: { items: ReuseItem[
     }
     setResult(null);
     setFeedback(null);
+    grammarRequest.current++;
+    setGrammar(null);
     setTyped('');
     setHint(false);
     setKeep(false);
@@ -306,6 +321,7 @@ function ReuseSession({ items, language, onAgain, onClose }: { items: ReuseItem[
               <div className="stack stack--sm" style={{ marginTop: 12 }}>
                 <Feedback item={item} result={result} language={language} onSpeak={speak} />
                 <ErrorFeedback feedback={feedback} />
+                <GrammarCheck state={grammar} language={language} />
                 {item.stage === 3 && result.verdict === 'present' && (
                   <label className="row small" style={{ gap: 6 }}>
                     <input
@@ -391,3 +407,50 @@ function Feedback({ item, result, language, onSpeak }: { item: ReuseItem; result
     </>
   );
 }
+
+type GrammarState = null | 'busy' | { text: string; issues: GrammarIssue[] } | { error: string };
+
+/** Signalements de LanguageTool : passages soulignés, explication et corrections proposées. */
+function GrammarCheck({ state, language }: { state: GrammarState; language: string }) {
+  if (!state) return null;
+  if (state === 'busy')
+    return (
+      <p className="muted small row">
+        <Loader2 size={14} className="spin" /> Vérification par LanguageTool…
+      </p>
+    );
+  if ('error' in state) return <p className="muted small">LanguageTool : {state.error}.</p>;
+  if (!state.issues.length) return <p className="muted small">LanguageTool ne signale rien. Il ne vérifie pas que la phrase dit ce que vous vouliez dire.</p>;
+  return (
+    <div className="grammar-check" role="note">
+      <p lang={language}>
+        {markIssues(state.text, state.issues).map((part, i) =>
+          part.issue ? (
+            <mark key={i} className={`grammar-issue grammar-issue--${part.issue.type || 'other'}`} title={part.issue.message}>
+              {part.text}
+            </mark>
+          ) : (
+            <span key={i}>{part.text}</span>
+          ),
+        )}
+      </p>
+      <ul>
+        {state.issues.map((issue, i) => (
+          <li key={i}>
+            <strong lang={language}>{state.text.slice(issue.offset, issue.offset + issue.length)}</strong>
+            {issue.replacements.length > 0 && (
+              <>
+                {' '}→ <span lang={language}>{issue.replacements.join(' / ')}</span>
+              </>
+            )}{' '}
+            <span className="muted" lang={language}>
+              ({issue.message})
+            </span>
+          </li>
+        ))}
+      </ul>
+      <p className="muted small">Signalé par LanguageTool : des fautes possibles, pas une note. Le sens reste à juger par vous.</p>
+    </div>
+  );
+}
+

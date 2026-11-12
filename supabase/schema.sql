@@ -335,6 +335,22 @@ create table if not exists public.answer_errors (
   server_updated_at  bigint not null default 0
 );
 
+-- Notation de la prononciation (facultative) : notes d'Azure par répétition ; jamais l'enregistrement.
+create table if not exists public.pronunciation_scores (
+  id                 uuid primary key,
+  user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  universe_id        uuid not null,
+  sentence_id        bigint not null,
+  score              smallint not null check (score between 0 and 100),
+  accuracy           smallint not null check (accuracy between 0 and 100),
+  fluency            smallint not null check (fluency between 0 and 100),
+  completeness       smallint not null check (completeness between 0 and 100),
+  created_at         bigint not null,
+  updated_at         bigint not null,
+  deleted            smallint not null default 0,
+  server_updated_at  bigint not null default 0
+);
+
 -- Série : jours manqués couverts par un bouclier (toutes langues confondues).
 create table if not exists public.streak_shields (
   user_id            uuid not null default auth.uid() references auth.users (id) on delete cascade,
@@ -363,7 +379,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers', 'streak_shields', 'placement_marks', 'reuse_answers', 'listening_answers', 'answer_errors'] loop
+  foreach t in array array['universes', 'collections', 'notes', 'cards', 'review_logs', 'practice_logs', 'settings', 'books', 'word_marks', 'vocab_tests', 'vocab_observations', 'grammar_answers', 'note_entries', 'typed_answers', 'reading_sessions', 'verb_answers', 'streak_shields', 'placement_marks', 'reuse_answers', 'listening_answers', 'answer_errors', 'pronunciation_scores'] loop
     execute format('create index if not exists %I on public.%I (user_id, server_updated_at)', t || '_sync_idx', t);
 
     execute format('drop trigger if exists lexora_touch on public.%I', t);

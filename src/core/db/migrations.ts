@@ -418,6 +418,27 @@ MIGRATIONS.push(MIGRATION_V2, {
     )`,
     'CREATE INDEX idx_answer_errors_universe ON answer_errors(universe_id, deleted, created_at)',
   ],
+}, {
+  version: 17,
+  name: 'notation de la prononciation',
+  statements: [
+    // Une ligne par répétition notée par Azure (src/core/speech/pronunciation.ts, réglage facultatif) : note globale,
+    // précision, fluidité, complétude (0 à 100). L'enregistrement lui-même n'est jamais gardé.
+    `CREATE TABLE pronunciation_scores (
+      id            TEXT PRIMARY KEY,
+      universe_id   TEXT    NOT NULL,
+      sentence_id   INTEGER NOT NULL,
+      score         INTEGER NOT NULL,
+      accuracy      INTEGER NOT NULL,
+      fluency       INTEGER NOT NULL,
+      completeness  INTEGER NOT NULL,
+      created_at    INTEGER NOT NULL,
+      updated_at    INTEGER NOT NULL,
+      deleted       INTEGER NOT NULL DEFAULT 0,
+      dirty         INTEGER NOT NULL DEFAULT 1
+    )`,
+    'CREATE INDEX idx_pronunciation_scores_universe ON pronunciation_scores(universe_id, deleted, created_at)',
+  ],
 });
 
 export const LATEST_VERSION = MIGRATIONS[MIGRATIONS.length - 1].version;

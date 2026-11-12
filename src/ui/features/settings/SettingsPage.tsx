@@ -15,6 +15,7 @@ import { getAutostart, openExternal, setAutostart } from '@/core/platform/deskto
 import { deeplUsage } from '@/core/translate/translate';
 import { sharedDeeplUsage } from '@/core/translate/shared';
 import { checkNaturalVoice } from '@/core/speech/natural';
+import { checkService } from '@/core/platform/serverCheck';
 import { authConfigured } from '@/core/platform/auth';
 import { PhoneSettingsTabs } from './PhoneSettingsTabs';
 import { currentPush, disablePush, enablePush, pushSupported } from '@/core/platform/push';
@@ -206,6 +207,25 @@ export function SettingsPage() {
             <Switch label="Prononciation enregistrée" checked={settings.recordedVoice} onChange={(v) => update({ recordedVoice: v })} />
           </Setting>
           {authConfigured && <NaturalVoiceSetting enabled={settings.naturalVoice} onChange={(v) => update({ naturalVoice: v })} />}
+          {authConfigured && (
+            <Setting
+              title="Notation de la prononciation"
+              desc="Écoute et shadowing : votre répétition enregistrée est envoyée à Azure (même service que la voix naturelle), qui la note (précision, fluidité, complétude, mot par mot), puis l'oublie : seules les notes sont gardées. Désactivée par défaut ; sans elle, la comparaison se fait à l'oreille et l'enregistrement ne quitte pas l'appareil."
+            >
+              <div className="stack stack--sm" style={{ alignItems: 'flex-end' }}>
+                <Switch label="Noter ma prononciation" checked={settings.pronunciationScoring} onChange={(v) => update({ pronunciationScoring: v })} />
+                {settings.pronunciationScoring && <ServiceTest name="pronounce" ok="Service de notation joignable." />}
+              </div>
+            </Setting>
+          )}
+          {authConfigured && (
+            <Setting
+              title="Correction des phrases (LanguageTool)"
+              desc="Réutiliser mes expressions : vos phrases écrites sont vérifiées par votre serveur LanguageTool (secret LANGUAGETOOL_URL dans Supabase), qui signale les fautes possibles. Il ne juge pas le sens. Sans serveur configuré, rien ne change."
+            >
+              <ServiceTest name="grammar" ok="Serveur LanguageTool joignable." />
+            </Setting>
+          )}
           {speechSupported() ? (
             <>
               <Setting
@@ -814,6 +834,23 @@ function BudgetSetting({ value, onChange }: { value: number; onChange: (v: numbe
         )}
       </div>
     </Setting>
+  );
+}
+
+/** Test d'une fonction Supabase facultative (déployée, configurée, serveur joignable). */
+function ServiceTest({ name, ok }: { name: string; ok: string }) {
+  const [state, setState] = useState<null | 'busy' | { error: string | null }>(null);
+  const run = () => {
+    setState('busy');
+    void checkService(name).then((error) => setState({ error }));
+  };
+  return (
+    <div className="stack stack--sm" style={{ alignItems: 'flex-end' }}>
+      <Button size="sm" onClick={run} disabled={state === 'busy'}>
+        Tester
+      </Button>
+      {state && state !== 'busy' && <span className={`small ${state.error ? 'text-danger' : 'muted'}`}>{state.error ? `Indisponible : ${state.error}` : ok}</span>}
+    </div>
   );
 }
 

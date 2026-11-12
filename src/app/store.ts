@@ -35,7 +35,7 @@ import type { PlacementMark } from '@/core/learn/placementResults';
 import { computeDayBudget, type AppDayBudget } from './budget';
 import { loadReuseAnswers, recordReuseAnswer } from '@/core/repo/reuseRepo';
 import type { ReuseAnswer } from '@/core/srs/reuse';
-import { loadListeningAnswers, recordListeningAnswer } from '@/core/repo/listeningRepo';
+import { loadListeningAnswers, recordListeningAnswer, recordPronunciation } from '@/core/repo/listeningRepo';
 import type { ListeningAnswer } from '@/core/srs/listening';
 import { recordAnswerError, type AnswerError } from '@/core/repo/errorsRepo';
 
@@ -251,6 +251,8 @@ interface AppState {
   answerGrammar(answer: GrammarAnswer): Promise<void>;
   /** Réponse de « Réutiliser mes expressions » (sans effet sur la planification). */
   answerReuse(answer: Omit<ReuseAnswer, 'id' | 'universeId'>): Promise<void>;
+  /** Note de prononciation d'une répétition (seules les notes sont gardées). */
+  recordPronunciation(s: { sentenceId: number; score: number; accuracy: number; fluency: number; completeness: number }): void;
   /** Réponse fausse ou approchée, avec son type d'erreur (mesure des erreurs qui reculent). */
   recordError(error: AnswerError): void;
   /** Phrase écoutée (sans effet sur la planification). */
@@ -738,6 +740,13 @@ export const useApp = create<AppState>((set, get) => {
       const row = await recordReuseAnswer(db(), { ...answer, universeId: u.id });
       set((s) => ({ reuseAnswers: [...s.reuseAnswers, row] }));
       scheduleSync();
+    },
+    recordPronunciation(score) {
+      const u = get().universe;
+      if (!u) return;
+      void recordPronunciation(db(), u.id, { ...score, createdAt: Date.now() })
+        .then(() => scheduleSync())
+        .catch(() => undefined);
     },
     recordError(error) {
       const u = get().universe;

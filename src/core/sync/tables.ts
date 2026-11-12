@@ -123,6 +123,12 @@ export const SYNC_TABLES: SyncTable[] = [
     columns: ['id', 'universe_id', 'source', 'item_id', 'kind', 'expected', 'given', 'created_at', ...SYNC],
     optional: true,
   },
+  {
+    name: 'pronunciation_scores',
+    key: 'id',
+    columns: ['id', 'universe_id', 'sentence_id', 'score', 'accuracy', 'fluency', 'completeness', 'created_at', ...SYNC],
+    optional: true,
+  },
   { name: 'streak_shields', key: 'day', columns: ['day', 'used_at', ...SYNC], optional: true, global: true },
 ];
 

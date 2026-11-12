@@ -4,6 +4,9 @@ import { errorMessage, useApp } from '@/app/store';
 import { assetUrl } from '@/core/platform/env';
 import { openExternal } from '@/core/platform/desktop';
 import { tatoebaCode } from '@/core/translate/examples';
+import { assessPronunciation, wordLevel, type PronunciationScore } from '@/core/speech/pronunciation';
+import { languageInfo } from '@/core/domain/languages';
+import { toWav16k } from '@/ui/audio';
 import { dictationDiff, parseBank, pickListening, type ListeningBankFile, type ListeningItem, type ListeningSentence } from '@/core/srs/listening';
 import { Button, EmptyState, Kbd } from '@/ui/components/ui';
 import { useHotkeys } from '@/ui/hooks/useHotkeys';
@@ -103,6 +106,34 @@ function ListeningSession({ items, language, onAgain, onClose }: { items: Listen
   const [results, setResults] = useState<(1 | 2 | 3)[]>([]);
   const audio = useRef<HTMLAudioElement | null>(null);
   const recorder = useRecorder();
+  const scoring = useApp((s) => s.settings.pronunciationScoring);
+  const speechLang = useApp((s) => languageInfo(s.universe?.language ?? 'en').speech);
+  const [pron, setPron] = useState<PronState>(null);
+
+  // Notation (réglage facultatif) : chaque nouvel enregistrement de la répétition est envoyé pour la note.
+  useEffect(() => {
+    if (!scoring || !recorder.blob || !item) return setPron(null);
+    let cancelled = false;
+    const sentence = item.sentence;
+    setPron('busy');
+    void (async () => {
+      const wav = await toWav16k(recorder.blob!);
+      if (!wav) return !cancelled && setPron({ error: 'Enregistrement trop court, trop long (30 s au plus) ou illisible.' });
+      try {
+        const result = await assessPronunciation(wav, sentence.text, speechLang);
+        if (cancelled) return;
+        if (!result) return setPron({ error: 'Rien de reconnu : rapprochez-vous du micro et répétez la phrase entière.' });
+        setPron(result);
+        useApp.getState().recordPronunciation({ sentenceId: sentence.id, score: result.score, accuracy: result.accuracy, fluency: result.fluency, completeness: result.completeness });
+      } catch (err) {
+        if (!cancelled) setPron({ error: `Notation indisponible : ${err instanceof Error ? err.message : String(err)}.` });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recorder.blob, scoring]);
   const reformulation = useRecorder();
   const item = items[index];
   const finished = index >= items.length;
@@ -329,6 +360,7 @@ function ListeningSession({ items, language, onAgain, onClose }: { items: Listen
                     )
                   }
                 />
+                {scoring && <PronunciationResult state={pron} />}
                 <Button variant={recorder.url ? 'primary' : 'ghost'} onClick={() => setPhase('reformulate')} shortcut="Entrée">
                   {recorder.url ? 'Continuer' : 'Passer cette étape'}
                 </Button>
@@ -399,3 +431,38 @@ function RecorderControls({ rec, onToggle, extra }: { rec: ReturnType<typeof use
     </>
   );
 }
+
+type PronState = null | 'busy' | PronunciationScore | { error: string };
+
+/** Notes d'Azure : globale et détaillée, mots colorés selon leur précision (mot oublié barré). */
+function PronunciationResult({ state }: { state: PronState }) {
+  if (!state) return null;
+  if (state === 'busy')
+    return (
+      <p className="muted small row">
+        <Loader2 size={14} className="spin" /> Notation de la prononciation…
+      </p>
+    );
+  if ('error' in state) return <p className="muted small">{state.error}</p>;
+  return (
+    <div className="pron-result" role="note">
+      <div className="pron-scores">
+        <span className="pron-score-main">{state.score}</span>
+        <span className="muted small">
+          / 100 · précision {state.accuracy} · fluidité {state.fluency} · complétude {state.completeness}
+        </span>
+      </div>
+      <p className="pron-words">
+        {state.words.map((w, i) => (
+          <Fragment key={i}>
+            <span className={`pron-word pron-word--${wordLevel(w)}`} title={w.error !== 'None' ? w.error : w.accuracy !== null ? `${Math.round(w.accuracy)} / 100` : undefined}>
+              {w.word}
+            </span>{' '}
+          </Fragment>
+        ))}
+      </p>
+      <p className="muted small">Mots en orange ou rouge : à retravailler (mot barré : oublié). La note mesure l'écart à la phrase entendue, pas le naturel.</p>
+    </div>
+  );
+}
+

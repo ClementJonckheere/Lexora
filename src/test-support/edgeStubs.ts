@@ -9,6 +9,8 @@ export const edge = {
   /** Envoi : lève l'erreur renvoyée (statusCode), sinon réussit. */
   send: (_endpoint: string): { statusCode: number } | null => null,
   sent: [] as { endpoint: string; payload: string }[],
+  /** Utilisateur connecté (auth.getUser) ; null : jeton refusé. */
+  user: { email: 'a@example.com' } as { email: string } | null,
 };
 
 class Query {
@@ -45,7 +47,10 @@ class Query {
 }
 
 export function createClient() {
-  return { from: (table: string) => new Query(table) };
+  return {
+    from: (table: string) => new Query(table),
+    auth: { getUser: async () => (edge.user ? { data: { user: edge.user }, error: null } : { data: { user: null }, error: new Error('jwt') }) },
+  };
 }
 
 const webpush = {

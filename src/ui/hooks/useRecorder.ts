@@ -10,6 +10,7 @@ export function useRecorder() {
   const supported = typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== 'undefined';
   const [state, setState] = useState<RecorderState>(supported ? 'idle' : 'unsupported');
   const [url, setUrl] = useState<string | null>(null);
+  const [blob, setBlob] = useState<Blob | null>(null);
   const recorder = useRef<MediaRecorder | null>(null);
   const stream = useRef<MediaStream | null>(null);
   const current = useRef<string | null>(null);
@@ -23,6 +24,7 @@ export function useRecorder() {
     if (current.current) URL.revokeObjectURL(current.current);
     current.current = null;
     setUrl(null);
+    setBlob(null);
   }, []);
 
   const start = useCallback(async () => {
@@ -40,8 +42,9 @@ export function useRecorder() {
       release();
       recorder.current = null;
       if (current.current) URL.revokeObjectURL(current.current);
-      const blob = new Blob(chunks, { type: r.mimeType || 'audio/webm' });
-      current.current = URL.createObjectURL(blob);
+      const recorded = new Blob(chunks, { type: r.mimeType || 'audio/webm' });
+      current.current = URL.createObjectURL(recorded);
+      setBlob(recorded);
       setUrl(current.current);
       setState('idle');
     };
@@ -61,5 +64,5 @@ export function useRecorder() {
     [release],
   );
 
-  return { state, url, start, stop, clear };
+  return { state, url, blob, start, stop, clear };
 }
