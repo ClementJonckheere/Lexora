@@ -160,7 +160,7 @@ Les expressions à prononcer sont envoyées à Azure (via cette fonction). La vo
 
 Dans *Réutiliser mes expressions* (étapes 2 et 3), les phrases écrites sont vérifiées par [LanguageTool](https://languagetool.org) (correcteur à règles, open source, non génératif), installé **sur votre propre serveur** : les phrases ne sont envoyées qu'à lui. LanguageTool signale des fautes possibles ; il ne juge pas le sens. Sans serveur, rien ne change dans Lexora.
 
-1. **Serveur LanguageTool** (Java ; 1 à 2 Go de mémoire), par exemple avec Docker sur un petit serveur ou un NAS :
+1. **Serveur LanguageTool** (Java ; 1 à 2 Go de mémoire). Gratuit et pas à pas : [LANGUAGETOOL-ORACLE.md](LANGUAGETOOL-ORACLE.md) (Oracle Cloud *Always Free*, script d'installation compris). Ou, par exemple avec Docker sur un petit serveur ou un NAS :
    `docker run -d --name languagetool --restart unless-stopped -p 8010:8010 -e Java_Xmx=1g erikvl87/languagetool`
    puis l'exposer en HTTPS (proxy inverse : Caddy, Nginx, Traefik), par exemple `https://lt.mondomaine.fr`. Test : `https://lt.mondomaine.fr/v2/languages` affiche la liste des langues. Pour des corrections plus fines en anglais, LanguageTool peut utiliser ses données « n-grammes » (8 Go, facultatives ; voir la documentation de l'image).
    Pour que seul Supabase s'en serve, protégez-le par mot de passe au niveau du proxy inverse (authentification « Basic ») : la fonction transmet l'en-tête donné dans `LANGUAGETOOL_AUTH`.
